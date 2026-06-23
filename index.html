@@ -603,6 +603,45 @@ body::after{display:none}
   background:rgba(255,255,255,.12);color:#fff;
 }
 
+/* P2: コホート・限定問い・バースデー */
+.cohort-section{margin:0 20px 20px;padding:16px;border-radius:var(--r);background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
+.cohort-section .cohort-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cohort-section .cohort-name{font-size:15px;font-weight:600}
+.cohort-section .cohort-count{font-size:11px;color:var(--ink-3)}
+.cohort-feed{display:flex;flex-direction:column;gap:10px}
+.cohort-item{padding:12px;border-radius:var(--r-sm);background:var(--bg-3);font-size:13px;line-height:1.45}
+.cohort-item .ci-meta{font-size:11px;color:var(--ink-3);margin-bottom:4px}
+.limited-prompt-badge{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+  background:rgba(255,200,100,.12);color:#ffc870;font-size:11px;font-weight:600;margin-bottom:10px;
+}
+.profile-edit{
+  margin:0 20px 16px;padding:16px;border-radius:var(--r);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.06);
+}
+.profile-edit label{display:block;font-size:11px;color:var(--ink-3);margin:10px 0 4px}
+.profile-edit input,.profile-edit select{
+  width:100%;padding:10px 12px;border-radius:var(--r-sm);border:none;
+  background:var(--bg-3);font-size:14px;color:var(--ink);
+}
+.birthday-overlay{
+  position:fixed;inset:0;z-index:480;background:rgba(0,0,0,.92);
+  display:none;align-items:center;justify-content:center;padding:24px;
+}
+.birthday-overlay.open{display:flex}
+.birthday-card{max-width:340px;width:100%;padding:28px 24px;border-radius:var(--r);background:var(--bg-2);text-align:center}
+.birthday-card .bd-icon{font-size:48px;margin-bottom:12px}
+.birthday-msgs{margin-top:16px;text-align:left;max-height:200px;overflow-y:auto}
+.birthday-msg{padding:12px;margin-bottom:8px;border-radius:var(--r-sm);background:var(--bg-3);font-size:13px;line-height:1.45}
+.birthday-msg .bm-from{font-size:11px;color:var(--ink-3);margin-bottom:4px}
+.unlock-festival{
+  margin:0 20px 16px;padding:14px 16px;border-radius:var(--r);
+  background:linear-gradient(120deg,#2d1f3d,#1a1a2e);border:1px solid rgba(200,150,255,.2);
+  text-align:center;
+}
+.unlock-festival .uf-title{font-size:15px;font-weight:600}
+.unlock-festival .uf-sub{font-size:12px;color:var(--ink-2);margin-top:6px}
+
 /* Timeline feed */
 .timeline-feed{padding:0 24px 32px;display:flex;flex-direction:column;gap:10px}
 .tl-item{
@@ -1759,6 +1798,17 @@ body::after{display:none}
       <div class="sb-sub">みんなが卒業前に封じて、1年後に一斉開封。学校単位で広がる。</div>
       <button type="button" id="joinSeasonBtn">参加する</button>
     </div>
+    <div class="unlock-festival hidden" id="unlockFestival">
+      <div class="uf-title">🎓 開封祭モード</div>
+      <div class="uf-sub" id="unlockFestivalSub">卒業カプセルが一斉に開きます</div>
+    </div>
+    <div class="cohort-section hidden" id="cohortSection">
+      <div class="cohort-head">
+        <div class="cohort-name" id="cohortName">—</div>
+        <div class="cohort-count" id="cohortCount">—</div>
+      </div>
+      <div class="cohort-feed" id="cohortFeed"></div>
+    </div>
     <div class="daily-question" id="dailyQuestionBlock">
       <div class="dq-label">今日の問い</div>
       <div class="dq-streak-pill hidden" id="streakPill">🔥 連続 <span id="streakCount">0</span> 日</div>
@@ -2028,6 +2078,16 @@ body::after{display:none}
   </div>
 </div>
 
+<div class="birthday-overlay" id="birthdayOverlay">
+  <div class="birthday-card">
+    <div class="bd-icon">🎂</div>
+    <h2 style="font-size:22px;font-weight:600">誕生日おめでとう</h2>
+    <p style="font-size:14px;color:var(--ink-2);margin-top:8px;line-height:1.5">友達からのメッセージが届いています</p>
+    <div class="birthday-msgs" id="birthdayMsgs"></div>
+    <button type="button" class="dq-cta" id="birthdayClose" style="width:100%;margin-top:16px">開ける</button>
+  </div>
+</div>
+
 <div class="invite-welcome-overlay" id="inviteWelcome">
   <div class="invite-welcome-card">
     <div class="iw-icon">💌</div>
@@ -2189,7 +2249,12 @@ const PROMPT_POOL=[
   {id:'free3',text:'今日いちばん笑ったことは？',type:'free'},
   {id:'tap4',text:'今日の帰り道の気分は？',type:'tap',options:['ほくほく','もやもや','へとへと']},
   {id:'hyb1',text:'今の気持ちは？',type:'hybrid',options:['うれしい','しみじみ','ざわざわ']},
+  {id:'lim-night',text:'今、眠れずに考えてることは？',type:'free',condition:'night'},
+  {id:'lim-rain',text:'雨の日に思い出す人は？',type:'free',condition:'rain'},
+  {id:'lim-friday',text:'今週いちばんの事件は？',type:'free',condition:'friday'},
+  {id:'lim-moon',text:'今、誰を思い出してる？',type:'free',condition:'fullmoon'},
 ];
+const GRADES=['中学1年生','中学2年生','中学3年生','高校1年生','高校2年生','高校3年生','大学1年生','大学2年生','大学3年生','大学4年生','その他'];
 const INVITE_HOSTS={
   'TC-DEMO1':{name:'みお',id:'u1'},
   'MI0-KENT':{name:'けんと',id:'u2'},
@@ -2782,10 +2847,158 @@ function isPromptDay(d=new Date()){
   const h=(d.getDate()+d.getMonth()*31+d.getFullYear())%7;
   return h!==0&&h!==6;
 }
+function isRainToday(){
+  if(S.weatherRain!==undefined)return S.weatherRain;
+  const seed=parseInt(todayStr().replace(/-/g,''),10);
+  return seed%5===0;
+}
+function isFullMoonTonight(){
+  const d=new Date();
+  return d.getDate()>=14&&d.getDate()<=16;
+}
+function getLimitedPrompt(){
+  const d=new Date(),h=d.getHours();
+  const limited=PROMPT_POOL.filter(p=>p.condition);
+  for(const p of limited){
+    if(p.condition==='night'&&h>=0&&h<3)return p;
+    if(p.condition==='friday'&&d.getDay()===5&&h>=18)return p;
+    if(p.condition==='rain'&&isRainToday())return p;
+    if(p.condition==='fullmoon'&&isFullMoonTonight())return p;
+  }
+  return null;
+}
 function getTodayPrompt(){
+  const limited=getLimitedPrompt();
+  if(limited)return{...limited,limited:true};
   if(!isPromptDay())return null;
-  const idx=(new Date().getDate()+new Date().getMonth()*31)%PROMPT_POOL.length;
-  return PROMPT_POOL[idx];
+  const regular=PROMPT_POOL.filter(p=>!p.condition);
+  const idx=(new Date().getDate()+new Date().getMonth()*31)%regular.length;
+  return regular[idx];
+}
+function ensureProfile(){
+  if(!S.profile)S.profile={school:'',graduationYear:2026,grade:'高校3年生',birthDate:''};
+}
+function cohortIdFromProfile(){
+  ensureProfile();
+  const s=(S.profile.school||'').trim();
+  const y=S.profile.graduationYear||'';
+  if(!s)return null;
+  return 'coh_'+s.replace(/\s+/g,'_')+'_'+y;
+}
+function ensureCohorts(){
+  ensureProfile();
+  const id=cohortIdFromProfile();
+  if(!id)return;
+  S.cohorts=S.cohorts||[];
+  let c=S.cohorts.find(x=>x.id===id);
+  const name=`${S.profile.school} ${S.profile.graduationYear}卒`;
+  if(!c){
+    c={id,name,type:'school',school:S.profile.school,graduationYear:S.profile.graduationYear,memberIds:['me'],createdAt:Date.now()};
+    S.cohorts.push(c);
+  }else c.name=name;
+  if(!c.memberIds.includes('me'))c.memberIds.push('me');
+  MEMBERS.slice(0,3).forEach(m=>{if(!c.memberIds.includes(m.id))c.memberIds.push(m.id)});
+  S.activeCohortId=id;
+  if(!S.cohortFeed?.length){
+    S.cohortFeed=[
+      {id:'cf1',userName:'みお',text:'同じ学校のみんな、卒業まで一緒に残そう',at:Date.now()-3600e3,cohortId:id},
+      {id:'cf2',userName:'けんと',text:'文化祭の写真、未来に送った',at:Date.now()-7200e3,cohortId:id},
+      {id:'cf3',userName:'あや',text:'今日の問い答えた人〜',at:Date.now()-10800e3,cohortId:id},
+    ];
+  }
+}
+function isBirthdayToday(dateStr){
+  if(!dateStr)return false;
+  const p=dateStr.split('-').map(Number);
+  if(p.length<3)return false;
+  const t=new Date();
+  return t.getMonth()+1===p[1]&&t.getDate()===p[2];
+}
+function checkBirthday(){
+  ensureProfile();
+  if(!isBirthdayToday(S.profile.birthDate))return;
+  const key='bd_'+todayStr();
+  if(S.shownNotifs?.includes(key))return;
+  S.birthdayMessages=S.birthdayMessages||[];
+  if(!S.birthdayMessages.filter(m=>m.date===todayStr()).length){
+    S.birthdayMessages.push(
+      {id:'bd1',from:'みお',text:'お誕生日おめでとう！いつもありがとう',date:todayStr(),at:Date.now()},
+      {id:'bd2',from:'けんと',text:'また一緒に遊ぼう',date:todayStr(),at:Date.now()-1000},
+      {id:'bd3',from:'あや',text:'素敵な1年になりますように',date:todayStr(),at:Date.now()-2000},
+    );
+  }
+  const msgs=S.birthdayMessages.filter(m=>m.date===todayStr());
+  $('birthdayMsgs').innerHTML=msgs.map(m=>`
+    <div class="birthday-msg"><div class="bm-from">${esc(m.from)}</div>${esc(m.text)}</div>`).join('');
+  $('birthdayOverlay')?.classList.add('open');
+  S.shownNotifs=S.shownNotifs||[];
+  S.shownNotifs.push(key);
+  pushHomeNotif('誕生日おめでとう','友達から'+msgs.length+'件のメッセージ','timeline');
+  save();
+}
+function checkLimitedPromptNotif(){
+  const p=getLimitedPrompt();
+  if(!p)return;
+  const key='lim_'+p.id+'_'+todayStr();
+  if(S.shownNotifs?.includes(key))return;
+  S.shownNotifs.push(key);
+  pushHomeNotif('今夜だけの問いが出ました',p.text,'timeline');
+  save();
+}
+function checkGlobalUnlock(){
+  const ev=S.seasonEvent;
+  if(!ev?.joined)return;
+  if(!ev.unlocksAt)ev.unlocksAt=addDays(30);
+  const festival=$('unlockFestival');
+  const ms=new Date(ev.unlocksAt).getTime()-Date.now();
+  if(ms<=0){
+    ev.unlocked=true;
+    festival?.classList.remove('hidden');
+    $('unlockFestivalSub').textContent='卒業カプセル 2026 · いま一斉開封中';
+    S.capsules?.forEach(c=>{
+      if(c.seasonEvent==='grad2026'&&c.sealed&&new Date(c.openAt)>new Date()){
+        c.openAt=new Date().toISOString();
+      }
+    });
+    const key='festival_'+todayStr();
+    if(!S.shownNotifs?.includes(key)){
+      S.shownNotifs.push(key);
+      pushHomeNotif('開封祭がはじまりました','卒業カプセルが一斉に開きます','open');
+      save();
+    }
+  }else if(festival){
+    festival.classList.remove('hidden');
+    const d=daysUntil(ev.unlocksAt);
+    $('unlockFestivalSub').textContent=`あと${d}日で一斉開封 · ${ev.theme||'3年後のじぶんへ'}`;
+  }
+}
+function renderCohortSection(){
+  ensureCohorts();
+  const sec=$('cohortSection');
+  const id=S.activeCohortId;
+  if(!id||!sec){sec?.classList.add('hidden');return}
+  const c=S.cohorts?.find(x=>x.id===id);
+  if(!c){sec.classList.add('hidden');return}
+  sec.classList.remove('hidden');
+  $('cohortName').textContent=c.name;
+  $('cohortCount').textContent=(c.memberIds?.length||0)+'人が参加';
+  const feed=(S.cohortFeed||[]).filter(x=>x.cohortId===id).sort((a,b)=>b.at-a.at).slice(0,6);
+  $('cohortFeed').innerHTML=feed.length?feed.map(f=>`
+    <div class="cohort-item">
+      <div class="ci-meta">${esc(f.userName)} · ${timeAgo(f.at)}</div>
+      ${esc(f.text)}
+    </div>`).join(''):'<div class="empty-state" style="padding:16px 0;font-size:13px">まだ投稿がありません</div>';
+}
+function saveProfileFromForm(){
+  ensureProfile();
+  S.profile.school=$('profileSchool')?.value.trim()||'';
+  S.profile.graduationYear=+($('profileGradYear')?.value||2026);
+  S.profile.grade=$('profileGrade')?.value||'';
+  S.profile.birthDate=$('profileBirth')?.value||'';
+  ensureCohorts();
+  save();renderArchive();renderTimeline();
+  toast('プロフィールを保存しました');
+  haptic();
 }
 function isDailyQuestionDone(){
   return S.dailyQuestionDate===todayStr()&&(S.dailyQuestionDone||!!S.dailyAnswerToday);
@@ -3084,7 +3297,9 @@ function defaults(){
     groups:[{id:'g1',name:GROUP,emoji:'✨',memberIds:MEMBERS.map(m=>m.id)},{id:'g2',name:'大学の仲間',emoji:'🎓',memberIds:['u1','u2','u3']}],
     inviteCode:'TC-DEMO1',
     pendingInvites:[],
-    seasonEvent:{joined:false,key:'grad2026'},
+    seasonEvent:{joined:false,key:'grad2026',theme:'3年後のじぶんへ',unlocksAt:null},
+    profile:{school:'',graduationYear:2026,grade:'高校3年生',birthDate:''},
+    cohorts:[],cohortFeed:[],birthdayMessages:[],
     dailyState:{
       date:todayStr(),openedUserIds:['u1','u2','u3'],
       postsCount:4,activeMembersCount:5,isUnlocked:false,
@@ -3169,7 +3384,12 @@ if(!S.sealFriendIds)S.sealFriendIds=S.sealFriendId?[S.sealFriendId]:[];
 if(!S.sealGroupIds)S.sealGroupIds=S.groups?.[0]?[S.groups[0].id]:[];
 if(!S.sealOpenDays)S.sealOpenDays=[1];
 if(!S.pendingInvites)S.pendingInvites=[];
-if(!S.seasonEvent)S.seasonEvent={joined:false,key:'grad2026'};
+if(!S.seasonEvent)S.seasonEvent={joined:false,key:'grad2026',theme:'3年後のじぶんへ'};
+ensureProfile();
+if(!S.cohorts)S.cohorts=[];
+if(!S.cohortFeed)S.cohortFeed=[];
+if(!S.birthdayMessages)S.birthdayMessages=[];
+ensureCohorts();
 if(S.demoMode===undefined)S.demoMode=false;
 if(!S.bonusItems)S.bonusItems=[];
 if(!S.invitations)S.invitations=[];
@@ -3289,6 +3509,10 @@ function renderTimeline(){
   renderLastYearToday();
   checkLastYearTodayNotif();
   checkUnlockNotifs();
+  checkLimitedPromptNotif();
+  checkGlobalUnlock();
+  checkBirthday();
+  renderCohortSection();
   renderHomeWidget();
   renderActivityFeed();
   checkOpenPreview();
@@ -3428,6 +3652,15 @@ function renderDailyQuestion(){
   }
   block?.classList.remove('hidden');
   text.textContent=prompt.text;
+  const limitedLbl=$('dqLimitedBadge');
+  if(prompt.limited){
+    if(!limitedLbl){
+      const b=document.createElement('div');
+      b.id='dqLimitedBadge';b.className='limited-prompt-badge';
+      b.textContent='✨ 今夜だけの問い';
+      text.parentElement?.insertBefore(b,text);
+    }else limitedLbl.classList.remove('hidden');
+  }else limitedLbl?.classList.add('hidden');
   const done=isDailyQuestionDone();
   const streak=S.currentStreak||0;
   if(streakPill){
@@ -3955,6 +4188,18 @@ function renderArchive(){
         招待コード: <strong>${esc(S.inviteCode)}</strong>
         <button type="button" id="copyInviteBtnArchive" style="margin-top:8px;padding:8px 14px;border-radius:999px;font-size:12px;background:var(--bg-3);width:100%">招待リンクをコピー</button>
       </div>
+      <div class="profile-edit" id="profileEdit">
+        <div class="sec-label" style="margin:0 0 8px">プロフィール · コホート</div>
+        <label>学校名</label>
+        <input type="text" id="profileSchool" placeholder="例：X高校" value="${esc(S.profile?.school||'')}">
+        <label>卒業予定年</label>
+        <input type="number" id="profileGradYear" min="2024" max="2035" value="${S.profile?.graduationYear||2026}">
+        <label>学年</label>
+        <select id="profileGrade">${GRADES.map(g=>`<option value="${esc(g)}"${S.profile?.grade===g?' selected':''}>${esc(g)}</option>`).join('')}</select>
+        <label>誕生日</label>
+        <input type="date" id="profileBirth" value="${esc(S.profile?.birthDate||'')}">
+        <button type="button" class="dq-cta" id="saveProfileBtn" style="width:100%;margin-top:12px">保存</button>
+      </div>
       <div class="spotify-row" style="padding:0 20px;margin-bottom:8px">
         <div><div style="font-size:14px;font-weight:500">Spotify</div><div style="font-size:12px;color:var(--ink-3)">${S.spotify?.connected?'連携済み':'未連携'}</div></div>
         <button type="button" id="spotifyConnectArchive">${S.spotify?.connected?'同期':'連携'}</button>
@@ -3982,6 +4227,7 @@ function renderArchive(){
     navigator.clipboard?.writeText(`${APP_URL}?invite=${S.inviteCode}`).then(()=>toast('コピーしました'));
     haptic();
   });
+  $('saveProfileBtn')?.addEventListener('click',saveProfileFromForm);
   $('spotifyConnectArchive')?.addEventListener('click',connectSpotify);
   $('addGroupBtnArchive')?.addEventListener('click',()=>{
     const n=$('newGroupNameArchive')?.value.trim();
@@ -4792,10 +5038,12 @@ $('onboardDemo')?.addEventListener('click',()=>{
   S.opened=[];
   S.feedPosts=[];
   S.auth={name,email:name+'@demo.local',loggedIn:true};
+  S.profile={school:'X高校',graduationYear:2026,grade:'高校3年生',birthDate:''};
   S.users=[{name,email:name+'@demo.local',pass:'demo'}];
   S.firstSealDone=false;
   S.onboardingDone=false;
   ensureInviteCode();
+  ensureCohorts();
   save();
   $('onboardOverlay')?.classList.remove('open');
   renderAll();
@@ -4895,9 +5143,18 @@ function openPromoteOverlay(postId){
   $('promoteOverlay')?.classList.add('open');
 }
 $('joinSeasonBtn')?.addEventListener('click',()=>{
-  S.seasonEvent={joined:true,key:'grad2026'};
+  S.seasonEvent={
+    joined:true,key:'grad2026',theme:'3年後のじぶんへ',
+    unlocksAt:addDays(S.demoMode?1:30),
+  };
+  grantBonus('badge-season');
   save();
   toast('卒業カプセル 2026 に参加しました');
+  renderTimeline();
+  haptic();
+});
+$('birthdayClose')?.addEventListener('click',()=>{
+  $('birthdayOverlay')?.classList.remove('open');
   haptic();
 });
 $('addGroupBtn')?.addEventListener('click',()=>{
