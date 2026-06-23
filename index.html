@@ -449,6 +449,53 @@ body::after{display:none}
 .reactions.show{opacity:1}
 .reaction-btn{padding:10px 16px;border-radius:var(--r-pill);background:rgba(255,255,255,.1);font-size:13px;color:#fff;transition:transform .25s var(--spring)}
 .reaction-btn:active{transform:scale(1.08)}
+.reaction-btn.on{transform:scale(1.05);border:1px solid rgba(255,200,100,.6);background:rgba(255,200,100,.15)}
+.opening-song-strip{
+  margin:16px auto 0;max-width:280px;padding:12px 16px;border-radius:var(--r-pill);
+  background:rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;
+  opacity:0;transition:opacity 3s ease;
+}
+.opening-song-strip.hidden{display:none}
+.opening-song-strip .oss-ico{font-size:20px}
+.opening-song-strip .oss-title{font-size:13px;font-weight:600;color:#fff}
+.opening-song-strip .oss-artist{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.opening-actions{
+  display:flex;flex-direction:column;gap:8px;margin-top:16px;opacity:0;transition:opacity .5s .6s;
+  max-width:300px;margin-left:auto;margin-right:auto;
+}
+.opening-actions.show{opacity:1}
+.opening-actions button{
+  padding:12px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:500;
+  background:rgba(255,255,255,.1);color:#fff;
+}
+.opening-actions button.primary{background:var(--accent);color:var(--accent-inv)}
+.prompt-dialogue-overlay{
+  position:fixed;inset:0;z-index:460;background:rgba(0,0,0,.9);
+  display:none;align-items:center;justify-content:center;padding:24px;
+}
+.prompt-dialogue-overlay.open{display:flex}
+.prompt-dialogue-card{
+  max-width:340px;width:100%;padding:28px 24px;border-radius:var(--r);background:var(--bg-2);
+  text-align:center;
+}
+.prompt-dialogue-card .pd-label{font-size:11px;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+.prompt-dialogue-card .pd-q{font-size:18px;font-weight:600;margin:12px 0 20px;line-height:1.4}
+.prompt-past-ans{
+  margin-top:20px;padding:16px;border-radius:var(--r-sm);background:var(--bg-3);
+  font-size:15px;line-height:1.5;opacity:0;transform:translateY(12px);transition:all .6s var(--spring);
+}
+.prompt-past-ans.show{opacity:1;transform:none}
+.dq-mode-row{display:flex;gap:8px;margin-top:12px}
+.dq-mode-row button{
+  flex:1;padding:10px;border-radius:var(--r-pill);font-size:12px;font-weight:600;
+  background:var(--bg-3);color:var(--ink-2);
+}
+.dq-mode-row button.on{background:var(--ink);color:var(--accent-inv)}
+.dq-seal-future{
+  margin-top:10px;padding:10px 14px;border-radius:var(--r-pill);font-size:12px;font-weight:500;
+  background:transparent;border:1px dashed rgba(255,255,255,.15);color:var(--ink-3);width:100%;
+}
+.dq-seal-future:not(.hidden):hover{color:var(--ink-2)}
 
 .export-btn{
   margin-top:16px;padding:14px 28px;border-radius:var(--r-pill);
@@ -519,6 +566,42 @@ body::after{display:none}
   animation:recPulse 1s ease-in-out infinite;
 }
 @keyframes recPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.voice-rec .voice-wave{display:flex;align-items:flex-end;justify-content:center;gap:3px;height:36px;margin:12px 0}
+.voice-rec .voice-wave span{width:4px;border-radius:2px;background:var(--ink);animation:wave 1s ease-in-out infinite}
+.voice-rec .voice-timer{font-size:13px;color:var(--ink-3);margin-top:8px}
+.create-icon-row{display:flex;gap:10px;margin:12px 0 4px}
+.create-icon{
+  width:44px;height:44px;border-radius:50%;font-size:20px;
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.06);
+  display:grid;place-items:center;transition:transform .2s var(--spring),background .2s;
+}
+.create-icon.on{background:var(--ink);border-color:var(--ink)}
+.create-icon.has-content{box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+.create-expand{
+  display:none;margin-bottom:14px;padding:14px;border-radius:var(--r-sm);
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.05);
+}
+.create-expand.open{display:block}
+.mood-palette{display:flex;flex-wrap:wrap;gap:8px}
+.mood-palette button{
+  width:44px;height:44px;border-radius:50%;font-size:22px;background:var(--bg-3);
+}
+.mood-palette button.on{background:var(--ink);box-shadow:0 0 0 2px rgba(255,255,255,.2)}
+.selfie-toggle{
+  display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--ink-2);
+}
+.selfie-toggle input{width:18px;height:18px}
+.mood-compare{
+  font-size:14px;color:rgba(255,255,255,.75);margin:8px 0 12px;text-align:center;
+}
+.voice-hint-nudge{
+  margin-top:12px;padding:12px 14px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.06);font-size:12px;color:rgba(255,255,255,.7);text-align:center;
+}
+.voice-hint-nudge button{
+  margin-top:8px;padding:8px 14px;border-radius:999px;font-size:12px;
+  background:rgba(255,255,255,.12);color:#fff;
+}
 
 /* Timeline feed */
 .timeline-feed{padding:0 24px 32px;display:flex;flex-direction:column;gap:10px}
@@ -969,7 +1052,27 @@ body::after{display:none}
 .map-sub-tab{font-size:14px;font-weight:500;color:var(--ink-3);padding-bottom:8px;position:relative}
 .map-sub-tab.on{color:var(--ink)}
 .map-sub-tab.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--ink)}
-.memory-map{height:calc(100dvh - var(--nav-h) - 160px);min-height:280px;width:100%;z-index:1}
+.memory-map{height:calc(100dvh - var(--nav-h) - 240px);min-height:220px;width:100%;z-index:1}
+.map-time-controls{
+  padding:12px 20px 8px;background:var(--bg);border-top:1px solid rgba(255,255,255,.06);
+}
+.map-time-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.map-time-head span{font-size:12px;color:var(--ink-2)}
+.map-time-head button{
+  padding:6px 12px;border-radius:999px;font-size:11px;font-weight:600;
+  background:var(--bg-2);color:var(--ink);
+}
+.map-time-slider{
+  width:100%;height:4px;-webkit-appearance:none;appearance:none;
+  background:var(--bg-3);border-radius:2px;outline:none;
+}
+.map-time-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  background:var(--ink);border:2px solid var(--bg);box-shadow:var(--shadow);
+}
+.map-heat-dot{border-radius:50%;background:rgba(255,255,255,.85);border:2px solid var(--bg);
+  box-shadow:0 0 12px rgba(255,255,255,.25);
+}
 .leaflet-container{background:var(--bg-2)!important;font-family:var(--font)}
 .map-dot-wrap{background:none;border:none}
 .map-dot{
@@ -1503,6 +1606,45 @@ body::after{display:none}
 .lyt-title{font-size:16px;font-weight:600;margin:8px 0 12px}
 .lyt-card img{width:100%;border-radius:var(--r-sm);max-height:200px;object-fit:cover}
 
+/* 今日の写真（相互性ロック） */
+.today-photo-section{margin:0 20px 20px;padding:16px;border-radius:var(--r);background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
+.today-photo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.tp-card{position:relative;border-radius:var(--r-sm);overflow:hidden;aspect-ratio:3/4;background:var(--bg-3)}
+.tp-card .tp-img{width:100%;height:100%;object-fit:cover;display:block}
+.tp-card .tp-placeholder{width:100%;height:100%;display:grid;place-items:center;font-size:28px;background:var(--bg-3)}
+.tp-card.locked .tp-img,.tp-card.locked .tp-placeholder{filter:blur(14px);transform:scale(1.05)}
+.tp-card .tp-hint{
+  position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:12px;
+  font-size:11px;line-height:1.45;color:var(--ink-2);background:rgba(0,0,0,.4);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.tp-card.locked .tp-hint{opacity:1}
+.tp-card.unlocked .tp-img,.tp-card.unlocked .tp-placeholder{animation:dqReveal .6s ease both}
+.tp-card .tp-name{position:absolute;bottom:0;left:0;right:0;padding:8px 10px;font-size:11px;font-weight:500;
+  background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff}
+.tl-open-body.tl-photo-locked{position:relative;overflow:hidden;border-radius:var(--r-sm)}
+.tl-open-body.tl-photo-locked img{filter:blur(14px);transform:scale(1.05)}
+.tl-open-body .tp-lock-hint{
+  position:absolute;inset:0;display:grid;place-items:center;font-size:12px;color:var(--ink-2);
+  background:rgba(0,0,0,.35);text-align:center;padding:16px;
+}
+.promote-overlay{
+  position:fixed;inset:0;z-index:450;background:rgba(0,0,0,.85);
+  display:none;align-items:flex-end;justify-content:center;padding:20px;
+}
+.promote-overlay.open{display:flex}
+.promote-sheet{
+  width:100%;max-width:400px;padding:24px;border-radius:var(--r) var(--r) 0 0;background:var(--bg-2);
+}
+.promote-sheet h3{font-size:18px;font-weight:600;margin-bottom:8px}
+.promote-sheet p{font-size:13px;color:var(--ink-2);margin-bottom:16px;line-height:1.5}
+.promote-days{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.promote-days button{
+  padding:10px 14px;border-radius:var(--r-pill);font-size:13px;font-weight:500;
+  background:var(--bg-3);color:var(--ink-2);
+}
+.promote-days button.on{background:var(--ink);color:var(--accent-inv)}
+
 /* 層トグル（封じる / いま） */
 .layer-toggle{display:flex;gap:8px;margin-bottom:16px;padding:4px;background:var(--bg-2);border-radius:var(--r-pill)}
 .layer-toggle button{
@@ -1622,11 +1764,21 @@ body::after{display:none}
       <div class="dq-streak-pill hidden" id="streakPill">🔥 連続 <span id="streakCount">0</span> 日</div>
       <div class="dq-text" id="dailyQuestionText">—</div>
       <div class="dq-tap-row hidden" id="dqTapRow"></div>
-      <button type="button" class="dq-cta hidden" id="dailyQuestionBtn">この問いを封じる</button>
+      <button type="button" class="dq-cta hidden" id="dailyQuestionBtn">一言で答える</button>
+      <div class="dq-mode-row hidden" id="dqModeRow">
+        <button type="button" class="on" data-pmode="today">今日見せ合う</button>
+        <button type="button" data-pmode="sealed">未来に封じる</button>
+      </div>
+      <button type="button" class="dq-seal-future hidden" id="dqSealFutureBtn">同じ答えを未来に封じる</button>
       <div class="dq-friends hidden" id="dqFriends">
         <div class="dq-friends-lbl">みんなの答え</div>
         <div id="dqFriendsList"></div>
       </div>
+    </div>
+    <div class="today-photo-section" id="todayPhotoBlock">
+      <div class="dq-label">今日の写真</div>
+      <p style="font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.45">撮ると、友達の今日が見える</p>
+      <div class="today-photo-grid" id="todayPhotoGrid"></div>
     </div>
     <div class="lyt-section hidden" id="lastYearToday">
       <div class="lyt-label">去年の今日</div>
@@ -1651,6 +1803,13 @@ body::after{display:none}
     </div>
     <div id="mapRouteView" class="map-route-view">
       <div id="memoryMap" class="memory-map"></div>
+      <div class="map-time-controls">
+        <div class="map-time-head">
+          <span id="mapTimeLabel">思い出の軌跡 · 全期間</span>
+          <button type="button" id="mapPlayBtn">▶ 再生</button>
+        </div>
+        <input type="range" class="map-time-slider" id="mapTimeSlider" min="0" max="100" value="100">
+      </div>
       <p class="map-privacy">写真に含まれる位置情報（Exif）だけを読みます。常時トラッキングはしません。位置のない写真は線に乗りません。</p>
       <button type="button" class="map-share-btn" id="mapShareBtn">軌跡をシェア</button>
     </div>
@@ -1794,34 +1953,63 @@ body::after{display:none}
       <div class="duration-label">グループ（複数選択可）</div>
       <div class="create-chip-row" id="createGroupRow"></div>
     </div>
-    <div class="create-friend-pick hidden" id="createInvitePick">
+    <div class="create-invite-pick create-friend-pick hidden" id="createInvitePick">
       <div class="duration-label">まだアプリにいない友達へ</div>
       <input type="text" class="goal-input" id="inviteContact" placeholder="メール or 電話番号" style="margin-bottom:8px">
       <div class="invite-notice">「誰かが1年後のあなたに何かを残しました」— 受け取るには入るしかない。</div>
     </div>
-    <div class="duration-label">タグ</div>
-    <div class="tag-input-row" id="tagInputRow">
-      <input type="text" id="tagInput" placeholder="#旅行 #卒業 …" maxlength="20">
+    <textarea class="create-input" id="createInput" maxlength="500" placeholder="いまの気持ちを綴る…"></textarea>
+    <div class="create-icon-row" id="createIconRow">
+      <button type="button" class="create-icon" data-expand="photo" title="写真">📷</button>
+      <button type="button" class="create-icon" data-expand="voice" title="声">🎙️</button>
+      <button type="button" class="create-icon" data-expand="prompt" title="問い">❔</button>
+      <button type="button" class="create-icon" data-expand="tags" title="タグ">#</button>
+      <button type="button" class="create-icon" data-expand="mood" title="ムード">🌙</button>
     </div>
-    <textarea class="create-input" id="createInput" maxlength="500" placeholder="今の言葉を書く…"></textarea>
+    <div class="create-expand" id="expandPhoto">
+      <div class="create-media-row">
+        <button type="button" class="create-pick" id="pickPhotoBtn">📷 撮る / 選ぶ</button>
+        <button type="button" class="create-pick" id="pickAlbumBtn">🖼 フォルダ</button>
+        <button type="button" class="create-pick" id="pickVideoBtn">🎥 動画</button>
+      </div>
+      <label class="selfie-toggle"><input type="checkbox" id="selfieToggle"> 自分も写す（任意）</label>
+      <button type="button" class="create-pick hidden" id="pickSelfieBtn" style="margin-top:8px;width:100%">🤳 セルフィーを追加</button>
+      <div class="media-preview" id="mediaPreview">
+        <button type="button" class="remove" id="removeMedia">×</button>
+        <div id="mediaPreviewInner"></div>
+      </div>
+      <div class="loc-notice hidden" id="locNotice">
+        この写真に含まれる位置情報（Exif）を読み取ります。常時の位置トラッキングは行いません。
+        <label><input type="checkbox" id="stripLoc"> 位置を外して封じる</label>
+      </div>
+    </div>
+    <div class="create-expand voice-rec" id="expandVoice">
+      <div class="rec-dot"></div>
+      <div style="font-size:14px;font-weight:500">ひとことだけ、声を残す</div>
+      <div style="font-size:12px;color:var(--ink-3);margin-top:4px">最大10秒</div>
+      <div class="voice-wave" id="voiceWave"><span style="height:8px"></span><span style="height:16px"></span><span style="height:24px"></span><span style="height:14px"></span><span style="height:20px"></span></div>
+      <div class="voice-timer" id="voiceTimer">0s / 10s</div>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:center">
+        <button type="button" class="create-pick" id="voiceRecordBtn">録音する</button>
+        <button type="button" class="create-pick hidden" id="voiceStopBtn">止める</button>
+        <button type="button" class="create-pick hidden" id="voiceClearBtn">やり直す</button>
+      </div>
+    </div>
+    <div class="create-expand" id="expandTags">
+      <div class="tag-input-row" id="tagInputRow">
+        <input type="text" id="tagInput" placeholder="#旅行 #卒業 …" maxlength="20">
+      </div>
+    </div>
+    <div class="create-expand" id="expandMood">
+      <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px">いまの気分をひとつ</div>
+      <div class="mood-palette" id="moodPalette"></div>
+    </div>
     <div class="duration-label">叶えたいことは？ <span style="font-weight:400;color:var(--ink-3)">開封時に振り返る</span></div>
     <input type="text" class="goal-input" id="goalInput" maxlength="120" placeholder="例：毎日続ける / あの人に伝える">
-    <div class="create-media-row">
-      <button type="button" class="create-pick" id="pickPhotoBtn">📷 写真</button>
-      <button type="button" class="create-pick" id="pickAlbumBtn">🖼 フォルダ</button>
-      <button type="button" class="create-pick" id="pickVideoBtn">🎥 動画</button>
-    </div>
     <input type="file" id="photoInput" accept="image/*" class="hidden">
+    <input type="file" id="selfieInput" accept="image/*" capture="user" class="hidden">
     <input type="file" id="albumInput" accept="image/*" multiple class="hidden">
     <input type="file" id="videoInput" accept="video/*" capture="environment" class="hidden">
-    <div class="media-preview" id="mediaPreview">
-      <button type="button" class="remove" id="removeMedia">×</button>
-      <div id="mediaPreviewInner"></div>
-    </div>
-    <div class="loc-notice hidden" id="locNotice">
-      この写真に含まれる位置情報（Exif）を読み取ります。常時の位置トラッキングは行いません。
-      <label><input type="checkbox" id="stripLoc"> 位置を外して封じる</label>
-    </div>
     <div class="duration-label">いつ開封しますか？ <span style="font-weight:400;color:var(--ink-3)">複数選択可</span></div>
     <div class="duration-pills multi" id="durationPills">
       <button type="button" class="duration-pill" data-days="now">今すぐ投稿</button>
@@ -1872,6 +2060,10 @@ body::after{display:none}
       <div class="drag-seal" id="dragSeal">🔒</div>
     </div>
     <p class="opening-hint" id="openingHint">シールを上にスワイプして開封</p>
+    <div class="opening-song-strip hidden" id="openingSongStrip">
+      <div class="oss-ico">🎧</div>
+      <div><div class="oss-title" id="openingSongTitle">—</div><div class="oss-artist" id="openingSongArtist">—</div></div>
+    </div>
     <div class="reveal-stack" id="revealStack"></div>
     <div class="reactions" id="reactions">
       <button type="button" class="reaction-btn">❤️</button>
@@ -1879,7 +2071,16 @@ body::after{display:none}
       <button type="button" class="reaction-btn">🌙 懐かしい</button>
     </div>
     <div class="goal-reflect hidden" id="goalReflect"></div>
-    <button type="button" class="export-btn" id="exportBtn">Stories / TikTok にシェア</button>
+    <div class="voice-hint-nudge hidden" id="voiceHintNudge">
+      次は声も残してみる？
+      <button type="button" id="voiceHintDismiss">あとで</button>
+    </div>
+    <div class="opening-actions" id="openingActions">
+      <button type="button" class="primary" id="shareOpenBtn">この瞬間をシェア</button>
+      <button type="button" id="transferBtn">未来の自分にもう一度送る</button>
+      <button type="button" id="closeOpenBtn">そっと閉じる</button>
+    </div>
+    <button type="button" class="export-btn hidden" id="exportBtn">Stories / TikTok にシェア</button>
   </div>
 </div>
 
@@ -1902,6 +2103,18 @@ body::after{display:none}
         <input type="text" class="dm-input" id="dmInput" placeholder="メッセージを入力…" maxlength="500">
         <button type="button" class="dm-send" id="dmSend">↑</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-dialogue-overlay" id="promptDialogueOverlay">
+  <div class="prompt-dialogue-card">
+    <div class="pd-label">同じ問いが、もう一度</div>
+    <div class="pd-q" id="pdQuestion">—</div>
+    <div class="dq-tap-row" id="pdTapRow"></div>
+    <div class="prompt-past-ans hidden" id="pdPastAns">
+      <div style="font-size:11px;color:var(--ink-3);margin-bottom:8px">あのときの自分</div>
+      <div id="pdPastText">—</div>
     </div>
   </div>
 </div>
@@ -1934,6 +2147,21 @@ body::after{display:none}
       <button type="button" id="wrappedShare">シェアする</button>
       <button type="button" class="ghost" id="wrappedClose">閉じる</button>
     </div>
+  </div>
+</div>
+
+<div class="promote-overlay" id="promoteOverlay">
+  <div class="promote-sheet">
+    <h3>未来にも残す</h3>
+    <p>今日見せ合った一枚を、未来のカプセルに複製します。元の写真はアルバムに残ります。</p>
+    <div class="promote-days" id="promoteDays">
+      <button type="button" data-days="7">7日後</button>
+      <button type="button" data-days="30" class="on">1ヶ月後</button>
+      <button type="button" data-days="180">半年後</button>
+      <button type="button" data-days="365">1年後</button>
+    </div>
+    <button type="button" class="dq-cta" id="promoteConfirmBtn" style="width:100%">封じる</button>
+    <button type="button" class="ghost" id="promoteCancelBtn" style="width:100%;margin-top:8px">やめる</button>
   </div>
 </div>
 
@@ -1987,8 +2215,9 @@ const SHELF=[
   {key:'30d',label:'1 MONTH',depth:1},
   {key:'365d',label:'1 YEAR',depth:2},
 ];
-const TYPE_ICONS={text:'✏️',photo:'📷',video:'🎥'};
-const TYPE_JA={text:'言葉',photo:'写真',video:'動画'};
+const TYPE_ICONS={text:'✏️',photo:'📷',video:'🎥',voice:'🎙️'};
+const TYPE_JA={text:'言葉',photo:'写真',video:'動画',voice:'声'};
+const MOOD_EMOJIS=['☀️','🌧️','🌙','🔥','🫧','💭'];
 const HOME_NOTIFS=[
   {id:'n1',title:'みおが記憶を封じました',sub:'写真 · あと2日で開封',read:false},
   {id:'n2',title:'カプセルが開封可能です',sub:'1件の記憶があなたを待っています',read:false,action:'open'},
@@ -2008,6 +2237,50 @@ function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');set
 function addDays(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString()}
 function addMinutes(n){const d=new Date();d.setMinutes(d.getMinutes()+n);return d.toISOString()}
 function todayStr(){return new Date().toISOString().slice(0,10)}
+function isToday(ts){
+  if(!ts)return false;
+  return new Date(ts).toDateString()===new Date().toDateString();
+}
+function getSeasonAlbumKey(d=new Date()){
+  const y=d.getFullYear(),m=d.getMonth();
+  if(m>=2&&m<=4)return y+'-spring';
+  if(m>=5&&m<=7)return y+'-summer';
+  if(m>=8&&m<=10)return y+'-autumn';
+  return y+'-winter';
+}
+function seasonAlbumLabel(key){
+  const [y,season]=(key||'').split('-');
+  const labels={spring:'春',summer:'夏',autumn:'秋',winter:'冬'};
+  return y+'年の'+(labels[season]||'思い出');
+}
+function hasPostedTodayPhoto(){
+  const me=meName();
+  return (S.capsules||[]).some(c=>
+    (c.from===me||c.from==='ゆうま')&&c.layer==='now'&&c.type==='photo'&&isToday(c.createdAt)
+  );
+}
+function demoTodayPhotos(){
+  const texts=['窓辺の光','放課後の空','ラテアート','静かな図書館'];
+  return MEMBERS.slice(0,4).map((m,i)=>({
+    name:m.n,id:m.id,color:m.c,char:m.i,
+    text:texts[i],mediaId:i<2?'demo_photo':null,at:Date.now()-i*3600e3,
+  }));
+}
+function myTodayPhotos(){
+  const me=meName();
+  return (S.capsules||[]).filter(c=>
+    (c.from===me||c.from==='ゆうま')&&c.layer==='now'&&c.type==='photo'&&isToday(c.createdAt)
+  );
+}
+function addToSeasonAlbum(cap){
+  if(!cap?.mediaId||cap.type!=='photo')return;
+  const key=cap.album||getSeasonAlbumKey();
+  S.albums=S.albums||{};
+  if(!S.albums[key])S.albums[key]={key,label:seasonAlbumLabel(key),items:[]};
+  S.albums[key].items.unshift({
+    id:cap.id,mediaId:cap.mediaId,text:cap.text,at:cap.createdAt||Date.now(),
+  });
+}
 function quorumRatio(){return (S.dailyState?.openedUserIds?.length||0)/MEMBER_COUNT}
 function mosaicClass(){
   const q=quorumRatio();
@@ -2030,6 +2303,10 @@ function playTear(){playTone(120,.1,'sawtooth',.08);playTone(200,.08,'sine',.06)
 
 /* IndexedDB for photos/videos */
 let pendingMedia=null;
+let pendingVoice=null;
+let pendingSelfie=null;
+let voiceRecorder=null,voiceChunks=[],voiceTimer=null,voiceSeconds=0;
+let createExpandOpen=null;
 
 function idbOpen(){
   return new Promise((res,rej)=>{
@@ -2118,6 +2395,7 @@ function timelinePosts(){
     id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,
     at:c.createdAt||Date.now(),openAt:c.openAt,mediaId:c.mediaId,
     sealed:c.sealed,tags:c.tags||[],loc:c.loc,capsule:c,
+    layer:c.layer,promoted:!!c.promoted,
     opened:canViewCapContent(c)||c.sealed===false||c.layer==='now',visibility:c.visibility,
   }));
   const opened=(S.opened||[]).map(o=>({
@@ -2218,6 +2496,104 @@ function renderCreateChips(){
 function updateMediaPickState(){
   $('pickPhotoBtn')?.classList.toggle('has-media',pendingMedia?.type==='photo');
   $('pickVideoBtn')?.classList.toggle('has-media',pendingMedia?.type==='video');
+  document.querySelector('.create-icon[data-expand="photo"]')?.classList.toggle('has-content',!!pendingMedia||!!pendingSelfie);
+  document.querySelector('.create-icon[data-expand="voice"]')?.classList.toggle('has-content',!!pendingVoice);
+  document.querySelector('.create-icon[data-expand="tags"]')?.classList.toggle('has-content',!!document.querySelector('#tagInputRow .tag-chip'));
+  document.querySelector('.create-icon[data-expand="mood"]')?.classList.toggle('has-content',!!S.sealMood);
+  $('pickSelfieBtn')?.classList.toggle('hidden',!$('selfieToggle')?.checked||!pendingMedia);
+}
+function initCreateExpands(){
+  const moods=$('moodPalette');
+  if(moods&&!moods.innerHTML){
+    moods.innerHTML=MOOD_EMOJIS.map(e=>`<button type="button" data-mood="${e}">${e}</button>`).join('');
+    moods.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      S.sealMood=S.sealMood===b.dataset.mood?null:b.dataset.mood;
+      moods.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.mood===S.sealMood));
+      updateMediaPickState();haptic();
+    }));
+  }
+  $('createIconRow')?.querySelectorAll('.create-icon').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const key=btn.dataset.expand;
+      if(key==='prompt'){
+        const p=getTodayPrompt();
+        if(p){$('createInput').value=p.text;toast('今日の問いを入力欄に入れました')}
+        else toast('今日は問いがありません');
+        haptic();return;
+      }
+      const panel=$('expand'+key.charAt(0).toUpperCase()+key.slice(1));
+      if(!panel)return;
+      const open=createExpandOpen===key?null:key;
+      createExpandOpen=open;
+      document.querySelectorAll('.create-expand').forEach(p=>p.classList.remove('open'));
+      $('createIconRow')?.querySelectorAll('.create-icon').forEach(b=>b.classList.toggle('on',b.dataset.expand===open));
+      if(open)panel.classList.add('open');
+      haptic();
+    });
+  });
+}
+function resetCreateExtras(){
+  pendingVoice=null;pendingSelfie=null;S.sealMood=null;
+  voiceSeconds=0;
+  $('voiceTimer').textContent='0s / 10s';
+  $('voiceRecordBtn')?.classList.remove('hidden');
+  $('voiceStopBtn')?.classList.add('hidden');
+  $('voiceClearBtn')?.classList.add('hidden');
+  if($('selfieToggle'))$('selfieToggle').checked=false;
+  $('pickSelfieBtn')?.classList.add('hidden');
+  document.querySelectorAll('.create-expand').forEach(p=>p.classList.remove('open'));
+  $('createIconRow')?.querySelectorAll('.create-icon').forEach(b=>b.classList.remove('on'));
+  $('moodPalette')?.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+  createExpandOpen=null;
+}
+async function blobToDataUrl(blob){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result);
+    r.onerror=rej;
+    r.readAsDataURL(blob);
+  });
+}
+async function startVoiceRecord(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    voiceChunks=[];voiceSeconds=0;
+    voiceRecorder=new MediaRecorder(stream);
+    voiceRecorder.ondataavailable=e=>{if(e.data.size)voiceChunks.push(e.data)};
+    voiceRecorder.onstop=async()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      $('voiceRecordBtn')?.classList.remove('hidden');
+      $('voiceStopBtn')?.classList.add('hidden');
+      if(!voiceChunks.length)return;
+      const blob=new Blob(voiceChunks,{type:'audio/webm'});
+      const dataUrl=await blobToDataUrl(blob);
+      pendingVoice={type:'voice',dataUrl,duration:voiceSeconds};
+      $('voiceClearBtn')?.classList.remove('hidden');
+      $('voiceTimer').textContent=`録音済み · ${voiceSeconds}秒`;
+      updateMediaPickState();
+    };
+    voiceRecorder.start();
+    $('voiceRecordBtn')?.classList.add('hidden');
+    $('voiceStopBtn')?.classList.remove('hidden');
+    voiceTimer=setInterval(()=>{
+      voiceSeconds++;
+      $('voiceTimer').textContent=`${voiceSeconds}s / 10s`;
+      if(voiceSeconds>=10)stopVoiceRecord();
+    },1000);
+    haptic();
+  }catch(e){
+    toast('マイクの許可が必要です');
+  }
+}
+function stopVoiceRecord(){
+  clearInterval(voiceTimer);
+  if(voiceRecorder?.state==='recording')voiceRecorder.stop();
+}
+function showVoiceHintNudge(){
+  if(S.dismissedVoiceHint||S.opened?.some(o=>o.type==='voice'))return;
+  const el=$('voiceHintNudge');
+  if(!el)return;
+  el.classList.remove('hidden');
 }
 function countdownText(openAt){
   const ms=new Date(openAt)-Date.now();
@@ -2242,6 +2618,161 @@ function capDestLabel(c){
   if(c.to==='group')return c.groupId?groupNameById(c.groupId):(S.groupName||GROUP);
   if(c.from===me||c.from==='ゆうま')return c.to+' へ';
   return c.from+' から';
+}
+function capFromLabel(c){
+  if(c.from===meName()||c.from==='ゆうま')return 'あなた';
+  return c.from;
+}
+function pushHomeNotif(title,sub,action,meta={}){
+  S.homeNotifs=S.homeNotifs||[];
+  S.homeNotifs.unshift({id:'hn'+Date.now()+Math.random(),title,sub,read:false,action,...meta});
+  save();
+}
+function linkedSongSnapshot(){
+  const s=currentTodaySong();
+  if(!s)return null;
+  return{title:s.title,artist:s.artist,plays:s.plays,at:Date.now()};
+}
+function playOpeningSong(song){
+  const strip=$('openingSongStrip');
+  if(!song||!strip)return;
+  strip.classList.remove('hidden');
+  $('openingSongTitle').textContent=song.title||'—';
+  $('openingSongArtist').textContent=song.artist||'';
+  strip.style.opacity='0';
+  requestAnimationFrame(()=>{strip.style.opacity='1'});
+  playTone(196,1,'sine',.05);
+  setTimeout(()=>playTone(247,.8,'sine',.04),350);
+  setTimeout(()=>playTone(294,1.2,'sine',.03),700);
+}
+let lastOpenedItem=null;
+let transferSourceId=null;
+let dqPromptMode='today';
+async function transferCapsule(source,days){
+  if(!source)return;
+  const capId='c'+Date.now()+'_xfer';
+  let mediaId=source.mediaId;
+  if(mediaId){
+    try{
+      const data=await idbGet(mediaId);
+      if(data){await idbPut(capId,data);mediaId=capId}
+    }catch(e){}
+  }
+  const cap={
+    id:capId,from:source.from||meName(),to:source.to||'self',type:source.type||'text',
+    text:source.text||'',sealed:true,openAt:addDays(days),days,postNow:false,layer:'sealed',
+    mediaId,createdAt:Date.now(),loc:source.loc,tags:source.tags,
+    transferredFrom:source.id,linkedSong:linkedSongSnapshot()||source.linkedSong,
+    promptId:source.promptId,promptText:source.promptText,choice:source.choice,
+  };
+  S.capsules.unshift(cap);
+  pushActivity('post_created',{postId:capId});
+  save();renderAll();
+  toast('もう一度、未来に送りました');
+  haptic();
+}
+function sealPromptToFuture(choice,text,days){
+  const prompt=getTodayPrompt();
+  if(!prompt)return;
+  const capId='c'+Date.now()+'_pq';
+  const cap={
+    id:capId,from:meName(),to:'self',type:'prompt',visibility:'future',
+    text:choice||text||prompt.text,sealed:true,openAt:addDays(days),days,
+    layer:'sealed',createdAt:Date.now(),
+    promptId:prompt.id,promptText:prompt.text,promptType:prompt.type,
+    choice,text:choice?text||'':text,options:prompt.options,
+    linkedSong:linkedSongSnapshot(),
+  };
+  S.capsules.unshift(cap);
+  pushActivity('post_created',{postId:capId});
+  save();renderAll();
+  toast('問いへの答えを未来に封じました');
+  haptic();
+}
+function showPromptDialogue(cap,onDone){
+  const ov=$('promptDialogueOverlay');
+  const q=$('pdQuestion');
+  const tap=$('pdTapRow');
+  const past=$('pdPastAns');
+  const pastText=$('pdPastText');
+  if(!ov||!cap?.promptId){onDone?.();return}
+  q.textContent=cap.promptText||cap.text||'—';
+  past?.classList.remove('show');
+  past?.classList.add('hidden');
+  const opts=cap.options||['最高','ふつう','限界'];
+  if(cap.promptType==='tap'||cap.promptType==='hybrid'||cap.choice){
+    tap.innerHTML=opts.map(o=>`<button type="button" class="dq-tap-btn" data-choice="${esc(o)}">${esc(o)}</button>`).join('');
+    tap.querySelectorAll('.dq-tap-btn').forEach(b=>b.addEventListener('click',()=>{
+      tap.querySelectorAll('.dq-tap-btn').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      setTimeout(()=>{
+        const ans=cap.choice?`${cap.choice}${cap.text?' · '+cap.text:''}`:(cap.text||'—');
+        pastText.textContent=ans;
+        past?.classList.remove('hidden');
+        requestAnimationFrame(()=>past?.classList.add('show'));
+        setTimeout(()=>{ov.classList.remove('open');onDone?.()},1400);
+      },500);
+      haptic();
+    }));
+  }else{
+    tap.innerHTML=`<button type="button" class="dq-cta" id="pdFreeBtn">今の自分として答える</button>`;
+    $('pdFreeBtn')?.addEventListener('click',()=>{
+      pastText.textContent=cap.text||cap.choice||'—';
+      past?.classList.remove('hidden');
+      past?.classList.add('show');
+      setTimeout(()=>{ov.classList.remove('open');onDone?.()},1200);
+      haptic();
+    });
+  }
+  ov.classList.add('open');
+}
+function checkUnlockNotifs(){
+  S.shownNotifs=S.shownNotifs||[];
+  const now=Date.now();
+  (S.capsules||[]).filter(c=>c.sealed&&new Date(c.openAt)>new Date(now)).forEach(c=>{
+    const ms=new Date(c.openAt).getTime()-now;
+    const d=daysUntil(c.openAt);
+    if(d===1){
+      const key='n24_'+c.id+'_'+todayStr();
+      if(!S.shownNotifs.includes(key)){
+        S.shownNotifs.push(key);
+        pushHomeNotif('明日、'+capFromLabel(c)+'が開きます',capDestLabel(c)+'への記憶','open');
+      }
+    }
+    if(ms<=3600000&&ms>0){
+      const key='n1h_'+c.id;
+      if(!S.shownNotifs.includes(key)){
+        S.shownNotifs.push(key);
+        pushHomeNotif('あと1時間。封が解けます',(c.text||'').slice(0,36),'open');
+      }
+    }
+  });
+  ready().forEach(c=>{
+    const key='nready_'+c.id+'_'+todayStr();
+    if(S.shownNotifs.includes(key))return;
+    S.shownNotifs.push(key);
+    pushHomeNotif('過去から、何かが届きました',capFromLabel(c)+'から · '+capDestLabel(c),'open');
+  });
+}
+function mapPointsFiltered(){
+  const all=mapPointsAll();
+  const pct=S.mapTimePct??100;
+  if(pct>=100||all.length<=1)return all;
+  const sorted=[...all].sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
+  const n=Math.max(1,Math.ceil(sorted.length*pct/100));
+  return sorted.slice(0,n);
+}
+function locationKey(loc){return loc.lat.toFixed(3)+','+loc.lng.toFixed(3)}
+function groupPointsByLocation(points){
+  const g={};
+  points.forEach(p=>{
+    if(!p.loc)return;
+    const k=locationKey(p.loc);
+    if(!g[k])g[k]={loc:p.loc,items:[],locked:!!p.locked};
+    g[k].items.push(p);
+    if(!p.locked)g[k].locked=false;
+  });
+  return Object.values(g);
 }
 function todayQuestion(){
   const p=getTodayPrompt();
@@ -2327,11 +2858,60 @@ function getLastYearToday(){
   const y=new Date();y.setFullYear(y.getFullYear()-1);
   const yStart=new Date(y);yStart.setHours(0,0,0,0);
   const yEnd=new Date(y);yEnd.setHours(23,59,59,999);
-  const all=[...(S.opened||[]),...(S.capsules||[])];
-  return all.find(p=>{
-    const t=p.openedAt||p.createdAt;
-    return t&&t>=yStart.getTime()&&t<=yEnd.getTime();
+  const ts0=yStart.getTime(),ts1=yEnd.getTime();
+  const score=p=>{
+    let s=0;
+    if(p.mediaId)s+=10;
+    if(p.type==='photo')s+=5;
+    return s;
+  };
+  const candidates=[
+    ...(S.opened||[]).map(o=>({...o,at:o.openedAt})),
+    ...(S.capsules||[]).map(c=>({...c,at:c.createdAt})),
+  ].filter(p=>p.at&&p.at>=ts0&&p.at<=ts1);
+  if(!candidates.length)return null;
+  candidates.sort((a,b)=>score(b)-score(a)||b.at-a.at);
+  return candidates[0];
+}
+function checkLastYearTodayNotif(){
+  const item=getLastYearToday();
+  if(!item)return;
+  const key='lyt_'+todayStr();
+  S.shownNotifs=S.shownNotifs||[];
+  if(S.shownNotifs.includes(key))return;
+  S.shownNotifs.push(key);
+  S.homeNotifs=S.homeNotifs||[];
+  S.homeNotifs.unshift({
+    id:'lyt'+Date.now(),title:'去年の今日、こんな日でした',
+    sub:(item.text||'この日の記憶').slice(0,40),read:false,action:'timeline',
   });
+  save();
+}
+let promoteSourceId=null;
+async function promoteToFuture(sourceId,days){
+  const src=S.capsules.find(c=>c.id===sourceId);
+  if(!src||src.layer!=='now'){toast('この記憶は昇格できません');return}
+  const capId='c'+Date.now()+'_p';
+  const openAt=addDays(days);
+  let mediaId=src.mediaId;
+  if(mediaId){
+    try{
+      const data=await idbGet(mediaId);
+      if(data){await idbPut(capId,data);mediaId=capId}
+    }catch(e){}
+  }
+  const cap={
+    id:capId,from:src.from,to:src.to,visibility:src.visibility==='today'?'future':(src.visibility||'future'),
+    type:src.type,text:src.text,sealed:true,openAt,days,postNow:false,layer:'sealed',
+    mediaId,createdAt:Date.now(),loc:src.loc,tags:src.tags,groupId:src.groupId,
+    promotedFrom:src.id,album:src.album,
+  };
+  S.capsules.unshift(cap);
+  src.promoted=true;
+  pushActivity('post_created',{postId:capId});
+  save();renderAll();
+  toast('未来に複製しました');
+  haptic();
 }
 function daysUntil(iso){return Math.max(0,Math.ceil((new Date(iso)-Date.now())/864e5))}
 function bucketFor(iso){
@@ -2475,6 +3055,9 @@ function defaults(){
   const now=Date.now();
   const caps=[
     {id:'c-ready',from:'みお',to:'group',type:'photo',text:'今すぐ開封できる写真',sealed:true,openAt:addMinutes(-1),days:0,createdAt:now,mediaId:'demo_photo'},
+    {id:'c-prompt-demo',from:'ゆうま',to:'self',type:'prompt',text:'最高',sealed:true,openAt:addMinutes(-1),days:365,
+      createdAt:now-30*864e5,promptId:'tap1',promptText:'今日のテンションは？',promptType:'tap',
+      choice:'最高',options:['最高','ふつう','限界'],linkedSong:{title:'夜に駆ける',artist:'YOASOBI'}},
     {id:'c1',from:'みお',to:'group',type:'photo',text:'屋上からの夕焼け',sealed:true,openAt:addDays(2),days:3,createdAt:now-864e5},
     {id:'c2',from:'けんと',to:'group',type:'video',text:'ライブの余韻',sealed:true,openAt:addDays(3),days:3,createdAt:now-2*864e5},
     {id:'c3',from:'ゆうま',to:'self',type:'photo',text:'未来の自分へ',sealed:true,openAt:addDays(3),days:3,createdAt:now-3*864e5,loc:{lat:35.6812,lng:139.7671},tags:['旅行']},
@@ -2511,6 +3094,7 @@ function defaults(){
       {id:'o2',from:'ゆい',type:'video',text:'あの頃ずっと聴いてた曲',openedAt:now-12*864e5,loc:{lat:34.6937,lng:135.5023}},
       {id:'o-demo',from:'みお',type:'photo',text:'開封済みの写真サンプル',openedAt:now-864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671}},
       {id:'o-map3',from:'ゆうま',type:'photo',text:'旅の途中',openedAt:now-3*864e5,loc:{lat:35.4437,lng:139.6380}},
+      {id:'o-lyt',from:'ゆうま',type:'photo',text:'去年の今日、窓辺に座ってた',openedAt:now-365.25*864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671}},
     ],
     readNotifs:[],
     auth:null,
@@ -2593,6 +3177,10 @@ if(S.currentStreak===undefined)S.currentStreak=S.streak||0;
 if(!S.longestStreak)S.longestStreak=S.currentStreak||0;
 if(!S.dailyAnswers)S.dailyAnswers=[];
 if(!S.activityFeed)S.activityFeed=[];
+if(!S.albums)S.albums={};
+if(!S.shownNotifs)S.shownNotifs=[];
+if(S.mapTimePct===undefined)S.mapTimePct=100;
+if(S.dismissedVoiceHint===undefined)S.dismissedVoiceHint=false;
 if(!S.sealLayer)S.sealLayer='seal';
 if(S.onboardingDone===undefined)S.onboardingDone=false;
 migrateMessages();
@@ -2637,7 +3225,7 @@ let fsTab='posts';
 let sharedTab='friends';
 let waitTimer=null;
 
-let mapInst=null,mapCluster=null,mapRouteLine=null;
+let mapInst=null,mapCluster=null,mapRouteLine=null,mapHeatLayer=null,mapPlayTimer=null;
 let mapSubTab='route';
 
 function switchTab(tab){
@@ -2697,7 +3285,10 @@ function renderHomeWidget(){
 
 function renderTimeline(){
   renderDailyQuestion();
+  renderTodayPhotos();
   renderLastYearToday();
+  checkLastYearTodayNotif();
+  checkUnlockNotifs();
   renderHomeWidget();
   renderActivityFeed();
   checkOpenPreview();
@@ -2728,13 +3319,21 @@ function renderTimeline(){
           <div class="when">${p.openAt?formatWhen({openAt:p.openAt}):'開封日まで'}</div>
         </div></div>`;
     }else if(p.mediaId){
-      body=`<div class="tl-open-body"><img data-lazy="${esc(p.mediaId)}" alt=""></div>${p.text?`<div class="tl-open-caption">${esc(p.text)}</div>`:''}`;
+      if(photoLocked){
+        body=`<div class="tl-open-body tl-photo-locked"><img data-lazy="${esc(p.mediaId)}" alt=""><div class="tp-lock-hint">撮ると、みんなの写真が見える</div></div>${p.text?`<div class="tl-open-caption" style="filter:blur(8px);opacity:.4">${esc(p.text)}</div>`:''}`;
+      }else{
+        body=`<div class="tl-open-body"><img data-lazy="${esc(p.mediaId)}" alt=""></div>${p.text?`<div class="tl-open-caption">${esc(p.text)}</div>`:''}`;
+      }
     }else if(p.text){
       body=`<div class="tl-open-caption">${esc(p.text)}</div>`;
     }
     const canReply=!locked&&p.from!==me&&p.from!=='ゆうま'&&MEMBERS.some(x=>x.n===p.from);
     const replyBtn=canReply?`<button type="button" class="tl-reply-btn" data-reply-to="${esc(MEMBERS.find(x=>x.n===p.from)?.id||'')}">DMで返信</button>`:'';
     const openBtn=locked&&p.openAt&&new Date(p.openAt)<=Date.now()&&p.capsule?`<button type="button" class="tl-reply-btn" data-open-id="${esc(p.id)}">開封する</button>`:'';
+    const isFriendTodayPhoto=p.layer==='now'&&p.type==='photo'&&isToday(p.at)&&p.from!==me&&p.from!=='ゆうま';
+    const photoLocked=isFriendTodayPhoto&&!hasPostedTodayPhoto();
+    const canPromote=!locked&&p.layer==='now'&&(p.from===me||p.from==='ゆうま')&&!p.promoted&&p.capsule;
+    const promoteBtn=canPromote?`<button type="button" class="tl-reply-btn" data-promote-id="${esc(p.id)}">未来にも残す</button>`:'';
     return`<article class="tl-item${previewSoon?' preview-soon':''}" data-id="${esc(p.id)}">
       <div class="tl-item-head">
         <div class="tl-av" ${avStyle}>${avChar}</div>
@@ -2744,7 +3343,7 @@ function renderTimeline(){
       </div>
       ${body}
       ${tags?`<div class="tl-tags">${tags}</div>`:''}
-      <div class="tl-actions">${openBtn}${replyBtn}</div>
+      <div class="tl-actions">${openBtn}${promoteBtn}${replyBtn}</div>
     </article>`;
   }).join('');
   loadLazyThumbs(el);
@@ -2755,6 +3354,33 @@ function renderTimeline(){
   el.querySelectorAll('[data-reply-to]').forEach(b=>b.addEventListener('click',()=>{
     if(b.dataset.replyTo){openFriendSpace(b.dataset.replyTo);fsTab='chat';document.querySelectorAll('.fs-tab').forEach(x=>x.classList.toggle('on',x.dataset.fstab==='chat'));$('fsPosts')?.classList.add('hidden');$('fsChat')?.classList.remove('hidden');$('fdmCompose')?.classList.remove('hidden');renderFriendSpace()}
   }));
+  el.querySelectorAll('[data-promote-id]').forEach(b=>b.addEventListener('click',()=>{
+    openPromoteOverlay(b.dataset.promoteId);
+    haptic();
+  }));
+}
+
+function renderTodayPhotos(){
+  const grid=$('todayPhotoGrid');
+  const block=$('todayPhotoBlock');
+  if(!grid)return;
+  const unlocked=hasPostedTodayPhoto();
+  const mine=myTodayPhotos();
+  const friends=demoTodayPhotos();
+  const cards=[
+    ...mine.map(p=>({name:meName(),char:meName().charAt(0),color:'#5A5A5A',text:p.text,mediaId:p.mediaId,at:p.createdAt,mine:true})),
+    ...friends.map(f=>({...f,mine:false})),
+  ];
+  block?.classList.remove('hidden');
+  grid.innerHTML=cards.map((c,i)=>`
+    <div class="tp-card${!c.mine&&!unlocked?' locked':' unlocked'}" style="animation-delay:${i*80}ms">
+      ${!c.mine&&!unlocked?'<div class="tp-hint">撮ると、みんなの写真が見える</div>':''}
+      ${c.mediaId
+        ?`<img class="tp-img" data-lazy="${esc(c.mediaId)}" alt="">`
+        :`<div class="tp-placeholder tp-img">${c.char}</div>`}
+      <div class="tp-name">${esc(c.mine?'あなた':c.name)}</div>
+    </div>`).join('');
+  loadLazyThumbs(grid);
 }
 
 function checkOpenPreview(){
@@ -2767,8 +3393,11 @@ function checkOpenPreview(){
   S.shownPreviews=S.shownPreviews||[];
   S.shownPreviews.push(key);
   save();
-  $('openPreviewTitle').textContent=d===1?'明日、開きます':'あと'+d+'日で開きます';
-  $('openPreviewBody').textContent=`${capDestLabel(c)}への記憶。開く前夜のドキドキこそ、このアプリの一番おいしいところ。`;
+  const title=d===1?'明日、'+capFromLabel(c)+'が開きます':'あと'+d+'日で開きます';
+  $('openPreviewTitle').textContent=title;
+  $('openPreviewBody').textContent=d===1
+    ?`${capDestLabel(c)}への記憶。開く前夜のドキドキこそ、このアプリの一番おいしいところ。`
+    :`${capDestLabel(c)} · ${(c.text||'').slice(0,30)}`;
   $('openPreviewOverlay')?.classList.add('open');
 }
 
@@ -2806,19 +3435,41 @@ function renderDailyQuestion(){
     $('streakCount').textContent=streak;
   }
   block?.classList.toggle('done',done);
+  const modeRow=$('dqModeRow');
+  const sealFutureBtn=$('dqSealFutureBtn');
   if(prompt.type==='tap'||prompt.type==='hybrid'){
+    modeRow?.classList.toggle('hidden',done);
+    sealFutureBtn?.classList.toggle('hidden',!done);
+    modeRow?.querySelectorAll('button').forEach(b=>{
+      b.classList.toggle('on',b.dataset.pmode===(dqPromptMode||'today'));
+      b.onclick=()=>{dqPromptMode=b.dataset.pmode;renderDailyQuestion();haptic()};
+    });
     tapRow?.classList.remove('hidden');
     btn?.classList.add('hidden');
     tapRow.innerHTML=(prompt.options||[]).map((o,i)=>`
       <button type="button" class="dq-tap-btn${S.dailyAnswerToday?.choice===o?' on':''}" data-choice="${esc(o)}" ${done?'disabled':''}>${esc(o)}</button>`).join('');
     tapRow.querySelectorAll('.dq-tap-btn').forEach(b=>b.addEventListener('click',()=>{
       if(done)return;
+      if(dqPromptMode==='sealed'){
+        sealPromptToFuture(b.dataset.choice,'',365);
+        recordDailyAnswer(b.dataset.choice);
+        renderDailyQuestion();
+        return;
+      }
       recordDailyAnswer(b.dataset.choice);
       renderDailyQuestion();
       toast('答えました');
       haptic();
     }));
+    sealFutureBtn?.replaceWith(sealFutureBtn.cloneNode(true));
+    $('dqSealFutureBtn')?.addEventListener('click',()=>{
+      const ch=S.dailyAnswerToday?.choice;
+      if(!ch)return;
+      sealPromptToFuture(ch,S.dailyAnswerToday?.text||'',365);
+    });
   }else{
+    modeRow?.classList.add('hidden');
+    sealFutureBtn?.classList.add('hidden');
     tapRow?.classList.add('hidden');
     btn?.classList.remove('hidden');
     if(btn){
@@ -2879,7 +3530,16 @@ function renderLastYearToday(){
   const sec=$('lastYearToday');
   if(!item||!sec)return;
   sec.classList.remove('hidden');
+  const d=new Date(item.at||item.openedAt||item.createdAt);
   $('lytTitle').textContent=item.text||'この日の記憶';
+  const sub=sec.querySelector('.lyt-sub')||(()=>{
+    const p=document.createElement('p');
+    p.className='lyt-sub';
+    p.style.cssText='font-size:12px;color:var(--ink-3);margin:-4px 0 12px';
+    $('lytTitle')?.after(p);
+    return p;
+  })();
+  sub.textContent=d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
   const card=$('lytCard');
   if(item.mediaId)card.innerHTML=`<img data-lazy="${esc(item.mediaId)}" alt="">`;
   else card.innerHTML=`<p style="font-size:14px;color:var(--ink-2);padding:12px 0">${esc(item.text||'')}</p>`;
@@ -3051,22 +3711,32 @@ function renderMemoryMap(){
   if(!mapInst)return;
   mapCluster?.clearLayers();
   if(mapRouteLine){mapInst.removeLayer(mapRouteLine);mapRouteLine=null}
-  const points=mapPointsAll();
+  if(mapHeatLayer){mapInst.removeLayer(mapHeatLayer);mapHeatLayer=null}
+  const points=mapPointsFiltered();
   if(!points.length){
     mapInst.setView([36.2,138.5],5);
+    $('mapTimeLabel').textContent='思い出の軌跡 · 地点なし';
     return;
   }
-  const dotIcon=L.divIcon({html:'<div class="map-dot"></div>',className:'map-dot-wrap',iconSize:[12,12]});
-  const dotLocked=L.divIcon({html:'<div class="map-dot" style="opacity:.45;border-style:dashed"></div>',className:'map-dot-wrap',iconSize:[12,12]});
+  const groups=groupPointsByLocation(points);
   const latlngs=[];
   const allLatlngs=[];
-  points.forEach(p=>{
-    allLatlngs.push([p.loc.lat,p.loc.lng]);
-    if(!p.locked)latlngs.push([p.loc.lat,p.loc.lng]);
-    const m=L.marker([p.loc.lat,p.loc.lng],{icon:p.locked?dotLocked:dotIcon});
-    m.on('click',()=>openMapPoint(p));
-    mapCluster.addLayer(m);
+  mapHeatLayer=L.layerGroup();
+  groups.forEach(g=>{
+    allLatlngs.push([g.loc.lat,g.loc.lng]);
+    if(!g.locked)latlngs.push([g.loc.lat,g.loc.lng]);
+    const n=g.items.length;
+    const size=Math.min(28,10+n*4);
+    const heatIcon=L.divIcon({
+      html:`<div class="map-heat-dot" style="width:${size}px;height:${size}px;opacity:${g.locked?0.45:Math.min(1,.55+n*0.12)}"></div>`,
+      className:'map-dot-wrap',iconSize:[size,size],
+    });
+    const rep=g.items[g.items.length-1];
+    const m=L.marker([g.loc.lat,g.loc.lng],{icon:heatIcon});
+    m.on('click',()=>openMapPoint(rep));
+    mapHeatLayer.addLayer(m);
   });
+  mapInst.addLayer(mapHeatLayer);
   if(latlngs.length>1){
     mapRouteLine=L.polyline(latlngs,{color:'#ffffff',weight:2,opacity:.55,dashArray:'6 8'});
     mapRouteLine.addTo(mapInst);
@@ -3075,6 +3745,11 @@ function renderMemoryMap(){
     const bounds=L.latLngBounds(allLatlngs);
     mapInst.fitBounds(bounds.pad(.15));
   }
+  const pct=S.mapTimePct??100;
+  const sorted=[...mapPointsAll()].sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
+  const last=sorted[Math.max(0,Math.ceil(sorted.length*pct/100)-1)];
+  const lbl=last?.openedAt?new Date(last.openedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'}):'全期間';
+  $('mapTimeLabel').textContent=pct>=100?'思い出の軌跡 · 全期間':`思い出の軌跡 · 〜 ${lbl}`;
   setTimeout(()=>mapInst?.invalidateSize(),100);
 }
 
@@ -3211,6 +3886,15 @@ function renderArchive(){
   const sealedStrip=sealedVaultItems().slice(0,6).map(()=>`
     <div class="vault-cell"><div class="vm-blur"></div><div class="vm-count">🔒</div></div>`).join('');
 
+  const seasonKey=getSeasonAlbumKey();
+  const seasonAlbum=S.albums?.[seasonKey];
+  const seasonStrip=seasonAlbum?.items?.length?`
+    <div style="padding:0 20px 16px">
+      <div class="vault-label">${esc(seasonAlbum.label||seasonAlbumLabel(seasonKey))}</div>
+      <div class="vault-mosaic">${seasonAlbum.items.slice(0,6).map(it=>`
+        <div class="vault-cell"><img data-lazy="${esc(it.mediaId)}" alt="" style="width:100%;height:100%;object-fit:cover"></div>`).join('')}</div>
+    </div>`:'';
+
   const theme=monthData?.themeSong;
   const themeCard=theme?`
     <div class="ap-theme" style="margin:0 20px 16px">
@@ -3282,6 +3966,7 @@ function renderArchive(){
       </div>
       <div class="settings-row" id="darkToggleArchive" style="margin:16px 20px"><span>ダークモード</span><div class="toggle ${S.dark?'on':''}" id="darkSwitchArchive"></div></div>
       ${sealedN?`<div class="vault-section"><div class="vault-label">まだ見られない · ${sealedN}件</div><div class="vault-mosaic">${sealedStrip}</div></div>`:''}
+      ${seasonStrip}
       ${themeCard}
       <div class="archive-tabs" style="padding:0 20px">
         <button type="button" class="archive-tab${tab==='all'?' on':''}" data-atab="all">思い出</button>
@@ -3410,6 +4095,7 @@ function renderNotifDropdown(){
       $('notifDropdown')?.classList.remove('open');
       if(item.dataset.action==='open'&&ready().length)startGroupSync(ready());
       else if(item.dataset.action==='dm'){switchTab('me');const dm=S.dms?.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}
+      else if(item.dataset.action==='timeline'){switchTab('waiting');$('lastYearToday')?.scrollIntoView({behavior:'smooth',block:'start'})}
       haptic();
     });
   });
@@ -3469,7 +4155,7 @@ window.addEventListener('scroll',()=>{
 
 /* Create */
 const overlay=$('createOverlay');
-$('openCreate').addEventListener('click',()=>{overlay.classList.add('open');haptic()});
+$('openCreate').addEventListener('click',()=>{initCreateExpands();overlay.classList.add('open');haptic()});
 overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
 
 /* Gyroscope — legacy home pills only */
@@ -3536,12 +4222,42 @@ $('videoInput').addEventListener('change',async e=>{
 });
 
 $('removeMedia').addEventListener('click',()=>{
-  pendingMedia=null;
+  pendingMedia=null;pendingSelfie=null;
   $('mediaPreview').classList.remove('show');
   $('mediaPreviewInner').innerHTML='';
   $('locNotice')?.classList.add('hidden');
   updateMediaPickState();
 });
+
+$('selfieToggle')?.addEventListener('change',()=>{
+  $('pickSelfieBtn')?.classList.toggle('hidden',!$('selfieToggle')?.checked||!pendingMedia);
+});
+$('pickSelfieBtn')?.addEventListener('click',()=>$('selfieInput')?.click());
+$('selfieInput')?.addEventListener('change',async e=>{
+  const file=e.target.files?.[0];
+  if(!file)return;
+  try{
+    const dataUrl=await compressImage(file,600);
+    pendingSelfie={type:'photo',dataUrl};
+    $('mediaPreviewInner').innerHTML+=`<img src="${dataUrl}" alt="selfie" style="margin-top:8px;max-height:120px;object-fit:cover;border-radius:12px">`;
+    toast('セルフィーを追加しました');
+    updateMediaPickState();
+  }catch(err){toast('セルフィーの読み込みに失敗')}
+  e.target.value='';
+});
+$('voiceRecordBtn')?.addEventListener('click',startVoiceRecord);
+$('voiceStopBtn')?.addEventListener('click',stopVoiceRecord);
+$('voiceClearBtn')?.addEventListener('click',()=>{
+  pendingVoice=null;voiceSeconds=0;
+  $('voiceTimer').textContent='0s / 10s';
+  $('voiceClearBtn')?.classList.add('hidden');
+  updateMediaPickState();haptic();
+});
+$('voiceHintDismiss')?.addEventListener('click',()=>{
+  S.dismissedVoiceHint=true;save();
+  $('voiceHintNudge')?.classList.add('hidden');
+});
+initCreateExpands();
 
 document.querySelectorAll('.duration-pill').forEach(b=>{
   b.addEventListener('click',()=>{
@@ -3591,8 +4307,10 @@ $('tagInput')?.addEventListener('keydown',e=>{
 });
 
 async function sealCapsule({caption,media,fromCreate,fromDaily}){
-  if(!media&&!caption){toast('写真・動画・言葉のいずれかを追加してください');return}
-  const type=media?media.type:'text';
+  const hasVoice=!!pendingVoice;
+  const hasMedia=!!pendingMedia;
+  if(!hasMedia&&!hasVoice&&!caption){toast('ひとことか、写真を残そう');return}
+  const type=hasVoice?'voice':(hasMedia?pendingMedia.type:'text');
   const dest=fromCreate?(S.sealTo||'self'):'self';
   const isPrivate=dest==='self';
   const isFriend=dest==='friend';
@@ -3627,15 +4345,25 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
     if(!targets.length){toast('グループを選んでください');return}
   }else targets.push({type:'self',to:'self',vis:'future'});
   const albumFiles=media?._albumFiles;
-  const mediaItems=albumFiles?.length?await Promise.all(albumFiles.map(async f=>{
-    const geo=await extractGeoFromFile(f);
-    return{type:'photo',dataUrl:await compressImage(f),geo};
-  })):(media?[media]:[null]);
-  const displayText=caption||(media?`（${TYPE_JA[type]}）`:'');
+  let mediaItems;
+  if(hasVoice&&!albumFiles){
+    mediaItems=[{type:'voice',dataUrl:pendingVoice.dataUrl}];
+  }else if(albumFiles?.length){
+    mediaItems=await Promise.all(albumFiles.map(async f=>{
+      const geo=await extractGeoFromFile(f);
+      return{type:'photo',dataUrl:await compressImage(f),geo};
+    }));
+  }else{
+    mediaItems=hasMedia?[media]:[null];
+  }
+  const displayText=caption||(hasVoice?'（声）':(hasMedia?`（${TYPE_JA[type]}）`:''));
+  const sealMood=S.sealMood||undefined;
+  const selfieData=pendingSelfie?.dataUrl;
   const fromName=meName();
   const seasonTag=S.seasonEvent?.joined?'grad2026':undefined;
   const doSeal=async()=>{
     let count=0;
+    const hadTodayPhoto=hasPostedTodayPhoto();
     for(const mItem of mediaItems){
       for(const t of targets){
         for(const days of openDaysList){
@@ -3645,6 +4373,11 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
           if(mItem?.dataUrl){
             try{await idbPut(capId,mItem.dataUrl)}catch(e){toast('メディアの保存に失敗');return}
           }
+          let selfieMediaId=null;
+          if(selfieData&&mItem?.type==='photo'){
+            selfieMediaId=capId+'_sf';
+            try{await idbPut(selfieMediaId,selfieData)}catch(e){}
+          }
           const cap={
             id:capId,from:fromName,to:t.to,visibility:isNowLayer?'today':t.vis,type:mItem?.type||type,
             text:displayText,sealed:!isNowLayer,openAt,days:isNowLayer?0:days,postNow:isNowLayer||days===0,
@@ -3652,7 +4385,11 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
             mediaId:mItem?.dataUrl?capId:null,createdAt:Date.now(),
             goal:goal||undefined,loc:itemLoc,tags:tags.length?tags:undefined,
             groupId:t.groupId,seasonEvent:seasonTag,
+            album:isNowLayer&&mItem?.type==='photo'?getSeasonAlbumKey():undefined,
+            linkedSong:linkedSongSnapshot(),mood:sealMood,selfieMediaId,
+            voiceDuration:mItem?.type==='voice'?pendingVoice?.duration:undefined,
           };
+          if(isNowLayer&&cap.type==='photo')addToSeasonAlbum(cap);
           if(t.type==='invite'){
             S.pendingInvites=S.pendingInvites||[];
             S.pendingInvites.push({id:'inv'+Date.now(),contact:t.contact,capId,from:fromName,text:displayText,openAt,inviteCode:S.inviteCode});
@@ -3672,6 +4409,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
       $('createInput').value='';$('goalInput').value='';$('inviteContact').value='';
       $('tagInputRow')?.querySelectorAll('.tag-chip').forEach(c=>c.remove());
       pendingMedia=null;
+      resetCreateExtras();
       $('mediaPreview').classList.remove('show');$('mediaPreviewInner').innerHTML='';
       $('locNotice')?.classList.add('hidden');
       if($('stripLoc'))$('stripLoc').checked=false;
@@ -3679,7 +4417,13 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
       $('onboardOverlay')?.classList.remove('open');
     }
     save();renderAll();
-    toast(count>1?`${count}件封じました`:'封じました');
+    if(isNowLayer&&mediaItems.some(m=>m?.type==='photo')&&!hadTodayPhoto){
+      toast('みんなの今日が見えるようになりました');
+    }else if(isNowLayer){
+      toast(count>1?`${count}件、今日に残しました`:'今日に残しました');
+    }else{
+      toast(count>1?`${count}件封じました`:'封じました');
+    }
     switchTab('waiting');
     if(isFriend&&targets[0]){
       switchTab('messages');
@@ -3693,7 +4437,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
 
 $('sealBtn').addEventListener('click',async()=>{
   const caption=$('createInput').value.trim();
-  if(!pendingMedia&&!caption){toast('写真・動画・言葉のいずれかを追加してください');return}
+  if(!pendingMedia&&!pendingVoice&&!caption){toast('ひとことか、写真を残そう');return}
   await sealCapsule({caption,media:pendingMedia,fromCreate:true});
 });
 
@@ -3829,20 +4573,29 @@ function makeParticles(){
 
 function startOpening(items,flash){
   openingItems=items;
+  lastOpenedItem=null;
   makeStars();makeParticles();
-  const selfItem=items.find(c=>c.to==='self'&&c.from==='ゆうま');
+  const c=items[0];
+  const selfItem=items.find(x=>x.to==='self'&&(x.from==='ゆうま'||x.from===meName()));
   $('openingPoetic').innerHTML=selfItem
-    ?'✉️ 過去から、何かが届きました。<br><span style="font-size:14px;opacity:.65;font-weight:400">1年前の自分が、あなたに何かを残していました。</span>'
-    :'✨ カプセルの開封時です。<br><span style="font-size:14px;opacity:.65;font-weight:400">身内の記憶が、ようやくよみがえります。</span>';
+    ?'✉️ 過去から、何かが届きました。<br><span style="font-size:14px;opacity:.65;font-weight:400">'+esc(capFromLabel(c))+'から、あなたに何かが残されていました。</span>'
+    :'✨ カプセルの開封時です。<br><span style="font-size:14px;opacity:.65;font-weight:400">'+esc(capFromLabel(c))+'の記憶が、ようやくよみがえります。</span>';
   $('openingEnvelope').classList.remove('opened');
   $('openingEnvelope').style.opacity='1';
   $('dragSeal').classList.remove('hidden');
   $('dragSeal').style.transform='translateX(-50%)';
   $('openingHint').style.display='';
+  $('openingSongStrip')?.classList.add('hidden');
+  if($('openingSongStrip'))$('openingSongStrip').style.opacity='0';
   $('revealStack').classList.remove('show');
   $('revealStack').innerHTML='';
   $('reactions').classList.remove('show');
+  $('openingActions')?.classList.remove('show');
   $('exportBtn').classList.remove('show');
+  $('goalReflect')?.classList.add('hidden');
+  $('voiceHintNudge')?.classList.add('hidden');
+  $('moodCompare')?.remove();
+  document.querySelectorAll('.reaction-btn').forEach(b=>b.classList.remove('on'));
   const op=$('opening');
   op.classList.add('active');
   if(flash){op.classList.add('flash');setTimeout(()=>op.classList.remove('flash'),500)}
@@ -3888,46 +4641,97 @@ function finishOpen(){
   haptic();try{navigator.vibrate?.([20,30,20])}catch(e){}
 
   setTimeout(async()=>{
-    $('openingEnvelope').style.opacity='0';
-    $('revealStack').classList.add('show');
-    const mediaBlocks=await Promise.all(openingItems.map(async c=>{
-      let media='';
-      if(c.mediaId){
-        const data=await idbGet(c.mediaId);
-        if(data){
-          if(c.type==='photo')media=`<div class="thumb"><img src="${data}" alt=""></div>`;
-          else if(c.type==='video')media=`<div class="thumb"><video src="${data}" autoplay muted loop playsinline></video></div>`;
-        }
+    const cap=openingItems[0];
+    const song=cap?.linkedSong||cap?.themeSong||currentTodaySong();
+    playOpeningSong(song);
+    const runReveal=async()=>{
+      if(cap?.type==='voice'&&cap.mediaId){
+        const vData=await idbGet(cap.mediaId);
+        if(vData){try{const au=new Audio(vData);au.volume=.9;au.play().catch(()=>{})}catch(e){}}
       }
-      if(!media&&c.type==='photo')media='<div class="thumb">📷</div>';
-      if(!media&&c.type==='video')media='<div class="thumb">▶️</div>';
-      return media;
-    }));
-    $('revealStack').innerHTML=openingItems.map((c,i)=>`
-      <div class="reveal-item ${c.type}" style="animation-delay:${i*.25}s">
-        <div class="from">${esc(c.from)} · ${TYPE_JA[c.type]||c.type}</div>
-        <div class="text" id="tw-${i}"></div>
-        ${mediaBlocks[i]||''}
-      </div>`).join('');
-    openingItems.forEach((c,i)=>{
-      const el=document.getElementById('tw-'+i);
-      if(el)setTimeout(()=>typewriter(el,c.text,()=>{
-        if(i===openingItems.length-1){
-          $('exportBtn').classList.add('show');
-          showGoalReflect(openingItems[0]);
+      $('openingEnvelope').style.opacity='0';
+      $('revealStack').classList.add('show');
+      const mediaBlocks=await Promise.all(openingItems.map(async c=>{
+        let media='';
+        if(c.type==='prompt'){
+          media=`<div class="thumb" style="padding:24px;font-size:15px;line-height:1.5;text-align:center">${esc(c.promptText||c.text||'')}</div>`;
+        }else if(c.mediaId){
+          const data=await idbGet(c.mediaId);
+          if(data){
+            if(c.type==='photo'){
+              media=`<div class="thumb"><img src="${data}" alt=""></div>`;
+              if(c.selfieMediaId){
+                const sf=await idbGet(c.selfieMediaId);
+                if(sf)media+=`<div class="thumb" style="margin-top:8px"><img src="${sf}" alt="" style="max-height:140px;object-fit:cover;width:100%;border-radius:12px"></div>`;
+              }
+            }else if(c.type==='video')media=`<div class="thumb"><video src="${data}" autoplay muted loop playsinline></video></div>`;
+            else if(c.type==='voice')media=`<div class="thumb voice"><div class="wave"><span></span><span></span><span></span><span></span><span></span></div><audio src="${data}" controls style="width:100%;margin-top:10px"></audio></div>`;
+          }
         }
-      }),i*400);
-    });
-    $('reactions').classList.add('show');
-    S.opened=S.opened||[];
-    openingItems.forEach(c=>S.opened.unshift({
-      id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,openedAt:Date.now(),mediaId:c.mediaId,
-      goal:c.goal,loc:c.loc,tags:c.tags,themeSong:currentThemeSong(),todaySong:currentTodaySong(),weekTop3:currentWeekTop3(),
-    }));
-    S.capsules=S.capsules.filter(c=>!openingItems.find(r=>r.id===c.id));
-    openingItems.forEach(c=>pushActivity('post_opened',{postId:c.id}));
-    save();renderAll();
+        if(!media&&c.type==='photo')media='<div class="thumb">📷</div>';
+        if(!media&&c.type==='video')media='<div class="thumb">▶️</div>';
+        if(!media&&c.type==='voice')media='<div class="thumb">🎙️</div>';
+        return media;
+      }));
+      const moodLine=cap?.mood?`<div class="mood-compare">あのとき ${cap.mood}</div>`:'';
+      $('revealStack').innerHTML=openingItems.map((c,i)=>`
+        <div class="reveal-item ${c.type}" style="animation-delay:${i*.25}s">
+          <div class="from">${esc(c.from)} · ${c.type==='prompt'?'問い':(TYPE_JA[c.type]||c.type)}</div>
+          ${i===0?moodLine:''}
+          <div class="text" id="tw-${i}"></div>
+          ${mediaBlocks[i]||''}
+        </div>`).join('');
+      const afterReveal=()=>{
+        $('reactions').classList.add('show');
+        $('openingActions')?.classList.add('show');
+        lastOpenedItem={...cap};
+        S.opened=S.opened||[];
+        openingItems.forEach(c=>S.opened.unshift({
+          id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,openedAt:Date.now(),mediaId:c.mediaId,
+          goal:c.goal,loc:c.loc,tags:c.tags,linkedSong:c.linkedSong,mood:c.mood,selfieMediaId:c.selfieMediaId,
+          promptId:c.promptId,promptText:c.promptText,choice:c.choice,
+          themeSong:c.linkedSong||currentThemeSong(),todaySong:currentTodaySong(),weekTop3:currentWeekTop3(),
+        }));
+        S.capsules=S.capsules.filter(c=>!openingItems.find(r=>r.id===c.id));
+        openingItems.forEach(c=>pushActivity('post_opened',{postId:c.id}));
+        save();renderAll();
+        showGoalReflect(openingItems[0]);
+        showMoodNowPick(cap);
+        if(cap?.type!=='voice')showVoiceHintNudge();
+      };
+      openingItems.forEach((c,i)=>{
+        const el=document.getElementById('tw-'+i);
+        const txt=c.type==='prompt'?(c.choice||c.text||''):(c.type==='voice'&&!c.text?'':c.text);
+        if(el)setTimeout(()=>typewriter(el,txt||'（声の記憶）',()=>{
+          if(i===openingItems.length-1)afterReveal();
+        }),i*400);
+      });
+    };
+    if(cap?.promptId){
+      showPromptDialogue(cap,runReveal);
+    }else{
+      await runReveal();
+    }
   },900);
+}
+
+function showMoodNowPick(cap){
+  if(!cap?.mood)return;
+  let el=$('moodCompare');
+  if(!el){
+    el=document.createElement('div');
+    el.id='moodCompare';
+    el.className='mood-compare';
+    $('reactions')?.before(el);
+  }
+  el.innerHTML=`あのとき ${cap.mood} → いまは？ `+MOOD_EMOJIS.map(e=>
+    `<button type="button" data-m="${e}" style="font-size:20px;margin:0 4px;background:none;border:none">${e}</button>`).join('');
+  el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    el.textContent=`あのとき ${cap.mood} → いま ${b.dataset.m}`;
+    const o=S.opened?.find(x=>x.id===cap.id);
+    if(o){o.moodNow=b.dataset.m;save()}
+    haptic();
+  }));
 }
 
 function showGoalReflect(cap){
@@ -3999,6 +4803,97 @@ $('onboardDemo')?.addEventListener('click',()=>{
   haptic();
 });
 $('openPreviewClose')?.addEventListener('click',()=>$('openPreviewOverlay')?.classList.remove('open'));
+document.querySelectorAll('#promoteDays button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#promoteDays button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  haptic();
+}));
+$('promoteCancelBtn')?.addEventListener('click',()=>{
+  promoteSourceId=null;
+  $('promoteOverlay')?.classList.remove('open');
+});
+$('promoteConfirmBtn')?.addEventListener('click',async()=>{
+  const days=+(document.querySelector('#promoteDays button.on')?.dataset.days||30);
+  $('promoteOverlay')?.classList.remove('open');
+  if(transferSourceId&&lastOpenedItem){
+    await transferCapsule(lastOpenedItem,days);
+    transferSourceId=null;
+    $('opening')?.classList.remove('active');
+  }else if(promoteSourceId){
+    await promoteToFuture(promoteSourceId,days);
+    promoteSourceId=null;
+  }
+});
+$('transferBtn')?.addEventListener('click',()=>{
+  if(!lastOpenedItem)return;
+  transferSourceId=lastOpenedItem.id;
+  promoteSourceId=null;
+  const sheet=$('promoteOverlay')?.querySelector('.promote-sheet');
+  if(sheet){
+    sheet.querySelector('h3').textContent='未来の自分にもう一度送る';
+    sheet.querySelector('p').textContent='開いた記憶を、新しい開封日でもう一度封じます。';
+    $('promoteConfirmBtn').textContent='送る';
+  }
+  $('promoteOverlay')?.classList.add('open');
+  haptic();
+});
+$('shareOpenBtn')?.addEventListener('click',()=>{
+  haptic();
+  toast('開封カードを生成中…');
+  openWrappedCard(S.musicMonths?.[0]?.key);
+});
+$('closeOpenBtn')?.addEventListener('click',()=>{
+  $('opening')?.classList.remove('active');
+  haptic();
+});
+document.querySelectorAll('.reaction-btn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.reaction-btn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  if(lastOpenedItem){
+    const o=S.opened?.find(x=>x.id===lastOpenedItem.id);
+    if(o)o.reaction=b.textContent?.trim();
+    save();
+  }
+  haptic();
+}));
+$('mapTimeSlider')?.addEventListener('input',e=>{
+  S.mapTimePct=+e.target.value;
+  save();
+  renderMemoryMap();
+});
+$('mapPlayBtn')?.addEventListener('click',()=>{
+  if(mapPlayTimer){
+    clearInterval(mapPlayTimer);mapPlayTimer=null;
+    $('mapPlayBtn').textContent='▶ 再生';
+    return;
+  }
+  S.mapTimePct=0;
+  $('mapTimeSlider').value=0;
+  $('mapPlayBtn').textContent='■ 停止';
+  mapPlayTimer=setInterval(()=>{
+    S.mapTimePct=Math.min(100,(S.mapTimePct||0)+2);
+    $('mapTimeSlider').value=S.mapTimePct;
+    renderMemoryMap();
+    if(S.mapTimePct>=100){
+      clearInterval(mapPlayTimer);mapPlayTimer=null;
+      $('mapPlayBtn').textContent='▶ 再生';
+      save();
+    }
+  },120);
+  haptic();
+});
+function openPromoteOverlay(postId){
+  promoteSourceId=postId;
+  transferSourceId=null;
+  const sheet=$('promoteOverlay')?.querySelector('.promote-sheet');
+  if(sheet){
+    sheet.querySelector('h3').textContent='未来にも残す';
+    sheet.querySelector('p').textContent='今日見せ合った一枚を、未来のカプセルに複製します。元の写真はアルバムに残ります。';
+    $('promoteConfirmBtn').textContent='封じる';
+  }
+  document.querySelectorAll('#promoteDays button').forEach(b=>b.classList.toggle('on',b.dataset.days==='30'));
+  $('promoteOverlay')?.classList.add('open');
+}
 $('joinSeasonBtn')?.addEventListener('click',()=>{
   S.seasonEvent={joined:true,key:'grad2026'};
   save();
