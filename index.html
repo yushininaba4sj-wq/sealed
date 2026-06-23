@@ -1096,6 +1096,113 @@ body::after{display:none}
   background:var(--bg-2);color:var(--ink-2);border:1px solid rgba(255,255,255,.06);
 }
 .create-friend-chip.on{background:var(--accent);color:var(--accent-inv);border-color:var(--accent)}
+
+/* Shared timeline tabs */
+.shared-top-tabs{display:flex;gap:20px;padding:0 20px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.shared-top-tab{font-size:14px;font-weight:500;color:var(--ink-3);padding-bottom:8px;position:relative}
+.shared-top-tab.on{color:var(--ink)}
+.shared-top-tab.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--ink)}
+.shared-timeline{padding:16px 20px 100px}
+.shared-dm-list{padding:0 20px 100px}
+.stl-post{margin-bottom:24px}
+.stl-post-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.stl-post-av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:14px;color:#fff;flex-shrink:0}
+.stl-post-name{font-size:15px;font-weight:500}
+.stl-post-meta{font-size:12px;color:var(--ink-3);margin-top:1px}
+.stl-post-badge{margin-left:auto;font-size:10px;font-weight:600;padding:4px 8px;border-radius:999px;background:var(--bg-2);color:var(--ink-3)}
+.stl-sealed-box{
+  padding:36px 20px;border-radius:var(--r);background:var(--bg-2);
+  border:1px dashed rgba(255,255,255,.1);text-align:center;
+}
+.stl-sealed-box .ico{font-size:26px;margin-bottom:8px;opacity:.8}
+.stl-sealed-box .lbl{font-size:14px;color:var(--ink-2)}
+.stl-sealed-box .when{font-size:12px;color:var(--ink-3);margin-top:4px}
+.stl-open-body img,.stl-open-body video{width:100%;border-radius:var(--r-sm);display:block}
+.stl-open-caption{font-size:14px;line-height:1.5;margin-top:10px;color:var(--ink-2)}
+.dest-toggle button{font-size:12px;padding:10px 6px}
+
+/* Archive — IG profile */
+.archive-profile{padding:0 0 100px}
+.ap-header{display:flex;align-items:flex-start;gap:20px;padding:0 20px 20px}
+.ap-avatar-wrap{flex-shrink:0}
+.ap-avatar{
+  width:84px;height:84px;border-radius:50%;background:var(--ink);color:var(--accent-inv);
+  display:grid;place-items:center;font-size:30px;font-weight:600;
+}
+.ap-info{flex:1;padding-top:8px}
+.ap-name{font-size:20px;font-weight:600}
+.ap-bio{font-size:13px;color:var(--ink-3);margin-top:4px;line-height:1.45}
+.ap-stats{display:flex;gap:24px;margin-top:14px}
+.ap-stat .n{font-size:16px;font-weight:600}
+.ap-stat .l{font-size:11px;color:var(--ink-3)}
+.ap-highlights{display:flex;gap:14px;padding:0 20px 20px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ap-hl{flex-shrink:0;text-align:center;width:68px;cursor:pointer}
+.ap-hl-ring{width:60px;height:60px;border-radius:50%;border:2px solid var(--ink);padding:2px;margin:0 auto}
+.ap-hl-ring.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--ink)}
+.ap-hl-inner{width:100%;height:100%;border-radius:50%;background:var(--bg-2);display:grid;place-items:center;font-size:18px}
+.ap-hl-label{font-size:10px;color:var(--ink-2);margin-top:5px}
+.ap-theme{
+  margin:0 20px 20px;padding:18px 20px;border-radius:var(--r);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.06);
+}
+.ap-theme-badge{font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--ink-3)}
+.ap-theme-title{font-size:17px;font-weight:600;margin-top:6px}
+.ap-theme-artist{font-size:13px;color:var(--ink-3);margin-top:2px}
+.ap-theme-note{font-size:12px;color:var(--ink-3);margin-top:10px;line-height:1.4}
+.archive-tabs{display:flex;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+.archive-tab{flex:1;padding:12px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3);letter-spacing:.02em}
+.archive-tab.on{color:var(--ink);border-bottom:2px solid var(--ink);margin-bottom:-1px}
+.archive-panel{padding:3px 0 0}
+.archive-grid.ig{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px}
+.archive-grid.ig .archive-cell{border-radius:0;border:none}
+.music-section{padding:16px 20px}
+.music-month-label{font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:12px}
+.music-rank{display:flex;flex-direction:column;gap:8px}
+.music-rank-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-sm);background:var(--bg-2);border:1px solid rgba(255,255,255,.04)}
+.music-rank-item.theme{border-color:rgba(255,255,255,.14);background:var(--bg-3)}
+.music-rank-item .rk{font-size:15px;font-weight:700;width:22px;color:var(--ink-3);flex-shrink:0}
+.music-rank-item.theme .rk{color:var(--ink)}
+.music-rank-item .info{flex:1;min-width:0}
+.music-rank-item .title{font-size:14px;font-weight:500}
+.music-rank-item .artist{font-size:12px;color:var(--ink-3);margin-top:2px}
+.music-rank-item .plays{font-size:11px;color:var(--ink-3);flex-shrink:0}
+.music-today-card{
+  margin:0 20px 16px;padding:16px 18px;border-radius:var(--r);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:14px;
+}
+.music-today-card .mtc-ico{font-size:28px;flex-shrink:0}
+.music-today-card .mtc-label{font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--ink-3)}
+.music-today-card .mtc-title{font-size:16px;font-weight:600;margin-top:3px}
+.music-today-card .mtc-artist{font-size:13px;color:var(--ink-3);margin-top:2px}
+.music-today-card .mtc-plays{margin-left:auto;font-size:12px;color:var(--ink-3);text-align:right;flex-shrink:0}
+.music-week-block{margin:0 20px 20px}
+.music-week-head{font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:10px}
+.music-week-list{display:flex;flex-direction:column;gap:6px}
+.music-week-item{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:var(--r-sm);
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.04);
+}
+.music-week-item .wk{font-size:14px;font-weight:700;width:20px;color:var(--ink-3)}
+.music-week-item:nth-child(1) .wk{color:var(--ink)}
+.music-week-item .info{flex:1;min-width:0}
+.music-week-item .title{font-size:14px;font-weight:500}
+.music-week-item .artist{font-size:12px;color:var(--ink-3);margin-top:1px}
+.music-week-item .plays{font-size:11px;color:var(--ink-3)}
+.music-now-strip{
+  margin:0 20px 16px;padding:12px 16px;border-radius:var(--r-sm);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:10px;
+}
+.music-now-strip .mns-ico{font-size:18px}
+.music-now-strip .mns-body{flex:1;min-width:0}
+.music-now-strip .mns-label{font-size:10px;color:var(--ink-3);letter-spacing:.04em}
+.music-now-strip .mns-title{font-size:13px;font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.music-section-divider{height:1px;background:rgba(255,255,255,.06);margin:20px 0}
+.private-card .pc-text.sealed-mask{
+  color:var(--ink-3);font-style:normal;font-size:14px;
+  padding:20px 16px;text-align:center;background:var(--bg-3);border-radius:12px;
+}
+.private-card.locked .pc-thumb{display:none!important}
+.create-group-label{font-size:12px;color:var(--ink-3);margin-top:8px;padding:10px 14px;background:var(--bg-2);border-radius:var(--r-sm)}
 </style>
 </head>
 <body>
@@ -1122,6 +1229,7 @@ body::after{display:none}
       <h1 style="font-size:28px;font-weight:600">Private</h1>
       <p class="sub">自分だけのタイムカプセル · 日記 · メモ</p>
     </div>
+    <div id="privateMusicStrip"></div>
     <div class="private-list" id="privateList"></div>
   </section>
 
@@ -1130,9 +1238,16 @@ body::after{display:none}
     <div id="sharedListView">
       <div class="panel-head" style="padding-top:0">
         <h1 style="font-size:28px;font-weight:600">Shared</h1>
-        <p class="sub">人との関係性 · 未来メッセージ</p>
+        <p class="sub">タイムライン · 未来DM · 友達</p>
       </div>
-      <div class="shared-list" id="sharedList"></div>
+      <div class="shared-top-tabs">
+        <button type="button" class="shared-top-tab on" data-stab="timeline">タイムライン</button>
+        <button type="button" class="shared-top-tab" data-stab="dm">DM</button>
+        <button type="button" class="shared-top-tab" data-stab="friends">友達</button>
+      </div>
+      <div class="shared-timeline" id="sharedTimeline"></div>
+      <div class="shared-dm-list hidden" id="sharedDmList"></div>
+      <div class="shared-list hidden" id="sharedList"></div>
     </div>
     <div class="friend-space" id="friendSpace">
       <div class="fs-top">
@@ -1167,10 +1282,6 @@ body::after{display:none}
 
   <!-- ③ Archive -->
   <section class="panel" id="panel-archive">
-    <div class="panel-head" style="padding-top:0">
-      <h1 style="font-size:28px;font-weight:600">Archive</h1>
-      <p class="sub">開封済みの記録 · 人生ログ</p>
-    </div>
     <div class="archive-view" id="archiveView"></div>
   </section>
 
@@ -1225,11 +1336,16 @@ body::after{display:none}
     <h2 class="create-title">未来に、何を<br>残しますか？</h2>
     <div class="dest-toggle">
       <button type="button" class="on" data-to="self" data-vis="future">Private</button>
-      <button type="button" data-to="shared" data-vis="shared">Shared</button>
+      <button type="button" data-to="friend" data-vis="shared">友達</button>
+      <button type="button" data-to="group" data-vis="group">グループ</button>
     </div>
     <div class="create-friend-pick hidden" id="createFriendPick">
       <div class="duration-label">誰に送る？</div>
       <div class="create-friend-row" id="createFriendRow"></div>
+    </div>
+    <div class="create-friend-pick hidden" id="createGroupPick">
+      <div class="duration-label">グループ</div>
+      <div class="create-group-label" id="createGroupLabel">私たち</div>
     </div>
     <textarea class="create-input" id="createInput" maxlength="500" placeholder="言葉を書く（写真だけでも、言葉だけでもOK）"></textarea>
     <div class="create-media-row">
@@ -1317,7 +1433,7 @@ body::after{display:none}
 <div class="toast" id="toast"></div>
 
 <script>
-const KEY='timecap_v4';
+const KEY='timecap_v5';
 const IDB_NAME='timecap_media_v1';
 const USER='ゆうま';
 const GROUP='私たち';
@@ -1459,11 +1575,15 @@ async function loadLazyThumbs(root){
   });
 }
 function updateCreateUI(){
-  const isShared=(S.sealVisibility==='shared'||S.sealTo==='shared');
-  $('createFriendPick')?.classList.toggle('hidden',!isShared);
-  if(isShared&&!S.sealFriendId&&MEMBERS[0])S.sealFriendId=MEMBERS[0].id;
+  const to=S.sealTo||'self';
+  const isFriend=to==='friend';
+  const isGroup=to==='group';
+  $('createFriendPick')?.classList.toggle('hidden',!isFriend);
+  $('createGroupPick')?.classList.toggle('hidden',!isGroup);
+  $('createGroupLabel').textContent=S.groupName||GROUP;
+  if(isFriend&&!S.sealFriendId&&MEMBERS[0])S.sealFriendId=MEMBERS[0].id;
   document.querySelectorAll('.dest-toggle button').forEach(b=>{
-    b.classList.toggle('on',isShared?b.dataset.vis==='shared':b.dataset.to==='self');
+    b.classList.toggle('on',b.dataset.to===to);
   });
 }
 function updateMediaPickState(){
@@ -1475,6 +1595,114 @@ function bucketFor(iso){
   const d=daysUntil(iso);
   if(d<=3)return '3d';if(d<=30)return '30d';return '365d';
 }
+function musicMonthKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function musicWeekKey(d=new Date()){
+  const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  const day=x.getUTCDay()||7;
+  x.setUTCDate(x.getUTCDate()+4-day);
+  const ys=new Date(Date.UTC(x.getUTCFullYear(),0,1));
+  const wk=Math.ceil((((x-ys)/864e5)+1)/7);
+  return x.getUTCFullYear()+'-W'+String(wk).padStart(2,'0');
+}
+function weekLabel(d=new Date()){
+  const s=new Date(d);s.setDate(d.getDate()-((d.getDay()+6)%7));
+  const e=new Date(s);e.setDate(s.getDate()+6);
+  const f=x=>x.toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'});
+  return f(s)+' – '+f(e);
+}
+function defaultMusicToday(){
+  return{date:todayStr(),top:{title:'夜に駆ける',artist:'YOASOBI',plays:12}};
+}
+function defaultMusicWeek(){
+  return{
+    key:musicWeekKey(),
+    label:weekLabel(),
+    top3:[
+      {rank:1,title:'夜に駆ける',artist:'YOASOBI',plays:47},
+      {rank:2,title:'アイドル',artist:'YOASOBI',plays:38},
+      {rank:3,title:'KICK BACK',artist:'米津玄師',plays:31},
+    ],
+  };
+}
+function ensureMusicPeriods(){
+  if(!S.musicToday||S.musicToday.date!==todayStr())S.musicToday=defaultMusicToday();
+  if(!S.musicWeek||S.musicWeek.key!==musicWeekKey())S.musicWeek=defaultMusicWeek();
+}
+function currentTodaySong(){ensureMusicPeriods();return S.musicToday?.top||null}
+function currentWeekTop3(){ensureMusicPeriods();return S.musicWeek?.top3||[]}
+function musicTodayCardHtml(compact){
+  const t=currentTodaySong();
+  if(!t)return'';
+  if(compact)return`<div class="music-now-strip">
+    <div class="mns-ico">🎧</div>
+    <div class="mns-body">
+      <div class="mns-label">今日いちばん聴いた曲</div>
+      <div class="mns-title">${esc(t.title)} · ${esc(t.artist)}</div>
+    </div>
+    <div class="mtc-plays">${t.plays}回</div>
+  </div>`;
+  return`<div class="music-today-card">
+    <div class="mtc-ico">🎧</div>
+    <div>
+      <div class="mtc-label">今日いちばん聴いた曲</div>
+      <div class="mtc-title">${esc(t.title)}</div>
+      <div class="mtc-artist">${esc(t.artist)}</div>
+    </div>
+    <div class="mtc-plays">${t.plays}回</div>
+  </div>`;
+}
+function musicWeekBlockHtml(){
+  const top3=currentWeekTop3();
+  const label=S.musicWeek?.label||weekLabel();
+  if(!top3.length)return'';
+  return`<div class="music-week-block">
+    <div class="music-week-head">今週のトップ3 <span style="font-weight:400;color:var(--ink-3)">· ${esc(label)}</span></div>
+    <div class="music-week-list">${top3.map(t=>`
+      <div class="music-week-item">
+        <div class="wk">${t.rank}</div>
+        <div class="info"><div class="title">${esc(t.title)}</div><div class="artist">${esc(t.artist)}</div></div>
+        <div class="plays">${t.plays}回</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+function defaultMusicMonths(){
+  const now=new Date();
+  const mk=(offset,tracks,themeIdx=0)=>({
+    key:musicMonthKey(new Date(now.getFullYear(),now.getMonth()-offset,1)),
+    label:new Date(now.getFullYear(),now.getMonth()-offset,1).toLocaleDateString('ja-JP',{year:'numeric',month:'long'}),
+    ranking:tracks.map((t,i)=>({rank:i+1,...t})),
+    themeSong:{...tracks[themeIdx],rank:1},
+  });
+  return[
+    mk(0,[
+      {title:'夜に駆ける',artist:'YOASOBI',plays:47},
+      {title:'アイドル',artist:'YOASOBI',plays:38},
+      {title:'KICK BACK',artist:'米津玄師',plays:31},
+      {title:'Subtitle',artist:'Official髭男dism',plays:24},
+      {title:'怪獣の花唄',artist:'Vaundy',plays:19},
+    ]),
+    mk(1,[
+      {title:'カナリヤ',artist:'米津玄師',plays:52},
+      {title:'晴る',artist:'ヨルシカ',plays:41},
+      {title:'Bling-Bang-Bang-Born',artist:'Creepy Nuts',plays:36},
+      {title:'ライラック',artist:'Mrs. GREEN APPLE',plays:28},
+      {title:'花',artist:'藤井風',plays:22},
+    ],0),
+    mk(2,[
+      {title:'アイラブユー',artist:'back number',plays:44},
+      {title:'ドライフラワー',artist:'優里',plays:39},
+      {title:'マリーゴールド',artist:'あいみょん',plays:33},
+      {title:'Pretender',artist:'Official髭男dism',plays:27},
+      {title:'水平線',artist:'Back number',plays:21},
+    ],0),
+  ];
+}
+function currentThemeSong(){
+  const m=(S.musicMonths||[]).find(x=>x.key===musicMonthKey());
+  return m?.themeSong||m?.ranking?.[0]||null;
+}
+function isCapLocked(c){return c.sealed&&!canViewCapContent(c)}
 function greeting(){
   const h=new Date().getHours();
   if(h<12)return `おはよう、${USER}。`;
@@ -1537,12 +1765,17 @@ function defaults(){
       ]},
     ],
     feedPosts:[
-      {id:'f1',from:'みお',type:'photo',text:'屋上からの夕焼け',at:now-2*3600e3,sealed:true},
+      {id:'f1',from:'みお',type:'photo',text:'屋上からの夕焼け',at:now-2*3600e3,sealed:true,mediaId:'demo_photo'},
       {id:'f2',from:'けんと',type:'video',text:'ライブの余韻',at:now-4*3600e3,sealed:true},
       {id:'f3',from:'あや',type:'photo',text:'カフェで',at:now-6*3600e3,sealed:true},
       {id:'f4',from:'そう',type:'photo',text:'図書館',at:now-8*3600e3,sealed:true},
       {id:'f5',from:'ゆい',type:'text',text:'今日なんかいい感じだった',at:now-10*3600e3,sealed:true},
     ],
+    musicMonths:defaultMusicMonths(),
+    musicToday:defaultMusicToday(),
+    musicWeek:defaultMusicWeek(),
+    archiveTab:'grid',
+    archiveMusicKey:null,
   };
 }
 
@@ -1564,9 +1797,17 @@ if(S.dailyState.date!==todayStr()){
 if(!S.dailyState.openedUserIds.includes('me')){
   S.dailyState.openedUserIds.push('me');
 }
-if(!S.sealTo||S.sealTo==='group'){S.sealTo='self';S.sealVisibility='future'}
+if(!S.sealTo)S.sealTo='self';
+if(S.sealTo==='shared')S.sealTo='friend';
+if(!S.sealVisibility)S.sealVisibility=S.sealTo==='friend'?'shared':S.sealTo==='group'?'group':'future';
 if(S.sealDays===undefined)S.sealDays=7;
 if(!S.sealFriendId&&MEMBERS[0])S.sealFriendId=MEMBERS[0].id;
+if(!S.musicMonths)S.musicMonths=defaultMusicMonths();
+ensureMusicPeriods();
+if(!S.archiveTab)S.archiveTab='grid';
+if(S.archiveMusicKey===undefined)S.archiveMusicKey=null;
+if(!S.sharedTab)S.sharedTab='timeline';
+sharedTab=S.sharedTab;
 migrateMessages();
 document.documentElement.dataset.theme=S.dark?'':'light';
 
@@ -1585,7 +1826,7 @@ function isPrivateCap(c){
   return c.to==='self'||(c.from===me||c.from==='ゆうま')&&c.visibility==='future';
 }
 function isSharedCap(c){
-  return !isPrivateCap(c)&&(c.to==='group'||MEMBERS.some(m=>m.n===c.from||c.to===m.n));
+  return !isPrivateCap(c)&&(c.to==='group'||c.visibility==='group'||MEMBERS.some(m=>m.n===c.from||c.to===m.n));
 }
 function msgOpenAt(days){
   if(!days)return null;
@@ -1602,6 +1843,7 @@ function migrateMessages(){
 let activeFriendId=null;
 let fdmDelayDays=0;
 let fsTab='posts';
+let sharedTab='timeline';
 
 function switchTab(tab){
   document.querySelectorAll('.tab-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
@@ -1636,6 +1878,8 @@ function openFriendSpace(memberId){
 
 function renderPrivate(){
   const el=$('privateList');
+  const strip=$('privateMusicStrip');
+  if(strip)strip.innerHTML=musicTodayCardHtml(true);
   const me=S.auth?.name||USER;
   const caps=S.capsules.filter(c=>(c.from===me||c.from==='ゆうま')&&isPrivateCap(c));
   const opened=(S.opened||[]).filter(o=>(o.from===me||o.from==='ゆうま')&&o.to==='self');
@@ -1650,10 +1894,13 @@ function renderPrivate(){
   el.innerHTML=items.map(c=>{
     const st=c.state||capState(c);
     const canOpen=st==='WAITING';
-    return`<article class="private-card${canOpen?' ready':''}" data-id="${esc(c.id)}" data-open="${canOpen?'1':''}">
+    const locked=isCapLocked(c);
+    const body=locked
+      ?`<div class="pc-text sealed-mask">🔒 開封まで中身は見られません<br><span style="font-size:12px;opacity:.7">${TYPE_JA[c.type]||c.type} · ${formatWhen(c)}</span></div>`
+      :`<div class="pc-text">${esc(c.text||'（記憶）')}</div>${c.mediaId?`<div class="pc-thumb"><img data-lazy="${esc(c.mediaId)}" alt=""></div>`:''}`;
+    return`<article class="private-card${canOpen?' ready':''}${locked?' locked':''}" data-id="${esc(c.id)}" data-open="${canOpen?'1':''}">
       <div class="pc-date">${new Date(c.createdAt||c.openedAt||Date.now()).toLocaleDateString('ja-JP')}</div>
-      <div class="pc-text">${esc(c.text||'（記憶）')}</div>
-      ${c.mediaId?`<div class="pc-thumb"><img data-lazy="${esc(c.mediaId)}" alt=""></div>`:''}
+      ${body}
       <div class="pc-meta">
         <span class="state-pill ${st.toLowerCase()}">${stateLabel(st)}</span>
         <span class="pc-open">${st==='LOCKED'?formatWhen(c):st==='WAITING'?'タップして開封':'開封済み'}</span>
@@ -1667,8 +1914,88 @@ function renderPrivate(){
   }));
 }
 
-function renderShared(){
+function renderSharedTimeline(){
+  const el=$('sharedTimeline');
+  if(!el)return;
+  const me=S.auth?.name||USER;
+  const capPosts=S.capsules.filter(c=>!isPrivateCap(c)).map(c=>({
+    id:c.id,from:c.from,type:c.type,text:c.text,at:c.createdAt||Date.now(),
+    sealed:c.sealed,openAt:c.openAt,mediaId:c.mediaId,to:c.to,capsule:c,
+  }));
+  const feed=(S.feedPosts||[]).map(p=>({...p,sealed:p.sealed!==false,capsule:null}));
+  const openedPosts=(S.opened||[]).filter(o=>o.to==='group'||MEMBERS.some(m=>m.n===o.from)).map(o=>({
+    id:o.id,from:o.from,type:o.type,text:o.text,at:o.openedAt,sealed:false,mediaId:o.mediaId,opened:true,
+  }));
+  let all=[...capPosts,...feed,...openedPosts].sort((a,b)=>b.at-a.at).slice(0,20);
+  if(!all.length){
+    el.innerHTML='<div class="empty-state" style="padding:40px 0">タイムラインは空です。<br>友達やグループに封じてみましょう。</div>';
+    return;
+  }
+  el.innerHTML=all.map(p=>{
+    const m=MEMBERS.find(x=>x.n===p.from);
+    const avStyle=m?`style="background:${m.c}"`:'';
+    const avChar=m?m.i:(p.from===me||p.from==='ゆうま'?'ゆ':'?');
+    const dest=p.to==='group'?(S.groupName||GROUP):p.to&&p.to!=='self'?p.to:'';
+    const locked=p.sealed&&!p.opened&&(!p.capsule||isCapLocked(p.capsule));
+    let body='';
+    if(locked){
+      body=`<div class="stl-sealed-box">
+        <div class="ico">🔒</div>
+        <div class="lbl">封印されたタイムカプセル</div>
+        <div class="when">${p.openAt?formatWhen({openAt:p.openAt}):'開封日まで中身は見えません'}</div>
+      </div>`;
+    }else if(p.mediaId){
+      body=`<div class="stl-open-body"><img data-lazy="${esc(p.mediaId)}" alt=""></div>${p.text?`<div class="stl-open-caption">${esc(p.text)}</div>`:''}`;
+    }else if(p.text){
+      body=`<div class="stl-open-caption">${esc(p.text)}</div>`;
+    }
+    return`<article class="stl-post">
+      <div class="stl-post-head">
+        <div class="stl-post-av" ${avStyle}>${avChar}</div>
+        <div>
+          <div class="stl-post-name">${esc(p.from==='ゆうま'?'あなた':p.from)}</div>
+          <div class="stl-post-meta">${timeAgo(p.at)}${dest?' · → '+esc(dest):''}</div>
+        </div>
+        <span class="stl-post-badge">${locked?'🔒 封印':p.opened?'開封済み':'投稿'}</span>
+      </div>
+      ${body}
+    </article>`;
+  }).join('');
+  loadLazyThumbs(el);
+}
+
+function renderSharedDms(){
+  const el=$('sharedDmList');
+  if(!el)return;
+  const dms=S.dms||[];
+  if(!dms.length){el.innerHTML='<div class="empty-state" style="padding:40px 0">DMはまだありません</div>';return}
+  el.innerHTML=dms.map(d=>{
+    const m=MEMBERS.find(x=>x.n===d.with);
+    const last=d.messages[d.messages.length-1];
+    const sealed=d.messages.filter(x=>!isMsgOpen(x)).length;
+    const preview=last&&!isMsgOpen(last)?'🔒 未来のメッセージ':last?.text||'';
+    return`<div class="friend-row" data-dmid="${esc(d.id)}" data-mid="${esc(d.withId)}">
+      <div class="fr-av" style="background:${m?.c||'#5A5A5A'}">${m?.i||'?'}</div>
+      <div class="fr-body">
+        <div class="fr-name">${esc(d.with)}</div>
+        <div class="fr-sub">${esc(preview.slice(0,28))}</div>
+      </div>
+      ${sealed?`<span class="fr-badge">${sealed}</span>`:''}
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.friend-row').forEach(r=>r.addEventListener('click',()=>{
+    openFriendSpace(r.dataset.mid);
+    fsTab='chat';
+    document.querySelectorAll('.fs-tab').forEach(x=>x.classList.toggle('on',x.dataset.fstab==='chat'));
+    $('fsPosts')?.classList.add('hidden');
+    $('fsChat')?.classList.remove('hidden');
+    renderFriendSpace();
+  }));
+}
+
+function renderSharedFriends(){
   const el=$('sharedList');
+  if(!el)return;
   el.innerHTML=MEMBERS.map(m=>{
     const dm=S.dms?.find(d=>d.withId===m.id);
     const sealedMsgs=dm?.messages.filter(x=>!isMsgOpen(x)).length||0;
@@ -1687,6 +2014,17 @@ function renderShared(){
   el.querySelectorAll('.friend-row').forEach(r=>r.addEventListener('click',()=>openFriendSpace(r.dataset.mid)));
 }
 
+function renderShared(){
+  sharedTab=S.sharedTab||'timeline';
+  document.querySelectorAll('.shared-top-tab').forEach(t=>t.classList.toggle('on',t.dataset.stab===sharedTab));
+  $('sharedTimeline')?.classList.toggle('hidden',sharedTab!=='timeline');
+  $('sharedDmList')?.classList.toggle('hidden',sharedTab!=='dm');
+  $('sharedList')?.classList.toggle('hidden',sharedTab!=='friends');
+  if(sharedTab==='timeline')renderSharedTimeline();
+  else if(sharedTab==='dm')renderSharedDms();
+  else renderSharedFriends();
+}
+
 function renderFriendSpace(){
   if(!activeFriendId)return;
   const m=MEMBERS.find(x=>x.id===activeFriendId);
@@ -1695,11 +2033,15 @@ function renderFriendSpace(){
   const chatEl=$('fsChat');
   const me=S.auth?.name||USER;
   const posts=S.capsules.filter(c=>c.from===m.n||(c.to===m.n&&(c.from===me||c.from==='ゆうま')));
-  postsEl.innerHTML=posts.length?posts.map(c=>`
-    <div class="fs-post">
+  postsEl.innerHTML=posts.length?posts.map(c=>{
+    const locked=isCapLocked(c);
+    return`<div class="fs-post">
       <div class="fp-when">${formatWhen(c)} · ${TYPE_JA[c.type]||c.type}</div>
-      <div class="fp-text">${esc(c.text||'（封じられた記憶）')}</div>
-    </div>`).join(''):'<div class="empty-state" style="padding:24px 0">Future Postsはまだありません</div>';
+      ${locked
+        ?`<div class="stl-sealed-box" style="padding:24px 16px;margin-top:8px"><div class="ico">🔒</div><div class="lbl">封印中 · 開封まで見られません</div></div>`
+        :`<div class="fp-text">${esc(c.text||'（封じられた記憶）')}</div>`}
+    </div>`;
+  }).join(''):'<div class="empty-state" style="padding:24px 0">Future Postsはまだありません</div>';
 
   const dm=S.dms?.find(d=>d.withId===activeFriendId);
   if(dm){
@@ -1719,26 +2061,106 @@ function renderFriendSpace(){
 function renderArchive(){
   const el=$('archiveView');
   const opened=S.opened||[];
-  const month=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long'});
-  const days=['日','月','火','水','木','金','土'];
-  const grid=opened.slice(0,12).map((o,i)=>{
-    if(o.mediaId)return`<div class="archive-cell"><img data-lazy="${esc(o.mediaId)}" alt=""><span class="ac-day">${days[i%7]}</span></div>`;
-    return`<div class="archive-cell text-cell">${esc((o.text||'').slice(0,20))}</div>`;
+  const me=S.auth?.name||USER;
+  const name=S.auth?.loggedIn?S.auth.name:USER;
+  const months=S.musicMonths||[];
+  const musicKey=S.archiveMusicKey||months[0]?.key;
+  const monthData=months.find(m=>m.key===musicKey)||months[0];
+  const tab=S.archiveTab||'grid';
+  const postCount=opened.length;
+  const themeCount=months.filter(m=>m.themeSong).length;
+
+  const highlights=months.map(m=>`
+    <div class="ap-hl" data-mkey="${esc(m.key)}">
+      <div class="ap-hl-ring${m.key===musicKey?' on':''}"><div class="ap-hl-inner">🎵</div></div>
+      <div class="ap-hl-label">${esc(m.label.replace(/^\d+年/,'').trim()||m.label)}</div>
+    </div>`).join('');
+
+  const theme=monthData?.themeSong;
+  const themeCard=theme?`
+    <div class="ap-theme">
+      <div class="ap-theme-badge">🎵 ${esc(monthData.label)}のテーマソング</div>
+      <div class="ap-theme-title">${esc(theme.title)}</div>
+      <div class="ap-theme-artist">${esc(theme.artist)}</div>
+      <div class="ap-theme-note">この時期いちばん聴いていた曲 — 記憶を呼び起こすサウンドトラック</div>
+    </div>`:'';
+
+  const todayWeekHtml=musicTodayCardHtml(false)+musicWeekBlockHtml();
+
+  const grid=opened.map(o=>{
+    if(o.mediaId)return`<div class="archive-cell"><img data-lazy="${esc(o.mediaId)}" alt=""></div>`;
+    return`<div class="archive-cell text-cell">${esc((o.text||'').slice(0,16))}</div>`;
   }).join('');
+
+  const musicRank=(monthData?.ranking||[]).map(t=>`
+    <div class="music-rank-item${t.rank===1?' theme':''}">
+      <div class="rk">${t.rank}</div>
+      <div class="info">
+        <div class="title">${esc(t.title)}</div>
+        <div class="artist">${esc(t.artist)}</div>
+      </div>
+      <div class="plays">${t.plays}回</div>
+    </div>`).join('');
+
   const log=opened.map(o=>`
     <div class="archive-log-item">
       ${o.mediaId?`<div class="ali-thumb"><img data-lazy="${esc(o.mediaId)}" alt=""></div>`:'<div class="ali-thumb" style="display:grid;place-items:center;font-size:18px">📝</div>'}
       <div class="ali-body">
         <div class="ali-title">${esc(o.from)} · ${TYPE_JA[o.type]||o.type}</div>
-        <div class="ali-sub">${new Date(o.openedAt).toLocaleDateString('ja-JP')} · ${esc((o.text||'').slice(0,40))}</div>
+        <div class="ali-sub">${new Date(o.openedAt).toLocaleDateString('ja-JP')} · ${esc((o.text||'').slice(0,40))}${o.todaySong?` · 🎧 ${esc(o.todaySong.title)}`:o.themeSong?` · 🎵 ${esc(o.themeSong.title)}`:''}</div>
       </div>
     </div>`).join('');
+
+  let panel='';
+  if(tab==='grid'){
+    panel=`<div class="archive-panel"><div class="archive-grid ig">${grid||'<div class="empty-state" style="grid-column:1/-1;padding:40px">まだ開封した記憶がありません</div>'}</div></div>`;
+  }else if(tab==='music'){
+    panel=`<div class="archive-panel music-section">
+      ${musicTodayCardHtml(false)}
+      ${musicWeekBlockHtml()}
+      <div class="music-section-divider"></div>
+      <div class="music-month-label">${esc(monthData?.label||'')} · 月間ランキング</div>
+      <div class="music-rank">${musicRank||'<div class="empty-state">音楽データがありません</div>'}</div>
+    </div>`;
+  }else{
+    panel=`<div class="archive-panel" style="padding:16px 20px"><div class="archive-log">${log||'<div class="empty-state">ログは空です</div>'}</div></div>`;
+  }
+
   el.innerHTML=`
-    <div class="archive-month">${month}</div>
-    <div class="archive-grid">${grid||'<div class="empty-state" style="grid-column:1/-1">まだ開封した記憶がありません</div>'}</div>
-    <div class="sec-label">開封ログ</div>
-    <div class="archive-log">${log||'<div class="empty-state">ログは空です</div>'}</div>`;
+    <div class="archive-profile">
+      <div class="panel-head" style="padding-top:0;padding-bottom:0">
+        <h1 style="font-size:28px;font-weight:600">Archive</h1>
+        <p class="sub">思い出 · 音楽 · 人生ログ</p>
+      </div>
+      <div class="ap-header">
+        <div class="ap-avatar-wrap"><div class="ap-avatar">${esc(name.charAt(0))}</div></div>
+        <div class="ap-info">
+          <div class="ap-name">${esc(name)}</div>
+          <div class="ap-bio">封じた記憶と、あの頃の音楽<br>すべてがここに残る</div>
+          <div class="ap-stats">
+            <div class="ap-stat"><div class="n">${postCount}</div><div class="l">思い出</div></div>
+            <div class="ap-stat"><div class="n">${pending().length}</div><div class="l">封印中</div></div>
+            <div class="ap-stat"><div class="n">${themeCount}</div><div class="l">テーマ曲</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ap-highlights">${highlights}</div>
+      ${todayWeekHtml}
+      ${themeCard}
+      <div class="archive-tabs">
+        <button type="button" class="archive-tab${tab==='grid'?' on':''}" data-atab="grid">グリッド</button>
+        <button type="button" class="archive-tab${tab==='music'?' on':''}" data-atab="music">音楽</button>
+        <button type="button" class="archive-tab${tab==='log'?' on':''}" data-atab="log">ログ</button>
+      </div>
+      ${panel}
+    </div>`;
   loadLazyThumbs(el);
+  el.querySelectorAll('.ap-hl').forEach(h=>h.addEventListener('click',()=>{
+    S.archiveMusicKey=h.dataset.mkey;save();renderArchive();haptic();
+  }));
+  el.querySelectorAll('.archive-tab').forEach(t=>t.addEventListener('click',()=>{
+    S.archiveTab=t.dataset.atab;save();renderArchive();haptic();
+  }));
 }
 
 function renderProfile(){
@@ -1954,15 +2376,17 @@ async function sealCapsule({caption,media,fromCreate}){
   if(!media&&!caption){toast('写真・動画・言葉のいずれかを追加してください');return}
   const type=media?media.type:'text';
   let openAt,days;
-  const isShared=fromCreate&&S.sealVisibility==='shared';
-  const isPrivate=!isShared;
+  const dest=fromCreate?(S.sealTo||'self'):'self';
+  const isPrivate=dest==='self';
+  const isFriend=dest==='friend';
+  const isGroup=dest==='group';
   let to='self';
-  if(isShared){
+  if(isFriend){
     const m=MEMBERS.find(x=>x.id===(S.sealFriendId||MEMBERS[0]?.id));
     if(!m){toast('送り先の友達を選んでください');return}
     to=m.n;
-  }
-  const vis=isShared?'shared':'future';
+  }else if(isGroup){to='group'}
+  const vis=isGroup?'group':isFriend?'shared':'future';
   const isDemoFirst=!S.firstSealDone&&isPrivate;
   if(isDemoFirst){openAt=addMinutes(1);days=0;toast('初回体験 — 1分後に開封！')}
   else{
@@ -1994,10 +2418,15 @@ async function sealCapsule({caption,media,fromCreate}){
     save();renderAll();
     if(isDemoFirst)setTimeout(()=>{if(ready().length)toast('カプセルが開封可能になりました！')},60000);
     else toast('封じました');
-    switchTab(isShared?'shared':'private');
-    if(isShared){
-      const fm=MEMBERS.find(x=>x.n===to);
-      if(fm)openFriendSpace(fm.id);
+    if(isPrivate)switchTab('private');
+    else{
+      switchTab('shared');
+      S.sharedTab='timeline';
+      sharedTab='timeline';
+      if(isFriend){
+        const fm=MEMBERS.find(x=>x.n===to);
+        if(fm)openFriendSpace(fm.id);
+      }
     }
   };
   $('sealOrigami').textContent=displayText||'封じる記憶…';
@@ -2023,6 +2452,13 @@ $('settingsOverlay')?.addEventListener('click',e=>{if(e.target===$('settingsOver
 
 /* Friend space */
 $('fsBack')?.addEventListener('click',()=>{closeFriendSpace();renderShared();haptic()});
+document.querySelectorAll('.shared-top-tab').forEach(t=>t.addEventListener('click',()=>{
+  S.sharedTab=t.dataset.stab;
+  sharedTab=S.sharedTab;
+  closeFriendSpace();
+  renderShared();
+  haptic();
+}));
 document.querySelectorAll('.fs-tab').forEach(t=>t.addEventListener('click',()=>{
   fsTab=t.dataset.fstab;
   document.querySelectorAll('.fs-tab').forEach(x=>x.classList.toggle('on',x.dataset.fstab===fsTab));
@@ -2212,6 +2648,9 @@ function finishOpen(){
     S.opened=S.opened||[];
     openingItems.forEach(c=>S.opened.unshift({
       id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,openedAt:Date.now(),mediaId:c.mediaId,
+      themeSong:currentThemeSong(),
+      todaySong:currentTodaySong(),
+      weekTop3:currentWeekTop3(),
     }));
     S.capsules=S.capsules.filter(c=>!openingItems.find(r=>r.id===c.id));
     save();renderAll();
