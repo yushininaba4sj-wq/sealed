@@ -2009,6 +2009,103 @@ body::after{display:none}
 }
 .wrapped-actions button.ghost{background:var(--bg-2);color:var(--ink)}
 
+/* 月次まとめ（フェーズ3） */
+.insight-hero{
+  margin:0 20px 20px;padding:20px;border-radius:var(--r-md);
+  background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.08);
+}
+.insight-hero-lbl{font-size:10px;letter-spacing:.12em;color:var(--ink-3);text-transform:uppercase}
+.insight-hero-title{font-size:22px;font-weight:600;margin-top:6px;letter-spacing:-.02em}
+.insight-hero-text{font-size:14px;color:var(--ink-2);line-height:1.65;margin-top:12px}
+.insight-section{padding:0 20px 24px}
+.insight-section h3{font-size:13px;font-weight:600;color:var(--ink-3);letter-spacing:.06em;margin-bottom:12px}
+.mood-weather-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
+}
+.mwc-day{
+  aspect-ratio:1;border-radius:8px;background:var(--bg-2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:9px;color:var(--ink-3);position:relative;
+}
+.mwc-day.has-mood{background:color-mix(in srgb,var(--mc) 22%,var(--bg-2))}
+.mwc-day.future{opacity:.25}
+.mwc-num{font-size:8px;opacity:.6}
+.mwc-icon{font-size:14px;line-height:1}
+.mood-weather-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.mwl-item{font-size:11px;color:var(--ink-3);display:flex;align-items:center;gap:4px}
+.hair-timeline{
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;
+}
+.hair-tile{
+  flex:0 0 72px;border-radius:var(--r-sm);overflow:hidden;background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.06);
+}
+.hair-tile img{width:72px;height:96px;object-fit:cover;display:block}
+.hair-tile-cap{font-size:9px;color:var(--ink-3);padding:4px 6px;text-align:center}
+.insight-cards{display:flex;flex-direction:column;gap:10px}
+.insight-card{
+  padding:14px 16px;border-radius:var(--r-sm);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.05);
+}
+.insight-card-lbl{font-size:10px;color:var(--ink-3);letter-spacing:.08em}
+.insight-card-val{font-size:15px;font-weight:500;margin-top:4px;line-height:1.45}
+.insight-card-sub{font-size:12px;color:var(--ink-3);margin-top:4px}
+.insight-change{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px}
+.insight-change .arr{color:var(--ink-3);font-size:11px}
+.insight-share-row{padding:0 20px 24px}
+.insight-view-overlay{
+  position:fixed;inset:0;z-index:420;background:var(--bg);
+  display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .35s;
+}
+.insight-view-overlay.open{opacity:1;pointer-events:auto}
+.insight-view-head{
+  display:flex;align-items:center;justify-content:space-between;padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;
+}
+.insight-view-head h2{font-size:17px;font-weight:600}
+.insight-view-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:40px}
+.insight-month-nav{display:flex;gap:8px;padding:12px 20px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.insight-month-chip{
+  flex:0 0 auto;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.08);color:var(--ink-3);
+}
+.insight-month-chip.on{background:var(--ink);color:var(--accent-inv);border-color:var(--ink)}
+.profile-insights{margin:20px 0;padding-top:16px;border-top:1px solid rgba(255,255,255,.06)}
+.profile-deep{margin:16px 0;padding-top:8px}
+.monthly-letter-box{
+  padding:14px;border-radius:var(--r-sm);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.06);margin-top:8px;
+}
+.monthly-letter-box textarea{
+  width:100%;min-height:88px;padding:10px;border-radius:10px;font-size:14px;line-height:1.55;
+  background:var(--bg-3);border:1px solid rgba(255,255,255,.08);color:var(--ink);resize:vertical;
+}
+.monthly-letter-sealed{font-size:13px;color:var(--ink-2);line-height:1.6;white-space:pre-wrap}
+.monthly-letter-meta{font-size:11px;color:var(--ink-3);margin-top:8px}
+.voice-series-row{
+  display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--r-sm);
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.06);margin-top:8px;
+}
+.voice-series-row button{
+  padding:10px 14px;border-radius:999px;font-size:12px;font-weight:600;
+  background:var(--accent);color:var(--accent-inv);white-space:nowrap;
+}
+.year-mood-strip{display:flex;gap:6px;margin:12px 0 4px}
+.year-mood-month{
+  flex:1;text-align:center;padding:8px 4px;border-radius:10px;background:var(--bg-2);
+  font-size:10px;color:var(--ink-3);
+}
+.year-mood-month.has{background:color-mix(in srgb,var(--mc) 25%,var(--bg-2))}
+.year-mood-month .ym-ico{font-size:16px;display:block;margin-bottom:2px}
+.room-timeline{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.room-tile{
+  flex:0 0 80px;border-radius:var(--r-sm);overflow:hidden;background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.06);
+}
+.room-tile img{width:80px;height:80px;object-fit:cover;display:block}
+.room-tile-cap{font-size:9px;color:var(--ink-3);padding:4px;text-align:center}
+
 /* オンボーディング */
 .onboard-overlay{
   position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);
@@ -2084,6 +2181,36 @@ body::after{display:none}
   transform:translateY(100%);transition:transform .4s var(--spring);
 }
 .mood-pick-overlay.open .mood-pick-sheet{transform:translateY(0)}
+.daily-vis-toggle{display:flex;gap:8px;margin:16px 0 8px}
+.daily-vis-toggle button{
+  flex:1;padding:10px;border-radius:999px;font-size:12px;font-weight:600;
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.08);color:var(--ink-3);
+}
+.daily-vis-toggle button.on{background:var(--ink);color:var(--accent-inv);border-color:var(--ink)}
+.daily-confirm-preview{margin:12px 0;border-radius:var(--r-sm);overflow:hidden;max-height:200px}
+.daily-confirm-preview img{width:100%;display:block;object-fit:cover}
+.song-pick-current{
+  margin:12px 0;padding:14px;border-radius:var(--r-sm);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.06);text-align:left;
+}
+.song-pick-current .sp-title{font-size:15px;font-weight:600}
+.song-pick-current .sp-artist{font-size:12px;color:var(--ink-3);margin-top:2px}
+.echo-reply{
+  width:100%;max-width:320px;margin:16px auto 0;padding:0 4px;
+  opacity:0;transition:opacity .5s .3s;
+}
+.echo-reply.show{opacity:1}
+.echo-reply-label{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:8px;text-align:center}
+.echo-reply-row{display:flex;gap:8px}
+.echo-reply-row input{
+  flex:1;padding:12px 14px;border-radius:var(--r-pill);font-size:14px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;
+}
+.echo-reply-row button{
+  padding:12px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:600;
+  background:rgba(255,255,255,.12);color:#fff;white-space:nowrap;
+}
+.inner-echo-note{font-size:11px;color:var(--ink-3);margin-top:8px;font-style:italic}
 </style>
 </head>
 <body>
@@ -2483,9 +2610,16 @@ body::after{display:none}
     </div>
     <div class="reveal-stack" id="revealStack"></div>
     <div class="reactions" id="reactions">
-      <button type="button" class="reaction-btn">❤️</button>
-      <button type="button" class="reaction-btn">🫧 しみた</button>
-      <button type="button" class="reaction-btn">🌙 懐かしい</button>
+      <button type="button" class="reaction-btn" data-react="heart">❤️</button>
+      <button type="button" class="reaction-btn" data-react="shimi">🫧 しみた</button>
+      <button type="button" class="reaction-btn" data-react="nats">🌙 懐かしい</button>
+    </div>
+    <div class="echo-reply hidden" id="echoReply">
+      <div class="echo-reply-label">余韻のひとこと <span id="echoReplyTarget"></span>へ</div>
+      <div class="echo-reply-row">
+        <input type="text" id="echoReplyInput" placeholder="しみた…" maxlength="80">
+        <button type="button" id="echoReplySend">届ける</button>
+      </div>
     </div>
     <div class="goal-reflect hidden" id="goalReflect"></div>
     <div class="voice-hint-nudge hidden" id="voiceHintNudge">
@@ -2573,10 +2707,41 @@ body::after{display:none}
     <h3 style="font-size:18px;font-weight:600;margin-bottom:8px">今日の気分</h3>
     <p style="font-size:13px;color:var(--ink-3);margin-bottom:16px">ひとつ選ぶだけ</p>
     <div class="onboard-mood-row" id="dailyMoodPicker"></div>
-    <button type="button" class="create-pick" id="moodPickClose" style="width:100%;margin-top:16px">閉じる</button>
+    <div class="daily-vis-toggle" data-vis-scope="mood">
+      <button type="button" class="on" data-vis="private">自分だけ</button>
+      <button type="button" data-vis="inner">身内に見せる</button>
+    </div>
+    <button type="button" class="create-pick" id="moodPickClose" style="width:100%;margin-top:8px">閉じる</button>
+  </div>
+</div>
+<div class="mood-pick-overlay" id="dailyConfirmOverlay">
+  <div class="mood-pick-sheet">
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:4px" id="dailyConfirmTitle">今日の一枚</h3>
+    <div class="daily-confirm-preview" id="dailyConfirmPreview"></div>
+    <div class="daily-vis-toggle" data-vis-scope="confirm">
+      <button type="button" class="on" data-vis="private">自分だけ</button>
+      <button type="button" data-vis="inner">身内に見せる</button>
+    </div>
+    <button type="button" class="dq-cta" id="dailyConfirmSave" style="width:100%;margin-top:8px">残す</button>
+    <button type="button" class="create-pick" id="dailyConfirmCancel" style="width:100%;margin-top:8px">やめる</button>
+  </div>
+</div>
+<div class="mood-pick-overlay" id="songPickOverlay">
+  <div class="mood-pick-sheet">
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:4px">今日の一曲</h3>
+    <p style="font-size:13px;color:var(--ink-3);margin-bottom:12px">いまの一曲を残す</p>
+    <div class="song-pick-current" id="songPickCurrent"></div>
+    <button type="button" class="dq-cta" id="songPickUseTop" style="width:100%;margin-bottom:8px">この曲を残す</button>
+    <button type="button" class="create-pick" id="songPickManual" style="width:100%;margin-bottom:8px">曲名を入力</button>
+    <div class="daily-vis-toggle" data-vis-scope="song">
+      <button type="button" class="on" data-vis="private">自分だけ</button>
+      <button type="button" data-vis="inner">身内に見せる</button>
+    </div>
+    <button type="button" class="create-pick" id="songPickClose" style="width:100%;margin-top:8px">閉じる</button>
   </div>
 </div>
 <input type="file" id="dailyPhotoInput" accept="image/*,.heic,.heif" capture="environment" class="hidden">
+<input type="file" id="dailySkyInput" accept="image/*,.heic,.heif" capture="environment" class="hidden">
 
 <div class="wrapped-overlay" id="wrappedOverlay">
   <div>
@@ -2586,6 +2751,16 @@ body::after{display:none}
       <button type="button" class="ghost" id="wrappedClose">閉じる</button>
     </div>
   </div>
+</div>
+
+<div class="insight-view-overlay" id="insightViewOverlay">
+  <div class="insight-view-head">
+    <button type="button" class="fs-back" id="insightViewClose">×</button>
+    <h2 id="insightViewTitle">まとめ</h2>
+    <button type="button" class="fs-back" id="insightViewShare" style="font-size:13px;width:auto;padding:6px 12px">シェア</button>
+  </div>
+  <div class="insight-month-nav" id="insightMonthNav"></div>
+  <div class="insight-view-body" id="insightViewBody"></div>
 </div>
 
 <div class="promote-overlay" id="promoteOverlay">
@@ -2699,6 +2874,14 @@ const SHELF=[
 const TYPE_ICONS={text:'✏️',photo:'📷',video:'🎥',voice:'🎙️'};
 const TYPE_JA={text:'言葉',photo:'写真',video:'動画',voice:'声'};
 const MOOD_EMOJIS=['☀️','🌧️','🌙','🔥','🫧','💭'];
+const MOOD_WEATHER={
+  '☀️':{label:'晴れ',color:'#FFD54F'},
+  '🌧️':{label:'雨',color:'#64B5F6'},
+  '🌙':{label:'月夜',color:'#7986CB'},
+  '🔥':{label:'熱',color:'#FF7043'},
+  '🫧':{label:'もや',color:'#B39DDB'},
+  '💭':{label:'くもり',color:'#90A4AE'},
+};
 const DAILY_RECORD_TYPES={
   mood:{icon:'🌙',label:'今日の気分'},
   photo:{icon:'📷',label:'今日の一枚'},
@@ -2707,6 +2890,63 @@ const DAILY_RECORD_TYPES={
   sky:{icon:'☁️',label:'今日の空'},
 };
 let pendingDailyType=null;
+let pendingDailyMedia=null;
+function getDailyVis(scope){
+  const toggle=document.querySelector(`.daily-vis-toggle[data-vis-scope="${scope||'mood'}"]`)
+    ||document.querySelector('.daily-vis-toggle');
+  return toggle?.querySelector('button.on')?.dataset.vis||'private';
+}
+function initDailyVisToggles(){
+  document.querySelectorAll('.daily-vis-toggle').forEach(toggle=>{
+    if(toggle.dataset.visReady)return;
+    toggle.dataset.visReady='1';
+    toggle.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      toggle.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      haptic();
+    }));
+  });
+}
+function isFromInnerFriend(cap){
+  if(!cap?.from)return false;
+  const me=meName();
+  if(cap.from===me||cap.from==='ゆうま')return false;
+  return MEMBERS.some(m=>m.n===cap.from);
+}
+function showEchoReply(cap){
+  const el=$('echoReply');
+  if(!el)return;
+  if(!isFromInnerFriend(cap)){
+    el.classList.add('hidden');
+    el.classList.remove('show');
+    return;
+  }
+  el.classList.remove('hidden');
+  $('echoReplyTarget').textContent=cap.from;
+  $('echoReplyInput').value='';
+  el._cap=cap;
+  setTimeout(()=>el.classList.add('show'),120);
+}
+function sendEchoReply(cap,text){
+  const t=String(text||'').trim();
+  if(!t||!cap)return;
+  S.echoReplies=S.echoReplies||[];
+  S.echoReplies.push({id:'er'+Date.now(),capId:cap.id,to:cap.from,from:meName(),text:t,at:Date.now()});
+  const m=MEMBERS.find(x=>x.n===cap.from);
+  if(m){
+    const dm=ensureDm(m.id);
+    dm.messages.push({from:meName(),text:t,at:Date.now(),kind:'echo',capId:cap.id});
+  }
+  save();
+  toast(cap.from+'に、静かに届きました');
+}
+function sendInnerReact(postId,react){
+  if(!postId)return;
+  S.innerReactions=S.innerReactions||[];
+  if(S.innerReactions.some(r=>r.postId===postId&&r.from===meName()&&r.react===react))return;
+  S.innerReactions.push({id:'ir'+Date.now(),postId,react,from:meName(),at:Date.now()});
+  save();
+}
 function ensureDailyRecords(){if(!S.dailyRecords)S.dailyRecords=[]}
 function todayDailyRecords(){
   ensureDailyRecords();
@@ -2726,8 +2966,8 @@ function recordStreakDisplay(){
 function dailyRecordPreview(rec){
   if(!rec)return '';
   if(rec.type==='mood')return rec.mood||'';
-  if(rec.type==='song')return rec.songTitle?'🎵':'';
-  if(rec.mediaId)return '📷';
+  if(rec.type==='song')return rec.songTitle?`🎵 ${rec.songTitle.slice(0,8)}`:'🎵';
+  if(rec.mediaId)return rec.type==='sky'?'☁️':rec.type==='food'?'🍙':'📷';
   return '✓';
 }
 async function createDailyRecord(type,data={}){
@@ -2762,9 +3002,31 @@ function finishDailyRecordToast(){
   haptic();
   renderAll();
 }
-async function saveDailyMood(emoji,visibility='private'){
-  await createDailyRecord('mood',{mood:emoji,visibility});
+async function saveDailyMood(emoji,visibility){
+  const vis=visibility||getDailyVis('mood');
+  await createDailyRecord('mood',{mood:emoji,visibility:vis});
   finishDailyRecordToast();
+}
+function openSongPickOverlay(){
+  ensureMusicPeriods();
+  const top=currentTodaySong();
+  const box=$('songPickCurrent');
+  if(box){
+    if(top)box.innerHTML=`<div class="sp-title">${esc(top.title)}</div><div class="sp-artist">${esc(top.artist)} · ${top.plays||0}回</div>`;
+    else box.innerHTML='<div class="sp-artist" style="line-height:1.5">Spotifyとつなぐと、いまの一曲が入ります。<br>または曲名を手入力できます。</div>';
+  }
+  const useBtn=$('songPickUseTop');
+  if(useBtn){useBtn.disabled=!top;useBtn.style.opacity=top?'1':'.45'}
+  $('songPickOverlay')?.classList.add('open');
+}
+function showDailyConfirm(dataUrl){
+  const type=pendingDailyType||'photo';
+  const titles={photo:'今日の一枚',food:'今日のごはん',sky:'今日の空'};
+  $('dailyConfirmTitle').textContent=titles[type]||'残す';
+  pendingDailyMedia={type,dataUrl};
+  const prev=$('dailyConfirmPreview');
+  if(prev)prev.innerHTML=`<img src="${dataUrl}" alt="">`;
+  $('dailyConfirmOverlay')?.classList.add('open');
 }
 function openDailyRecord(type){
   if(hasTodayDaily(type)){toast('今日はもう残しています');return}
@@ -2773,18 +3035,12 @@ function openDailyRecord(type){
     return;
   }
   if(type==='song'){
-    const top=currentTodaySong();
-    if(top){
-      createDailyRecord('song',{songTitle:top.title,songId:top.title}).then(finishDailyRecordToast);
-      return;
-    }
-    toast('曲を選ぶには残す画面を開いてください');
-    S.pendingDailyType='song';
-    overlay.classList.add('open');
+    openSongPickOverlay();
     return;
   }
   pendingDailyType=type;
-  $('dailyPhotoInput')?.click();
+  if(type==='sky')$('dailySkyInput')?.click();
+  else $('dailyPhotoInput')?.click();
 }
 function renderHomeTodayGrid(){
   const grid=$('todayGrid');
@@ -2816,12 +3072,31 @@ function demoInnerTodayPosts(){
     at:Date.now()-(i+1)*3600e3,mediaId:i===1?'demo_photo':null,
   }));
 }
+function innerCapsulePostsToday(){
+  const me=meName();
+  return (S.capsules||[]).filter(c=>
+    c.layer==='now'&&isToday(c.createdAt)&&
+    c.from!==me&&c.from!=='ゆうま'&&
+    MEMBERS.some(m=>m.n===c.from)&&
+    (c.visibility==='shared'||c.visibility==='inner'||c.to==='group')
+  ).map(c=>{
+    const m=MEMBERS.find(x=>x.n===c.from)||{};
+    return{
+      id:c.id,name:c.from,char:m.i||c.from.charAt(0),color:m.c||'#5A5A5A',
+      type:c.type==='photo'?'photo':c.type,text:c.text,
+      songTitle:c.linkedSong?.title,mediaId:c.mediaId,mood:c.mood,
+      at:c.createdAt,sealContext:c.sealContext,
+    };
+  });
+}
 function innerCircleTodayPosts(){
   const d=todayStr();
   const mine=(S.dailyRecords||[]).filter(r=>r.visibility==='inner'&&new Date(r.createdAt).toISOString().slice(0,10)===d)
-    .map(r=>({name:meName(),char:meName().charAt(0),color:'#5A5A5A',...r,at:r.createdAt}));
-  const demo=demoInnerTodayPosts();
-  return[...mine,...demo].sort((a,b)=>b.at-a.at);
+    .map(r=>({id:r.id,name:meName(),char:meName().charAt(0),color:'#5A5A5A',...r,at:r.createdAt}));
+  const caps=innerCapsulePostsToday();
+  const posts=[...mine,...caps];
+  if(!posts.length&&S.demoMode)return demoInnerTodayPosts();
+  return posts.sort((a,b)=>b.at-a.at);
 }
 function renderInnerCircle(){
   renderAuth($('authSection'));
@@ -2833,11 +3108,14 @@ function renderInnerCircle(){
     return;
   }
   feed.innerHTML=posts.map(p=>{
+    const postKey=p.id||p.name+':'+p.at;
+    const reacted=(S.innerReactions||[]).filter(r=>r.postId===p.id&&r.from===meName());
     const body=p.type==='mood'||p.mood?`<div class="inner-post-body" style="font-size:28px">${p.mood||''}</div>`
+      :p.type==='song'?`<div class="inner-post-body">🎵 ${esc(p.songTitle||p.text||'一曲')}</div>`
       :p.mediaId?`<div class="inner-post-media"><img data-lazy="${esc(p.mediaId)}" alt=""></div>`
-      :`<div class="inner-post-body">${esc(p.text||p.songTitle||'')}</div>`;
+      :`<div class="inner-post-body">${esc(p.text||'')}</div>`;
     const ctx=contextStampHtml(p);
-    return`<article class="inner-post">
+    return`<article class="inner-post" data-post="${esc(postKey)}">
       <div class="inner-post-head">
         <div class="inner-post-av" style="background:${p.color||'#5A5A5A'}">${esc(p.char||'?')}</div>
         <div><div class="inner-post-name">${esc(p.name)}</div>
@@ -2845,13 +3123,16 @@ function renderInnerCircle(){
       </div>
       ${body}${ctx}
       <div class="inner-react">
-        <button type="button" data-react="shimi">🫧 しみた</button>
-        <button type="button" data-react="nats">🌙 懐かしい</button>
+        <button type="button" class="${reacted.some(r=>r.react==='shimi')?'on':''}" data-react="shimi" data-post="${esc(postKey)}">🫧 しみた</button>
+        <button type="button" class="${reacted.some(r=>r.react==='nats')?'on':''}" data-react="nats" data-post="${esc(postKey)}">🌙 懐かしい</button>
       </div>
     </article>`;
   }).join('');
   feed.querySelectorAll('[data-react]').forEach(b=>b.addEventListener('click',()=>{
-    b.classList.toggle('on');
+    if(b.classList.contains('on'))return;
+    const post=posts.find(p=>(p.id||p.name+':'+p.at)===b.dataset.post);
+    b.classList.add('on');
+    if(post?.id)sendInnerReact(post.id,b.dataset.react);
     toast('静かに届きました');
     haptic();
   }));
@@ -2871,7 +3152,7 @@ function initMoodPickers(){
     $('onboardStats').textContent=`記録 ${recordCountDisplay()} · 連続 ${recordStreakDisplay()}日`;
   });
   mkRow($('dailyMoodPicker'),async m=>{
-    await saveDailyMood(m);
+    await saveDailyMood(m,getDailyVis('mood'));
     $('moodPickOverlay')?.classList.remove('open');
   });
 }
@@ -4501,6 +4782,33 @@ function checkLastYearTodayNotif(){
   S.shownNotifs.push(key);
   pushHomeNotif('去年の今日、こんな日でした',(item.text||'この日の記憶').slice(0,40),'timeline',{priority:4});
 }
+function checkMonthInsightNotif(){
+  const now=new Date();
+  const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  if(daysInMonth-now.getDate()>2)return;
+  const key='insight_'+monthInsightKey();
+  if(S.shownNotifs?.includes(key))return;
+  if(!(S.dailyRecords?.length||S.opened?.length))return;
+  S.shownNotifs=S.shownNotifs||[];
+  S.shownNotifs.push(key);
+  pushHomeNotif('今月のまとめができました','振り返りで、あなたの今月を見てみよう','insight',{priority:4});
+}
+function checkYearInsightNotif(){
+  const now=new Date();
+  if(now.getMonth()!==11||now.getDate()<25)return;
+  const yr=now.getFullYear();
+  const key='year_insight_'+yr;
+  if(S.shownNotifs?.includes(key))return;
+  if(!(S.dailyRecords?.length||S.opened?.length))return;
+  S.shownNotifs=S.shownNotifs||[];
+  S.shownNotifs.push(key);
+  pushHomeNotif('今年のまとめができました',yr+'年のあなたを振り返ろう','yearInsight',{priority:2});
+}
+function listInsightYears(){
+  const years=new Set([new Date().getFullYear()]);
+  listInsightMonthKeys().forEach(k=>years.add(+k.split('-')[0]));
+  return[...years].sort().reverse();
+}
 let promoteSourceId=null;
 async function promoteToFuture(sourceId,days){
   const src=S.capsules.find(c=>c.id===sourceId);
@@ -4680,26 +4988,505 @@ function buildYearWrapStats(year=new Date().getFullYear()){
   const topSong=Object.entries(songs).sort((a,b)=>b[1]-a[1])[0];
   return{year,openedCount:opened.length,topTag,topFriend,placeCount:places.size,bestMonth,topSong};
 }
-function openYearWrapCard(year){
-  const s=buildYearWrapStats(year);
-  const monthNames=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-  const monthName=s.openedCount?monthNames[s.bestMonth]:'—';
+function monthInsightKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function monthInsightRange(key){
+  const [y,m]=key.split('-').map(Number);
+  const start=new Date(y,m-1,1).getTime();
+  const end=new Date(y,m,1).getTime();
+  const label=new Date(y,m-1,1).toLocaleDateString('ja-JP',{year:'numeric',month:'long'});
+  return{year:y,month:m,start,end,label};
+}
+function collectMonthData(key){
+  const {start,end}=monthInsightRange(key);
+  const inR=ts=>ts!=null&&ts>=start&&ts<end;
+  const daily=(S.dailyRecords||[]).filter(r=>inR(r.createdAt));
+  const opened=(S.opened||[]).filter(o=>inR(o.openedAt||o.createdAt));
+  const sealed=(S.capsules||[]).filter(c=>inR(c.createdAt));
+  const moods=daily.filter(r=>r.type==='mood'&&r.mood);
+  const moodCounts={};
+  moods.forEach(r=>{moodCounts[r.mood]=(moodCounts[r.mood]||0)+1});
+  const moodDominant=Object.entries(moodCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+  const photos=[
+    ...daily.filter(r=>r.mediaId&&['photo','food','sky'].includes(r.type)).map(r=>({mediaId:r.mediaId,at:r.createdAt,label:DAILY_RECORD_TYPES[r.type]?.label})),
+    ...opened.filter(o=>o.mediaId&&(o.type==='photo'||o.selfieMediaId)).map(o=>({mediaId:o.selfieMediaId||o.mediaId,at:o.openedAt||o.createdAt,label:'記憶'})),
+    ...sealed.filter(c=>c.mediaId&&c.type==='photo').map(c=>({mediaId:c.mediaId,at:c.createdAt,label:'封じた一枚'})),
+  ].sort((a,b)=>a.at-b.at);
+  const songs=[];
+  daily.filter(r=>r.type==='song'&&r.songTitle).forEach(r=>songs.push({title:r.songTitle,at:r.createdAt}));
+  [...opened,...sealed].forEach(p=>{
+    if(p.linkedSong?.title)songs.push({title:p.linkedSong.title,artist:p.linkedSong.artist,at:p.openedAt||p.createdAt});
+  });
+  const songCounts={};
+  songs.forEach(s=>{const k=s.title;songCounts[k]=(songCounts[k]||0)+1});
+  const topSongEntry=Object.entries(songCounts).sort((a,b)=>b[1]-a[1])[0];
+  const topSong=topSongEntry?{title:topSongEntry[0],count:topSongEntry[1]}:null;
+  const mid=start+(end-start)/2;
+  const early={},late={};
+  songs.forEach(s=>{(s.at<mid?early:late)[s.title]=((s.at<mid?early:late)[s.title]||0)+1});
+  const topEarly=Object.entries(early).sort((a,b)=>b[1]-a[1])[0]?.[0];
+  const topLate=Object.entries(late).sort((a,b)=>b[1]-a[1])[0]?.[0];
+  const places=[];
+  [...daily,...opened,...sealed].forEach(p=>{
+    const ctx=resolveSealContext(p);
+    const name=ctx?.place||p.loc?.placeName||p.loc?.name;
+    if(name)places.push({name,at:p.createdAt||p.openedAt});
+  });
+  const placeCounts={};
+  places.forEach(p=>{placeCounts[p.name]=(placeCounts[p.name]||0)+1});
+  const topPlace=Object.entries(placeCounts).sort((a,b)=>b[1]-a[1])[0];
+  const placeFirst=places[0]?.name;
+  const placeLast=places[places.length-1]?.name;
+  const texts=[...daily,...opened,...sealed].map(p=>p.text||p.choice||'').filter(Boolean);
+  const catchphrases=extractCatchphrases(texts,3);
+  const roomPhotos=[
+    ...daily.filter(r=>r.type==='sky'&&r.mediaId).map(r=>({mediaId:r.mediaId,at:r.createdAt,label:'窓の空'})),
+    ...daily.filter(r=>r.type==='photo'&&r.mediaId).map(r=>({mediaId:r.mediaId,at:r.createdAt,label:'部屋'})),
+    ...opened.filter(o=>o.mediaId&&((o.tags||[]).includes('部屋')||/部屋/.test(o.text||'')||/部屋/.test(o.promptText||'')))
+      .map(o=>({mediaId:o.mediaId,at:o.openedAt||o.createdAt,label:'部屋'})),
+    ...sealed.filter(c=>c.mediaId&&((c.tags||[]).includes('部屋')||/部屋/.test(c.text||'')||/部屋/.test(c.promptText||'')))
+      .map(c=>({mediaId:c.mediaId,at:c.createdAt,label:'部屋'})),
+  ].sort((a,b)=>a.at-b.at);
+  return{
+    key,label:monthInsightRange(key).label,
+    dailyCount:daily.length,photoCount:photos.length,moodCounts,moodDominant,moods,
+    photos:photos.slice(-8),roomPhotos:roomPhotos.slice(-6),topSong,topEarly,topLate,
+    topPlace:topPlace?{name:topPlace[0],count:topPlace[1]}:null,
+    placeFirst,placeLast,placeCount:Object.keys(placeCounts).length,catchphrases,
+    recordDays:new Set(daily.map(r=>new Date(r.createdAt).toISOString().slice(0,10))).size,
+  };
+}
+function listInsightMonthKeys(){
+  const keys=new Set();
+  const add=ts=>{
+    if(!ts)return;
+    const d=new Date(ts);
+    keys.add(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));
+  };
+  (S.dailyRecords||[]).forEach(r=>add(r.createdAt));
+  (S.opened||[]).forEach(o=>add(o.openedAt||o.createdAt));
+  (S.capsules||[]).forEach(c=>add(c.createdAt));
+  keys.add(monthInsightKey());
+  return[...keys].sort().reverse();
+}
+function ensureMonthlyLetters(){if(!S.monthlyLetters)S.monthlyLetters=[]}
+function getMonthlyLetter(key){ensureMonthlyLetters();return S.monthlyLetters.find(l=>l.monthKey===key)}
+function saveMonthlyLetter(text){
+  const key=monthInsightKey();
+  ensureMonthlyLetters();
+  const t=String(text||'').trim();
+  if(!t){toast('手紙を書いてください');return}
+  const ex=S.monthlyLetters.findIndex(l=>l.monthKey===key);
+  const rec={id:ex>=0?S.monthlyLetters[ex].id:'ml'+Date.now(),monthKey:key,text:t,createdAt:Date.now(),opensAt:addDays(365)};
+  if(ex>=0)S.monthlyLetters[ex]=rec;else S.monthlyLetters.unshift(rec);
+  save();toast('手紙を封じました。1年後に戻ってきます。');haptic();
+  renderAccountPanel($('accountPanelRoot'));
+  const body=$('insightViewBody');
+  if(body&&$('insightViewOverlay')?.classList.contains('open'))openInsightSheet(key);
+}
+function myVoiceSeriesItems(){
+  const me=meName();
+  const seriesId='voice_series_'+me.replace(/\s/g,'_');
+  return voiceSeriesItems(seriesId).filter(v=>v.from===me||v.from==='ゆうま');
+}
+function roomTimelineHtml(photos){
+  if(!photos?.length)return'<div class="empty-state" style="padding:16px 0;font-size:13px">「今日の空」や部屋の写真が増えると、ここに並びます</div>';
+  return`<div class="room-timeline">${photos.map(p=>`
+    <div class="room-tile">
+      <img data-lazy="${esc(p.mediaId)}" alt="">
+      <div class="room-tile-cap">${esc(p.label)} · ${new Date(p.at).getDate()}日</div>
+    </div>`).join('')}</div>
+    <p style="font-size:11px;color:var(--ink-3);margin-top:8px;line-height:1.5">部屋の光、窓の景色、小さな配置の変化が、時間の証になります。</p>`;
+}
+function monthlyLetterHtml(key,editable){
+  const letter=getMonthlyLetter(key);
+  if(!editable&&!letter)return'';
+  const label=monthInsightRange(key).label;
+  if(letter&&!editable){
+    return`<div class="insight-section"><h3>💌 月一の手紙</h3>
+      <div class="monthly-letter-box"><div class="monthly-letter-sealed">${esc(letter.text)}</div>
+      <div class="monthly-letter-meta">${esc(label)}に封じた · 1年後に開けます</div></div></div>`;
+  }
+  if(!editable)return'';
+  return`<div class="insight-section"><h3>💌 月一の手紙</h3>
+    <p style="font-size:12px;color:var(--ink-3);margin-bottom:8px;line-height:1.5">未来の自分へ、今月だけの言葉を。1年後に戻ってきます。</p>
+    <div class="monthly-letter-box">
+      <textarea id="monthlyLetterInput" maxlength="500" placeholder="未来の自分へ…">${esc(letter?.text||'')}</textarea>
+      <button type="button" class="dq-cta" id="saveMonthlyLetterBtn" style="width:100%;margin-top:10px">${letter?'手紙を更新':'手紙を封じる'}</button>
+    </div></div>`;
+}
+function voiceInsightHtml(){
+  const items=myVoiceSeriesItems();
+  if(!items.length){
+    return`<div class="insight-section"><h3>🎙️ 声の変化</h3>
+      <div class="empty-state" style="padding:16px 0;font-size:13px">封じる画面から、毎月の声を残すと<br>1年後に連続再生できます</div></div>`;
+  }
+  const months=items.map(v=>v.voiceMonthKey?.slice(5)||'?').join(' · ');
+  return`<div class="insight-section"><h3>🎙️ 声の変化</h3>
+    <div class="voice-series-row">
+      <div style="flex:1;font-size:13px;line-height:1.45">${items.length}ヶ月分の声<br><span style="color:var(--ink-3);font-size:11px">${esc(months)}月</span></div>
+      <button type="button" id="playVoiceSeriesBtn">連続再生</button>
+    </div></div>`;
+}
+function extractCatchphrases(texts,limit=3){
+  const words={};
+  const stop=new Set(['こと','今日','これ','それ','なんか','思う','です','ます','して','いる','ある','ない','から','まで','よう','自分','みんな','また','ちょっと']);
+  texts.forEach(t=>{
+    const m=String(t).replace(/\s/g,'').match(/[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]{2,8}/g)||[];
+    m.forEach(w=>{if(!stop.has(w)&&w.length>=2)words[w]=(words[w]||0)+1});
+  });
+  return Object.entries(words).sort((a,b)=>b[1]-a[1]).slice(0,limit).map(([w,n])=>({word:w,count:n}));
+}
+function generateMonthlyNarrative(ins){
+  if(!ins)return'';
+  const lines=[];
+  if(ins.recordDays)lines.push(`今月は${ins.recordDays}日、静かに残しました。`);
+  if(ins.moodDominant){
+    const w=MOOD_WEATHER[ins.moodDominant];
+    lines.push(`${w?.label||'穏やか'}な気分の日が、少し多かったようです。`);
+  }
+  if(ins.topPlace)lines.push(`${ins.topPlace.name}に、何度も足を運んでいます。`);
+  if(ins.topSong)lines.push(`「${ins.topSong.title}」が、あなたのBGMでした。`);
+  if(ins.photoCount>=2)lines.push(`写真に残った${ins.photoCount}の瞬間が、変化の軌跡になっています。`);
+  if(!lines.length)lines.push('記録が増えるほど、ここにあなただけの物語が育ちます。');
+  return lines.join(' ');
+}
+function moodWeatherCalendarHtml(ins){
+  const {year,month}=monthInsightRange(ins.key);
+  const daysInMonth=new Date(year,month,0).getDate();
+  const now=new Date();
+  const moodByDay={};
+  (ins.moods||[]).forEach(r=>{
+    moodByDay[new Date(r.createdAt).getDate()]=r.mood;
+  });
+  let cells='';
+  for(let d=1;d<=daysInMonth;d++){
+    const mood=moodByDay[d];
+    const w=mood?MOOD_WEATHER[mood]:null;
+    const future=year===now.getFullYear()&&month===now.getMonth()+1&&d>now.getDate();
+    cells+=`<div class="mwc-day${mood?' has-mood':''}${future?' future':''}" style="--mc:${w?.color||'transparent'}" title="${d}日${w?' · '+w.label:''}">
+      <span class="mwc-num">${d}</span><span class="mwc-icon">${mood||'·'}</span></div>`;
+  }
+  const legend=Object.entries(MOOD_WEATHER).map(([e,w])=>
+    `<span class="mwl-item">${e} ${w.label}</span>`).join('');
+  return`<div class="mood-weather-grid">${cells}</div><div class="mood-weather-legend">${legend}</div>`;
+}
+function hairTimelineHtml(photos){
+  if(!photos.length)return'<div class="empty-state" style="padding:16px 0;font-size:13px">写真が増えると、ここに変化が並びます</div>';
+  return`<div class="hair-timeline">${photos.map((p,i)=>`
+    <div class="hair-tile">
+      <img data-lazy="${esc(p.mediaId)}" alt="">
+      <div class="hair-tile-cap">${new Date(p.at).getDate()}日</div>
+    </div>`).join('')}</div>
+    <p style="font-size:11px;color:var(--ink-3);margin-top:8px;line-height:1.5">写真を重ねると、髪型も雰囲気も、少しずつ変わっていく自分に気づけます。</p>`;
+}
+function insightCardsHtml(ins){
+  const cards=[];
+  if(ins.topSong){
+    let musicSub='';
+    if(ins.topEarly&&ins.topLate&&ins.topEarly!==ins.topLate)
+      musicSub=`<div class="insight-change"><span>${esc(ins.topEarly)}</span><span class="arr">→</span><span>${esc(ins.topLate)}</span></div>`;
+    cards.push(`<div class="insight-card"><div class="insight-card-lbl">🎵 音楽の変化</div>
+      <div class="insight-card-val">${esc(ins.topSong.title)}</div>
+      <div class="insight-card-sub">${ins.topSong.count}回の記憶に登場${musicSub}</div></div>`);
+  }
+  if(ins.topPlace||ins.placeCount){
+    const placeVal=ins.topPlace?`${esc(ins.topPlace.name)}（${ins.topPlace.count}回）`:'—';
+    let placeSub='';
+    if(ins.placeFirst&&ins.placeLast&&ins.placeFirst!==ins.placeLast)
+      placeSub=`<div class="insight-change"><span>${esc(ins.placeFirst)}</span><span class="arr">→</span><span>${esc(ins.placeLast)}</span></div>`;
+    cards.push(`<div class="insight-card"><div class="insight-card-lbl">📍 場所の変化</div>
+      <div class="insight-card-val">${placeVal}</div>
+      <div class="insight-card-sub">${ins.placeCount}か所を歩きました${placeSub}</div></div>`);
+  }
+  if(ins.catchphrases?.length){
+    cards.push(`<div class="insight-card"><div class="insight-card-lbl">💬 口癖・よく使う言葉</div>
+      <div class="insight-card-val">${ins.catchphrases.map(c=>`「${esc(c.word)}」`).join(' ')}</div>
+      <div class="insight-card-sub">テキストから拾った、あなたの言葉</div></div>`);
+  }
+  if(!cards.length){
+    return`<div class="empty-state" style="padding:16px 0;font-size:13px">記録を重ねると、音楽・場所・言葉の変化が見えてきます</div>`;
+  }
+  return`<div class="insight-cards">${cards.join('')}</div>`;
+}
+function renderInsightPanel(key,opts={}){
+  const ins=collectMonthData(key||monthInsightKey());
+  const isCurrent=key===monthInsightKey()||!key;
+  const monthKeys=listInsightMonthKeys();
+  const nav=monthKeys.length>1?`<div class="insight-month-nav" style="padding-top:0">${monthKeys.map(k=>{
+    const lb=monthInsightRange(k).label.replace(/\d+年/,'');
+    return`<button type="button" class="insight-month-chip${k===ins.key?' on':''}" data-insight-month="${k}">${esc(lb)}</button>`;
+  }).join('')}</div>`:'';
+  return`${nav}
+    <div class="insight-hero">
+      <div class="insight-hero-lbl">月末まとめ</div>
+      <div class="insight-hero-title">${esc(ins.label)}</div>
+      <div class="insight-hero-text">${esc(generateMonthlyNarrative(ins))}</div>
+    </div>
+    ${monthlyLetterHtml(ins.key,isCurrent)}
+    <div class="insight-section">
+      <h3>感情の天気図</h3>
+      ${moodWeatherCalendarHtml(ins)}
+    </div>
+    <div class="insight-section">
+      <h3>あなたの変化</h3>
+      ${hairTimelineHtml(ins.photos)}
+    </div>
+    <div class="insight-section">
+      <h3>部屋の変化</h3>
+      ${roomTimelineHtml(ins.roomPhotos)}
+    </div>
+    <div class="insight-section">
+      <h3>音楽 · 場所 · 口癖</h3>
+      ${insightCardsHtml(ins)}
+    </div>
+    ${voiceInsightHtml()}
+    <div class="insight-share-row">
+      <button type="button" class="dq-cta" id="openMonthInsightShare" style="width:100%">この月のまとめをシェア</button>
+    </div>`;
+}
+function bindInsightPanelEvents(root,key){
+  if(!root)return;
+  root.querySelectorAll('[data-insight-month]').forEach(b=>b.addEventListener('click',()=>{
+    S.insightViewKey=b.dataset.insightMonth;save();
+    if($('insightViewOverlay')?.classList.contains('open'))openInsightSheet(b.dataset.insightMonth);
+    else{renderArchive();haptic()}
+  }));
+  root.querySelector('#openMonthInsightShare')?.addEventListener('click',()=>openMonthInsightShare(key));
+  root.querySelector('#saveMonthlyLetterBtn')?.addEventListener('click',()=>{
+    saveMonthlyLetter(root.querySelector('#monthlyLetterInput')?.value);
+  });
+  root.querySelector('#playVoiceSeriesBtn')?.addEventListener('click',async()=>{
+    const items=myVoiceSeriesItems();
+    if(items.length<2){toast('もう1ヶ月分の声を残すと再生できます');return}
+    toast('声の変化を再生中…');
+    await playVoiceChain('voice_series_'+meName().replace(/\s/g,'_'));
+    toast('再生が終わりました');
+    haptic();
+  });
+  loadLazyThumbs(root);
+}
+let insightViewMode='month';
+let insightViewKey=null;
+function openInsightSheet(keyOrYear){
+  const overlay=$('insightViewOverlay');
+  const body=$('insightViewBody');
+  if(!overlay||!body)return;
+  if(String(keyOrYear).length===4&&!String(keyOrYear).includes('-')){
+    insightViewMode='year';
+    insightViewKey=+keyOrYear;
+    $('insightViewTitle').textContent=insightViewKey+'年のまとめ';
+    $('insightMonthNav').innerHTML='';
+    body.innerHTML=renderYearInsightPanel(insightViewKey);
+    bindYearInsightEvents(body,insightViewKey);
+  }else{
+    insightViewMode='month';
+    insightViewKey=keyOrYear||monthInsightKey();
+    $('insightViewTitle').textContent='まとめ';
+    const monthKeys=listInsightMonthKeys();
+    $('insightMonthNav').innerHTML=monthKeys.map(k=>{
+      const lb=monthInsightRange(k).label.replace(/\d+年/,'');
+      return`<button type="button" class="insight-month-chip${k===insightViewKey?' on':''}" data-nav-month="${k}">${esc(lb)}</button>`;
+    }).join('');
+    $('insightMonthNav').querySelectorAll('[data-nav-month]').forEach(b=>b.addEventListener('click',()=>openInsightSheet(b.dataset.navMonth)));
+    body.innerHTML=renderInsightPanel(insightViewKey);
+    bindInsightPanelEvents(body,insightViewKey);
+  }
+  overlay.classList.add('open');
+  haptic();
+}
+function buildYearInsight(year=new Date().getFullYear()){
+  const months=[];
+  for(let m=1;m<=12;m++)months.push(collectMonthData(year+'-'+String(m).padStart(2,'0')));
+  const active=months.filter(m=>m.dailyCount||m.photoCount||m.moodDominant);
+  const base=buildYearWrapStats(year);
+  const allPhotos=months.flatMap(m=>m.photos);
+  const allRooms=months.flatMap(m=>m.roomPhotos||[]);
+  const moodByMonth=months.map((m,i)=>({month:i+1,mood:m.moodDominant,label:monthInsightRange(m.key).label}));
+  const songCounts={};
+  months.forEach(m=>{if(m.topSong)songCounts[m.topSong.title]=(songCounts[m.topSong.title]||0)+m.topSong.count});
+  const yearTopSong=Object.entries(songCounts).sort((a,b)=>b[1]-a[1])[0];
+  const placeCounts={};
+  months.forEach(m=>{if(m.topPlace)placeCounts[m.topPlace.name]=(placeCounts[m.topPlace.name]||0)+m.topPlace.count});
+  const yearTopPlace=Object.entries(placeCounts).sort((a,b)=>b[1]-a[1])[0];
+  const allTexts=months.flatMap(m=>m.catchphrases||[]);
+  const phraseMap={};
+  allTexts.forEach(c=>{phraseMap[c.word]=(phraseMap[c.word]||0)+c.count});
+  const yearPhrases=Object.entries(phraseMap).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([w,n])=>({word:w,count:n}));
+  const letters=(S.monthlyLetters||[]).filter(l=>l.monthKey.startsWith(year+'-'));
+  const voiceMonths=myVoiceSeriesItems().filter(v=>{
+    const y=v.voiceMonthKey?.slice(0,4);
+    return+y===year;
+  }).length;
+  const totalRecords=months.reduce((s,m)=>s+m.dailyCount,0);
+  const recordDays=months.reduce((s,m)=>s+m.recordDays,0);
+  return{
+    year,months,activeMonths:active.length,base,allPhotos:allPhotos.slice(-12),allRooms:allRooms.slice(-8),
+    moodByMonth,yearTopSong:yearTopSong?{title:yearTopSong[0],count:yearTopSong[1]}:null,
+    yearTopPlace:yearTopPlace?{name:yearTopPlace[0],count:yearTopPlace[1]}:null,
+    yearPhrases,letters,voiceMonths,totalRecords,recordDays,
+  };
+}
+function generateYearNarrative(yi){
+  if(!yi)return'';
+  const lines=[];
+  if(yi.recordDays)lines.push(`${yi.year}年、${yi.recordDays}日分の記録が残りました。`);
+  if(yi.base.openedCount)lines.push(`${yi.base.openedCount}の記憶を開封し、時間を取り戻しました。`);
+  if(yi.yearTopSong)lines.push(`「${yi.yearTopSong.title}」が、一年を通してのBGMでした。`);
+  if(yi.yearTopPlace)lines.push(`${yi.yearTopPlace.name}が、いちばん足跡の多い場所。`);
+  if(yi.letters.length)lines.push(`${yi.letters.length}通の手紙を、未来の自分に預けました。`);
+  if(yi.voiceMonths)lines.push(`声の記録が${yi.voiceMonths}ヶ月分、積み重なっています。`);
+  if(!lines.length)lines.push('記録が育つほど、年末のまとめが豊かになります。');
+  return lines.join(' ');
+}
+function yearMoodStripHtml(yi){
+  const names=['1','2','3','4','5','6','7','8','9','10','11','12'];
+  return`<div class="year-mood-strip">${yi.moodByMonth.map((m,i)=>{
+    const w=m.mood?MOOD_WEATHER[m.mood]:null;
+    return`<div class="year-mood-month${m.mood?' has':''}" style="--mc:${w?.color||'transparent'}" title="${names[i]}月">
+      <span class="ym-ico">${m.mood||'·'}</span>${names[i]}月</div>`;
+  }).join('')}</div>
+    <p style="font-size:11px;color:var(--ink-3);margin-top:4px">月ごとの代表的な気分</p>`;
+}
+function renderYearInsightPanel(year){
+  const yi=buildYearInsight(year);
+  return`
+    <div class="insight-hero">
+      <div class="insight-hero-lbl">年間まとめ</div>
+      <div class="insight-hero-title">${yi.year}年</div>
+      <div class="insight-hero-text">${esc(generateYearNarrative(yi))}</div>
+    </div>
+    <div class="insight-section">
+      <h3>一年の感情の天気</h3>
+      ${yearMoodStripHtml(yi)}
+    </div>
+    <div class="insight-section">
+      <h3>一年のあなたの変化</h3>
+      ${hairTimelineHtml(yi.allPhotos)}
+    </div>
+    <div class="insight-section">
+      <h3>部屋の一年</h3>
+      ${roomTimelineHtml(yi.allRooms)}
+    </div>
+    <div class="insight-section">
+      <h3>音楽 · 場所 · 口癖</h3>
+      <div class="insight-cards">
+        ${yi.yearTopSong?`<div class="insight-card"><div class="insight-card-lbl">🎵 年間の一曲</div><div class="insight-card-val">${esc(yi.yearTopSong.title)}</div><div class="insight-card-sub">${yi.yearTopSong.count}回登場</div></div>`:''}
+        ${yi.yearTopPlace?`<div class="insight-card"><div class="insight-card-lbl">📍 年間の場所</div><div class="insight-card-val">${esc(yi.yearTopPlace.name)}</div><div class="insight-card-sub">${yi.yearTopPlace.count}回</div></div>`:''}
+        ${yi.yearPhrases.length?`<div class="insight-card"><div class="insight-card-lbl">💬 年間の言葉</div><div class="insight-card-val">${yi.yearPhrases.map(c=>`「${esc(c.word)}」`).join(' ')}</div></div>`:''}
+        ${!yi.yearTopSong&&!yi.yearTopPlace&&!yi.yearPhrases.length?'<div class="empty-state" style="padding:16px 0;font-size:13px">記録が増えると、ここに一年の変化が並びます</div>':''}
+      </div>
+    </div>
+    ${yi.letters.length?`<div class="insight-section"><h3>💌 預けた手紙 · ${yi.letters.length}通</h3>
+      ${yi.letters.map(l=>`<div class="monthly-letter-box" style="margin-bottom:8px">
+        <div class="monthly-letter-meta">${esc(monthInsightRange(l.monthKey).label)}</div>
+        <div class="monthly-letter-sealed" style="margin-top:6px">${esc(l.text.slice(0,80))}${l.text.length>80?'…':''}</div>
+      </div>`).join('')}</div>`:''}
+    ${voiceInsightHtml()}
+    <div class="insight-share-row">
+      <button type="button" class="dq-cta" id="openYearInsightShare" style="width:100%">${yi.year}年のまとめをシェア</button>
+    </div>`;
+}
+function bindYearInsightEvents(root,year){
+  root.querySelector('#playVoiceSeriesBtn')?.addEventListener('click',async()=>{
+    const items=myVoiceSeriesItems();
+    if(items.length<2){toast('もう1ヶ月分の声を残すと再生できます');return}
+    toast('声の変化を再生中…');
+    await playVoiceChain('voice_series_'+meName().replace(/\s/g,'_'));
+    toast('再生が終わりました');haptic();
+  });
+  root.querySelector('#openYearInsightShare')?.addEventListener('click',()=>openYearInsightShare(year));
+  loadLazyThumbs(root);
+}
+function openYearInsightShare(year){
+  const yi=buildYearInsight(year);
+  const moodLine=yi.moodByMonth.filter(m=>m.mood).map(m=>m.mood).slice(0,5).join('');
   $('wrappedCard').innerHTML=`
     <div class="wc-brand">TIME CAP</div>
-    <div class="wc-period">${s.year}年<br>まとめ</div>
-    <div class="wc-stat">開封した記憶 <strong>${s.openedCount}</strong> 件<br>
-    ${s.placeCount?`訪れた場所 ${s.placeCount} か所<br>`:''}
-    ${s.topTag?`いちばん使ったタグ #${esc(s.topTag[0])}<br>`:''}
-    ${s.topFriend?`一緒にいた友達 ${esc(s.topFriend[0])}`:''}</div>
+    <div class="wc-period">${yi.year}年<br>まとめ</div>
+    <div class="wc-stat">${esc(generateYearNarrative(yi))}</div>
     <div class="wc-theme">
-      <div class="wc-theme-lbl">いちばん記憶に残った月</div>
-      <div class="wc-theme-title">${monthName}</div>
-      ${s.topSong?`<div class="wc-theme-artist">🎵 ${esc(s.topSong[0])}</div>`:'<div class="wc-theme-artist">音楽が耳 · マップが足跡</div>'}
+      <div class="wc-theme-lbl">一年の天気</div>
+      <div class="wc-theme-title">${moodLine||'·'}</div>
+      ${yi.yearTopSong?`<div class="wc-theme-artist">🎵 ${esc(yi.yearTopSong.title)}</div>`:''}
+      <div class="wc-stat" style="margin-top:12px;font-size:13px">
+        記録 ${yi.totalRecords} · 開封 ${yi.base.openedCount}${yi.yearTopPlace?`<br>📍 ${esc(yi.yearTopPlace.name)}`:''}
+      </div>
     </div>
     <div class="wrapped-footer">${APP_URL}</div>
     ${shareCardFooter()}`;
   $('wrappedOverlay')?.classList.add('open');
   haptic();
+}
+function renderProfileInsightsSection(){
+  const monthKeys=listInsightMonthKeys();
+  const years=listInsightYears();
+  const chips=monthKeys.slice(0,8).map(k=>{
+    const lb=monthInsightRange(k).label.replace(/\d+年/,'');
+    return`<button type="button" class="insight-month-chip" data-profile-insight="${k}">${esc(lb)}</button>`;
+  }).join('');
+  const yearBtns=years.map(y=>`<button type="button" class="profile-ig-edit-btn" data-profile-year="${y}" style="margin-top:8px">${y}年のまとめ</button>`).join('');
+  const letter=getMonthlyLetter(monthInsightKey());
+  return`<div class="profile-insights">
+    <div class="sec-label">あなたのまとめ</div>
+    <p style="font-size:12px;color:var(--ink-3);margin-bottom:10px;line-height:1.5">感情の天気図・あなたの変化・音楽や場所の記録を、いつでも振り返れます。</p>
+    <div class="insight-month-nav" style="padding:0;margin-bottom:12px">${chips}</div>
+    <button type="button" class="dq-cta" id="profileOpenCurrentInsight" style="width:100%;margin-bottom:8px">今月のまとめを見る</button>
+    ${yearBtns}
+  </div>
+  <div class="profile-deep">
+    <div class="sec-label">月一の手紙</div>
+    ${letter
+      ?`<div class="monthly-letter-box"><div class="monthly-letter-sealed">${esc(letter.text.slice(0,120))}${letter.text.length>120?'…':''}</div>
+        <div class="monthly-letter-meta">今月封じ済み · まとめから全文へ</div></div>`
+      :`<div class="monthly-letter-box">
+        <textarea id="profileLetterInput" maxlength="500" placeholder="未来の自分へ、今月の言葉を…" style="min-height:72px"></textarea>
+        <button type="button" class="dq-cta" id="profileSaveLetterBtn" style="width:100%;margin-top:8px">手紙を封じる</button>
+      </div>`}
+    <div class="sec-label" style="margin-top:20px">声 · 部屋</div>
+    ${myVoiceSeriesItems().length
+      ?`<div class="voice-series-row"><div style="flex:1;font-size:13px">${myVoiceSeriesItems().length}ヶ月分の声が残っています</div>
+        <button type="button" id="profilePlayVoiceBtn">再生</button></div>`
+      :'<p style="font-size:12px;color:var(--ink-3);line-height:1.5;margin-top:6px">毎月の声を封じると、ここから連続再生できます。</p>'}
+  </div>`;
+}
+function bindProfileInsightEvents(el){
+  if(!el)return;
+  el.querySelectorAll('[data-profile-insight]').forEach(b=>b.addEventListener('click',()=>openInsightSheet(b.dataset.profileInsight)));
+  el.querySelectorAll('[data-profile-year]').forEach(b=>b.addEventListener('click',()=>openInsightSheet(b.dataset.profileYear)));
+  el.querySelector('#profileOpenCurrentInsight')?.addEventListener('click',()=>openInsightSheet(monthInsightKey()));
+  el.querySelector('#profileSaveLetterBtn')?.addEventListener('click',()=>{
+    saveMonthlyLetter(el.querySelector('#profileLetterInput')?.value);
+  });
+  el.querySelector('#profilePlayVoiceBtn')?.addEventListener('click',async()=>{
+    const items=myVoiceSeriesItems();
+    if(items.length<2){toast('もう1ヶ月分の声を残すと再生できます');return}
+    toast('声の変化を再生中…');
+    await playVoiceChain('voice_series_'+meName().replace(/\s/g,'_'));
+    toast('再生が終わりました');haptic();
+  });
+}
+function openMonthInsightShare(key){
+  const ins=collectMonthData(key||monthInsightKey());
+  const moodLabel=ins.moodDominant?(MOOD_WEATHER[ins.moodDominant]?.label||''):'—';
+  $('wrappedCard').innerHTML=`
+    <div class="wc-brand">TIME CAP</div>
+    <div class="wc-period">${esc(ins.label)}<br>まとめ</div>
+    <div class="wc-stat">${esc(generateMonthlyNarrative(ins))}</div>
+    <div class="wc-theme">
+      <div class="wc-theme-lbl">今月の天気</div>
+      <div class="wc-theme-title">${ins.moodDominant||'·'} ${esc(moodLabel)}</div>
+      ${ins.topSong?`<div class="wc-theme-artist">🎵 ${esc(ins.topSong.title)}</div>`:''}
+      <div class="wc-stat" style="margin-top:12px;font-size:13px">
+        記録 ${ins.dailyCount} · 写真 ${ins.photoCount}${ins.topPlace?`<br>📍 ${esc(ins.topPlace.name)}`:''}
+      </div>
+    </div>
+    <div class="wrapped-footer">${APP_URL}</div>
+    ${shareCardFooter()}`;
+  $('wrappedOverlay')?.classList.add('open');
+  haptic();
+}
+function openYearWrapCard(year){
+  openInsightSheet(String(year||new Date().getFullYear()));
 }
 function friendTrailPoints(friendName){
   return(S.opened||[]).filter(o=>o.from===friendName&&o.loc);
@@ -4837,6 +5624,9 @@ function defaults(){
     archiveMusicKey:null,
     onboardingDone:false,
     dailyRecords:[],
+    monthlyLetters:[],
+    echoReplies:[],
+    innerReactions:[],
     dailyQuestionDate:null,
     dailyQuestionDone:false,
   };
@@ -4896,6 +5686,9 @@ if(!S.invitations)S.invitations=[];
 if(S.currentStreak===undefined)S.currentStreak=S.streak||0;
 if(!S.longestStreak)S.longestStreak=S.currentStreak||0;
 if(!S.dailyRecords)S.dailyRecords=[];
+if(!S.echoReplies)S.echoReplies=[];
+if(!S.monthlyLetters)S.monthlyLetters=[];
+if(!S.innerReactions)S.innerReactions=[];
 if(!S.dailyAnswers)S.dailyAnswers=[];
 ensureDailyRecords();
 if(!S.activityFeed)S.activityFeed=[];
@@ -5123,6 +5916,8 @@ function renderLastYearToday(){
 function renderTimeline(){
   checkMorningPromptNotif();
   checkLastYearTodayNotif();
+  checkMonthInsightNotif();
+  checkYearInsightNotif();
   checkUnlockNotifs();
   checkLimitedPromptNotif();
   checkGlobalUnlock();
@@ -5670,6 +6465,9 @@ function renderFriendSpace(){
           <div class="dcc-when">${esc(TYPE_JA[meta.type]||meta.type||'記憶')} · ${esc(meta.when||'')}</div>
         </div>`;
       }
+      if(msg.kind==='echo'){
+        return`<div class="fdm-bubble ${mine?'me':'them'} inner-echo-note">余韻 · ${esc(msg.text)}</div>`;
+      }
       return`<div class="fdm-bubble ${mine?'me':'them'}">${esc(msg.text)}</div>`;
     }).join('');
   }else chatEl.innerHTML='<div class="empty-state">メッセージを送ってみましょう</div>';
@@ -5781,6 +6579,9 @@ function renderArchive(){
   let panel='';
   if(tab==='all'){
     panel=`${memFilters}<div class="arb-masonry">${memoryList||'<div class="empty-state" style="padding:40px 0;grid-column:span 2">まだ何も残していない。最初の記憶を封じよう。</div>'}</div>`;
+  }else if(tab==='insight'){
+    const iKey=S.insightViewKey||monthInsightKey();
+    panel=`<div class="archive-panel" id="insightPanelRoot">${renderInsightPanel(iKey)}</div>`;
   }else if(tab==='music'){
     panel=`<div class="archive-panel music-section" style="padding:0 20px">
       ${musicTodayCardHtml(false)}${musicWeekBlockHtml()}
@@ -5825,6 +6626,7 @@ function renderArchive(){
       ${themeCard}
       <div class="archive-tabs" style="padding:0 20px">
         <button type="button" class="archive-tab${tab==='all'?' on':''}" data-atab="all">思い出</button>
+        <button type="button" class="archive-tab${tab==='insight'?' on':''}" data-atab="insight">まとめ</button>
         <button type="button" class="archive-tab${tab==='music'?' on':''}" data-atab="music">音楽</button>
         <button type="button" class="archive-tab${tab==='account'?' on':''}" data-atab="account">アカウント</button>
         <button type="button" class="archive-tab${tab==='log'?' on':''}" data-atab="log">ログ</button>
@@ -5848,6 +6650,11 @@ function renderArchive(){
   }));
   $('openWrappedBtn')?.addEventListener('click',()=>openWrappedCard(musicKey));
   $('openYearWrapBtn')?.addEventListener('click',()=>openYearWrapCard(yr));
+  const insightRoot=$('insightPanelRoot');
+  if(insightRoot){
+    const iKey=S.insightViewKey||monthInsightKey();
+    bindInsightPanelEvents(insightRoot,iKey);
+  }
 }
 
 function openWrappedCard(monthKey){
@@ -5989,6 +6796,7 @@ function renderAccountPanel(el){
         <input type="date" id="profileBirth" value="${esc(S.profile?.birthDate||'')}">
         <button type="button" class="dq-cta" id="saveProfileBtn" style="width:100%;margin-top:12px">保存</button>
       </div>
+      ${renderProfileInsightsSection()}
     </div>
     <div class="account-actions">
       <button type="button" id="switchAccountBtn">アカウントを切り替え</button>
@@ -6036,6 +6844,7 @@ function renderAccountPanel(el){
   $('darkToggleArchive')?.addEventListener('click',()=>{
     S.dark=!S.dark;document.documentElement.dataset.theme=S.dark?'':'light';save();renderArchive();haptic();
   });
+  bindProfileInsightEvents(el);
 }
 
 function renderNotifBadge(){
@@ -6111,9 +6920,11 @@ function renderNotifDropdown(){
       const n=S.homeNotifs?.find(x=>x.id===item.dataset.nid);
       if(n&&!n.read){n.read=true;save();renderNotifBadge()}
       $('notifDropdown')?.classList.remove('open');
-      if(item.dataset.action==='open'&&ready().length)startGroupSync(ready());
+      if(item.dataset.action==='open'&&ready().length)startOpening(ready(),false);
       else if(item.dataset.action==='dm'){switchTab('me');const dm=S.dms?.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}
       else if(item.dataset.action==='timeline'){switchTab('waiting');$('timeMachineSection')?.scrollIntoView({behavior:'smooth',block:'start'})}
+      else if(item.dataset.action==='insight'){S.archiveTab='insight';save();switchTab('archive');renderArchive();openInsightSheet(monthInsightKey())}
+      else if(item.dataset.action==='yearInsight')openInsightSheet(String(new Date().getFullYear()));
       haptic();
     });
   });
@@ -6781,6 +7592,8 @@ function startOpening(items,flash){
   $('revealStack').classList.remove('show');
   $('revealStack').innerHTML='';
   $('reactions').classList.remove('show');
+  $('echoReply')?.classList.add('hidden');
+  $('echoReply')?.classList.remove('show');
   $('openingActions')?.classList.remove('show');
   $('exportBtn').classList.remove('show');
   $('goalReflect')?.classList.add('hidden');
@@ -6864,6 +7677,7 @@ function finishOpen(){
       const ctxCard=memoryContextHtml(resolveSealContext(cap),cap?.linkedSong);
       const afterReveal=()=>{
         $('reactions').classList.add('show');
+        showEchoReply(cap);
         $('openingActions')?.classList.add('show');
         lastOpenedItem={...cap};
         S.opened=S.opened||[];
@@ -6995,18 +7809,63 @@ $('onboardFinish')?.addEventListener('click',()=>{
 });
 $('moodPickClose')?.addEventListener('click',()=>$('moodPickOverlay')?.classList.remove('open'));
 $('moodPickOverlay')?.addEventListener('click',e=>{if(e.target===$('moodPickOverlay'))$('moodPickOverlay').classList.remove('open')});
-$('dailyPhotoInput')?.addEventListener('change',async e=>{
-  const file=e.target.files?.[0];
-  const type=pendingDailyType||'photo';
+$('dailyConfirmCancel')?.addEventListener('click',()=>{
+  pendingDailyMedia=null;
   pendingDailyType=null;
+  $('dailyConfirmOverlay')?.classList.remove('open');
+});
+$('dailyConfirmOverlay')?.addEventListener('click',e=>{if(e.target===$('dailyConfirmOverlay'))$('dailyConfirmOverlay').classList.remove('open')});
+$('dailyConfirmSave')?.addEventListener('click',async()=>{
+  if(!pendingDailyMedia)return;
+  try{
+    await createDailyRecord(pendingDailyMedia.type,{mediaDataUrl:pendingDailyMedia.dataUrl,visibility:getDailyVis('confirm')});
+    pendingDailyMedia=null;
+    pendingDailyType=null;
+    $('dailyConfirmOverlay')?.classList.remove('open');
+    finishDailyRecordToast();
+  }catch(err){toast('保存に失敗しました')}
+});
+$('songPickClose')?.addEventListener('click',()=>$('songPickOverlay')?.classList.remove('open'));
+$('songPickOverlay')?.addEventListener('click',e=>{if(e.target===$('songPickOverlay'))$('songPickOverlay').classList.remove('open')});
+$('songPickUseTop')?.addEventListener('click',async()=>{
+  const top=currentTodaySong();
+  if(!top)return;
+  await createDailyRecord('song',{songTitle:top.title,songId:top.title,visibility:getDailyVis('song')});
+  $('songPickOverlay')?.classList.remove('open');
+  finishDailyRecordToast();
+});
+$('songPickManual')?.addEventListener('click',async()=>{
+  const title=prompt('曲名を入力','')?.trim();
+  if(!title)return;
+  const artist=prompt('アーティスト（任意）','')?.trim()||'';
+  await createDailyRecord('song',{songTitle:artist?`${title} · ${artist}`:title,songId:title,visibility:getDailyVis('song')});
+  $('songPickOverlay')?.classList.remove('open');
+  finishDailyRecordToast();
+});
+$('echoReplySend')?.addEventListener('click',()=>{
+  const cap=$('echoReply')?._cap;
+  const text=$('echoReplyInput')?.value||'';
+  if(!cap||!text.trim()){toast('ひとこと入力してください');return}
+  sendEchoReply(cap,text);
+  $('echoReply')?.classList.remove('show');
+  $('echoReplyInput').value='';
+  haptic();
+});
+$('echoReplyInput')?.addEventListener('keydown',e=>{
+  if(e.key==='Enter')$('echoReplySend')?.click();
+});
+async function handleDailyPhotoInput(e){
+  const file=e.target.files?.[0];
   e.target.value='';
   if(!file)return;
   try{
     const dataUrl=await compressImage(file);
-    await createDailyRecord(type,{mediaDataUrl:dataUrl});
-    finishDailyRecordToast();
+    showDailyConfirm(dataUrl);
   }catch(err){toast('写真の読み込みに失敗しました')}
-});
+}
+$('dailyPhotoInput')?.addEventListener('change',handleDailyPhotoInput);
+$('dailySkyInput')?.addEventListener('change',handleDailyPhotoInput);
+initDailyVisToggles();
 $('onboardDemo')?.addEventListener('click',async()=>{
   const name=prompt('あなたの名前','ゆうま')||'ゆうま';
   const email=name+'@demo.local';
@@ -7252,6 +8111,13 @@ $('wrappedShare')?.addEventListener('click',()=>{
   haptic();toast('シェアシートを開きます（デモ）');
 });
 $('wrappedOverlay')?.addEventListener('click',e=>{if(e.target===$('wrappedOverlay'))$('wrappedOverlay').classList.remove('open')});
+$('insightViewClose')?.addEventListener('click',()=>$('insightViewOverlay')?.classList.remove('open'));
+$('insightViewShare')?.addEventListener('click',()=>{
+  if(insightViewMode==='year')openYearInsightShare(insightViewKey);
+  else openMonthInsightShare(insightViewKey||monthInsightKey());
+  haptic();
+});
+$('insightViewOverlay')?.addEventListener('click',e=>{if(e.target===$('insightViewOverlay'))$('insightViewOverlay').classList.remove('open')});
 startWaitTimer();
 (async()=>{
   try{
