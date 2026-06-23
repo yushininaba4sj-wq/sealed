@@ -986,6 +986,19 @@ body::after{display:none}
   background:var(--bg-2);font-size:15px;outline:none;
 }
 .auth-field input:focus{border-color:var(--ink-3)}
+.auth-code-input{
+  width:100%;border:none;outline:none;padding:16px;border-radius:var(--r-sm);
+  background:var(--bg-2);font-size:24px;font-weight:600;letter-spacing:.35em;text-align:center;
+  font-variant-numeric:tabular-nums;border:1px solid var(--bg-3);
+}
+.auth-hint{font-size:12px;color:var(--ink-3);line-height:1.5;margin-bottom:12px}
+.dm-capsule-card{
+  align-self:flex-start;max-width:90%;padding:12px 14px;border-radius:16px;
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.08);font-size:13px;line-height:1.45;
+}
+.dm-capsule-card.me{align-self:flex-end;background:rgba(255,255,255,.06)}
+.dm-capsule-card .dcc-ico{font-size:20px;margin-bottom:4px}
+.dm-capsule-card .dcc-when{font-size:11px;color:var(--ink-3);margin-top:6px}
 .auth-submit{
   width:100%;padding:15px;border-radius:var(--r-pill);
   background:var(--ink);color:var(--accent-inv);
@@ -1463,6 +1476,19 @@ body::after{display:none}
 .home-widget .hw-sub{font-size:12px;color:var(--ink-3);line-height:1.45}
 .home-widget .hw-bar{height:2px;background:var(--bg-3);border-radius:2px;margin-top:12px;overflow:hidden}
 .home-widget .hw-fill{height:100%;background:linear-gradient(90deg,var(--ink-3),var(--ink));border-radius:2px}
+.home-widget .hw-open-btn{
+  margin-top:14px;width:100%;padding:12px;border-radius:var(--r-pill);font-size:14px;font-weight:600;
+  background:var(--ink);color:var(--bg);
+}
+.home-widget .hw-empty{font-size:14px;color:var(--ink-3);margin-top:8px;line-height:1.45}
+.home-widget.ready{border-color:rgba(255,255,255,.18);box-shadow:0 0 32px rgba(255,255,255,.06)}
+.tl-feed-head{padding:8px 20px 12px;display:flex;align-items:center;justify-content:space-between}
+.tl-feed-head .tl-feed-label{font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+.tl-feed-head .tl-feed-sub{font-size:11px;color:var(--ink-3)}
+.tl-item.compact .tl-body-sealed{min-height:72px}
+.tl-item.compact .tl-body-sealed .lock-core{padding:12px}
+.tl-item.compact .tl-body-sealed .lock-core .ico{font-size:20px;margin-bottom:4px}
+.tl-extras{display:none}
 .season-banner{
   margin:0 20px 16px;padding:16px 18px;border-radius:var(--r);
   background:linear-gradient(120deg,#1a1a2e,#16213e);border:1px solid rgba(255,255,255,.1);
@@ -1827,16 +1853,22 @@ body::after{display:none}
 
   <!-- ① タイムライン -->
   <section class="panel active" id="panel-waiting">
-    <div class="panel-head" style="padding-top:0">
+    <div class="panel-head" style="padding-top:0;padding-bottom:8px">
       <h1 style="font-size:28px;font-weight:600">タイムライン</h1>
-      <p class="sub">投稿順 · 封印中も輪郭だけ見える</p>
     </div>
-    <div class="home-widget hidden" id="homeWidget">
+    <div class="home-widget" id="homeWidget">
       <div class="hw-label">次に開くカプセル</div>
       <div class="hw-countdown" id="widgetCountdown">—</div>
-      <div class="hw-sub" id="widgetSub">ロック画面ウィジェット風</div>
-      <div class="hw-bar"><div class="hw-fill" id="widgetFill" style="width:0%"></div></div>
+      <div class="hw-sub" id="widgetSub"></div>
+      <div class="hw-bar" id="widgetBar"><div class="hw-fill" id="widgetFill" style="width:0%"></div></div>
+      <button type="button" class="hw-open-btn hidden" id="widgetOpenBtn">開封する</button>
     </div>
+    <div class="tl-feed-head">
+      <span class="tl-feed-label">フィード</span>
+      <span class="tl-feed-sub">みんなの投稿 · 思い出</span>
+    </div>
+    <div class="tl-feed" id="timelineFeed"></div>
+    <div class="tl-extras" aria-hidden="true">
     <div class="season-banner" id="seasonBanner">
       <div class="sb-tag">季節の一斉イベント</div>
       <div class="sb-title">卒業カプセル 2026</div>
@@ -1880,10 +1912,10 @@ body::after{display:none}
       <p style="font-size:12px;color:var(--ink-3);margin:6px 0 12px;line-height:1.45">過去の今日、あなたはここにいた</p>
       <div class="tm-scroll" id="timeMachineScroll"></div>
     </div>
-    <div class="tl-feed" id="timelineFeed"></div>
     <div class="activity-section" id="activitySection">
       <div class="activity-label">アクティビティ · 24時間</div>
       <div class="activity-feed" id="activityFeed"></div>
+    </div>
     </div>
   </section>
 
@@ -1920,14 +1952,13 @@ body::after{display:none}
     <div id="meListView">
       <div class="panel-head" style="padding-top:0">
         <h1 style="font-size:28px;font-weight:600">メッセージ</h1>
-        <p class="sub">開封後の個人的な返信 · いいねはない</p>
+        <p class="sub">個人チャット · ふたりだけのタイムライン</p>
       </div>
       <div class="me-panel" id="mePanel">
         <div id="authSection"></div>
         <div class="sec-label" style="padding:8px 0">人との関係</div>
         <div class="shared-top-tabs">
-          <button type="button" class="shared-top-tab on" data-stab="friends">親友・2人</button>
-          <button type="button" class="shared-top-tab" data-stab="dm">未来DM</button>
+          <button type="button" class="shared-top-tab on" data-stab="friends">チャット</button>
         </div>
         <div class="shared-dm-list hidden" id="sharedDmList"></div>
         <div class="shared-list" id="sharedList"></div>
@@ -1938,12 +1969,12 @@ body::after{display:none}
         <button type="button" class="fs-back" id="fsBack">←</button>
         <div class="fs-head">
           <div class="fs-name" id="fsName">みお</div>
-          <div class="fs-sub" id="fsSub">未来DM · タイムカプセル</div>
+          <div class="fs-sub" id="fsSub">ふたりのタイムライン · チャット</div>
         </div>
       </div>
       <div class="fs-tabs">
-        <button type="button" class="fs-tab on" data-fstab="posts">タイムカプセル</button>
-        <button type="button" class="fs-tab" data-fstab="chat">未来DM</button>
+        <button type="button" class="fs-tab on" data-fstab="posts">ふたりの記憶</button>
+        <button type="button" class="fs-tab" data-fstab="chat">チャット</button>
         <button type="button" class="fs-tab" data-fstab="trail">軌跡</button>
       </div>
       <div class="gift-row" id="fsGiftRow"></div>
@@ -1954,14 +1985,8 @@ body::after{display:none}
       </div>
     </div>
     <div class="fdm-compose hidden" id="fdmCompose">
-      <div class="fdm-delay" id="fdmDelay">
-        <button type="button" class="on" data-delay="1">1日後</button>
-        <button type="button" data-delay="7">1週間後</button>
-        <button type="button" data-delay="30">1ヶ月後</button>
-        <button type="button" data-delay="365">1年後</button>
-      </div>
       <div class="fdm-input-row">
-        <input type="text" class="fdm-input" id="fdmInput" placeholder="未来のメッセージを封じる…" maxlength="500">
+        <input type="text" class="fdm-input" id="fdmInput" placeholder="メッセージを送る…" maxlength="500">
         <button type="button" class="fdm-send" id="fdmSend">↑</button>
       </div>
     </div>
@@ -2286,6 +2311,7 @@ body::after{display:none}
 <script>
 const KEY='timecap_v9';
 const APP_URL='https://sealed-psi.vercel.app';
+const ADMIN_EMAIL='yushininaba4sj@gmail.com';
 const SPOTIFY_CLIENT_ID=''; // 設定するとSpotify連携が有効
 const IDB_NAME='timecap_media_v1';
 const USER='ゆうま';
@@ -2494,6 +2520,83 @@ async function hashPass(pass){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass+':timecap'));
   return[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
+function generateOtp(){return String(Math.floor(100000+Math.random()*900000))}
+async function sendVerificationCode(email,code,mode,name){
+  try{
+    const r=await fetch('/api/send-code',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,code,mode,name}),
+    });
+    const data=await r.json().catch(()=>({}));
+    if(r.ok&&!data.dev){
+      toast(ADMIN_EMAIL+' に確認コードを送信しました');
+      return true;
+    }
+  }catch(e){}
+  toast(`確認コード: ${code}（${ADMIN_EMAIL} に送信 · API未設定時は画面表示）`);
+  return true;
+}
+function pairwiseItems(friendName){
+  const me=meName();
+  const capItems=(S.capsules||[]).filter(c=>{
+    if(isPairCap(c)){
+      if(!canSeePairCap(c))return false;
+      return(c.from===me&&c.to===friendName)||(c.from===friendName&&(c.to===me||c.pairWith===me));
+    }
+    if(isDirectCap(c)){
+      if(!canSeeDirectCap(c))return false;
+      return(c.from===me&&c.to===friendName)||(c.from===friendName&&c.to===me);
+    }
+    return(c.from===friendName&&c.to===me)||(c.from===me&&c.to===friendName);
+  }).map(c=>({
+    id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,
+    at:c.createdAt||Date.now(),openAt:c.openAt,mediaId:c.mediaId,
+    sealed:c.sealed,capsule:c,opened:canViewCapContent(c),
+  }));
+  const openedItems=(S.opened||[]).filter(o=>{
+    if(isPairCap(o)||isDirectCap(o)){
+      return(o.from===me&&o.to===friendName)||(o.from===friendName&&o.to===me);
+    }
+    return(o.from===friendName&&o.to===me)||(o.from===me&&o.to===friendName);
+  }).map(o=>({...o,at:o.openedAt,sealed:false,opened:true,capsule:null}));
+  return[...capItems,...openedItems].sort((a,b)=>b.at-a.at);
+}
+function ensureDm(friendId){
+  S.dms=S.dms||[];
+  let dm=S.dms.find(d=>d.withId===friendId);
+  if(!dm){
+    const m=MEMBERS.find(x=>x.id===friendId);
+    if(!m)return null;
+    dm={id:'d'+Date.now(),with:m.n,withId:friendId,unread:0,messages:[]};
+    S.dms.push(dm);
+  }
+  return dm;
+}
+function notifyDmCapsule(friendId,cap){
+  const dm=ensureDm(friendId);
+  if(!dm)return;
+  dm.messages.push({
+    from:cap.from,text:cap.text||'',at:Date.now(),openAt:null,
+    kind:'capsule',capId:cap.id,
+    capsuleMeta:{type:cap.type,when:formatWhen(cap),sealed:cap.sealed},
+  });
+}
+function renderPairwisePost(p,me){
+  const locked=p.sealed&&!p.opened;
+  const isMe=p.from===me||p.from==='ゆうま';
+  let body='';
+  if(locked){
+    body=`<div class="tl-body-sealed" style="min-height:72px"><div class="lock-core" style="padding:12px"><div class="ico">🔒</div><div class="lbl">封印中</div><div class="when">${p.openAt?formatWhen({openAt:p.openAt}):''}</div></div></div>`;
+  }else if(p.mediaId){
+    body=`<div class="tl-open-body"><img data-lazy="${esc(p.mediaId)}" alt=""></div>`;
+  }
+  const caption=p.text&&!locked?`<div class="fp-text" style="margin-top:8px">${esc(p.text)}</div>`:'';
+  return`<div class="fs-post">
+    <div class="fp-when">${timeAgo(p.at)} · ${TYPE_JA[p.type]||p.type} · ${isMe?'あなた':'相手'}</div>
+    ${body}${caption}
+  </div>`;
+}
 function ensureSealDestSet(){
   if(!S.sealDestSet){
     const to=S.sealTo||'self';
@@ -2632,6 +2735,17 @@ function parseTagsFromInput(){
   return[...new Set([...fromChips,...typed])].slice(0,5);
 }
 function isPairCap(c){return c.visibility==='pair'||c.to==='pair'}
+function isDirectCap(c){
+  if(!c||c.to==='group'||c.to==='self')return false;
+  if(isPairCap(c))return false;
+  return c.visibility==='shared'||MEMBERS.some(m=>m.n===c.to);
+}
+function canSeeDirectCap(c){
+  const me=meName();
+  if(c.from===me||c.from==='ゆうま')return true;
+  if(c.to===me)return true;
+  return false;
+}
 function canSeePairCap(c){
   const me=meName();
   if(c.from===me||c.from==='ゆうま')return true;
@@ -2639,14 +2753,14 @@ function canSeePairCap(c){
   return false;
 }
 function timelinePosts(){
-  const caps=(S.capsules||[]).filter(c=>!isPairCap(c)).map(c=>({
+  const caps=(S.capsules||[]).filter(c=>!isPairCap(c)&&!isDirectCap(c)).map(c=>({
     id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,
     at:c.createdAt||Date.now(),openAt:c.openAt,mediaId:c.mediaId,
     sealed:c.sealed,tags:c.tags||[],loc:c.loc,capsule:c,
     layer:c.layer,promoted:!!c.promoted,
     opened:canViewCapContent(c)||c.sealed===false||c.layer==='now',visibility:c.visibility,
   }));
-  const opened=(S.opened||[]).filter(o=>!isPairCap(o)).map(o=>({
+  const opened=(S.opened||[]).filter(o=>!isPairCap(o)&&!isDirectCap(o)).map(o=>({
     id:o.id,from:o.from,to:o.to||'self',type:o.type,text:o.text,
     at:o.openedAt,openAt:o.openedAt,mediaId:o.mediaId,
     sealed:false,tags:o.tags||[],opened:true,capsule:null,
@@ -3601,7 +3715,7 @@ function defaults(){
       {id:'d1',with:'みお',withId:'u1',unread:1,messages:[
         {from:'みお',text:'今日の写真見れた？',at:now-3600e3,openAt:null},
         {from:'ゆうま',text:'まだ封じてる！開封楽しみ',at:now-3000e3,openAt:null},
-        {from:'みお',text:'1週間後に届く秘密',at:now-1800e3,openAt:addDays(7)},
+        {from:'みお',text:'またあとで話そう',at:now-1800e3,openAt:null},
       ]},
       {id:'d2',with:'けんと',withId:'u2',unread:0,messages:[
         {from:'けんと',text:'今度のカプセルいつ開く？',at:now-864e5},
@@ -3716,11 +3830,11 @@ function msgOpenAt(days){
   if(days===365)return addDays(365);
   return addDays(days);
 }
-function isMsgOpen(m){return !!(m.openAt&&new Date(m.openAt)<=Date.now())}
+function isMsgOpen(m){return !m.openAt||new Date(m.openAt)<=Date.now()}
 function migrateMessages(){
   let ch=false;
   S.dms?.forEach(d=>d.messages.forEach(m=>{
-    if(m.openAt===undefined||m.openAt===null){m.openAt=addDays(7);ch=true;}
+    if(m.openAt){m.openAt=null;ch=true;}
   }));
   if(ch)save();
 }
@@ -3778,90 +3892,102 @@ function openFriendSpace(memberId){
   haptic();
 }
 
-function renderHomeWidget(){
+function getNextCapsule(){
+  const me=meName();
+  const mine=c=>c.from===me||c.from==='ゆうま';
+  const sealed=(S.capsules||[]).filter(c=>c.sealed&&mine(c));
+  const ready=sealed.filter(c=>new Date(c.openAt)<=Date.now());
+  if(ready.length)return ready.sort((a,b)=>new Date(a.openAt)-new Date(b.openAt))[0];
+  const waiting=sealed.filter(c=>new Date(c.openAt)>Date.now());
+  if(waiting.length)return waiting.sort((a,b)=>new Date(a.openAt)-new Date(b.openAt))[0];
+  return null;
+}
+function timelineFeedPosts(){
+  const me=meName();
+  const next=getNextCapsule();
+  return timelinePosts().filter(p=>{
+    if(next&&p.id===next.id)return false;
+    if(p.sealed&&!p.opened&&(p.from===me||p.from==='ゆうま'))return false;
+    return true;
+  });
+}
+function renderNextCapsule(){
   const w=$('homeWidget');
   if(!w)return;
-  const next=pending().sort((a,b)=>new Date(a.openAt)-new Date(b.openAt))[0];
-  if(!next){w.classList.add('hidden');return}
-  w.classList.remove('hidden');
+  const next=getNextCapsule();
+  const cdEl=$('widgetCountdown');
+  const subEl=$('widgetSub');
+  const barEl=$('widgetBar');
+  const openBtn=$('widgetOpenBtn');
+  if(!next){
+    w.classList.remove('ready');
+    cdEl.textContent='—';
+    subEl.textContent='いま開く予定のカプセルはありません';
+    if(barEl)barEl.classList.add('hidden');
+    openBtn?.classList.add('hidden');
+    return;
+  }
+  if(barEl)barEl.classList.remove('hidden');
+  const ready=new Date(next.openAt)<=Date.now();
+  w.classList.toggle('ready',ready);
   const cd=countdownText(next.openAt);
-  $('widgetCountdown').textContent=cd.text;
-  $('widgetSub').textContent=`${capDestLabel(next)} · ${TYPE_JA[next.type]||next.type}`;
-  $('widgetFill').style.width=sealProgress(next)+'%';
+  cdEl.textContent=ready?'開封できる':cd.text;
+  subEl.textContent=`${capDestLabel(next)} · ${TYPE_JA[next.type]||next.type}${next.text?' · '+next.text.slice(0,28):''}`;
+  $('widgetFill').style.width=ready?'100%':sealProgress(next)+'%';
+  if(openBtn){
+    openBtn.classList.toggle('hidden',!ready);
+    openBtn.onclick=()=>{if(next)startOpening([next],false);haptic()};
+  }
 }
+function renderHomeWidget(){renderNextCapsule()}
 
-function renderTimeline(){
-  renderDailyQuestion();
-  renderTodayPhotos();
-  renderTimeMachine();
-  checkLastYearTodayNotif();
-  checkUnlockNotifs();
-  checkLimitedPromptNotif();
-  checkGlobalUnlock();
-  checkBirthday();
-  renderCohortSection();
-  renderHomeWidget();
-  renderActivityFeed();
-  checkOpenPreview();
+function renderTimelineFeed(){
   const el=$('timelineFeed');
   if(!el)return;
   const me=meName();
-  const posts=timelinePosts();
+  const posts=timelineFeedPosts();
   if(!posts.length){
-    el.innerHTML='<div class="empty-state" style="padding:48px 0">タイムラインは空です。<br><span style="color:var(--ink-3)">＋から最初の記憶を封じましょう。</span></div>';
+    el.innerHTML='<div class="empty-state" style="padding:40px 0">まだ投稿がありません。<br><span style="color:var(--ink-3)">＋から記憶を封じましょう。</span></div>';
     return;
   }
   el.innerHTML=posts.map(p=>{
     const m=MEMBERS.find(x=>x.n===p.from);
     const avStyle=m?`style="background:${m.c}"`:'';
     const avChar=m?m.i:(p.from===me||p.from==='ゆうま'?'ゆ':'?');
+    const isMe=p.from===me||p.from==='ゆうま';
     const dest=p.to==='group'?groupNameById(p.groupId)||(S.groupName||GROUP):p.to&&p.to!=='self'?p.to:'';
     const locked=p.sealed&&!p.opened;
-    const daysLeft=locked&&p.openAt?daysUntil(p.openAt):null;
-    const previewSoon=locked&&daysLeft!==null&&daysLeft<=3&&daysLeft>0;
-    const tags=(p.tags||[]).map(t=>`<span class="tl-tag">#${esc(t)}</span>`).join('');
+    const isFriendTodayPhoto=p.layer==='now'&&p.type==='photo'&&isToday(p.at)&&!isMe;
+    const photoLocked=isFriendTodayPhoto&&!hasPostedTodayPhoto();
     let body='';
     if(locked){
-      body=`<div class="tl-body-sealed">${previewSoon?'<div class="preview-flare"></div>':''}
-        <div class="mosaic"></div>
-        <div class="lock-core">
-          <div class="ico">🔒</div>
-          <div class="lbl">封印中 · 中身は見えません</div>
-          <div class="when">${p.openAt?formatWhen({openAt:p.openAt}):'開封日まで'}</div>
-        </div></div>`;
+      body=`<div class="tl-body-sealed"><div class="lock-core"><div class="ico">🔒</div><div class="lbl">${esc(p.from)} · 封印中</div><div class="when">${p.openAt?formatWhen({openAt:p.openAt}):''}</div></div></div>`;
     }else if(p.mediaId){
       if(photoLocked){
-        body=`<div class="tl-open-body tl-photo-locked"><img data-lazy="${esc(p.mediaId)}" alt=""><div class="tp-lock-hint">撮ると、みんなの写真が見える</div></div>${p.text?`<div class="tl-open-caption" style="filter:blur(8px);opacity:.4">${esc(p.text)}</div>`:''}`;
+        body=`<div class="tl-open-body tl-photo-locked"><img data-lazy="${esc(p.mediaId)}" alt=""><div class="tp-lock-hint">撮ると、みんなの写真が見える</div></div>`;
       }else{
-        body=`<div class="tl-open-body"><img data-lazy="${esc(p.mediaId)}" alt=""></div>${p.text?`<div class="tl-open-caption">${esc(p.text)}</div>`:''}`;
+        body=`<div class="tl-open-body"><img data-lazy="${esc(p.mediaId)}" alt=""></div>`;
       }
-    }else if(p.text){
-      body=`<div class="tl-open-caption">${esc(p.text)}</div>`;
     }
-    const canReply=!locked&&p.from!==me&&p.from!=='ゆうま'&&MEMBERS.some(x=>x.n===p.from);
-    const replyBtn=canReply?`<button type="button" class="tl-reply-btn" data-reply-to="${esc(MEMBERS.find(x=>x.n===p.from)?.id||'')}">DMで返信</button>`:'';
-    const openBtn=locked&&p.openAt&&new Date(p.openAt)<=Date.now()&&p.capsule?`<button type="button" class="tl-reply-btn" data-open-id="${esc(p.id)}">開封する</button>`:'';
-    const isFriendTodayPhoto=p.layer==='now'&&p.type==='photo'&&isToday(p.at)&&p.from!==me&&p.from!=='ゆうま';
-    const photoLocked=isFriendTodayPhoto&&!hasPostedTodayPhoto();
-    const canPromote=!locked&&p.layer==='now'&&(p.from===me||p.from==='ゆうま')&&!p.promoted&&p.capsule;
+    const caption=p.text&&!locked?`<div class="tl-open-caption">${esc(p.text)}</div>`:'';
+    const song=p.linkedSong&&!locked?`<div class="arb-song" style="margin-top:8px">🎵 ${esc(p.linkedSong.title)}</div>`:'';
+    const canReply=!locked&&!isMe&&MEMBERS.some(x=>x.n===p.from);
+    const replyBtn=canReply?`<button type="button" class="tl-reply-btn" data-reply-to="${esc(MEMBERS.find(x=>x.n===p.from)?.id||'')}">返信</button>`:'';
+    const canPromote=!locked&&p.layer==='now'&&isMe&&!p.promoted&&p.capsule;
     const promoteBtn=canPromote?`<button type="button" class="tl-reply-btn" data-promote-id="${esc(p.id)}">未来にも残す</button>`:'';
-    return`<article class="tl-item${previewSoon?' preview-soon':''}" data-id="${esc(p.id)}">
+    const badge=locked?'🔒':isMe?'あなた':'';
+    return`<article class="tl-item${locked?' compact':''}" data-id="${esc(p.id)}">
       <div class="tl-item-head">
         <div class="tl-av" ${avStyle}>${avChar}</div>
-        <div><div class="tl-name">${esc(p.from===me||p.from==='ゆうま'?'あなた':p.from)}</div>
-        <div class="tl-meta">${timeAgo(p.at)}${dest?' · → '+esc(dest):''}</div></div>
-        <span class="tl-badge${previewSoon?' soon':''}">${locked?(previewSoon?`あと${daysLeft}日`:'🔒 封印'):'開封済み'}</span>
+        <div><div class="tl-name">${esc(isMe?'あなた':p.from)}</div>
+        <div class="tl-meta">${timeAgo(p.at)}${dest?' · '+esc(dest):''}</div></div>
+        ${badge?`<span class="tl-badge">${badge}</span>`:''}
       </div>
-      ${body}
-      ${tags?`<div class="tl-tags">${tags}</div>`:''}
-      <div class="tl-actions">${openBtn}${promoteBtn}${replyBtn}</div>
+      ${body}${caption}${song}
+      ${(replyBtn||promoteBtn)?`<div class="tl-actions">${promoteBtn}${replyBtn}</div>`:''}
     </article>`;
   }).join('');
   loadLazyThumbs(el);
-  el.querySelectorAll('[data-open-id]').forEach(b=>b.addEventListener('click',()=>{
-    const cap=S.capsules.find(c=>c.id===b.dataset.openId);
-    if(cap)startOpening([cap],false);
-  }));
   el.querySelectorAll('[data-reply-to]').forEach(b=>b.addEventListener('click',()=>{
     if(b.dataset.replyTo){openFriendSpace(b.dataset.replyTo);fsTab='chat';document.querySelectorAll('.fs-tab').forEach(x=>x.classList.toggle('on',x.dataset.fstab==='chat'));$('fsPosts')?.classList.add('hidden');$('fsChat')?.classList.remove('hidden');$('fdmCompose')?.classList.remove('hidden');renderFriendSpace()}
   }));
@@ -3869,6 +3995,17 @@ function renderTimeline(){
     openPromoteOverlay(b.dataset.promoteId);
     haptic();
   }));
+}
+
+function renderTimeline(){
+  checkLastYearTodayNotif();
+  checkUnlockNotifs();
+  checkLimitedPromptNotif();
+  checkGlobalUnlock();
+  checkBirthday();
+  checkOpenPreview();
+  renderNextCapsule();
+  renderTimelineFeed();
 }
 
 function renderTodayPhotos(){
@@ -3918,7 +4055,7 @@ function startWaitTimer(){
   stopWaitTimer();
   if(!$('panel-waiting')?.classList.contains('active'))return;
   waitTimer=setInterval(()=>{
-    if($('panel-waiting')?.classList.contains('active')){renderTimeline();renderHomeWidget()}
+    if($('panel-waiting')?.classList.contains('active')){renderNextCapsule();renderTimelineFeed()}
     else stopWaitTimer();
   },30000);
 }
@@ -4153,29 +4290,23 @@ function renderSharedFriends(){
   if(!el)return;
   el.innerHTML=MEMBERS.map(m=>{
     const dm=S.dms?.find(d=>d.withId===m.id);
-    const sealedMsgs=dm?.messages.filter(x=>!isMsgOpen(x)).length||0;
-    const posts=S.capsules.filter(c=>c.from===m.n||c.to===m.n).length;
-    const preview=dm?.messages[dm.messages.length-1];
-    const sub=sealedMsgs?`${sealedMsgs}件の未来DM`:preview?preview.text.slice(0,24):`${posts}件の記憶`;
+    const last=dm?.messages[dm.messages.length-1];
+    const pairwise=pairwiseItems(m.n).length;
+    const preview=last?(last.kind==='capsule'?'🎁 カプセル':(last.text||'').slice(0,24)):(pairwise?`${pairwise}件の記憶`:'メッセージを送る');
     return`<div class="friend-row" data-mid="${m.id}">
       <div class="fr-av" style="background:${m.c}">${m.i}</div>
       <div class="fr-body">
         <div class="fr-name">${esc(m.n)}</div>
-        <div class="fr-sub">${esc(sub)}</div>
+        <div class="fr-sub">${esc(preview)}</div>
       </div>
-      ${sealedMsgs?`<span class="fr-badge">${sealedMsgs}</span>`:''}
     </div>`;
   }).join('');
   el.querySelectorAll('.friend-row').forEach(r=>r.addEventListener('click',()=>openFriendSpace(r.dataset.mid)));
 }
 
 function renderShared(){
-  sharedTab=S.sharedTab||'friends';
-  document.querySelectorAll('.shared-top-tab').forEach(t=>t.classList.toggle('on',t.dataset.stab===sharedTab));
-  $('sharedDmList')?.classList.toggle('hidden',sharedTab!=='dm');
-  $('sharedList')?.classList.toggle('hidden',sharedTab!=='friends');
-  if(sharedTab==='dm')renderSharedDms();
-  else renderSharedFriends();
+  sharedTab='friends';
+  renderSharedFriends();
 }
 
 function renderMessages(){
@@ -4360,21 +4491,12 @@ function renderFriendSpace(){
   if(!m)return;
   const postsEl=$('fsPosts');
   const chatEl=$('fsChat');
-  const me=S.auth?.name||USER;
-  const posts=S.capsules.filter(c=>{
-    if(isPairCap(c))return canSeePairCap(c)&&(c.from===m.n||c.to===m.n||(c.from===me||c.from==='ゆうま'));
-    return c.from===m.n||(c.to===m.n&&(c.from===me||c.from==='ゆうま'));
-  });
-  postsEl.innerHTML=posts.length?posts.map(c=>{
-    const locked=isCapLocked(c);
-    const pairBadge=isPairCap(c)?'<span style="font-size:10px;color:var(--warm,#e8a87c);margin-left:6px">🔒 秘密</span>':'';
-    return`<div class="fs-post">
-      <div class="fp-when">${formatWhen(c)} · ${TYPE_JA[c.type]||c.type}${pairBadge}</div>
-      ${locked
-        ?`<div class="stl-sealed-box" style="padding:24px 16px;margin-top:8px"><div class="ico">🔒</div><div class="lbl">封印中 · 開封まで見られません</div></div>`
-        :`<div class="fp-text">${esc(c.text||'（封じられた記憶）')}</div>`}
-    </div>`;
-  }).join(''):'<div class="empty-state" style="padding:24px 0">Future Postsはまだありません</div>';
+  const me=meName();
+  const pairwise=pairwiseItems(m.n);
+  postsEl.innerHTML=pairwise.length
+    ?pairwise.map(p=>renderPairwisePost(p,me)).join('')
+    :'<div class="empty-state" style="padding:24px 0">ふたりの記憶はまだありません<br><span style="color:var(--ink-3)">＋から個人に封じると、ここにだけ見えます</span></div>';
+  loadLazyThumbs(postsEl);
 
   const gr=$('fsGiftRow');
   if(gr){
@@ -4385,16 +4507,21 @@ function renderFriendSpace(){
   }
 
   const dm=S.dms?.find(d=>d.withId===activeFriendId);
-  if(dm){
+  if(dm&&dm.messages.length){
     chatEl.innerHTML=dm.messages.map(msg=>{
       const mine=msg.from===me||msg.from==='ゆうま';
-      if(!isMsgOpen(msg)){
-        const d=daysUntil(msg.openAt);
-        return`<div class="fdm-bubble sealed">${mine?'':'🔒 '}${d?`あと${d}日で開封`:'まもなく開封'}</div>`;
+      if(msg.kind==='capsule'){
+        const meta=msg.capsuleMeta||{};
+        return`<div class="dm-capsule-card ${mine?'me':''}">
+          <div class="dcc-ico">🎁</div>
+          <div>${mine?'カプセルを送りました':'カプセルが届きました'}</div>
+          <div>${esc((msg.text||'').slice(0,60))}</div>
+          <div class="dcc-when">${esc(TYPE_JA[meta.type]||meta.type||'記憶')} · ${esc(meta.when||'')}</div>
+        </div>`;
       }
       return`<div class="fdm-bubble ${mine?'me':'them'}">${esc(msg.text)}</div>`;
     }).join('');
-  }else chatEl.innerHTML='<div class="empty-state">未来DMを送ってみましょう</div>';
+  }else chatEl.innerHTML='<div class="empty-state">メッセージを送ってみましょう</div>';
 
   $('fdmCompose').classList.toggle('hidden',fsTab!=='chat');
   if(fsTab==='trail')renderFriendTrail(m);
@@ -4710,28 +4837,64 @@ function renderAuth(container){
       <div class="auth-info"><div style="font-weight:600">${esc(S.auth.name)}</div><div class="auth-email">${esc(S.auth.email)}</div></div>
       <button type="button" class="auth-logout" id="authLogout">ログアウト</button>
     </div></div>`;
-    el.querySelector('#authLogout')?.addEventListener('click',()=>{S.auth=null;save();renderAll();toast('ログアウトしました');haptic()});
+    el.querySelector('#authLogout')?.addEventListener('click',()=>{S.auth=null;S.authStep=null;S.pendingAuth=null;save();renderAll();toast('ログアウトしました');haptic()});
     return;
   }
   const mode=S.authMode||'login';
+  if(S.authStep==='verify'&&S.pendingAuth){
+    const pa=S.pendingAuth;
+    el.innerHTML=`<div class="auth-card"><h3>確認コード</h3>
+      <p class="auth-hint"><strong>${esc(ADMIN_EMAIL)}</strong> に6桁のコードを送信しました。<br>メールを確認して入力してください。</p>
+      <div class="auth-field"><label>6桁コード</label><input type="text" class="auth-code-input" id="authCode" maxlength="6" inputmode="numeric" placeholder="000000" autocomplete="one-time-code"></div>
+      <button type="button" class="auth-submit" id="authVerify">ログイン完了</button>
+      <button type="button" class="auth-submit" id="authBack" style="margin-top:8px;background:var(--bg-2);color:var(--ink)">戻る</button>
+    </div>`;
+    el.querySelector('#authBack')?.addEventListener('click',()=>{S.authStep=null;save();renderAuth(el);haptic()});
+    el.querySelector('#authVerify')?.addEventListener('click',async()=>{
+      const code=el.querySelector('#authCode')?.value.trim();
+      if(!code){toast('コードを入力してください');return}
+      if(!S.pendingAuth||Date.now()>S.pendingAuth.expires){
+        toast('コードの有効期限が切れました');S.authStep=null;save();renderAuth(el);return;
+      }
+      if(code!==S.pendingAuth.code){toast('コードが正しくありません');return}
+      const pa=S.pendingAuth;
+      if(pa.mode==='signup'){
+        if(S.users.find(u=>u.email===pa.email)){toast('登録済みです');return}
+        const uid='u'+Date.now();
+        S.users.push({id:uid,name:pa.name,email:pa.email,passHash:pa.passHash,createdAt:Date.now()});
+        S.auth={name:pa.name,email:pa.email,loggedIn:true,id:uid};
+        toast('アカウントを作成しました');
+      }else{
+        const u=S.users.find(x=>x.email===pa.email);
+        if(!u){toast('アカウントが見つかりません');return}
+        if(u.passHash!==pa.passHash){toast('パスワードが違います');return}
+        S.auth={name:u.name,email:u.email,loggedIn:true,id:u.id};
+        toast('ログインしました');
+      }
+      S.authStep=null;S.pendingAuth=null;
+      save();renderAll();haptic();
+    });
+    return;
+  }
   el.innerHTML=`<div class="auth-card"><h3>${mode==='login'?'ログイン':'アカウント作成'}</h3>
-    <p class="auth-sub">メールとパスワードで登録 · データはこの端末に保存されます</p>
+    <p class="auth-sub">確認コードは <strong>${esc(ADMIN_EMAIL)}</strong> に届きます</p>
     <div class="auth-tabs">
       <button type="button" class="${mode==='login'?'on':''}" data-authmode="login">ログイン</button>
       <button type="button" class="${mode==='signup'?'on':''}" data-authmode="signup">新規登録</button>
     </div>
-    <div class="auth-field"><label>名前</label><input type="text" id="authName" placeholder="ゆうま" autocomplete="name"></div>
+    <div class="auth-field"><label>名前</label><input type="text" id="authName" placeholder="ゆうま" autocomplete="name" ${mode==='login'?'':'required'}></div>
     <div class="auth-field"><label>メール</label><input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"></div>
     <div class="auth-field"><label>パスワード</label><input type="password" id="authPass" autocomplete="${mode==='signup'?'new-password':'current-password'}" minlength="6"></div>
     ${mode==='signup'?'<div class="auth-field"><label>パスワード（確認）</label><input type="password" id="authPass2" autocomplete="new-password" minlength="6"></div>':''}
-    <button type="button" class="auth-submit" id="authSubmit">${mode==='login'?'ログイン':'アカウントを作成'}</button>
+    <button type="button" class="auth-submit" id="authSubmit">確認コードを送信</button>
   </div>`;
-  el.querySelectorAll('[data-authmode]').forEach(b=>b.addEventListener('click',()=>{S.authMode=b.dataset.authmode;renderAuth(el);haptic()}));
+  el.querySelectorAll('[data-authmode]').forEach(b=>b.addEventListener('click',()=>{S.authMode=b.dataset.authmode;S.authStep=null;renderAuth(el);haptic()}));
   el.querySelector('#authSubmit')?.addEventListener('click',async()=>{
-    const name=el.querySelector('#authName').value.trim();
+    const name=el.querySelector('#authName').value.trim()||(mode==='login'?'':USER);
     const email=el.querySelector('#authEmail').value.trim().toLowerCase();
     const pass=el.querySelector('#authPass').value;
-    if(!name||!email||!pass){toast('すべて入力してください');return}
+    if(!email||!pass){toast('メールとパスワードを入力してください');return}
+    if(mode==='signup'&&!name){toast('名前を入力してください');return}
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('メール形式が正しくありません');return}
     if(pass.length<6){toast('パスワードは6文字以上');return}
     const hash=await hashPass(pass);
@@ -4739,19 +4902,20 @@ function renderAuth(container){
       const pass2=el.querySelector('#authPass2')?.value;
       if(pass!==pass2){toast('パスワードが一致しません');return}
       if(S.users.find(u=>u.email===email)){toast('このメールは登録済みです');return}
-      S.users.push({id:'u'+Date.now(),name,email,passHash:hash,createdAt:Date.now()});
-      S.auth={name,email,loggedIn:true,id:S.users.at(-1).id};
-      toast('アカウントを作成しました');
     }else{
       const u=S.users.find(x=>x.email===email);
       if(!u){toast('アカウントが見つかりません');return}
       const ok=u.passHash?u.passHash===hash:u.pass===pass;
       if(!ok){toast('パスワードが違います');return}
       if(!u.passHash){u.passHash=hash;delete u.pass}
-      S.auth={name:u.name,email:u.email,loggedIn:true,id:u.id};
-      toast('ログインしました');
     }
-    save();renderAll();haptic();
+    const code=generateOtp();
+    S.pendingAuth={mode,name:name||S.users.find(u=>u.email===email)?.name||USER,email,passHash:hash,code,expires:Date.now()+600000};
+    S.authStep='verify';
+    save();
+    await sendVerificationCode(email,code,mode,name);
+    renderAuth(el);
+    haptic();
   });
 }
 
@@ -4996,7 +5160,11 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
             S.homeNotifs.unshift({id:'inv'+Date.now(),title:'招待を送りました',sub:t.contact+' に届きます',read:false});
           }else{
             S.capsules.unshift(cap);
-            if(t.vis==='pair'){
+            if(t.type==='friend'){
+              const fid=MEMBERS.find(x=>x.n===t.to)?.id;
+              if(fid)notifyDmCapsule(fid,cap);
+              pushHomeNotif('カプセルを送りました',fromName+' → '+t.to,'messages');
+            }else if(t.vis==='pair'){
               pushHomeNotif('秘密のカプセルが届きました',fromName+' からふたりだけの記憶','messages');
             }else pushActivity('post_created',{postId:capId});
           }
@@ -5090,34 +5258,23 @@ document.querySelectorAll('.fs-tab').forEach(t=>t.addEventListener('click',()=>{
   if(fsTab==='trail')renderFriendSpace();
   haptic();
 }));
-document.querySelectorAll('#fdmDelay button').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('#fdmDelay button').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on');
-  fdmDelayDays=+b.dataset.delay;
-  haptic();
-}));
-function sendFutureDm(){
+function sendDm(){
   if(!activeFriendId)return;
   const text=$('fdmInput')?.value.trim();
   if(!text)return;
-  const me=S.auth?.name||USER;
+  const me=meName();
   const m=MEMBERS.find(x=>x.id===activeFriendId);
   if(!m)return;
-  let dm=(S.dms||[]).find(d=>d.withId===activeFriendId);
-  if(!dm){
-    dm={id:'d'+Date.now(),with:m.n,withId:activeFriendId,unread:0,messages:[]};
-    S.dms=S.dms||[];S.dms.push(dm);
-  }
-  const openAt=addDays(fdmDelayDays||1);
-  dm.messages.push({from:me,text,at:Date.now(),openAt});
+  const dm=ensureDm(activeFriendId);
+  if(!dm)return;
+  dm.messages.push({from:me,text,at:Date.now(),openAt:null});
   $('fdmInput').value='';
   save();renderFriendSpace();renderShared();
-  const dl=fdmDelayDays===1?'1日':fdmDelayDays===7?'1週間':fdmDelayDays===30?'1ヶ月':fdmDelayDays===365?'1年':fdmDelayDays+'日';
-  toast(`${dl}後に届くメッセージを封じました`);
+  toast('送信しました');
   haptic();
 }
-$('fdmSend')?.addEventListener('click',sendFutureDm);
-$('fdmInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendFutureDm()});
+$('fdmSend')?.addEventListener('click',sendDm);
+$('fdmInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendDm()});
 
 /* Legacy DM overlay — optional */
 $('dmClose')?.addEventListener('click',()=>$('dmOverlay')?.classList.remove('open'));
