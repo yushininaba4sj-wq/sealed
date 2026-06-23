@@ -39,8 +39,9 @@
   --grain:0;
   --r:20px;--r-sm:14px;--r-pill:999px;
   --font:-apple-system,BlinkMacSystemFont,'SF Pro Display','Hiragino Sans','Inter',sans-serif;
-  --font-display:'Playfair Display',Georgia,serif;
+  --font-display:'Inter',var(--font);
   --font-sans:'Inter',var(--font);
+  --font-weight:300;
   --spring:cubic-bezier(.34,1.56,.64,1);
   --smooth:cubic-bezier(.4,0,.2,1);
   --safe-t:env(safe-area-inset-top,0px);
@@ -64,6 +65,7 @@ body{
   transition:background .5s,color .5s;
 }
 button,input,textarea{font:inherit;color:inherit}
+body{font-weight:400}
 button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:transparent}
 .hidden{display:none!important}
 body::before{display:none}
@@ -931,178 +933,290 @@ body::after{display:none}
   width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--accent-inv);
   font-size:16px;flex-shrink:0;
 }
+
+/* ── 3-Tab Architecture ── */
+.app-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(10px + var(--safe-t)) 20px 12px;position:sticky;top:0;z-index:30;
+  background:var(--bg);
+}
+.app-logo{font-size:17px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.app-header-actions{display:flex;gap:4px;align-items:center}
+.icon-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--ink)}
+.icon-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6}
+.fab-compose{
+  position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 16px);right:20px;
+  width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-inv);
+  box-shadow:var(--shadow-lg);font-size:24px;z-index:90;display:grid;place-items:center;
+}
+.tab-nav-wrap{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  padding-bottom:var(--safe-b);background:var(--bg);
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.tab-nav{
+  max-width:430px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;
+  height:var(--nav-h);
+}
+.tab-nav button{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  font-size:11px;font-weight:500;color:var(--ink-3);letter-spacing:.02em;
+}
+.tab-nav button svg{width:22px;height:22px;stroke-width:1.6}
+.tab-nav button.active{color:var(--ink)}
+.tab-nav button.active svg{stroke-width:2}
+
+/* Private cards */
+.private-list{padding:8px 20px 100px;display:flex;flex-direction:column;gap:16px}
+.private-card{
+  padding:22px 20px;border-radius:var(--r);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.05);position:relative;
+}
+.private-card .pc-date{font-size:12px;color:var(--ink-3);font-weight:400}
+.private-card .pc-text{font-size:16px;line-height:1.55;margin-top:10px;font-weight:400}
+.private-card .pc-meta{display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+.state-pill{
+  font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 10px;border-radius:999px;
+}
+.state-pill.locked{background:rgba(255,255,255,.06);color:var(--ink-3)}
+.state-pill.waiting{background:rgba(255,255,255,.12);color:var(--ink);animation:pulseWait 2s ease infinite}
+.state-pill.opened{background:var(--accent);color:var(--accent-inv)}
+@keyframes pulseWait{0%,100%{opacity:1}50%{opacity:.65}}
+.private-card .pc-open{font-size:12px;color:var(--ink-3)}
+.private-card .pc-thumb{margin-top:14px;border-radius:12px;overflow:hidden;max-height:160px}
+.private-card .pc-thumb img,.private-card .pc-thumb video{width:100%;object-fit:cover;display:block}
+
+/* Shared */
+.shared-list{padding:0 20px 100px}
+.friend-row{
+  display:flex;align-items:center;gap:14px;padding:16px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;
+}
+.friend-row:active{opacity:.7}
+.friend-row .fr-av{
+  width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
+  font-size:18px;font-weight:500;color:#fff;flex-shrink:0;
+}
+.friend-row .fr-body{flex:1;min-width:0}
+.friend-row .fr-name{font-size:16px;font-weight:500}
+.friend-row .fr-sub{font-size:13px;color:var(--ink-3);margin-top:3px}
+.friend-row .fr-badge{font-size:11px;color:var(--ink-3);flex-shrink:0}
+
+.friend-space{display:none;flex-direction:column;min-height:calc(100dvh - var(--nav-h))}
+.friend-space.active{display:flex}
+.shared-list.hidden{display:none}
+.fs-top{padding:8px 20px 0;display:flex;align-items:center;gap:12px}
+.fs-back{width:36px;height:36px;border-radius:50%;background:var(--bg-2);font-size:18px}
+.fs-head{flex:1}
+.fs-head .fs-name{font-size:20px;font-weight:600}
+.fs-head .fs-sub{font-size:13px;color:var(--ink-3);margin-top:2px}
+.fs-tabs{display:flex;gap:20px;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.fs-tab{font-size:14px;font-weight:500;color:var(--ink-3);padding-bottom:8px;position:relative}
+.fs-tab.on{color:var(--ink)}
+.fs-tab.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--ink)}
+.fs-content{flex:1;padding:16px 20px 120px;overflow-y:auto}
+.fs-posts{display:flex;flex-direction:column;gap:12px}
+.fs-post{
+  padding:16px;border-radius:var(--r-sm);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.04);
+}
+.fs-post .fp-when{font-size:12px;color:var(--ink-3)}
+.fs-post .fp-text{font-size:15px;margin-top:8px;line-height:1.5}
+
+/* Future DM */
+.future-dm-list{display:flex;flex-direction:column;gap:10px}
+.fdm-bubble{max-width:85%;padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.45}
+.fdm-bubble.me{align-self:flex-end;background:var(--accent);color:var(--accent-inv);border-bottom-right-radius:4px}
+.fdm-bubble.them{align-self:flex-start;background:var(--bg-2);border-bottom-left-radius:4px}
+.fdm-bubble.sealed{
+  align-self:flex-start;background:var(--bg-3);color:var(--ink-3);
+  border:1px dashed rgba(255,255,255,.12);font-style:italic;
+}
+.fdm-compose{
+  position:fixed;bottom:calc(var(--nav-h) + var(--safe-b));left:0;right:0;
+  padding:12px 16px;background:var(--bg);border-top:1px solid rgba(255,255,255,.06);
+  max-width:430px;margin:0 auto;
+}
+.fdm-compose.hidden{display:none}
+.fdm-delay{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto}
+.fdm-delay button{
+  padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;
+  background:var(--bg-2);color:var(--ink-3);white-space:nowrap;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.06);
+}
+.fdm-delay button.on{background:var(--accent);color:var(--accent-inv);border-color:var(--accent)}
+.fdm-input-row{display:flex;gap:8px}
+.fdm-input{
+  flex:1;padding:12px 16px;border-radius:var(--r-pill);border:none;
+  background:var(--bg-2);font-size:14px;outline:none;color:var(--ink);
+}
+.fdm-send{width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--accent-inv);font-size:16px}
+
+/* Archive */
+.archive-view{padding:0 20px 100px}
+.archive-month{font-family:var(--font-display);font-size:28px;font-weight:600;margin-bottom:16px}
+.archive-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:32px}
+.archive-cell{
+  aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--bg-2);
+  position:relative;border:1px solid rgba(255,255,255,.04);
+}
+.archive-cell img{width:100%;height:100%;object-fit:cover}
+.archive-cell .ac-day{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.archive-cell.text-cell{padding:8px;font-size:9px;line-height:1.3;color:var(--ink-2);display:grid;place-items:center;text-align:center}
+.archive-log{display:flex;flex-direction:column;gap:10px}
+.archive-log-item{
+  padding:14px 16px;border-radius:var(--r-sm);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.04);display:flex;gap:12px;align-items:center;
+}
+.archive-log-item .ali-thumb{width:48px;height:48px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--bg-3)}
+.archive-log-item .ali-thumb img{width:100%;height:100%;object-fit:cover}
+.archive-log-item .ali-body{flex:1;min-width:0}
+.archive-log-item .ali-title{font-size:14px;font-weight:500}
+.archive-log-item .ali-sub{font-size:12px;color:var(--ink-3);margin-top:2px}
+
+.settings-overlay{
+  position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.85);
+  opacity:0;pointer-events:none;transition:opacity .35s;
+}
+.settings-overlay.open{opacity:1;pointer-events:auto}
+.settings-panel{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
+  width:100%;max-width:430px;max-height:90dvh;overflow-y:auto;
+  background:var(--bg);border-radius:var(--r) var(--r) 0 0;
+  padding:20px 20px calc(24px + var(--safe-b));transition:transform .45s var(--spring);
+}
+.settings-overlay.open .settings-panel{transform:translateX(-50%) translateY(0)}
+.nav-wrap,.br-header,.br-feed-tabs{display:none!important}
+.create-friend-pick{margin-bottom:14px}
+.create-friend-pick.hidden{display:none}
+.create-friend-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.create-friend-chip{
+  padding:8px 14px;border-radius:999px;font-size:13px;font-weight:500;
+  background:var(--bg-2);color:var(--ink-2);border:1px solid rgba(255,255,255,.06);
+}
+.create-friend-chip.on{background:var(--accent);color:var(--accent-inv);border-color:var(--accent)}
 </style>
 </head>
 <body>
 <div class="app">
 
-  <section class="panel active" id="panel-home">
-    <div class="br-header">
-      <button type="button" class="br-header-btn" aria-label="友達">
-        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </button>
-      <div class="br-logo">Time Cap.</div>
-      <button type="button" class="notif-bell" id="notifBell" aria-label="通知">
+  <header class="app-header">
+    <div class="app-logo">Time Cap</div>
+    <div class="app-header-actions">
+      <button type="button" class="icon-btn" id="notifBell" aria-label="通知">
         <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="notif-badge hidden" id="notifBadge">0</span>
       </button>
+      <button type="button" class="icon-btn" id="openSettings" aria-label="設定">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
     </div>
-    <div class="br-feed-tabs">
-      <button type="button" class="br-tab on" data-feed="friends">私の友達</button>
-      <button type="button" class="br-tab" data-feed="all">みんな</button>
-    </div>
+  </header>
 
-    <div class="br-composer quick-capture" id="quickCapture">
-      <div class="qc-header">
-        <span class="qc-label">いまを封じる</span>
-        <span class="qc-friends" id="quickFriends">4人が投稿済み</span>
-      </div>
-      <textarea class="qc-text" id="quickCaption" placeholder="言葉を書く（写真だけでも、言葉だけでもOK）" maxlength="500"></textarea>
-      <div class="qc-preview hidden" id="quickPreview">
-        <button type="button" class="qc-preview-remove" id="quickPreviewRemove">×</button>
-        <div id="quickPreviewInner"></div>
-      </div>
-      <div class="br-composer-actions">
-        <button type="button" class="br-icon-btn" id="quickPhotoBtn" aria-label="写真">📷</button>
-        <button type="button" class="br-icon-btn" id="quickVideoBtn" aria-label="動画">🎥</button>
-        <button type="button" class="br-post-btn" id="quickSeal">封じる</button>
-      </div>
-      <input type="file" id="quickPhotoInput" accept="image/*" capture="environment" class="hidden">
-      <input type="file" id="quickVideoInput" accept="video/*" capture="environment" class="hidden">
-    </div>
+  <button type="button" class="fab-compose" id="openCreate" aria-label="封じる">+</button>
 
-    <div class="friends-feed">
-      <div id="friendsFeed"></div>
+  <!-- ① Private -->
+  <section class="panel active" id="panel-private">
+    <div class="panel-head" style="padding-top:0">
+      <h1 style="font-size:28px;font-weight:600">Private</h1>
+      <p class="sub">自分だけのタイムカプセル · 日記 · メモ</p>
     </div>
+    <div class="private-list" id="privateList"></div>
+  </section>
 
-    <details class="home-extra">
-      <summary>未来の記憶 · 今日の問い</summary>
-      <div class="home-extra-inner">
-        <div class="friends-pulse">
-          <div class="dots" id="friendDots"></div>
-          <p id="dailyStateLabel"><strong id="memoryCount">52</strong>件待機 · 今日<em id="friendCount">4</em>人が封じた</p>
+  <!-- ② Shared -->
+  <section class="panel" id="panel-shared">
+    <div id="sharedListView">
+      <div class="panel-head" style="padding-top:0">
+        <h1 style="font-size:28px;font-weight:600">Shared</h1>
+        <p class="sub">人との関係性 · 未来メッセージ</p>
+      </div>
+      <div class="shared-list" id="sharedList"></div>
+    </div>
+    <div class="friend-space" id="friendSpace">
+      <div class="fs-top">
+        <button type="button" class="fs-back" id="fsBack">←</button>
+        <div class="fs-head">
+          <div class="fs-name" id="fsName">みお</div>
+          <div class="fs-sub" id="fsSub">未来DM · タイムカプセル</div>
         </div>
-        <div class="quorum-bar" id="quorumBar"></div>
-        <div class="day0-banner hidden" id="day0Banner">Day 0 — 初回は1分後に開封（デモ）</div>
-        <div class="prompt-glass" id="promptCard">
-          <div class="label">今日の問い</div>
-          <div class="text" id="promptText">今日、何が笑顔にした？</div>
-          <div class="hint">タップでお題を変えて封じる</div>
-        </div>
-        <div class="pill-scroll" id="homeCapsules"></div>
       </div>
-    </details>
-
-    <div class="sec-label">すべての記憶</div>
-    <div class="timeline-feed" id="timelineFeed"></div>
-    <div style="height:32px"></div>
-  </section>
-
-  <section class="panel" id="panel-chat">
-    <div class="panel-head">
-      <h1>チャット</h1>
-      <p class="sub">身内とのメッセージ</p>
+      <div class="fs-tabs">
+        <button type="button" class="fs-tab on" data-fstab="posts">Future Posts</button>
+        <button type="button" class="fs-tab" data-fstab="chat">未来DM</button>
+      </div>
+      <div class="fs-content">
+        <div id="fsPosts" class="fs-posts"></div>
+        <div id="fsChat" class="future-dm-list hidden"></div>
+      </div>
     </div>
-    <div class="chat-search">
-      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" placeholder="検索" id="chatSearch">
-    </div>
-    <div class="dm-list" id="chatList" style="padding:0"></div>
-  </section>
-
-  <section class="panel" id="panel-capsules">
-    <div class="panel-head">
-      <h1>メモリーズ</h1>
-      <p class="sub">封じられた記憶のアーカイブ</p>
-    </div>
-    <div class="vault-hero">
-      <div class="num" id="vaultTotal">52</div>
-      <div class="label">件、未来を待っている</div>
-    </div>
-    <div class="mem-week" id="memGrid"></div>
-    <div class="shelf-wrap" id="shelfWrap"></div>
-    <div class="sec-label">開封済み</div>
-    <div class="archive-list opened-timeline" id="archiveList"></div>
-    <div class="sec-label">待機中</div>
-    <div class="pending-scroll" id="pendingList"></div>
-  </section>
-
-  <section class="panel" id="panel-inbox">
-    <div class="panel-head">
-      <h1>アクティビティ</h1>
-      <p class="sub">届いた記憶と通知</p>
-    </div>
-    <div class="filter-chips" id="filterChips">
-      <button type="button" class="filter-chip on" data-filter="all">すべて</button>
-      <button type="button" class="filter-chip" data-filter="open">開封</button>
-      <button type="button" class="filter-chip" data-filter="group">グループ</button>
-      <button type="button" class="filter-chip" data-filter="dm">DM</button>
-    </div>
-    <div class="group-sync" id="groupSync">
-      <div class="status" id="syncStatus">みんなの開封を待っています…</div>
-      <div class="online" id="syncOnline">3 / 5</div>
-      <div style="font-size:13px;opacity:.6">クォーラム 60% でモザイク解除</div>
-      <div class="countdown hidden" id="syncCountdown"></div>
-      <button type="button" class="sync-btn" id="syncBtn">一緒に開封する</button>
-    </div>
-    <div class="notif-list" id="notifList"></div>
-  </section>
-
-  <section class="panel" id="panel-profile">
-    <div id="authSection"></div>
-    <div class="profile-header" id="profileHeader">
-      <div class="profile-avatar" id="profileAvatar">ゆ</div>
-      <div class="profile-name" id="profileName">ゆうま</div>
-      <div class="profile-bio" id="profileBio">時間遅延型の感情保存<br>未来の自分へ、今を届ける</div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="n" id="statSealed">52</div><div class="l">封じた</div></div>
-      <div class="stat-card"><div class="n" id="statOpened">12</div><div class="l">開けた</div></div>
-      <div class="stat-card"><div class="n" id="statStreak">7</div><div class="l">連続日数</div></div>
-    </div>
-    <div class="future-pending">
-      <div class="n" id="futurePending">8</div>
-      <div class="l">未来の自分宛 · 開封待ち</div>
-    </div>
-    <div class="streak-card">
-      <div class="n" id="streakNum">7</div>
-      <div class="l">日連続で記憶を封じています</div>
-    </div>
-    <div class="group-section">
-      <h3>身内グループ（5人）</h3>
-      <div class="member-row" id="memberRow"></div>
-    </div>
-    <div style="padding:20px 24px 0">
-      <div class="settings-row" id="darkToggle">
-        <span>ダークモード</span>
-        <div class="toggle" id="darkSwitch"></div>
+    <div class="fdm-compose hidden" id="fdmCompose">
+      <div class="fdm-delay" id="fdmDelay">
+        <button type="button" class="on" data-delay="0">今すぐ</button>
+        <button type="button" data-delay="1">1日後</button>
+        <button type="button" data-delay="7">1週間後</button>
+        <button type="button" data-delay="365">1年後</button>
+      </div>
+      <div class="fdm-input-row">
+        <input type="text" class="fdm-input" id="fdmInput" placeholder="未来のメッセージを封じる…" maxlength="500">
+        <button type="button" class="fdm-send" id="fdmSend">↑</button>
       </div>
     </div>
   </section>
+
+  <!-- ③ Archive -->
+  <section class="panel" id="panel-archive">
+    <div class="panel-head" style="padding-top:0">
+      <h1 style="font-size:28px;font-weight:600">Archive</h1>
+      <p class="sub">開封済みの記録 · 人生ログ</p>
+    </div>
+    <div class="archive-view" id="archiveView"></div>
+  </section>
+
+  <!-- legacy hidden for JS compat -->
+  <div class="hidden" id="groupSync"><div id="syncStatus"></div><div id="syncOnline"></div><div id="syncCountdown"></div><button id="syncBtn"></button></div>
+  <div class="hidden" id="notifList"></div>
 </div>
 
-<div class="nav-wrap">
-  <nav class="nav-bar">
-    <button type="button" class="nav-btn active" data-tab="home">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9.5 12 3l9 6.5V20a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 20V9.5z"/></svg>
-      ホーム
+<div class="tab-nav-wrap">
+  <nav class="tab-nav">
+    <button type="button" class="tab-nav-btn active" data-tab="private">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Private
     </button>
-    <button type="button" class="nav-btn" data-tab="chat">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-      チャット
+    <button type="button" class="tab-nav-btn" data-tab="shared">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Shared
     </button>
-    <button type="button" class="nav-create" id="openCreate" aria-label="投稿">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-    </button>
-    <button type="button" class="nav-btn" data-tab="capsules">
+    <button type="button" class="tab-nav-btn" data-tab="archive">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      メモリーズ
-    </button>
-    <button type="button" class="nav-btn" data-tab="profile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/></svg>
-      プロフィール
+      Archive
     </button>
   </nav>
+</div>
+
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h2 style="font-size:20px;font-weight:600">設定</h2>
+      <button type="button" class="fs-back" id="settingsClose">×</button>
+    </div>
+    <div id="authSection"></div>
+    <div class="profile-header" id="profileHeader" style="padding:16px 0">
+      <div class="profile-avatar" id="profileAvatar">ゆ</div>
+      <div class="profile-name" id="profileName">ゆうま</div>
+      <div class="profile-bio" id="profileBio"></div>
+    </div>
+    <div class="stats-row" style="padding:0">
+      <div class="stat-card"><div class="n" id="statSealed">0</div><div class="l">封じた</div></div>
+      <div class="stat-card"><div class="n" id="statOpened">0</div><div class="l">開けた</div></div>
+      <div class="stat-card"><div class="n" id="statStreak">0</div><div class="l">連続</div></div>
+    </div>
+    <div style="padding:16px 0">
+      <div class="settings-row" id="darkToggle"><span>ダークモード</span><div class="toggle" id="darkSwitch"></div></div>
+    </div>
+  </div>
 </div>
 
 <div class="create-overlay" id="createOverlay">
@@ -1110,8 +1224,12 @@ body::after{display:none}
     <div class="sheet-handle"></div>
     <h2 class="create-title">未来に、何を<br>残しますか？</h2>
     <div class="dest-toggle">
-      <button type="button" class="on" data-to="group" data-vis="daily">今日のグループ</button>
-      <button type="button" data-to="self" data-vis="future">未来の記憶へ</button>
+      <button type="button" class="on" data-to="self" data-vis="future">Private</button>
+      <button type="button" data-to="shared" data-vis="shared">Shared</button>
+    </div>
+    <div class="create-friend-pick hidden" id="createFriendPick">
+      <div class="duration-label">誰に送る？</div>
+      <div class="create-friend-row" id="createFriendRow"></div>
     </div>
     <textarea class="create-input" id="createInput" maxlength="500" placeholder="言葉を書く（写真だけでも、言葉だけでもOK）"></textarea>
     <div class="create-media-row">
@@ -1199,7 +1317,7 @@ body::after{display:none}
 <div class="toast" id="toast"></div>
 
 <script>
-const KEY='timecap_v3';
+const KEY='timecap_v4';
 const IDB_NAME='timecap_media_v1';
 const USER='ゆうま';
 const GROUP='私たち';
@@ -1340,14 +1458,17 @@ async function loadLazyThumbs(root){
     if(data)img.src=data;
   });
 }
-function updateCreateUI(){}
+function updateCreateUI(){
+  const isShared=(S.sealVisibility==='shared'||S.sealTo==='shared');
+  $('createFriendPick')?.classList.toggle('hidden',!isShared);
+  if(isShared&&!S.sealFriendId&&MEMBERS[0])S.sealFriendId=MEMBERS[0].id;
+  document.querySelectorAll('.dest-toggle button').forEach(b=>{
+    b.classList.toggle('on',isShared?b.dataset.vis==='shared':b.dataset.to==='self');
+  });
+}
 function updateMediaPickState(){
   $('pickPhotoBtn')?.classList.toggle('has-media',pendingMedia?.type==='photo');
   $('pickVideoBtn')?.classList.toggle('has-media',pendingMedia?.type==='video');
-}
-function updateQuickMediaState(){
-  $('quickPhotoBtn')?.classList.toggle('has-media',!!quickMedia);
-  $('quickVideoBtn')?.classList.toggle('has-media',quickMedia?.type==='video');
 }
 function daysUntil(iso){return Math.max(0,Math.ceil((new Date(iso)-Date.now())/864e5))}
 function bucketFor(iso){
@@ -1403,9 +1524,9 @@ function defaults(){
     homeNotifs:HOME_NOTIFS.map(n=>({...n})),
     dms:[
       {id:'d1',with:'みお',withId:'u1',unread:1,messages:[
-        {from:'みお',text:'今日の写真見れた？',at:now-3600e3},
-        {from:'ゆうま',text:'まだ封じてる！開封楽しみ',at:now-3000e3},
-        {from:'みお',text:'わかる、私もまだ見れない笑',at:now-1800e3},
+        {from:'みお',text:'今日の写真見れた？',at:now-3600e3,openAt:null},
+        {from:'ゆうま',text:'まだ封じてる！開封楽しみ',at:now-3000e3,openAt:null},
+        {from:'みお',text:'1週間後に届く秘密',at:now-1800e3,openAt:addDays(7)},
       ]},
       {id:'d2',with:'けんと',withId:'u2',unread:0,messages:[
         {from:'けんと',text:'今度のカプセルいつ開く？',at:now-864e5},
@@ -1443,128 +1564,219 @@ if(S.dailyState.date!==todayStr()){
 if(!S.dailyState.openedUserIds.includes('me')){
   S.dailyState.openedUserIds.push('me');
 }
+if(!S.sealTo||S.sealTo==='group'){S.sealTo='self';S.sealVisibility='future'}
+if(S.sealDays===undefined)S.sealDays=7;
+if(!S.sealFriendId&&MEMBERS[0])S.sealFriendId=MEMBERS[0].id;
+migrateMessages();
 document.documentElement.dataset.theme=S.dark?'':'light';
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('保存容量がいっぱいです')}}
 function pending(){return S.capsules.filter(c=>c.sealed&&new Date(c.openAt)>Date.now())}
 function ready(){return S.capsules.filter(c=>c.sealed&&new Date(c.openAt)<=Date.now())}
 
+function capState(c){
+  if(S.opened?.some(o=>o.id===c.id))return 'OPENED';
+  if(c.sealed&&new Date(c.openAt)<=Date.now())return 'WAITING';
+  return 'LOCKED';
+}
+function stateLabel(s){return s==='LOCKED'?'封印中':s==='WAITING'?'開封待ち':'開封済み'}
+function isPrivateCap(c){
+  const me=S.auth?.name||USER;
+  return c.to==='self'||(c.from===me||c.from==='ゆうま')&&c.visibility==='future';
+}
+function isSharedCap(c){
+  return !isPrivateCap(c)&&(c.to==='group'||MEMBERS.some(m=>m.n===c.from||c.to===m.n));
+}
+function msgOpenAt(days){
+  if(!days)return null;
+  if(days===1)return addDays(1);
+  if(days===7)return addDays(7);
+  if(days===365)return addDays(365);
+  return addDays(days);
+}
+function isMsgOpen(m){return !m.openAt||new Date(m.openAt)<=Date.now()}
+function migrateMessages(){
+  S.dms?.forEach(d=>d.messages.forEach(m=>{if(m.openAt===undefined)m.openAt=null}));
+}
+
+let activeFriendId=null;
+let fdmDelayDays=0;
+let fsTab='posts';
+
 function switchTab(tab){
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.tab-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+tab));
-  if(tab==='chat')renderChat();
+  if(tab!=='shared')closeFriendSpace();
+  $('fdmCompose')?.classList.add('hidden');
   haptic();
 }
-document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+document.querySelectorAll('.tab-nav-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 
-document.querySelectorAll('.br-tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    document.querySelectorAll('.br-tab').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on');
-    S.feedFilter=t.dataset.feed;save();renderFriendsFeed();haptic();
-  });
-});
-
-$('notifBell').addEventListener('click',e=>{
-  e.stopPropagation();
-  switchTab('inbox');
-  haptic();
-});
-
-function renderHome(){
-  const p=pending();
-  $('memoryCount').textContent=p.length;
-  $('friendCount').textContent=S.friendSealedToday||0;
-  $('quickFriends').textContent=`${S.friendSealedToday||0}人が投稿済み`;
-  $('friendDots').innerHTML=MEMBERS.slice(0,4).map(m=>`<div class="dot" style="background:${m.c}">${m.i}</div>`).join('');
-  $('promptText').textContent=PROMPTS[S.promptIdx%PROMPTS.length];
-
-  const q=quorumRatio();
-  const mosaic=mosaicClass();
-  $('quorumBar').innerHTML=q>=QUORUM
-    ?`<strong>${Math.round(q*100)}%</strong> のメンバーがアプリを開きました。カードはモザイク表示に移行中です。`
-    :`アプリを開いたメンバー <strong>${S.dailyState.openedUserIds.length}/${MEMBER_COUNT}</strong> — 60%でモザイク表示`;
-
-  $('day0Banner').classList.toggle('hidden',S.firstSealDone!==false);
-
-  const groups={};BUCKETS.forEach(b=>groups[b.key]=[]);
-  p.forEach(c=>groups[bucketFor(c.openAt)].push(c));
-  const show=BUCKETS.filter(b=>groups[b.key].length>0);
-  if(!show.length){
-    $('homeCapsules').innerHTML='<div style="padding:8px 0;font-size:13px;color:var(--ink-3)">まだカプセルはありません</div>';
-  }else{
-    $('homeCapsules').innerHTML=show.map((b,i)=>`
-      <div class="pill-card float" data-pill="${i}" style="animation-delay:${i*.3}s">
-        <div>
-          <div class="pill-label">${b.pill}</div>
-          <div class="pill-num">${groups[b.key].length}</div>
-        </div>
-        <div class="pill-mosaic ${mosaic}">░░░</div>
-      </div>`).join('');
-  }
-
-  renderFriendsFeed();
-  renderNotifBadge();
-  renderTimelineFeed();
-  document.querySelectorAll('.br-tab').forEach(t=>t.classList.toggle('on',t.dataset.feed===(S.feedFilter||'friends')));
+function closeFriendSpace(){
+  activeFriendId=null;
+  $('friendSpace')?.classList.remove('active');
+  $('sharedListView')?.classList.remove('hidden');
+  $('fdmCompose')?.classList.add('hidden');
 }
 
-function renderFriendsFeed(){
-  const el=$('friendsFeed');
-  const mosaic=mosaicClass();
-  const blurCls=mosaic==='blur-semi'?'semi':mosaic==='blur-full'?'blurred':'';
-  const feedFilter=S.feedFilter||'friends';
-  const posts=(S.feedPosts||[]);
-  const userPosts=S.capsules.filter(c=>c.from==='ゆうま'||c.from===(S.auth?.name||USER))
-    .map(c=>({id:c.id,from:c.from==='ゆうま'?'あなた':c.from,type:c.type,text:c.text,at:c.createdAt||Date.now(),sealed:true,mediaId:c.mediaId}));
-  const openedPosts=(S.opened||[]).map(o=>({id:o.id,from:o.from,type:o.type,text:o.text,at:o.openedAt,sealed:false,mediaId:o.mediaId}));
-  let all=[...userPosts,...posts,...openedPosts].sort((a,b)=>b.at-a.at);
-  if(feedFilter==='friends')all=all.filter(p=>p.from!=='あなた'||p.sealed===false);
-  all=all.slice(0,12);
-  if(!all.length){
-    el.innerHTML='<div class="empty-state" style="padding:32px 16px">まだ投稿がありません。<br>上から封じて、みんなの記憶を見よう。</div>';
+function openFriendSpace(memberId){
+  activeFriendId=memberId;
+  const m=MEMBERS.find(x=>x.id===memberId);
+  if(!m)return;
+  $('fsName').textContent=m.n;
+  $('sharedListView').classList.add('hidden');
+  $('friendSpace').classList.add('active');
+  fsTab='posts';
+  document.querySelectorAll('.fs-tab').forEach(t=>t.classList.toggle('on',t.dataset.fstab==='posts'));
+  $('fsPosts').classList.remove('hidden');
+  $('fsChat').classList.add('hidden');
+  renderFriendSpace();
+  haptic();
+}
+
+function renderPrivate(){
+  const el=$('privateList');
+  const me=S.auth?.name||USER;
+  const caps=S.capsules.filter(c=>(c.from===me||c.from==='ゆうま')&&isPrivateCap(c));
+  const opened=(S.opened||[]).filter(o=>(o.from===me||o.from==='ゆうま')&&o.to==='self');
+  const items=[
+    ...caps.map(c=>({...c,state:capState(c)})),
+    ...opened.map(o=>({...o,state:'OPENED',sealed:false,openAt:o.openedAt})),
+  ].sort((a,b)=>(b.createdAt||b.openedAt||0)-(a.createdAt||a.openedAt||0));
+  if(!items.length){
+    el.innerHTML='<div class="empty-state" style="padding:40px 0">Privateは空です。<br>＋から未来の自分へ封じましょう。</div>';
     return;
   }
-  const userPostedToday=(S.dailyState?.postsCount||0)>0;
-  el.innerHTML=all.map(p=>{
-    const m=MEMBERS.find(x=>x.n===p.from);
-    const avStyle=m?`style="background:${m.c}"`:'';
-    const avChar=m?m.i:'ゆ';
-    const ago=timeAgo(p.at);
-    const isSealed=p.sealed!==false;
-    const showLock=isSealed&&blurCls&&!userPostedToday;
-    let body='';
-    if(p.mediaId){
-      body=`<div class="br-post-body ${isSealed?blurCls:''}">
-        <img data-lazy="${esc(p.mediaId)}" alt="">
-        ${showLock?`<div class="br-lock-overlay">
-          <div class="br-lock-icon">👁‍🗨</div>
-          <div class="br-lock-title">封じて表示</div>
-          <div class="br-lock-sub">あなたも記憶を封じると、少しずつ見えてきます</div>
-          <button type="button" class="br-cta-white" data-action="post">封じる</button>
-        </div>`:''}
-      </div>`;
-      if(p.text&&!showLock)body+=`<div class="br-post-caption">${esc(p.text)}</div>`;
-    }else if(p.text){
-      body=`<div class="br-post-text ${isSealed?blurCls:''}">${esc(p.text)}</div>`;
-    }
-    return`<article class="br-post">
-      <div class="br-post-head">
-        <div class="br-post-av" ${avStyle}>${avChar}</div>
-        <div>
-          <div class="br-post-name">${esc(p.from)}</div>
-          <div class="br-post-time">${ago}</div>
-        </div>
-        <span class="br-post-badge">${isSealed?'🔒 封じ済み':'開封済み'}</span>
+  el.innerHTML=items.map(c=>{
+    const st=c.state||capState(c);
+    const canOpen=st==='WAITING';
+    return`<article class="private-card${canOpen?' ready':''}" data-id="${esc(c.id)}" data-open="${canOpen?'1':''}">
+      <div class="pc-date">${new Date(c.createdAt||c.openedAt||Date.now()).toLocaleDateString('ja-JP')}</div>
+      <div class="pc-text">${esc(c.text||'（記憶）')}</div>
+      ${c.mediaId?`<div class="pc-thumb"><img data-lazy="${esc(c.mediaId)}" alt=""></div>`:''}
+      <div class="pc-meta">
+        <span class="state-pill ${st.toLowerCase()}">${stateLabel(st)}</span>
+        <span class="pc-open">${st==='LOCKED'?formatWhen(c):st==='WAITING'?'タップして開封':'開封済み'}</span>
       </div>
-      ${body}
     </article>`;
   }).join('');
   loadLazyThumbs(el);
-  el.querySelectorAll('[data-action="post"]').forEach(b=>b.addEventListener('click',()=>{
-    $('quickCaption').focus();haptic();
-    window.scrollTo({top:0,behavior:'smooth'});
+  el.querySelectorAll('[data-open="1"]').forEach(card=>card.addEventListener('click',()=>{
+    const cap=S.capsules.find(c=>c.id===card.dataset.id);
+    if(cap)startOpening([cap],false);
   }));
+}
+
+function renderShared(){
+  const el=$('sharedList');
+  el.innerHTML=MEMBERS.map(m=>{
+    const dm=S.dms?.find(d=>d.withId===m.id);
+    const sealedMsgs=dm?.messages.filter(x=>!isMsgOpen(x)).length||0;
+    const posts=S.capsules.filter(c=>c.from===m.n||c.to===m.n).length;
+    const preview=dm?.messages[dm.messages.length-1];
+    const sub=sealedMsgs?`${sealedMsgs}件の未来DM`:preview?preview.text.slice(0,24):`${posts}件の記憶`;
+    return`<div class="friend-row" data-mid="${m.id}">
+      <div class="fr-av" style="background:${m.c}">${m.i}</div>
+      <div class="fr-body">
+        <div class="fr-name">${esc(m.n)}</div>
+        <div class="fr-sub">${esc(sub)}</div>
+      </div>
+      ${sealedMsgs?`<span class="fr-badge">${sealedMsgs}</span>`:''}
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.friend-row').forEach(r=>r.addEventListener('click',()=>openFriendSpace(r.dataset.mid)));
+}
+
+function renderFriendSpace(){
+  if(!activeFriendId)return;
+  const m=MEMBERS.find(x=>x.id===activeFriendId);
+  if(!m)return;
+  const postsEl=$('fsPosts');
+  const chatEl=$('fsChat');
+  const me=S.auth?.name||USER;
+  const posts=S.capsules.filter(c=>c.from===m.n||(c.to===m.n&&(c.from===me||c.from==='ゆうま')));
+  postsEl.innerHTML=posts.length?posts.map(c=>`
+    <div class="fs-post">
+      <div class="fp-when">${formatWhen(c)} · ${TYPE_JA[c.type]||c.type}</div>
+      <div class="fp-text">${esc(c.text||'（封じられた記憶）')}</div>
+    </div>`).join(''):'<div class="empty-state" style="padding:24px 0">Future Postsはまだありません</div>';
+
+  const dm=S.dms?.find(d=>d.withId===activeFriendId);
+  if(dm){
+    chatEl.innerHTML=dm.messages.map(msg=>{
+      const mine=msg.from===me||msg.from==='ゆうま';
+      if(!isMsgOpen(msg)){
+        const d=daysUntil(msg.openAt);
+        return`<div class="fdm-bubble sealed">${mine?'':'🔒 '}${d?`あと${d}日で開封`:'まもなく開封'}</div>`;
+      }
+      return`<div class="fdm-bubble ${mine?'me':'them'}">${esc(msg.text)}</div>`;
+    }).join('');
+  }else chatEl.innerHTML='<div class="empty-state">未来DMを送ってみましょう</div>';
+
+  $('fdmCompose').classList.toggle('hidden',fsTab!=='chat');
+}
+
+function renderArchive(){
+  const el=$('archiveView');
+  const opened=S.opened||[];
+  const month=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long'});
+  const days=['日','月','火','水','木','金','土'];
+  const grid=opened.slice(0,12).map((o,i)=>{
+    if(o.mediaId)return`<div class="archive-cell"><img data-lazy="${esc(o.mediaId)}" alt=""><span class="ac-day">${days[i%7]}</span></div>`;
+    return`<div class="archive-cell text-cell">${esc((o.text||'').slice(0,20))}</div>`;
+  }).join('');
+  const log=opened.map(o=>`
+    <div class="archive-log-item">
+      ${o.mediaId?`<div class="ali-thumb"><img data-lazy="${esc(o.mediaId)}" alt=""></div>`:'<div class="ali-thumb" style="display:grid;place-items:center;font-size:18px">📝</div>'}
+      <div class="ali-body">
+        <div class="ali-title">${esc(o.from)} · ${TYPE_JA[o.type]||o.type}</div>
+        <div class="ali-sub">${new Date(o.openedAt).toLocaleDateString('ja-JP')} · ${esc((o.text||'').slice(0,40))}</div>
+      </div>
+    </div>`).join('');
+  el.innerHTML=`
+    <div class="archive-month">${month}</div>
+    <div class="archive-grid">${grid||'<div class="empty-state" style="grid-column:1/-1">まだ開封した記憶がありません</div>'}</div>
+    <div class="sec-label">開封ログ</div>
+    <div class="archive-log">${log||'<div class="empty-state">ログは空です</div>'}</div>`;
+  loadLazyThumbs(el);
+}
+
+function renderProfile(){
+  renderAuth();
+  const name=S.auth?.loggedIn?S.auth.name:USER;
+  $('profileAvatar').textContent=name.charAt(0);
+  $('profileName').textContent=name;
+  $('profileBio').innerHTML=S.auth?.loggedIn?esc(S.auth.email):'時間遅延型の感情保存';
+  $('darkSwitch')?.classList.toggle('on',S.dark);
+  $('statSealed').textContent=pending().length;
+  $('statOpened').textContent=(S.opened||[]).length;
+  $('statStreak').textContent=S.streak||0;
+  $('createFriendRow').innerHTML=MEMBERS.map(m=>`
+    <button type="button" class="create-friend-chip${S.sealFriendId===m.id?' on':''}" data-fid="${m.id}">${esc(m.n)}</button>`).join('');
+  $('createFriendRow')?.querySelectorAll('.create-friend-chip').forEach(b=>b.addEventListener('click',()=>{
+    S.sealFriendId=b.dataset.fid;save();renderProfile();
+    document.querySelectorAll('.create-friend-chip').forEach(x=>x.classList.toggle('on',x.dataset.fid===S.sealFriendId));
+  }));
+}
+
+function renderNotifBadge(){
+  const unread=(S.homeNotifs||[]).filter(n=>!n.read).length;
+  const readyN=ready().length;
+  const badge=$('notifBadge');
+  if(!badge)return;
+  badge.textContent=unread+readyN;
+  badge.classList.toggle('hidden',!(unread+readyN));
+}
+
+function renderAll(){
+  migrateMessages();
+  renderPrivate();
+  renderShared();
+  if(activeFriendId)renderFriendSpace();
+  renderArchive();
+  renderProfile();
+  renderNotifBadge();
+  renderNotifDropdown();
 }
 
 function timeAgo(ts){
@@ -1576,20 +1788,14 @@ function timeAgo(ts){
   return `${Math.floor(h/24)}日前`;
 }
 
-function renderNotifBadge(){
-  const unread=(S.homeNotifs||[]).filter(n=>!n.read).length;
-  const badge=$('notifBadge');
-  badge.textContent=unread;
-  badge.classList.toggle('hidden',!unread);
-}
-
 function renderNotifDropdown(){
   const el=$('notifDropdownList');
+  if(!el)return;
   const notifs=S.homeNotifs||[];
-  if(!notifs.length){
-    el.innerHTML='<div class="empty-state" style="padding:24px">通知はありません</div>';
-    return;
-  }
+  const r=ready();
+  if(r.length&&!notifs.find(n=>n.action==='open'))
+    notifs.unshift({id:'rn',title:'開封可能な記憶',sub:`${r.length}件`,read:false,action:'open'});
+  if(!notifs.length){el.innerHTML='<div class="empty-state" style="padding:24px">通知はありません</div>';return}
   el.innerHTML=notifs.map(n=>`
     <div class="notif-drop-item${n.read?'':' unread'}" data-nid="${esc(n.id)}" data-action="${n.action||''}" data-dmid="${n.dmId||''}">
       <div class="nd-title">${esc(n.title)}</div>
@@ -1597,318 +1803,78 @@ function renderNotifDropdown(){
     </div>`).join('');
   el.querySelectorAll('.notif-drop-item').forEach(item=>{
     item.addEventListener('click',()=>{
-      const nid=item.dataset.nid;
-      const n=S.homeNotifs.find(x=>x.id===nid);
+      const n=S.homeNotifs.find(x=>x.id===item.dataset.nid);
       if(n&&!n.read){n.read=true;save();renderNotifBadge();item.classList.remove('unread')}
-      $('notifDropdown').classList.remove('open');
+      $('notifDropdown')?.classList.remove('open');
       if(item.dataset.action==='open'&&ready().length)startGroupSync(ready());
-      else if(item.dataset.action==='dm'){switchTab('chat');if(item.dataset.dmid){openDm();openDmThread(item.dataset.dmid)}}
+      else if(item.dataset.action==='dm'){switchTab('shared');if(item.dataset.dmid){const dm=S.dms.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}}
       haptic();
     });
   });
-}
-
-function renderTimelineFeed(){
-  const el=$('timelineFeed');
-  const all=[
-    ...S.capsules.map(c=>({...c,status:'sealed',sortAt:c.createdAt||Date.parse(c.openAt)||0})),
-    ...(S.opened||[]).map(o=>({...o,status:'opened',sealed:false,sortAt:o.openedAt||0})),
-  ];
-  all.sort((a,b)=>b.sortAt-a.sortAt);
-  if(!all.length){
-    el.innerHTML='<div class="empty-state">タイムラインは空です。<br>＋から最初の記憶を封じましょう。</div>';
-    return;
-  }
-  const mosaic=mosaicClass();
-  const blur=mosaic==='blur-semi'?'semi':mosaic==='blur-full'?'full':'';
-  el.innerHTML=all.slice(0,30).map(c=>{
-    const isOpen=c.status==='opened';
-    const canOpen=c.sealed&&new Date(c.openAt)<=Date.now();
-    const thumb=isOpen
-      ?`<div class="tl-thumb">${c.mediaId?`<img data-lazy="${esc(c.mediaId)}" alt="">`:c.type==='text'?`<span style="font-size:10px;padding:4px;line-height:1.2;text-align:center">${esc((c.text||'').slice(0,20))}</span>`:`<span>${TYPE_ICONS[c.type]}</span>`}</div>`
-      :thumbHtml(c,blur);
-    return`<div class="tl-item${canOpen?' ready':''}" data-id="${esc(c.id)}" data-canopen="${canOpen?'1':''}">
-      ${thumb}
-      <div class="tl-body">
-        <div class="tl-from">${c.from==='ゆうま'?'あなた':esc(c.from)} · ${TYPE_JA[c.type]||c.type}</div>
-        <div class="tl-meta">${isOpen?'開封済み · '+new Date(c.openedAt).toLocaleDateString('ja-JP'):formatWhen(c)+' · '+(c.mediaId?TYPE_JA[c.type]:c.text?'言葉':'中身は非表示')}</div>
-      </div>
-      <span class="tl-badge${canOpen?' open':''}">${isOpen?'開いた':canOpen?'開封':'封じ'}</span>
-    </div>`;
-  }).join('');
-  loadLazyThumbs(el);
-  el.querySelectorAll('.tl-item[data-canopen="1"]').forEach(item=>{
-    item.addEventListener('click',()=>{
-      const cap=S.capsules.find(c=>c.id===item.dataset.id);
-      if(cap)startOpening([cap],false);
-    });
-  });
-}
-
-function renderCapsules(){
-  const p=pending();
-  $('vaultTotal').textContent=p.length;
-  $('statSealed').textContent=p.length;
-  $('statOpened').textContent=(S.opened||[]).length;
-  renderMemGrid();
-
-  const groups={};SHELF.forEach(s=>groups[s.key]=[]);
-  p.forEach(c=>groups[bucketFor(c.openAt)].push(c));
-  $('shelfWrap').innerHTML=SHELF.map(s=>{
-    const n=groups[s.key].length;
-    return`<div class="shelf-layer" data-depth="${s.depth}">
-      <div class="shelf-label">${s.label}</div>
-      <div class="shelf-num">${n}</div>
-      <div class="shelf-sub">件 · Sealed with ${GROUP}</div>
-      <div class="shelf-line"></div>
-    </div>`;
-  }).join('');
-
-  const opened=S.opened||[];
-  $('archiveList').innerHTML=opened.length?opened.slice(0,12).map(o=>`
-    <div class="archive-card">
-      <div class="date">${esc(o.from)} · ${TYPE_JA[o.type]||o.type} · ${new Date(o.openedAt).toLocaleDateString('ja-JP')}</div>
-      ${o.mediaId?`<div class="thumb"><img data-lazy="${esc(o.mediaId)}" alt=""></div>`:''}
-      <div class="text">${esc(o.text)}</div>
-    </div>`).join(''):'<div class="empty-state">まだ開封した記憶はありません</div>';
-  loadLazyThumbs($('archiveList'));
-
-  if(!p.length){$('pendingList').innerHTML='<div class="empty-state">棚は空です。</div>';return}
-  $('pendingList').innerHTML=p.sort((a,b)=>new Date(a.openAt)-new Date(b.openAt)).map(c=>`
-    <div class="pending-row">
-      <div class="seal-icon">${TYPE_ICONS[c.type]}</div>
-      <div>
-        <div class="title">${c.from==='ゆうま'?'未来の自分':esc(c.from)} · ${c.visibility==='future'||c.to==='self'?'未来':'今日'}</div>
-        <div class="sub">あと${daysUntil(c.openAt)}日 · ${TYPE_JA[c.type]} · 封じ済み</div>
-      </div>
-    </div>`).join('');
-}
-
-function renderInbox(){
-  $('syncOnline').textContent=`${S.syncOnline||3} / 5`;
-  const r=ready();
-  const notifs=[...POETIC_NOTIFS];
-  if(r.length)notifs.unshift({
-    icon:'✨',poetic:'カプセルの開封時です。',detail:`${r.length}件の記憶が、あなたを待っています。`,ready:true,action:'open',
-  });
-  $('notifList').innerHTML=notifs.map((n,i)=>{
-    const m=MEMBERS[i%MEMBERS.length];
-    return`<div class="act-item notif-card${S.readNotifs?.includes(i)?'':' unread'}" data-idx="${i}" data-action="${n.action||''}">
-      <div class="act-av" style="background:${m.c}">${m.i}</div>
-      <div class="act-body">
-        <div class="act-text"><strong>${esc(n.poetic)}</strong><br>${esc(n.detail)}</div>
-        <div class="act-time">${n.ready?'タップして開封':'たった今'}</div>
-      </div>
-      <div class="act-thumb">${n.icon}</div>
-    </div>`;
-  }).join('');
-
-  document.querySelectorAll('.notif-card').forEach(card=>{
-    card.addEventListener('click',()=>{
-      haptic();
-      const idx=+card.dataset.idx;
-      S.readNotifs=S.readNotifs||[];
-      if(!S.readNotifs.includes(idx)){S.readNotifs.push(idx);save();card.classList.remove('unread')}
-      if(card.dataset.action==='open'&&ready().length)startGroupSync(ready());
-    });
-  });
-}
-
-function renderChat(){
-  const el=$('chatList');
-  const dms=S.dms||[];
-  if(!dms.length){el.innerHTML='<div class="empty-state">メッセージはありません</div>';return}
-  el.innerHTML=dms.map(d=>{
-    const m=MEMBERS.find(x=>x.n===d.with);
-    const last=d.messages[d.messages.length-1];
-    return`<div class="dm-thread" data-dmid="${esc(d.id)}">
-      <div class="dm-av" style="background:${m?.c||'#5A5A5A'}">${m?.i||'?'}</div>
-      <div class="dm-body">
-        <div class="dm-name">${esc(d.with)}</div>
-        <div class="dm-preview">${esc(last?.text||'')}</div>
-      </div>
-      <div class="dm-time">${timeAgo(last?.at||0)}</div>
-    </div>`;
-  }).join('');
-  el.querySelectorAll('.dm-thread').forEach(t=>t.addEventListener('click',()=>{
-    openDm();openDmThread(t.dataset.dmid);
-  }));
-}
-
-function renderMemGrid(){
-  const el=$('memGrid');
-  if(!el)return;
-  const opened=(S.opened||[]).slice(0,8);
-  const days=['日','月','火','水','木','金','土'];
-  el.innerHTML=`<div class="mem-week-head"><h2>Week ${Math.ceil(new Date().getDate()/7)}</h2><span>${new Date().getMonth()+1}月</span></div>
-  <div class="mem-grid">${Array.from({length:8},(_,i)=>{
-    const o=opened[i];
-    if(o&&o.mediaId)return`<div class="mem-cell"><img data-lazy="${esc(o.mediaId)}" alt=""><span class="day">${days[i%7]}</span></div>`;
-    if(o)return`<div class="mem-cell" style="display:grid;place-items:center;font-size:10px;padding:6px;color:var(--ink-2)">${esc((o.text||'').slice(0,12))}</div>`;
-    return`<div class="mem-cell empty">${days[i%7]}</div>`;
-  }).join('')}</div>`;
-  loadLazyThumbs(el);
-}
-
-function renderProfile(){
-  renderAuth();
-  const name=S.auth?.loggedIn?S.auth.name:USER;
-  const initial=name.charAt(0);
-  $('profileAvatar').textContent=initial;
-  $('profileName').textContent=name;
-  $('profileBio').innerHTML=S.auth?.loggedIn
-    ?`${esc(S.auth.email)}<br>ログイン中`
-    :'時間遅延型の感情保存<br>未来の自分へ、今を届ける';
-  $('memberRow').innerHTML=MEMBERS.map(m=>{
-    const n=S.capsules.filter(c=>c.from===m.n).length;
-    return`<div class="member-chip"><div class="av" style="background:${m.c}">${m.i}</div><div class="name">${esc(m.n)}</div><div class="cnt">${n}件</div></div>`;
-  }).join('');
-  $('darkSwitch').classList.toggle('on',S.dark);
-  $('streakNum').textContent=S.streak||0;
-  $('statStreak').textContent=S.streak||0;
-  const fp=S.capsules.filter(c=>c.sealed&&(c.to==='self'||c.visibility==='future')&&new Date(c.openAt)>Date.now()).length;
-  $('futurePending').textContent=fp;
-  const dmUnread=(S.dms||[]).reduce((s,d)=>s+(d.unread||0),0);
-  const chatBtn=document.querySelector('[data-tab="chat"]');
-  if(chatBtn){
-    let badge=chatBtn.querySelector('.nav-unread');
-    if(dmUnread){
-      if(!badge){badge=document.createElement('span');badge.className='nav-unread';chatBtn.style.position='relative';chatBtn.appendChild(badge)}
-      badge.textContent=dmUnread;
-    }else badge?.remove();
-  }
 }
 
 function renderAuth(){
   const el=$('authSection');
+  if(!el)return;
   if(S.auth?.loggedIn){
-    el.innerHTML=`<div class="auth-card">
-      <div class="auth-logged">
-        <div class="auth-av">${esc(S.auth.name.charAt(0))}</div>
-        <div class="auth-info">
-          <div style="font-weight:700">${esc(S.auth.name)}</div>
-          <div class="auth-email">${esc(S.auth.email)}</div>
-        </div>
-        <button type="button" class="auth-logout" id="authLogout">ログアウト</button>
-      </div>
-    </div>`;
-    $('authLogout')?.addEventListener('click',()=>{
-      S.auth=null;save();renderProfile();renderHome();toast('ログアウトしました');haptic();
-    });
+    el.innerHTML=`<div class="auth-card"><div class="auth-logged">
+      <div class="auth-av">${esc(S.auth.name.charAt(0))}</div>
+      <div class="auth-info"><div style="font-weight:600">${esc(S.auth.name)}</div><div class="auth-email">${esc(S.auth.email)}</div></div>
+      <button type="button" class="auth-logout" id="authLogout">ログアウト</button>
+    </div></div>`;
+    $('authLogout')?.addEventListener('click',()=>{S.auth=null;save();renderAll();toast('ログアウトしました');haptic()});
     return;
   }
   const mode=S.authMode||'login';
-  el.innerHTML=`<div class="auth-card">
-    <h3>${mode==='login'?'ログイン':'アカウント作成'}</h3>
-    <p class="auth-sub">デモ用 · ローカルに保存されます</p>
+  el.innerHTML=`<div class="auth-card"><h3>${mode==='login'?'ログイン':'アカウント作成'}</h3>
     <div class="auth-tabs">
       <button type="button" class="${mode==='login'?'on':''}" data-authmode="login">ログイン</button>
       <button type="button" class="${mode==='signup'?'on':''}" data-authmode="signup">新規登録</button>
     </div>
-    <div class="auth-field"><label>名前</label><input type="text" id="authName" placeholder="ゆうま" value="${esc(S.authDraft?.name||'')}"></div>
-    <div class="auth-field"><label>メール</label><input type="email" id="authEmail" placeholder="you@example.com" value="${esc(S.authDraft?.email||'')}"></div>
-    <div class="auth-field"><label>パスワード</label><input type="password" id="authPass" placeholder="••••••••"></div>
-    <button type="button" class="auth-submit" id="authSubmit">${mode==='login'?'ログイン':'アカウントを作成'}</button>
+    <div class="auth-field"><label>名前</label><input type="text" id="authName" placeholder="ゆうま"></div>
+    <div class="auth-field"><label>メール</label><input type="email" id="authEmail" placeholder="you@example.com"></div>
+    <div class="auth-field"><label>パスワード</label><input type="password" id="authPass"></div>
+    <button type="button" class="auth-submit" id="authSubmit">${mode==='login'?'ログイン':'作成'}</button>
   </div>`;
-  el.querySelectorAll('[data-authmode]').forEach(b=>b.addEventListener('click',()=>{
-    S.authMode=b.dataset.authmode;renderAuth();haptic();
-  }));
-  $('authSubmit').addEventListener('click',()=>{
-    const name=$('authName').value.trim();
-    const email=$('authEmail').value.trim();
-    const pass=$('authPass').value;
+  el.querySelectorAll('[data-authmode]').forEach(b=>b.addEventListener('click',()=>{S.authMode=b.dataset.authmode;renderAuth();haptic()}));
+  $('authSubmit')?.addEventListener('click',()=>{
+    const name=$('authName').value.trim(),email=$('authEmail').value.trim(),pass=$('authPass').value;
     if(!name||!email||!pass){toast('すべて入力してください');return}
     if(mode==='signup'){
-      if(S.users.find(u=>u.email===email)){toast('このメールは登録済みです');return}
-      S.users.push({name,email,pass});
-      S.auth={name,email,loggedIn:true};
-      toast('アカウントを作成しました');
+      if(S.users.find(u=>u.email===email)){toast('登録済みです');return}
+      S.users.push({name,email,pass});S.auth={name,email,loggedIn:true};toast('作成しました');
     }else{
       const u=S.users.find(x=>x.email===email&&x.pass===pass);
-      if(!u){toast('メールまたはパスワードが違います');return}
-      S.auth={name:u.name,email:u.email,loggedIn:true};
-      toast('ログインしました');
+      if(!u){toast('認証に失敗');return}
+      S.auth={name:u.name,email:u.email,loggedIn:true};toast('ログインしました');
     }
-    save();renderProfile();renderHome();haptic();
+    save();renderAll();haptic();
   });
 }
 
-let activeDmId=null;
-function renderDmList(){
-  $('dmList').classList.remove('hidden');
-  $('dmChat').classList.add('hidden');
-  $('dmBack').classList.add('hidden');
-  $('dmTitle').textContent='メッセージ';
-  const el=$('dmList');
-  const dms=S.dms||[];
-  if(!dms.length){
-    el.innerHTML='<div class="empty-state">メッセージはありません</div>';
-    return;
-  }
-  el.innerHTML=dms.map(d=>{
-    const m=MEMBERS.find(x=>x.n===d.with);
-    const last=d.messages[d.messages.length-1];
-    return`<div class="dm-thread" data-dmid="${esc(d.id)}">
-      <div class="dm-av" style="background:${m?.c||'#5A5A5A'}">${m?.i||'?'}</div>
-      <div class="dm-body">
-        <div class="dm-name">${esc(d.with)}</div>
-        <div class="dm-preview">${esc(last?.text||'')}</div>
-      </div>
-      <div class="dm-time">${timeAgo(last?.at||0)}</div>
-    </div>`;
-  }).join('');
-  el.querySelectorAll('.dm-thread').forEach(t=>t.addEventListener('click',()=>openDmThread(t.dataset.dmid)));
-}
-
-function openDmThread(id){
-  activeDmId=id;
-  const d=S.dms.find(x=>x.id===id);
-  if(!d)return;
-  d.unread=0;save();renderProfile();
-  $('dmList').classList.add('hidden');
-  $('dmChat').classList.remove('hidden');
-  $('dmBack').classList.remove('hidden');
-  $('dmTitle').textContent=d.with;
-  const el=$('dmMessages');
-  const me=S.auth?.name||USER;
-  el.innerHTML=d.messages.map(m=>`
-    <div class="dm-bubble ${m.from===me||m.from==='ゆうま'?'me':'them'}">${esc(m.text)}</div>`).join('');
-  el.scrollTop=el.scrollHeight;
-}
-
-function openDm(){
-  $('dmOverlay').classList.add('open');
-  activeDmId=null;
-  renderDmList();
-  haptic();
-}
-function openDmFromChat(){
-  switchTab('chat');
-}
-
-function renderAll(){renderHome();renderCapsules();renderInbox();renderChat();renderProfile();renderNotifDropdown()}
-
-/* Parallax shelf */
+/* Parallax shelf — legacy shelf element may be absent */
 const shelfWrap=$('shelfWrap');
-document.getElementById('panel-capsules').addEventListener('scroll',()=>{},true);
+if(shelfWrap){
+document.getElementById('panel-capsules')?.addEventListener('scroll',()=>{},true);
 window.addEventListener('scroll',()=>{
-  if(!shelfWrap)return;
   const rect=shelfWrap.getBoundingClientRect();
   shelfWrap.querySelectorAll('.shelf-layer').forEach((el,i)=>{
     const offset=(rect.top-window.innerHeight*.3)*.02*(i+1);
     el.style.transform=`translateY(${offset}px) scale(${1-i*.04})`;
   });
 },{passive:true});
+}
 
 /* Create */
 const overlay=$('createOverlay');
 $('openCreate').addEventListener('click',()=>{overlay.classList.add('open');haptic()});
 overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
 
-/* Gyroscope parallax on home pills */
+/* Gyroscope — legacy home pills only */
 if(window.DeviceOrientationEvent){
   window.addEventListener('deviceorientation',e=>{
-    if(!document.getElementById('panel-home').classList.contains('active'))return;
+    const home=document.getElementById('panel-home');
+    if(!home?.classList.contains('active'))return;
     const tilt=(e.gamma||0)*.15;
     document.querySelectorAll('.pill-card').forEach((card,i)=>{
       card.style.transform=`translateX(${tilt*(i+1)*.3}px) rotateY(${tilt*.2}deg)`;
@@ -1921,11 +1887,8 @@ document.querySelectorAll('.dest-toggle button').forEach(b=>{
     document.querySelectorAll('.dest-toggle button').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');
     S.sealTo=b.dataset.to;
-    S.sealVisibility=b.dataset.vis||'daily';
-    save();haptic();
-    const isFuture=b.dataset.vis==='future';
-    document.getElementById('durationPills').style.display=isFuture?'flex':'none';
-    document.querySelector('.duration-label').style.display=isFuture?'block':'none';
+    S.sealVisibility=b.dataset.vis||'future';
+    save();haptic();updateCreateUI();
   });
 });
 
@@ -1987,56 +1950,25 @@ $('sealBtn').addEventListener('click',async()=>{
   await sealCapsule({caption,media:pendingMedia,fromCreate:true});
 });
 
-let quickMedia=null;
-$('quickPhotoBtn').addEventListener('click',()=>$('quickPhotoInput').click());
-$('quickVideoBtn').addEventListener('click',()=>$('quickVideoInput').click());
-$('quickPhotoInput').addEventListener('change',async e=>{
-  const file=e.target.files?.[0];if(!file)return;
-  try{
-    const dataUrl=await compressImage(file);
-    quickMedia={type:'photo',dataUrl};
-    $('quickPreviewInner').innerHTML=`<img src="${dataUrl}" alt="">`;
-    $('quickPreview').classList.remove('hidden');
-    updateQuickMediaState();
-  }catch(err){toast('写真の読み込みに失敗')}
-  e.target.value='';
-});
-$('quickVideoInput').addEventListener('change',async e=>{
-  const file=e.target.files?.[0];if(!file)return;
-  if(file.size>15*1024*1024){toast('動画は15MB以下');return}
-  try{
-    const dataUrl=await readFileAsDataUrl(file);
-    quickMedia={type:'video',dataUrl};
-    $('quickPreviewInner').innerHTML=`<video src="${dataUrl}" muted playsinline></video>`;
-    $('quickPreview').classList.remove('hidden');
-    updateQuickMediaState();
-  }catch(err){toast('動画の読み込みに失敗')}
-  e.target.value='';
-});
-$('quickPreviewRemove').addEventListener('click',()=>{
-  quickMedia=null;
-  $('quickPreview').classList.add('hidden');
-  $('quickPreviewInner').innerHTML='';
-  updateQuickMediaState();
-});
-$('quickSeal').addEventListener('click',async()=>{
-  const caption=$('quickCaption').value.trim();
-  if(!quickMedia&&!caption){toast('写真・動画・言葉のいずれかを追加してください');return}
-  await sealCapsule({caption,media:quickMedia,quick:true});
-});
-
-async function sealCapsule({caption,media,fromCreate,quick}){
+async function sealCapsule({caption,media,fromCreate}){
   if(!media&&!caption){toast('写真・動画・言葉のいずれかを追加してください');return}
   const type=media?media.type:'text';
   let openAt,days;
-  const to=fromCreate?(S.sealTo||'group'):'group';
-  const vis=fromCreate?(S.sealVisibility||'daily'):'daily';
-  const isDay0=!S.firstSealDone&&to==='group';
-  if(isDay0){openAt=addMinutes(1);days=0;toast('Day 0 — 1分後に開封体験！')}
-  else if(vis==='future'){
+  const isShared=fromCreate&&S.sealVisibility==='shared';
+  const isPrivate=!isShared;
+  let to='self';
+  if(isShared){
+    const m=MEMBERS.find(x=>x.id===(S.sealFriendId||MEMBERS[0]?.id));
+    if(!m){toast('送り先の友達を選んでください');return}
+    to=m.n;
+  }
+  const vis=isShared?'shared':'future';
+  const isDemoFirst=!S.firstSealDone&&isPrivate;
+  if(isDemoFirst){openAt=addMinutes(1);days=0;toast('初回体験 — 1分後に開封！')}
+  else{
     days=S.sealDays==='custom'?+($('customDaysInput').value||14):S.sealDays||7;
     openAt=addDays(days);
-  }else{days=1;openAt=addDays(1)}
+  }
   const capId='c'+Date.now();
   if(media){
     try{await idbPut(capId,media.dataUrl)}catch(e){toast('メディアの保存に失敗');return}
@@ -2049,8 +1981,7 @@ async function sealCapsule({caption,media,fromCreate,quick}){
       text:displayText,sealed:true,openAt,days,
       mediaId:media?capId:null,createdAt:Date.now(),
     });
-    if(isDay0)S.firstSealDone=true;
-    S.dailyState.postsCount=(S.dailyState.postsCount||0)+1;
+    if(isDemoFirst)S.firstSealDone=true;
     S.streak=(S.streak||0)+1;
     if(fromCreate){
       $('createInput').value='';
@@ -2060,45 +1991,77 @@ async function sealCapsule({caption,media,fromCreate,quick}){
       updateMediaPickState();
       overlay.classList.remove('open');
     }
-    if(quick){
-      $('quickCaption').value='';
-      quickMedia=null;
-      $('quickPreview').classList.add('hidden');
-      $('quickPreviewInner').innerHTML='';
-      updateQuickMediaState();
-    }
     save();renderAll();
-    if(isDay0)setTimeout(()=>{if(ready().length)toast('カプセルが開封可能になりました！')},60000);
+    if(isDemoFirst)setTimeout(()=>{if(ready().length)toast('カプセルが開封可能になりました！')},60000);
     else toast('封じました');
-    switchTab('home');
+    switchTab(isShared?'shared':'private');
+    if(isShared){
+      const fm=MEMBERS.find(x=>x.n===to);
+      if(fm)openFriendSpace(fm.id);
+    }
   };
   $('sealOrigami').textContent=displayText||'封じる記憶…';
   runSealAnimation(doSeal);
 }
 
-/* Notifications dropdown (legacy) */
-$('notifDropdown')&&document.addEventListener('click',e=>{
-  if($('notifDropdown')&&!$('notifDropdown').contains(e.target)&&e.target!==$('notifBell')&&!$('notifBell').contains(e.target))
-    $('notifDropdown').classList.remove('open');
+/* Notifications */
+$('notifBell')?.addEventListener('click',e=>{
+  e.stopPropagation();
+  renderNotifDropdown();
+  $('notifDropdown')?.classList.toggle('open');
+  haptic();
+});
+document.addEventListener('click',e=>{
+  if($('notifDropdown')&&!$('notifDropdown').contains(e.target)&&!$('notifBell')?.contains(e.target))
+    $('notifDropdown')?.classList.remove('open');
 });
 
-/* DM */
-$('dmClose').addEventListener('click',()=>$('dmOverlay').classList.remove('open'));
-$('dmOverlay').addEventListener('click',e=>{if(e.target===$('dmOverlay'))$('dmOverlay').classList.remove('open')});
-$('dmBack').addEventListener('click',()=>renderDmList());
-$('dmSend').addEventListener('click',sendDm);
-$('dmInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendDm()});
-function sendDm(){
-  if(!activeDmId)return;
-  const text=$('dmInput').value.trim();
+/* Settings */
+$('openSettings')?.addEventListener('click',()=>{$('settingsOverlay')?.classList.add('open');renderProfile();haptic()});
+$('settingsClose')?.addEventListener('click',()=>$('settingsOverlay')?.classList.remove('open'));
+$('settingsOverlay')?.addEventListener('click',e=>{if(e.target===$('settingsOverlay'))$('settingsOverlay').classList.remove('open')});
+
+/* Friend space */
+$('fsBack')?.addEventListener('click',()=>{closeFriendSpace();renderShared();haptic()});
+document.querySelectorAll('.fs-tab').forEach(t=>t.addEventListener('click',()=>{
+  fsTab=t.dataset.fstab;
+  document.querySelectorAll('.fs-tab').forEach(x=>x.classList.toggle('on',x.dataset.fstab===fsTab));
+  $('fsPosts')?.classList.toggle('hidden',fsTab!=='posts');
+  $('fsChat')?.classList.toggle('hidden',fsTab!=='chat');
+  $('fdmCompose')?.classList.toggle('hidden',fsTab!=='chat');
+  haptic();
+}));
+document.querySelectorAll('#fdmDelay button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#fdmDelay button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  fdmDelayDays=+b.dataset.delay;
+  haptic();
+}));
+function sendFutureDm(){
+  if(!activeFriendId)return;
+  const text=$('fdmInput')?.value.trim();
   if(!text)return;
-  const d=S.dms.find(x=>x.id===activeDmId);
-  if(!d)return;
   const me=S.auth?.name||USER;
-  d.messages.push({from:me,text,at:Date.now()});
-  $('dmInput').value='';
-  save();openDmThread(activeDmId);haptic();
+  const m=MEMBERS.find(x=>x.id===activeFriendId);
+  if(!m)return;
+  let dm=(S.dms||[]).find(d=>d.withId===activeFriendId);
+  if(!dm){
+    dm={id:'d'+Date.now(),with:m.n,withId:activeFriendId,unread:0,messages:[]};
+    S.dms=S.dms||[];S.dms.push(dm);
+  }
+  const openAt=fdmDelayDays?addDays(fdmDelayDays):null;
+  dm.messages.push({from:me,text,at:Date.now(),openAt});
+  $('fdmInput').value='';
+  save();renderFriendSpace();renderShared();
+  toast(fdmDelayDays?`${fdmDelayDays===1?'1日':fdmDelayDays===7?'1週間':fdmDelayDays===365?'1年':fdmDelayDays+'日'}後に届くメッセージを封じました`:'メッセージを送信しました');
+  haptic();
 }
+$('fdmSend')?.addEventListener('click',sendFutureDm);
+$('fdmInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendFutureDm()});
+
+/* Legacy DM overlay — optional */
+$('dmClose')?.addEventListener('click',()=>$('dmOverlay')?.classList.remove('open'));
+$('dmOverlay')?.addEventListener('click',e=>{if(e.target===$('dmOverlay'))$('dmOverlay').classList.remove('open')});
 
 function runSealAnimation(cb){
   const anim=$('sealAnim');
@@ -2176,7 +2139,6 @@ function startOpening(items,flash){
   const op=$('opening');
   op.classList.add('active');
   if(flash){op.classList.add('flash');setTimeout(()=>op.classList.remove('flash'),500)}
-  switchTab('inbox');
   haptic();
 }
 
@@ -2249,7 +2211,7 @@ function finishOpen(){
     $('reactions').classList.add('show');
     S.opened=S.opened||[];
     openingItems.forEach(c=>S.opened.unshift({
-      id:c.id,from:c.from,type:c.type,text:c.text,openedAt:Date.now(),mediaId:c.mediaId,
+      id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,openedAt:Date.now(),mediaId:c.mediaId,
     }));
     S.capsules=S.capsules.filter(c=>!openingItems.find(r=>r.id===c.id));
     save();renderAll();
@@ -2266,12 +2228,6 @@ $('darkToggle').addEventListener('click',()=>{
   S.dark=!S.dark;
   document.documentElement.dataset.theme=S.dark?'':'light';
   save();renderProfile();haptic();
-});
-
-$('promptCard').addEventListener('click',()=>{
-  S.promptIdx=(S.promptIdx+1)%PROMPTS.length;save();renderHome();haptic();
-  overlay.classList.add('open');
-  $('createInput').value=PROMPTS[S.promptIdx%PROMPTS.length];
 });
 
 updateCreateUI();
