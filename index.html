@@ -1639,11 +1639,27 @@ body::after{display:none}
   background:rgba(255,255,255,.08);font-size:12px;font-weight:500;margin-bottom:12px;
 }
 
-/* 去年の今日 */
+/* タイムマシン */
 .lyt-section{margin:0 20px 20px;padding:16px;border-radius:var(--r);background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
 .lyt-label{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
 .lyt-title{font-size:16px;font-weight:600;margin:8px 0 12px}
 .lyt-card img{width:100%;border-radius:var(--r-sm);max-height:200px;object-fit:cover}
+.tm-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.tm-scroll::-webkit-scrollbar{display:none}
+.tm-card{flex:0 0 72%;max-width:280px;scroll-snap-align:start;padding:12px;border-radius:var(--r-sm);background:var(--bg-3);border:1px solid rgba(255,255,255,.06)}
+.tm-years{font-size:10px;color:var(--ink-3);letter-spacing:.08em;margin-bottom:6px}
+.tm-title{font-size:14px;font-weight:600;margin-bottom:8px;line-height:1.35}
+.tm-card img{width:100%;border-radius:8px;max-height:140px;object-fit:cover}
+.pair-hint{font-size:12px;color:var(--warm,#e8a87c);margin:-8px 0 16px;line-height:1.45}
+.gift-row{display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.gift-chip{padding:8px 12px;border-radius:999px;background:var(--bg-2);font-size:13px;border:1px solid rgba(255,255,255,.08)}
+.gift-collection{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 16px}
+.gift-badge{padding:6px 12px;border-radius:999px;background:var(--bg-2);font-size:12px}
+.fs-trail{padding:16px 20px}
+.fs-trail-map{height:180px;border-radius:var(--r);background:var(--bg-2);position:relative;overflow:hidden;margin-top:12px;border:1px solid rgba(255,255,255,.06)}
+.fs-trail-point{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--warm,#e8a87c);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(232,168,124,.25)}
+.fs-trail-list{margin-top:12px;display:flex;flex-direction:column;gap:0}
+.year-wrap-btn{margin:0 20px 16px;width:calc(100% - 40px)}
 
 /* 今日の写真（相互性ロック） */
 .today-photo-section{margin:0 20px 20px;padding:16px;border-radius:var(--r);background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
@@ -1830,10 +1846,10 @@ body::after{display:none}
       <p style="font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.45">撮ると、友達の今日が見える</p>
       <div class="today-photo-grid" id="todayPhotoGrid"></div>
     </div>
-    <div class="lyt-section hidden" id="lastYearToday">
-      <div class="lyt-label">去年の今日</div>
-      <div class="lyt-title" id="lytTitle">—</div>
-      <div class="lyt-card" id="lytCard"></div>
+    <div class="lyt-section tm-section hidden" id="timeMachineSection">
+      <div class="lyt-label">タイムマシン</div>
+      <p style="font-size:12px;color:var(--ink-3);margin:6px 0 12px;line-height:1.45">過去の今日、あなたはここにいた</p>
+      <div class="tm-scroll" id="timeMachineScroll"></div>
     </div>
     <div class="tl-feed" id="timelineFeed"></div>
     <div class="activity-section" id="activitySection">
@@ -1899,10 +1915,13 @@ body::after{display:none}
       <div class="fs-tabs">
         <button type="button" class="fs-tab on" data-fstab="posts">タイムカプセル</button>
         <button type="button" class="fs-tab" data-fstab="chat">未来DM</button>
+        <button type="button" class="fs-tab" data-fstab="trail">軌跡</button>
       </div>
+      <div class="gift-row" id="fsGiftRow"></div>
       <div class="fs-content">
         <div id="fsPosts" class="fs-posts"></div>
         <div id="fsChat" class="future-dm-list hidden"></div>
+        <div id="fsTrail" class="fs-trail hidden"></div>
       </div>
     </div>
     <div class="fdm-compose hidden" id="fdmCompose">
@@ -1992,9 +2011,11 @@ body::after{display:none}
     <div class="dest-toggle">
       <button type="button" class="on" data-to="self" data-vis="future">自分へ</button>
       <button type="button" data-to="friend" data-vis="shared">親友へ</button>
+      <button type="button" data-to="pair" data-vis="pair">ふたり</button>
       <button type="button" data-to="group" data-vis="group">グループ</button>
       <button type="button" data-to="invite" data-vis="invite">招待</button>
     </div>
+    <p class="pair-hint hidden" id="pairHint">🔒 秘密カプセル · ふたりだけが見られます。タイムラインには載りません。</p>
     <div class="create-friend-pick hidden" id="createFriendPick">
       <div class="duration-label">誰に送る？（複数選択可）</div>
       <div class="create-chip-row create-friend-row" id="createFriendRow"></div>
@@ -2455,15 +2476,22 @@ function parseTagsFromInput(){
   const typed=raw?raw.split(/[\s,#]+/).filter(Boolean).map(t=>t.replace(/^#/,'')):[];
   return[...new Set([...fromChips,...typed])].slice(0,5);
 }
+function isPairCap(c){return c.visibility==='pair'||c.to==='pair'}
+function canSeePairCap(c){
+  const me=meName();
+  if(c.from===me||c.from==='ゆうま')return true;
+  if(c.pairWith===me||c.to===me)return true;
+  return false;
+}
 function timelinePosts(){
-  const caps=(S.capsules||[]).map(c=>({
+  const caps=(S.capsules||[]).filter(c=>!isPairCap(c)).map(c=>({
     id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,
     at:c.createdAt||Date.now(),openAt:c.openAt,mediaId:c.mediaId,
     sealed:c.sealed,tags:c.tags||[],loc:c.loc,capsule:c,
     layer:c.layer,promoted:!!c.promoted,
     opened:canViewCapContent(c)||c.sealed===false||c.layer==='now',visibility:c.visibility,
   }));
-  const opened=(S.opened||[]).map(o=>({
+  const opened=(S.opened||[]).filter(o=>!isPairCap(o)).map(o=>({
     id:o.id,from:o.from,to:o.to||'self',type:o.type,text:o.text,
     at:o.openedAt,openAt:o.openedAt,mediaId:o.mediaId,
     sealed:false,tags:o.tags||[],opened:true,capsule:null,
@@ -2517,11 +2545,15 @@ function updateCreateUI(){
   const layer=S.sealLayer||'seal';
   const isNow=layer==='now';
   const isFriend=to==='friend';
+  const isPair=to==='pair';
   const isGroup=to==='group';
   const isInvite=to==='invite';
-  $('createFriendPick')?.classList.toggle('hidden',!isFriend);
+  $('createFriendPick')?.classList.toggle('hidden',!isFriend&&!isPair);
   $('createGroupPick')?.classList.toggle('hidden',!isGroup);
   $('createInvitePick')?.classList.toggle('hidden',!isInvite);
+  $('pairHint')?.classList.toggle('hidden',!isPair);
+  const friendLbl=$('createFriendPick')?.querySelector('.duration-label');
+  if(friendLbl)friendLbl.textContent=isPair?'誰とふたりだけ？':'誰に送る？（複数選択可）';
   $('durationPills')?.closest('.duration-label')?.classList.toggle('hidden',isNow);
   $('durationPills')?.parentElement?.querySelector('.duration-label')?.classList.toggle('hidden',isNow);
   document.querySelectorAll('#durationPills')?.forEach?.(()=>{});
@@ -2533,6 +2565,7 @@ function updateCreateUI(){
   document.querySelectorAll('.layer-toggle button').forEach(b=>b.classList.toggle('on',b.dataset.layer===layer));
   ensureGroups();
   if(isFriend&&!S.sealFriendIds?.length&&MEMBERS[0])S.sealFriendIds=[MEMBERS[0].id];
+  if(isPair&&!S.sealFriendIds?.length&&MEMBERS[0])S.sealFriendIds=[MEMBERS[0].id];
   if(isGroup&&!S.sealGroupIds?.length&&S.groups[0])S.sealGroupIds=[S.groups[0].id];
   document.querySelectorAll('.dest-toggle button').forEach(b=>{
     b.classList.toggle('on',b.dataset.to===to);
@@ -2548,7 +2581,11 @@ function renderCreateChips(){
   $('createFriendRow')?.querySelectorAll('.create-friend-chip').forEach(b=>b.addEventListener('click',()=>{
     const id=b.dataset.fid;
     if(!S.sealFriendIds)S.sealFriendIds=[];
-    S.sealFriendIds=S.sealFriendIds.includes(id)?S.sealFriendIds.filter(x=>x!==id):[...S.sealFriendIds,id];
+    if((S.sealTo||'self')==='pair'){
+      S.sealFriendIds=S.sealFriendIds.includes(id)?[]:[id];
+    }else{
+      S.sealFriendIds=S.sealFriendIds.includes(id)?S.sealFriendIds.filter(x=>x!==id):[...S.sealFriendIds,id];
+    }
     save();renderCreateChips();haptic();
   }));
   $('createGroupRow')?.querySelectorAll('.create-group-chip').forEach(b=>b.addEventListener('click',()=>{
@@ -2679,6 +2716,7 @@ function sealProgress(c){
 }
 function capDestLabel(c){
   const me=meName();
+  if(isPairCap(c))return (c.to||c.pairWith||'ふたり')+' とだけ';
   if(c.to==='self')return '未来の自分へ';
   if(c.to==='group')return c.groupId?groupNameById(c.groupId):(S.groupName||GROUP);
   if(c.from===me||c.from==='ゆうま')return c.to+' へ';
@@ -3067,8 +3105,8 @@ function shareCardFooter(){
   const qr=`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(APP_URL+'?invite='+code)}`;
   return`<div class="wrapped-qr"><img src="${qr}" alt="QR"><div><div style="font-size:10px;color:var(--ink-3)">招待コード</div><div class="wrapped-code">${esc(code)}</div></div></div>`;
 }
-function getLastYearToday(){
-  const y=new Date();y.setFullYear(y.getFullYear()-1);
+function getMemoriesOnDay(yearsAgo){
+  const y=new Date();y.setFullYear(y.getFullYear()-yearsAgo);
   const yStart=new Date(y);yStart.setHours(0,0,0,0);
   const yEnd=new Date(y);yEnd.setHours(23,59,59,999);
   const ts0=yStart.getTime(),ts1=yEnd.getTime();
@@ -3086,6 +3124,7 @@ function getLastYearToday(){
   candidates.sort((a,b)=>score(b)-score(a)||b.at-a.at);
   return candidates[0];
 }
+function getLastYearToday(){return getMemoriesOnDay(1)}
 function checkLastYearTodayNotif(){
   const item=getLastYearToday();
   if(!item)return;
@@ -3240,6 +3279,94 @@ function defaultMusicMonths(){
     ],0),
   ];
 }
+const GIFT_DEFS={
+  heart:{emoji:'💝',label:'ハート'},
+  star:{emoji:'⭐',label:'キラキラ'},
+  letter:{emoji:'💌',label:'手紙'},
+  flower:{emoji:'🌸',label:'花'},
+};
+function ensureUserGifts(){if(!S.userGifts)S.userGifts=[]}
+function sendGift(toName,giftKey){
+  ensureUserGifts();
+  const me=meName();
+  const def=GIFT_DEFS[giftKey];
+  if(!def)return;
+  const last=S.userGifts.filter(g=>g.from===me&&g.to===toName).sort((a,b)=>b.at-a.at)[0];
+  if(last&&Date.now()-last.at<3600e3){toast('少し待ってから贈ろう');return}
+  S.userGifts.push({id:'gft'+Date.now(),giftId:giftKey,from:me,to:toName,at:Date.now()});
+  pushHomeNotif('ギフトが届きました',me+' から '+def.emoji,'messages');
+  save();renderFriendSpace();toast('贈りました');haptic();
+}
+function buildYearWrapStats(year=new Date().getFullYear()){
+  const start=new Date(year,0,1).getTime();
+  const end=new Date(year+1,0,1).getTime();
+  const opened=(S.opened||[]).filter(o=>o.openedAt>=start&&o.openedAt<end);
+  const tagCounts={};
+  opened.forEach(o=>(o.tags||[]).forEach(t=>{tagCounts[t]=(tagCounts[t]||0)+1}));
+  const topTag=Object.entries(tagCounts).sort((a,b)=>b[1]-a[1])[0];
+  const friendCounts={};
+  const me=meName();
+  opened.forEach(o=>{if(o.from&&o.from!==me&&o.from!=='ゆうま')friendCounts[o.from]=(friendCounts[o.from]||0)+1});
+  const topFriend=Object.entries(friendCounts).sort((a,b)=>b[1]-a[1])[0];
+  const places=new Set(opened.filter(o=>o.loc).map(o=>Math.round(o.loc.lat*100)+','+Math.round(o.loc.lng*100)));
+  const monthCounts=new Array(12).fill(0);
+  opened.forEach(o=>monthCounts[new Date(o.openedAt).getMonth()]++);
+  const bestMonth=monthCounts.indexOf(Math.max(...monthCounts));
+  const songs={};
+  opened.forEach(o=>{if(o.linkedSong?.title)songs[o.linkedSong.title]=(songs[o.linkedSong.title]||0)+1});
+  const topSong=Object.entries(songs).sort((a,b)=>b[1]-a[1])[0];
+  return{year,openedCount:opened.length,topTag,topFriend,placeCount:places.size,bestMonth,topSong};
+}
+function openYearWrapCard(year){
+  const s=buildYearWrapStats(year);
+  const monthNames=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const monthName=s.openedCount?monthNames[s.bestMonth]:'—';
+  $('wrappedCard').innerHTML=`
+    <div class="wc-brand">TIME CAP</div>
+    <div class="wc-period">${s.year}年<br>まとめ</div>
+    <div class="wc-stat">開封した記憶 <strong>${s.openedCount}</strong> 件<br>
+    ${s.placeCount?`訪れた場所 ${s.placeCount} か所<br>`:''}
+    ${s.topTag?`いちばん使ったタグ #${esc(s.topTag[0])}<br>`:''}
+    ${s.topFriend?`一緒にいた友達 ${esc(s.topFriend[0])}`:''}</div>
+    <div class="wc-theme">
+      <div class="wc-theme-lbl">いちばん記憶に残った月</div>
+      <div class="wc-theme-title">${monthName}</div>
+      ${s.topSong?`<div class="wc-theme-artist">🎵 ${esc(s.topSong[0])}</div>`:'<div class="wc-theme-artist">音楽が耳 · マップが足跡</div>'}
+    </div>
+    <div class="wrapped-footer">${APP_URL}</div>
+    ${shareCardFooter()}`;
+  $('wrappedOverlay')?.classList.add('open');
+  haptic();
+}
+function friendTrailPoints(friendName){
+  return(S.opened||[]).filter(o=>o.from===friendName&&o.loc);
+}
+function renderFriendTrail(m){
+  const el=$('fsTrail');
+  if(!el||!m)return;
+  const pts=friendTrailPoints(m.n);
+  if(!pts.length){
+    el.innerHTML='<div class="empty-state" style="padding:24px 0">まだ軌跡がありません</div>';
+    return;
+  }
+  const lats=pts.map(p=>p.loc.lat),lngs=pts.map(p=>p.loc.lng);
+  const minLat=Math.min(...lats),maxLat=Math.max(...lats);
+  const minLng=Math.min(...lngs),maxLng=Math.max(...lngs);
+  const latR=(maxLat-minLat)||0.01,lngR=(maxLng-minLng)||0.01;
+  const dots=pts.map(p=>{
+    const x=((p.loc.lng-minLng)/lngR)*80+10;
+    const y=((maxLat-p.loc.lat)/latR)*70+10;
+    return`<div class="fs-trail-point" style="left:${x}%;top:${y}%"></div>`;
+  }).join('');
+  const list=pts.slice().reverse().map(p=>`
+    <div style="font-size:13px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+      <div style="color:var(--ink-3);font-size:11px">${new Date(p.openedAt).toLocaleDateString('ja-JP')}</div>
+      <div>${esc((p.text||'').slice(0,40))}</div>
+    </div>`).join('');
+  el.innerHTML=`<div class="lyt-label">${esc(m.n)}の足跡 · ${pts.length}地点</div>
+    <div class="fs-trail-map">${dots}</div>
+    <div class="fs-trail-list">${list}</div>`;
+}
 function canViewCapContent(c){return !!(S.opened||[]).find(o=>o.id===c.id)}
 function currentThemeSong(){
   const m=(S.musicMonths||[]).find(x=>x.key===musicMonthKey());
@@ -3281,6 +3408,7 @@ function defaults(){
     {id:'c8',from:'みお',to:'group',type:'photo',text:'冬のイルミ',sealed:true,openAt:addDays(350),days:365,createdAt:now-8*864e5},
     {id:'c9',from:'けんと',to:'group',type:'video',text:'来年の目標',sealed:true,openAt:addDays(340),days:365,createdAt:now-9*864e5},
     {id:'c10',from:'ゆうま',to:'self',type:'photo',text:'この気持ち、忘れないで。',sealed:true,openAt:addDays(360),days:365,createdAt:now-10*864e5,loc:{lat:35.4437,lng:139.6380},tags:['卒業']},
+    {id:'c-pair-demo',from:'ゆうま',to:'みお',visibility:'pair',pairWith:'みお',type:'text',text:'ふたりだけの秘密',sealed:true,openAt:addDays(5),days:5,createdAt:now},
   ];
   for(let i=11;i<=52;i++){
     const days=[3,7,30,180,365][i%5];
@@ -3299,7 +3427,7 @@ function defaults(){
     pendingInvites:[],
     seasonEvent:{joined:false,key:'grad2026',theme:'3年後のじぶんへ',unlocksAt:null},
     profile:{school:'',graduationYear:2026,grade:'高校3年生',birthDate:''},
-    cohorts:[],cohortFeed:[],birthdayMessages:[],
+    cohorts:[],cohortFeed:[],birthdayMessages:[],userGifts:[],
     dailyState:{
       date:todayStr(),openedUserIds:['u1','u2','u3'],
       postsCount:4,activeMembersCount:5,isUnlocked:false,
@@ -3310,6 +3438,8 @@ function defaults(){
       {id:'o-demo',from:'みお',type:'photo',text:'開封済みの写真サンプル',openedAt:now-864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671}},
       {id:'o-map3',from:'ゆうま',type:'photo',text:'旅の途中',openedAt:now-3*864e5,loc:{lat:35.4437,lng:139.6380}},
       {id:'o-lyt',from:'ゆうま',type:'photo',text:'去年の今日、窓辺に座ってた',openedAt:now-365.25*864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671}},
+      {id:'o-lyt2',from:'ゆうま',type:'photo',text:'2年前、初めて一人で遠出した',openedAt:now-2*365.25*864e5,mediaId:'demo_photo',loc:{lat:35.4437,lng:139.6380}},
+      {id:'o-lyt3',from:'ゆうま',type:'text',text:'3年前の文化祭、最高だった',openedAt:now-3*365.25*864e5,tags:['文化祭']},
     ],
     readNotifs:[],
     auth:null,
@@ -3353,6 +3483,7 @@ if(!S)try{const old=JSON.parse(localStorage.getItem('timecap_v2'));if(old)S=old}
 if(!S)try{const old=JSON.parse(localStorage.getItem('timecap_v1'));if(old)S=old}catch(e){}
 if(!S||!S.capsules?.length)S=defaults();
 if(!S.homeNotifs)S.homeNotifs=HOME_NOTIFS.map(n=>({...n}));
+ensureUserGifts();
 if(!S.dms)S.dms=defaults().dms;
 if(!S.feedPosts)S.feedPosts=defaults().feedPosts;
 if(!S.feedFilter)S.feedFilter='friends';
@@ -3418,6 +3549,7 @@ function capState(c){
 function stateLabel(s){return s==='LOCKED'?'封印中':s==='WAITING'?'開封待ち':'開封済み'}
 function isPrivateCap(c){
   const me=S.auth?.name||USER;
+  if(isPairCap(c))return !canSeePairCap(c);
   return c.to==='self'||(c.from===me||c.from==='ゆうま')&&c.visibility==='future';
 }
 function isSharedCap(c){
@@ -3486,6 +3618,7 @@ function openFriendSpace(memberId){
   document.querySelectorAll('.fs-tab').forEach(t=>t.classList.toggle('on',t.dataset.fstab==='posts'));
   $('fsPosts').classList.remove('hidden');
   $('fsChat').classList.add('hidden');
+  $('fsTrail')?.classList.add('hidden');
   switchTab('messages');
   renderFriendSpace();
   haptic();
@@ -3506,7 +3639,7 @@ function renderHomeWidget(){
 function renderTimeline(){
   renderDailyQuestion();
   renderTodayPhotos();
-  renderLastYearToday();
+  renderTimeMachine();
   checkLastYearTodayNotif();
   checkUnlockNotifs();
   checkLimitedPromptNotif();
@@ -3758,24 +3891,25 @@ function renderActivityFeed(){
   }));
 }
 
-function renderLastYearToday(){
-  const item=getLastYearToday();
-  const sec=$('lastYearToday');
-  if(!item||!sec)return;
+function renderTimeMachine(){
+  const sec=$('timeMachineSection');
+  if(!sec)return;
+  const items=[1,2,3].map(y=>({years:y,item:getMemoriesOnDay(y)})).filter(x=>x.item);
+  if(!items.length){sec.classList.add('hidden');return}
   sec.classList.remove('hidden');
-  const d=new Date(item.at||item.openedAt||item.createdAt);
-  $('lytTitle').textContent=item.text||'この日の記憶';
-  const sub=sec.querySelector('.lyt-sub')||(()=>{
-    const p=document.createElement('p');
-    p.className='lyt-sub';
-    p.style.cssText='font-size:12px;color:var(--ink-3);margin:-4px 0 12px';
-    $('lytTitle')?.after(p);
-    return p;
-  })();
-  sub.textContent=d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-  const card=$('lytCard');
-  if(item.mediaId)card.innerHTML=`<img data-lazy="${esc(item.mediaId)}" alt="">`;
-  else card.innerHTML=`<p style="font-size:14px;color:var(--ink-2);padding:12px 0">${esc(item.text||'')}</p>`;
+  const scroll=$('timeMachineScroll');
+  if(!scroll)return;
+  scroll.innerHTML=items.map(({years,item})=>{
+    const d=new Date(item.at||item.openedAt||item.createdAt);
+    const body=item.mediaId
+      ?`<img data-lazy="${esc(item.mediaId)}" alt="">`
+      :`<p style="font-size:13px;color:var(--ink-2);line-height:1.45;margin:0">${esc(item.text||'')}</p>`;
+    return`<article class="tm-card">
+      <div class="tm-years">${years}年前の今日 · ${d.toLocaleDateString('ja-JP',{month:'long',day:'numeric'})}</div>
+      <div class="tm-title">${esc(item.text||'この日の記憶')}</div>
+      ${body}
+    </article>`;
+  }).join('');
   loadLazyThumbs(sec);
 }
 
@@ -3785,7 +3919,7 @@ function renderSharedTimeline(){
   const el=$('sharedTimeline');
   if(!el)return;
   const me=S.auth?.name||USER;
-  const capPosts=S.capsules.filter(c=>!isPrivateCap(c)).map(c=>({
+  const capPosts=S.capsules.filter(c=>!isPrivateCap(c)&&!isPairCap(c)).map(c=>({
     id:c.id,from:c.from,type:c.type,text:c.text,at:c.createdAt||Date.now(),
     sealed:c.sealed,openAt:c.openAt,mediaId:c.mediaId,to:c.to,capsule:c,
   }));
@@ -4073,16 +4207,28 @@ function renderFriendSpace(){
   const postsEl=$('fsPosts');
   const chatEl=$('fsChat');
   const me=S.auth?.name||USER;
-  const posts=S.capsules.filter(c=>c.from===m.n||(c.to===m.n&&(c.from===me||c.from==='ゆうま')));
+  const posts=S.capsules.filter(c=>{
+    if(isPairCap(c))return canSeePairCap(c)&&(c.from===m.n||c.to===m.n||(c.from===me||c.from==='ゆうま'));
+    return c.from===m.n||(c.to===m.n&&(c.from===me||c.from==='ゆうま'));
+  });
   postsEl.innerHTML=posts.length?posts.map(c=>{
     const locked=isCapLocked(c);
+    const pairBadge=isPairCap(c)?'<span style="font-size:10px;color:var(--warm,#e8a87c);margin-left:6px">🔒 秘密</span>':'';
     return`<div class="fs-post">
-      <div class="fp-when">${formatWhen(c)} · ${TYPE_JA[c.type]||c.type}</div>
+      <div class="fp-when">${formatWhen(c)} · ${TYPE_JA[c.type]||c.type}${pairBadge}</div>
       ${locked
         ?`<div class="stl-sealed-box" style="padding:24px 16px;margin-top:8px"><div class="ico">🔒</div><div class="lbl">封印中 · 開封まで見られません</div></div>`
         :`<div class="fp-text">${esc(c.text||'（封じられた記憶）')}</div>`}
     </div>`;
   }).join(''):'<div class="empty-state" style="padding:24px 0">Future Postsはまだありません</div>';
+
+  const gr=$('fsGiftRow');
+  if(gr){
+    gr.innerHTML=Object.entries(GIFT_DEFS).map(([k,g])=>
+      `<button type="button" class="gift-chip" data-gift="${k}">${g.emoji} ${g.label}</button>`
+    ).join('')+'<span style="font-size:11px;color:var(--ink-3);width:100%;margin-top:4px">友達にギフトを贈る</span>';
+    gr.querySelectorAll('[data-gift]').forEach(b=>b.addEventListener('click',()=>sendGift(m.n,b.dataset.gift)));
+  }
 
   const dm=S.dms?.find(d=>d.withId===activeFriendId);
   if(dm){
@@ -4097,6 +4243,7 @@ function renderFriendSpace(){
   }else chatEl.innerHTML='<div class="empty-state">未来DMを送ってみましょう</div>';
 
   $('fdmCompose').classList.toggle('hidden',fsTab!=='chat');
+  if(fsTab==='trail')renderFriendTrail(m);
 }
 
 function renderArchive(){
@@ -4111,6 +4258,13 @@ function renderArchive(){
   const tab=S.archiveTab||'all';
   const sealedN=sealedVaultItems().length;
   const streak=S.currentStreak||0;
+  ensureUserGifts();
+  const myGifts=S.userGifts.filter(g=>g.to===name);
+  const giftCollection=myGifts.length?myGifts.slice(0,12).map(g=>{
+    const d=GIFT_DEFS[g.giftId]||{emoji:'🎁',label:g.giftId};
+    return`<span class="gift-badge">${d.emoji} ${esc(g.from)}</span>`;
+  }).join(''):'';
+  const yr=new Date().getFullYear();
   const bonuses=(S.bonusItems||[]).map(id=>{
     const b=BONUS_DEFS[id]||{label:id,emoji:'✨'};
     return`<span class="bonus-badge">${b.emoji} ${esc(b.label)}</span>`;
@@ -4183,6 +4337,8 @@ function renderArchive(){
         <div><div style="font-size:20px;font-weight:600">${streak}</div><div style="font-size:11px;color:var(--ink-3)">連続</div></div>
       </div>
       ${streak?`<p style="padding:0 20px 12px;font-size:13px;color:var(--ink-2)">${esc(name)}は連続${streak}日、毎日の問いに答えています</p>`:''}
+      <button type="button" class="dq-cta year-wrap-btn" id="openYearWrapBtn">${yr}年まとめを見る</button>
+      ${myGifts.length?`<div style="padding:0 20px 8px"><div class="sec-label">もらったギフト</div><div class="gift-collection">${giftCollection}</div></div>`:''}
       ${bonuses?`<div class="bonus-row" style="padding:0 20px 16px;justify-content:flex-start">${bonuses}</div>`:''}
       <div class="invite-notice" style="margin:0 20px 16px">
         招待コード: <strong>${esc(S.inviteCode)}</strong>
@@ -4242,6 +4398,7 @@ function renderArchive(){
     S.archiveTab=t.dataset.atab;save();renderArchive();haptic();
   }));
   $('openWrappedBtn')?.addEventListener('click',()=>openWrappedCard(musicKey));
+  $('openYearWrapBtn')?.addEventListener('click',()=>openYearWrapCard(yr));
 }
 
 function openWrappedCard(monthKey){
@@ -4341,7 +4498,7 @@ function renderNotifDropdown(){
       $('notifDropdown')?.classList.remove('open');
       if(item.dataset.action==='open'&&ready().length)startGroupSync(ready());
       else if(item.dataset.action==='dm'){switchTab('me');const dm=S.dms?.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}
-      else if(item.dataset.action==='timeline'){switchTab('waiting');$('lastYearToday')?.scrollIntoView({behavior:'smooth',block:'start'})}
+      else if(item.dataset.action==='timeline'){switchTab('waiting');$('timeMachineSection')?.scrollIntoView({behavior:'smooth',block:'start'})}
       haptic();
     });
   });
@@ -4560,6 +4717,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
   const dest=fromCreate?(S.sealTo||'self'):'self';
   const isPrivate=dest==='self';
   const isFriend=dest==='friend';
+  const isPair=dest==='pair';
   const isGroup=dest==='group';
   const isInvite=dest==='invite';
   const tags=parseTagsFromInput();
@@ -4584,6 +4742,11 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
       if(m)targets.push({type:'friend',to:m.n,vis:'shared'});
     });
     if(!targets.length){toast('送り先を選んでください');return}
+  }else if(isPair){
+    const fid=(S.sealFriendIds||[])[0]||MEMBERS[0]?.id;
+    const m=MEMBERS.find(x=>x.id===fid);
+    if(!m){toast('相手を選んでください');return}
+    targets.push({type:'pair',to:m.n,vis:'pair',pairWith:m.n});
   }else if(isGroup){
     ensureGroups();
     const gids=(S.sealGroupIds||[]).length?S.sealGroupIds:[S.groups[0]?.id];
@@ -4630,7 +4793,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
             layer:isNowLayer?'now':'sealed',
             mediaId:mItem?.dataUrl?capId:null,createdAt:Date.now(),
             goal:goal||undefined,loc:itemLoc,tags:tags.length?tags:undefined,
-            groupId:t.groupId,seasonEvent:seasonTag,
+            groupId:t.groupId,seasonEvent:seasonTag,pairWith:t.pairWith,
             album:isNowLayer&&mItem?.type==='photo'?getSeasonAlbumKey():undefined,
             linkedSong:linkedSongSnapshot(),mood:sealMood,selfieMediaId,
             voiceDuration:mItem?.type==='voice'?pendingVoice?.duration:undefined,
@@ -4641,7 +4804,12 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
             S.pendingInvites.push({id:'inv'+Date.now(),contact:t.contact,capId,from:fromName,text:displayText,openAt,inviteCode:S.inviteCode});
             S.homeNotifs=S.homeNotifs||[];
             S.homeNotifs.unshift({id:'inv'+Date.now(),title:'招待を送りました',sub:t.contact+' に届きます',read:false});
-          }else{S.capsules.unshift(cap);pushActivity('post_created',{postId:capId});}
+          }else{
+            S.capsules.unshift(cap);
+            if(t.vis==='pair'){
+              pushHomeNotif('秘密のカプセルが届きました',fromName+' からふたりだけの記憶','messages');
+            }else pushActivity('post_created',{postId:capId});
+          }
           count++;
         }
       }
@@ -4724,7 +4892,10 @@ document.querySelectorAll('.fs-tab').forEach(t=>t.addEventListener('click',()=>{
   document.querySelectorAll('.fs-tab').forEach(x=>x.classList.toggle('on',x.dataset.fstab===fsTab));
   $('fsPosts')?.classList.toggle('hidden',fsTab!=='posts');
   $('fsChat')?.classList.toggle('hidden',fsTab!=='chat');
+  $('fsTrail')?.classList.toggle('hidden',fsTab!=='trail');
+  $('fsGiftRow')?.classList.toggle('hidden',fsTab==='trail');
   $('fdmCompose')?.classList.toggle('hidden',fsTab!=='chat');
+  if(fsTab==='trail')renderFriendSpace();
   haptic();
 }));
 document.querySelectorAll('#fdmDelay button').forEach(b=>b.addEventListener('click',()=>{
@@ -4935,11 +5106,11 @@ function finishOpen(){
         openingItems.forEach(c=>S.opened.unshift({
           id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,openedAt:Date.now(),mediaId:c.mediaId,
           goal:c.goal,loc:c.loc,tags:c.tags,linkedSong:c.linkedSong,mood:c.mood,selfieMediaId:c.selfieMediaId,
-          promptId:c.promptId,promptText:c.promptText,choice:c.choice,
+          promptId:c.promptId,promptText:c.promptText,choice:c.choice,visibility:c.visibility,pairWith:c.pairWith,
           themeSong:c.linkedSong||currentThemeSong(),todaySong:currentTodaySong(),weekTop3:currentWeekTop3(),
         }));
         S.capsules=S.capsules.filter(c=>!openingItems.find(r=>r.id===c.id));
-        openingItems.forEach(c=>pushActivity('post_opened',{postId:c.id}));
+        openingItems.forEach(c=>{if(!isPairCap(c))pushActivity('post_opened',{postId:c.id})});
         save();renderAll();
         showGoalReflect(openingItems[0]);
         showMoodNowPick(cap);
