@@ -1203,6 +1203,96 @@ body::after{display:none}
 }
 .private-card.locked .pc-thumb{display:none!important}
 .create-group-label{font-size:12px;color:var(--ink-3);margin-top:8px;padding:10px 14px;background:var(--bg-2);border-radius:var(--r-sm)}
+
+/* P0 — 待合室 */
+.waiting-list{padding:8px 20px 100px;display:flex;flex-direction:column;gap:14px}
+.wait-card{
+  padding:20px;border-radius:var(--r);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;
+}
+.wait-card.ready{border-color:rgba(255,255,255,.18);animation:pulseWait 2.5s ease infinite}
+.wait-card .wc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.wait-card .wc-to{font-size:14px;font-weight:500}
+.wait-card .wc-type{font-size:11px;color:var(--ink-3)}
+.wait-card .wc-countdown{font-size:22px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.wait-card .wc-countdown.open{color:var(--ink)}
+.wait-card .wc-bar{height:3px;background:var(--bg-3);border-radius:2px;margin-top:12px;overflow:hidden}
+.wait-card .wc-fill{height:100%;background:var(--ink);border-radius:2px;transition:width 1s linear}
+.wait-card .wc-foot{font-size:12px;color:var(--ink-3);margin-top:10px}
+
+/* P0 — 今日の問い */
+.daily-question{
+  margin:0 20px 20px;padding:22px 20px;border-radius:var(--r);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.08);
+}
+.daily-question .dq-label{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+.daily-question .dq-text{font-size:18px;font-weight:500;line-height:1.45;margin:12px 0 18px}
+.daily-question .dq-cta{
+  width:100%;padding:14px;border-radius:var(--r-pill);background:var(--accent);color:var(--accent-inv);
+  font-size:14px;font-weight:600;
+}
+.daily-question.done .dq-text{opacity:.6}
+.daily-question.done .dq-cta{background:var(--bg-3);color:var(--ink-3)}
+
+.goal-input{
+  width:100%;border:none;outline:none;padding:14px 16px;border-radius:var(--r-sm);
+  background:var(--bg-2);font-size:14px;margin-bottom:14px;border:1px solid var(--bg-3);
+}
+.goal-input::placeholder{color:var(--ink-3)}
+
+/* 開封 — 叶った? */
+.goal-reflect{
+  margin-top:20px;padding:18px;border-radius:var(--r);background:rgba(255,255,255,.06);
+  text-align:center;
+}
+.goal-reflect .gr-q{font-size:15px;font-weight:500;margin:10px 0 14px}
+.goal-reflect .gr-btns{display:flex;gap:10px;justify-content:center}
+.goal-reflect button{
+  padding:10px 20px;border-radius:var(--r-pill);font-size:13px;font-weight:600;
+  background:var(--bg-2);color:var(--ink);
+}
+.goal-reflect button.yes{background:var(--accent);color:var(--accent-inv)}
+
+/* Wrapped シェアカード */
+.wrapped-overlay{
+  position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.92);
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.wrapped-overlay.open{display:flex}
+.wrapped-card{
+  width:100%;max-width:320px;aspect-ratio:9/16;border-radius:24px;
+  background:linear-gradient(165deg,#1a1a1a 0%,#000 50%,#1c1c1e 100%);
+  padding:28px 24px;display:flex;flex-direction:column;justify-content:space-between;
+  border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 80px rgba(0,0,0,.8);
+}
+.wrapped-card .wc-brand{font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--ink-3)}
+.wrapped-card .wc-period{font-size:28px;font-weight:700;line-height:1.15;margin-top:8px}
+.wrapped-card .wc-stat{font-size:15px;color:var(--ink-2);margin-top:16px;line-height:1.6}
+.wrapped-card .wc-theme{margin-top:auto;padding-top:24px}
+.wrapped-card .wc-theme-lbl{font-size:10px;color:var(--ink-3);letter-spacing:.08em}
+.wrapped-card .wc-theme-title{font-size:22px;font-weight:700;margin-top:6px}
+.wrapped-card .wc-theme-artist{font-size:14px;color:var(--ink-3);margin-top:4px}
+.wrapped-actions{display:flex;gap:10px;margin-top:16px;width:100%;max-width:320px}
+.wrapped-actions button{
+  flex:1;padding:14px;border-radius:var(--r-pill);font-size:13px;font-weight:600;
+  background:var(--accent);color:var(--accent-inv);
+}
+.wrapped-actions button.ghost{background:var(--bg-2);color:var(--ink)}
+
+/* オンボーディング */
+.onboard-overlay{
+  position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);
+  display:flex;align-items:center;justify-content:center;padding:32px;
+  opacity:0;pointer-events:none;transition:opacity .4s;
+}
+.onboard-overlay.open{opacity:1;pointer-events:auto}
+.onboard-panel{max-width:340px;text-align:center}
+.onboard-panel h2{font-size:26px;font-weight:600;line-height:1.3}
+.onboard-panel p{font-size:15px;color:var(--ink-2);margin-top:14px;line-height:1.55}
+.onboard-panel button{
+  margin-top:28px;width:100%;padding:16px;border-radius:var(--r-pill);
+  background:var(--accent);color:var(--accent-inv);font-size:15px;font-weight:600;
+}
 </style>
 </head>
 <body>
@@ -1211,7 +1301,7 @@ body::after{display:none}
   <header class="app-header">
     <div class="app-logo">Time Cap</div>
     <div class="app-header-actions">
-      <button type="button" class="icon-btn" id="notifBell" aria-label="通知">
+      <button type="button" class="icon-btn" id="notifBell" aria-label="過去から届いた">
         <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="notif-badge hidden" id="notifBadge">0</span>
       </button>
@@ -1223,31 +1313,35 @@ body::after{display:none}
 
   <button type="button" class="fab-compose" id="openCreate" aria-label="封じる">+</button>
 
-  <!-- ① Private -->
-  <section class="panel active" id="panel-private">
+  <!-- ① 待合室 — ホーム -->
+  <section class="panel active" id="panel-waiting">
     <div class="panel-head" style="padding-top:0">
-      <h1 style="font-size:28px;font-weight:600">Private</h1>
-      <p class="sub">自分だけのタイムカプセル · 日記 · メモ</p>
+      <h1 style="font-size:28px;font-weight:600">待合室</h1>
+      <p class="sub">封じた記憶が、開封を待っている</p>
     </div>
-    <div id="privateMusicStrip"></div>
-    <div class="private-list" id="privateList"></div>
+    <div class="waiting-list" id="waitingList"></div>
   </section>
 
-  <!-- ② Shared -->
-  <section class="panel" id="panel-shared">
+  <!-- ② 封じる — 能動 -->
+  <section class="panel" id="panel-seal">
     <div id="sharedListView">
       <div class="panel-head" style="padding-top:0">
-        <h1 style="font-size:28px;font-weight:600">Shared</h1>
-        <p class="sub">タイムライン · 未来DM · 友達</p>
+        <h1 style="font-size:28px;font-weight:600">封じる</h1>
+        <p class="sub">今の気持ちを、未来へ届ける</p>
       </div>
+      <div class="daily-question" id="dailyQuestionBlock">
+        <div class="dq-label">今日の問い</div>
+        <div class="dq-text" id="dailyQuestionText">—</div>
+        <button type="button" class="dq-cta" id="dailyQuestionBtn">この問いを封じる</button>
+      </div>
+      <div class="sec-label" style="padding-top:8px">人との関係</div>
       <div class="shared-top-tabs">
-        <button type="button" class="shared-top-tab on" data-stab="timeline">タイムライン</button>
-        <button type="button" class="shared-top-tab" data-stab="dm">DM</button>
-        <button type="button" class="shared-top-tab" data-stab="friends">友達</button>
+        <button type="button" class="shared-top-tab on" data-stab="friends">親友・2人</button>
+        <button type="button" class="shared-top-tab" data-stab="dm">未来DM</button>
       </div>
-      <div class="shared-timeline" id="sharedTimeline"></div>
+      <div class="shared-timeline hidden" id="sharedTimeline"></div>
       <div class="shared-dm-list hidden" id="sharedDmList"></div>
-      <div class="shared-list hidden" id="sharedList"></div>
+      <div class="shared-list" id="sharedList"></div>
     </div>
     <div class="friend-space" id="friendSpace">
       <div class="fs-top">
@@ -1258,7 +1352,7 @@ body::after{display:none}
         </div>
       </div>
       <div class="fs-tabs">
-        <button type="button" class="fs-tab on" data-fstab="posts">Future Posts</button>
+        <button type="button" class="fs-tab on" data-fstab="posts">タイムカプセル</button>
         <button type="button" class="fs-tab" data-fstab="chat">未来DM</button>
       </div>
       <div class="fs-content">
@@ -1268,9 +1362,9 @@ body::after{display:none}
     </div>
     <div class="fdm-compose hidden" id="fdmCompose">
       <div class="fdm-delay" id="fdmDelay">
-        <button type="button" class="on" data-delay="0">今すぐ</button>
-        <button type="button" data-delay="1">1日後</button>
+        <button type="button" class="on" data-delay="1">1日後</button>
         <button type="button" data-delay="7">1週間後</button>
+        <button type="button" data-delay="30">1ヶ月後</button>
         <button type="button" data-delay="365">1年後</button>
       </div>
       <div class="fdm-input-row">
@@ -1280,7 +1374,7 @@ body::after{display:none}
     </div>
   </section>
 
-  <!-- ③ Archive -->
+  <!-- ③ 振り返り — 受動 -->
   <section class="panel" id="panel-archive">
     <div class="archive-view" id="archiveView"></div>
   </section>
@@ -1292,17 +1386,17 @@ body::after{display:none}
 
 <div class="tab-nav-wrap">
   <nav class="tab-nav">
-    <button type="button" class="tab-nav-btn active" data-tab="private">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      Private
+    <button type="button" class="tab-nav-btn active" data-tab="waiting">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      待合室
     </button>
-    <button type="button" class="tab-nav-btn" data-tab="shared">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Shared
+    <button type="button" class="tab-nav-btn" data-tab="seal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      封じる
     </button>
     <button type="button" class="tab-nav-btn" data-tab="archive">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      Archive
+      振り返り
     </button>
   </nav>
 </div>
@@ -1333,10 +1427,10 @@ body::after{display:none}
 <div class="create-overlay" id="createOverlay">
   <div class="create-sheet">
     <div class="sheet-handle"></div>
-    <h2 class="create-title">未来に、何を<br>残しますか？</h2>
+    <h2 class="create-title">今の気持ちを、<br>未来に封じる</h2>
     <div class="dest-toggle">
-      <button type="button" class="on" data-to="self" data-vis="future">Private</button>
-      <button type="button" data-to="friend" data-vis="shared">友達</button>
+      <button type="button" class="on" data-to="self" data-vis="future">自分へ</button>
+      <button type="button" data-to="friend" data-vis="shared">親友へ</button>
       <button type="button" data-to="group" data-vis="group">グループ</button>
     </div>
     <div class="create-friend-pick hidden" id="createFriendPick">
@@ -1347,7 +1441,9 @@ body::after{display:none}
       <div class="duration-label">グループ</div>
       <div class="create-group-label" id="createGroupLabel">私たち</div>
     </div>
-    <textarea class="create-input" id="createInput" maxlength="500" placeholder="言葉を書く（写真だけでも、言葉だけでもOK）"></textarea>
+    <textarea class="create-input" id="createInput" maxlength="500" placeholder="今の言葉を書く…"></textarea>
+    <div class="duration-label">叶えたいことは？ <span style="font-weight:400;color:var(--ink-3)">開封時に振り返る</span></div>
+    <input type="text" class="goal-input" id="goalInput" maxlength="120" placeholder="例：毎日続ける / あの人に伝える">
     <div class="create-media-row">
       <button type="button" class="create-pick" id="pickPhotoBtn">📷 写真を添える</button>
       <button type="button" class="create-pick" id="pickVideoBtn">🎥 動画を添える</button>
@@ -1371,7 +1467,7 @@ body::after{display:none}
       <input type="number" id="customDaysInput" min="1" max="3650" value="14" inputmode="numeric">
       <span>日後に開封</span>
     </div>
-    <button type="button" class="seal-cta" id="sealBtn">SEAL — 封をする</button>
+    <button type="button" class="seal-cta" id="sealBtn">封をする</button>
   </div>
 </div>
 
@@ -1403,12 +1499,13 @@ body::after{display:none}
       <button type="button" class="reaction-btn">🫧 しみた</button>
       <button type="button" class="reaction-btn">🌙 懐かしい</button>
     </div>
+    <div class="goal-reflect hidden" id="goalReflect"></div>
     <button type="button" class="export-btn" id="exportBtn">Stories / TikTok にシェア</button>
   </div>
 </div>
 
 <div class="notif-dropdown" id="notifDropdown">
-  <div class="notif-dropdown-header">通知</div>
+  <div class="notif-dropdown-header">過去から届いた</div>
   <div class="notif-dropdown-list" id="notifDropdownList"></div>
 </div>
 
@@ -1432,18 +1529,36 @@ body::after{display:none}
 
 <div class="toast" id="toast"></div>
 
+<div class="onboard-overlay" id="onboardOverlay">
+  <div class="onboard-panel">
+    <h2>24時間後の<br>自分へ、1通。</h2>
+    <p>最初のカプセルを封じよう。<br>明日、過去のあなたから届く。</p>
+    <button type="button" id="onboardStart">封じる</button>
+  </div>
+</div>
+
+<div class="wrapped-overlay" id="wrappedOverlay">
+  <div>
+    <div class="wrapped-card" id="wrappedCard"></div>
+    <div class="wrapped-actions">
+      <button type="button" id="wrappedShare">シェアする</button>
+      <button type="button" class="ghost" id="wrappedClose">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const KEY='timecap_v5';
+const KEY='timecap_v6';
 const IDB_NAME='timecap_media_v1';
 const USER='ゆうま';
 const GROUP='私たち';
 const MEMBER_COUNT=5;
 const QUORUM=0.6;
 const PROMPTS=[
-  '今日、何が笑顔にした？','いまの机の上を見せて。','今日の宝物は？',
-  'いま頭に残ってる曲は？','感謝していること、ひとつ。',
-  '未来の自分へのメッセージ。','いまの空の色は？',
-  '今何してる？','まだあの人好き？',
+  '今いちばん会いたい人は？','3年後の自分に一言','今日、何が笑顔にした？',
+  'いま頭に残ってる曲は？','感謝していること、ひとつ','未来の自分へのメッセージ',
+  'いまの空の色は？','まだあの人好き？','叶えたいこと、ひとつ',
+  '今日の宝物は？','今の気持ちを、そのまま','忘れたくない瞬間は？',
 ];
 const MEMBERS=[
   {n:'みお',i:'み',c:'#2A2A2A',id:'u1'},{n:'けんと',i:'け',c:'#4A4A4A',id:'u2'},
@@ -1589,6 +1704,37 @@ function updateCreateUI(){
 function updateMediaPickState(){
   $('pickPhotoBtn')?.classList.toggle('has-media',pendingMedia?.type==='photo');
   $('pickVideoBtn')?.classList.toggle('has-media',pendingMedia?.type==='video');
+}
+function countdownText(openAt){
+  const ms=new Date(openAt)-Date.now();
+  if(ms<=0)return {text:'開封の時が来た',ready:true};
+  const d=Math.floor(ms/864e5);
+  const h=Math.floor((ms%864e5)/360e5);
+  const m=Math.floor((ms%360e5)/6e4);
+  if(d>0)return {text:`あと ${d}日 ${h}時間`,ready:false};
+  if(h>0)return {text:`あと ${h}時間 ${m}分`,ready:false};
+  return {text:`あと ${m}分`,ready:false};
+}
+function sealProgress(c){
+  const start=c.createdAt||Date.now()-864e5;
+  const end=new Date(c.openAt).getTime();
+  const now=Date.now();
+  if(end<=now)return 100;
+  return Math.min(99,Math.max(2,Math.round((now-start)/(end-start)*100)));
+}
+function capDestLabel(c){
+  const me=S.auth?.name||USER;
+  if(c.to==='self')return '未来の自分へ';
+  if(c.to==='group')return S.groupName||GROUP;
+  if(c.from===me||c.from==='ゆうま')return c.to+' へ';
+  return c.from+' から';
+}
+function todayQuestion(){
+  const idx=Math.floor(Date.now()/864e5)%PROMPTS.length;
+  return PROMPTS[idx];
+}
+function isDailyQuestionDone(){
+  return S.dailyQuestionDate===todayStr()&&S.dailyQuestionDone;
 }
 function daysUntil(iso){return Math.max(0,Math.ceil((new Date(iso)-Date.now())/864e5))}
 function bucketFor(iso){
@@ -1777,6 +1923,9 @@ function defaults(){
     musicWeek:defaultMusicWeek(),
     archiveTab:'grid',
     archiveMusicKey:null,
+    onboardingDone:false,
+    dailyQuestionDate:null,
+    dailyQuestionDone:false,
   };
 }
 
@@ -1807,7 +1956,8 @@ if(!S.musicMonths)S.musicMonths=defaultMusicMonths();
 ensureMusicPeriods();
 if(!S.archiveTab)S.archiveTab='grid';
 if(S.archiveMusicKey===undefined)S.archiveMusicKey=null;
-if(!S.sharedTab)S.sharedTab='timeline';
+if(!S.sharedTab)S.sharedTab='friends';
+if(S.onboardingDone===undefined)S.onboardingDone=false;
 migrateMessages();
 document.documentElement.dataset.theme=S.dark?'':'light';
 
@@ -1835,21 +1985,30 @@ function msgOpenAt(days){
   if(days===365)return addDays(365);
   return addDays(days);
 }
-function isMsgOpen(m){return !m.openAt||new Date(m.openAt)<=Date.now()}
+function isMsgOpen(m){return !!(m.openAt&&new Date(m.openAt)<=Date.now())}
 function migrateMessages(){
-  S.dms?.forEach(d=>d.messages.forEach(m=>{if(m.openAt===undefined)m.openAt=null}));
+  let ch=false;
+  S.dms?.forEach(d=>d.messages.forEach(m=>{
+    if(m.openAt===undefined||m.openAt===null){m.openAt=addDays(7);ch=true;}
+  }));
+  if(ch)save();
 }
 
 let activeFriendId=null;
-let fdmDelayDays=0;
+let fdmDelayDays=1;
 let fsTab='posts';
-let sharedTab='timeline';
+let sharedTab='friends';
+let waitTimer=null;
 
 function switchTab(tab){
+  if(tab==='private')tab='waiting';
+  if(tab==='shared')tab='seal';
   document.querySelectorAll('.tab-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+tab));
-  if(tab!=='shared')closeFriendSpace();
+  if(tab!=='seal')closeFriendSpace();
   $('fdmCompose')?.classList.add('hidden');
+  if(tab==='waiting')startWaitTimer();
+  else stopWaitTimer();
   haptic();
 }
 document.querySelectorAll('.tab-nav-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
@@ -1876,43 +2035,61 @@ function openFriendSpace(memberId){
   haptic();
 }
 
-function renderPrivate(){
-  const el=$('privateList');
-  const strip=$('privateMusicStrip');
-  if(strip)strip.innerHTML=musicTodayCardHtml(true);
-  const me=S.auth?.name||USER;
-  const caps=S.capsules.filter(c=>(c.from===me||c.from==='ゆうま')&&isPrivateCap(c));
-  const opened=(S.opened||[]).filter(o=>(o.from===me||o.from==='ゆうま')&&o.to==='self');
-  const items=[
-    ...caps.map(c=>({...c,state:capState(c)})),
-    ...opened.map(o=>({...o,state:'OPENED',sealed:false,openAt:o.openedAt})),
-  ].sort((a,b)=>(b.createdAt||b.openedAt||0)-(a.createdAt||a.openedAt||0));
-  if(!items.length){
-    el.innerHTML='<div class="empty-state" style="padding:40px 0">Privateは空です。<br>＋から未来の自分へ封じましょう。</div>';
+function renderWaitingRoom(){
+  const el=$('waitingList');
+  if(!el)return;
+  const caps=S.capsules.filter(c=>c.sealed&&!canViewCapContent(c))
+    .sort((a,b)=>new Date(a.openAt)-new Date(b.openAt));
+  if(!caps.length){
+    el.innerHTML='<div class="empty-state" style="padding:48px 0">待合室は空です。<br><span style="color:var(--ink-3)">封じるタブから、最初の1通を。</span></div>';
     return;
   }
-  el.innerHTML=items.map(c=>{
-    const st=c.state||capState(c);
-    const canOpen=st==='WAITING';
-    const locked=isCapLocked(c);
-    const body=locked
-      ?`<div class="pc-text sealed-mask">🔒 開封まで中身は見られません<br><span style="font-size:12px;opacity:.7">${TYPE_JA[c.type]||c.type} · ${formatWhen(c)}</span></div>`
-      :`<div class="pc-text">${esc(c.text||'（記憶）')}</div>${c.mediaId?`<div class="pc-thumb"><img data-lazy="${esc(c.mediaId)}" alt=""></div>`:''}`;
-    return`<article class="private-card${canOpen?' ready':''}${locked?' locked':''}" data-id="${esc(c.id)}" data-open="${canOpen?'1':''}">
-      <div class="pc-date">${new Date(c.createdAt||c.openedAt||Date.now()).toLocaleDateString('ja-JP')}</div>
-      ${body}
-      <div class="pc-meta">
-        <span class="state-pill ${st.toLowerCase()}">${stateLabel(st)}</span>
-        <span class="pc-open">${st==='LOCKED'?formatWhen(c):st==='WAITING'?'タップして開封':'開封済み'}</span>
+  el.innerHTML=caps.map(c=>{
+    const cd=countdownText(c.openAt);
+    const st=capState(c);
+    const pct=sealProgress(c);
+    return`<article class="wait-card${cd.ready||st==='WAITING'?' ready':''}" data-id="${esc(c.id)}" data-open="${cd.ready||st==='WAITING'?'1':''}">
+      <div class="wc-top">
+        <span class="wc-to">${esc(capDestLabel(c))}</span>
+        <span class="wc-type">${TYPE_JA[c.type]||c.type}</span>
       </div>
+      <div class="wc-countdown${cd.ready?' open':''}">${cd.text}</div>
+      <div class="wc-bar"><div class="wc-fill" style="width:${pct}%"></div></div>
+      <div class="wc-foot">🔒 封じられたまま · 開封まで中身は見えません</div>
     </article>`;
   }).join('');
-  loadLazyThumbs(el);
   el.querySelectorAll('[data-open="1"]').forEach(card=>card.addEventListener('click',()=>{
     const cap=S.capsules.find(c=>c.id===card.dataset.id);
     if(cap)startOpening([cap],false);
   }));
 }
+
+function startWaitTimer(){
+  stopWaitTimer();
+  if(!$('panel-waiting')?.classList.contains('active'))return;
+  waitTimer=setInterval(()=>{
+    if($('panel-waiting')?.classList.contains('active'))renderWaitingRoom();
+    else stopWaitTimer();
+  },30000);
+}
+function stopWaitTimer(){if(waitTimer){clearInterval(waitTimer);waitTimer=null}}
+
+function renderDailyQuestion(){
+  const q=todayQuestion();
+  const block=$('dailyQuestionBlock');
+  const text=$('dailyQuestionText');
+  const btn=$('dailyQuestionBtn');
+  if(!text)return;
+  text.textContent=q;
+  const done=isDailyQuestionDone();
+  block?.classList.toggle('done',done);
+  if(btn){
+    btn.textContent=done?'今日は封じ済み ✓':'この問いを封じる';
+    btn.disabled=done;
+  }
+}
+
+function renderPrivate(){renderWaitingRoom()}
 
 function renderSharedTimeline(){
   const el=$('sharedTimeline');
@@ -2015,13 +2192,13 @@ function renderSharedFriends(){
 }
 
 function renderShared(){
-  sharedTab=S.sharedTab||'timeline';
+  renderDailyQuestion();
+  sharedTab=S.sharedTab||'friends';
   document.querySelectorAll('.shared-top-tab').forEach(t=>t.classList.toggle('on',t.dataset.stab===sharedTab));
-  $('sharedTimeline')?.classList.toggle('hidden',sharedTab!=='timeline');
+  $('sharedTimeline')?.classList.add('hidden');
   $('sharedDmList')?.classList.toggle('hidden',sharedTab!=='dm');
   $('sharedList')?.classList.toggle('hidden',sharedTab!=='friends');
-  if(sharedTab==='timeline')renderSharedTimeline();
-  else if(sharedTab==='dm')renderSharedDms();
+  if(sharedTab==='dm')renderSharedDms();
   else renderSharedFriends();
 }
 
@@ -2118,6 +2295,7 @@ function renderArchive(){
     panel=`<div class="archive-panel music-section">
       ${musicTodayCardHtml(false)}
       ${musicWeekBlockHtml()}
+      <button type="button" class="dq-cta" id="openWrappedBtn" style="margin-bottom:20px">期間まとめをシェア</button>
       <div class="music-section-divider"></div>
       <div class="music-month-label">${esc(monthData?.label||'')} · 月間ランキング</div>
       <div class="music-rank">${musicRank||'<div class="empty-state">音楽データがありません</div>'}</div>
@@ -2129,8 +2307,8 @@ function renderArchive(){
   el.innerHTML=`
     <div class="archive-profile">
       <div class="panel-head" style="padding-top:0;padding-bottom:0">
-        <h1 style="font-size:28px;font-weight:600">Archive</h1>
-        <p class="sub">思い出 · 音楽 · 人生ログ</p>
+        <h1 style="font-size:28px;font-weight:600">振り返り</h1>
+        <p class="sub">勝手に貯まった痕跡 · 音楽 · 思い出</p>
       </div>
       <div class="ap-header">
         <div class="ap-avatar-wrap"><div class="ap-avatar">${esc(name.charAt(0))}</div></div>
@@ -2161,7 +2339,29 @@ function renderArchive(){
   el.querySelectorAll('.archive-tab').forEach(t=>t.addEventListener('click',()=>{
     S.archiveTab=t.dataset.atab;save();renderArchive();haptic();
   }));
+  $('openWrappedBtn')?.addEventListener('click',()=>openWrappedCard(musicKey));
 }
+
+function openWrappedCard(monthKey){
+  const m=(S.musicMonths||[]).find(x=>x.key===monthKey)||S.musicMonths?.[0];
+  if(!m)return;
+  const opened=(S.opened||[]).length;
+  const theme=m.themeSong||m.ranking?.[0];
+  const top3=(m.ranking||[]).slice(0,3).map(t=>`${t.rank}. ${t.title}`).join('<br>');
+  $('wrappedCard').innerHTML=`
+    <div class="wc-brand">TIME CAP</div>
+    <div class="wc-period">${esc(m.label)}<br>まとめ</div>
+    <div class="wc-stat">開封した記憶 <strong>${opened}</strong> 件<br>いちばん聴いた曲は…</div>
+    <div class="wc-theme">
+      <div class="wc-theme-lbl">テーマソング</div>
+      <div class="wc-theme-title">${esc(theme?.title||'—')}</div>
+      <div class="wc-theme-artist">${esc(theme?.artist||'')}</div>
+      <div class="wc-stat" style="margin-top:16px;font-size:13px">${top3}</div>
+    </div>`;
+  $('wrappedOverlay')?.classList.add('open');
+  haptic();
+}
+function showOnboarding(){$('onboardOverlay')?.classList.add('open')}
 
 function renderProfile(){
   renderAuth();
@@ -2192,13 +2392,14 @@ function renderNotifBadge(){
 
 function renderAll(){
   migrateMessages();
-  renderPrivate();
+  renderWaitingRoom();
   renderShared();
   if(activeFriendId)renderFriendSpace();
   renderArchive();
   renderProfile();
   renderNotifBadge();
   renderNotifDropdown();
+  if(!S.onboardingDone&&!S.firstSealDone)showOnboarding();
 }
 
 function timeAgo(ts){
@@ -2229,7 +2430,7 @@ function renderNotifDropdown(){
       if(n&&!n.read){n.read=true;save();renderNotifBadge();item.classList.remove('unread')}
       $('notifDropdown')?.classList.remove('open');
       if(item.dataset.action==='open'&&ready().length)startGroupSync(ready());
-      else if(item.dataset.action==='dm'){switchTab('shared');if(item.dataset.dmid){const dm=S.dms.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}}
+      else if(item.dataset.action==='dm'){switchTab('seal');if(item.dataset.dmid){const dm=S.dms.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}}
       haptic();
     });
   });
@@ -2372,7 +2573,7 @@ $('sealBtn').addEventListener('click',async()=>{
   await sealCapsule({caption,media:pendingMedia,fromCreate:true});
 });
 
-async function sealCapsule({caption,media,fromCreate}){
+async function sealCapsule({caption,media,fromCreate,fromDaily}){
   if(!media&&!caption){toast('写真・動画・言葉のいずれかを追加してください');return}
   const type=media?media.type:'text';
   let openAt,days;
@@ -2383,16 +2584,16 @@ async function sealCapsule({caption,media,fromCreate}){
   let to='self';
   if(isFriend){
     const m=MEMBERS.find(x=>x.id===(S.sealFriendId||MEMBERS[0]?.id));
-    if(!m){toast('送り先の友達を選んでください');return}
+    if(!m){toast('送り先を選んでください');return}
     to=m.n;
   }else if(isGroup){to='group'}
   const vis=isGroup?'group':isFriend?'shared':'future';
-  const isDemoFirst=!S.firstSealDone&&isPrivate;
-  if(isDemoFirst){openAt=addMinutes(1);days=0;toast('初回体験 — 1分後に開封！')}
+  if(!S.firstSealDone&&isPrivate){openAt=addDays(1);days=1;toast('24時間後の自分へ届きます')}
   else{
     days=S.sealDays==='custom'?+($('customDaysInput').value||14):S.sealDays||7;
     openAt=addDays(days);
   }
+  const goal=$('goalInput')?.value.trim()||'';
   const capId='c'+Date.now();
   if(media){
     try{await idbPut(capId,media.dataUrl)}catch(e){toast('メディアの保存に失敗');return}
@@ -2404,29 +2605,31 @@ async function sealCapsule({caption,media,fromCreate}){
       id:capId,from:fromName,to,visibility:vis,type,
       text:displayText,sealed:true,openAt,days,
       mediaId:media?capId:null,createdAt:Date.now(),
+      goal:goal||undefined,
     });
-    if(isDemoFirst)S.firstSealDone=true;
+    if(fromDaily||caption===todayQuestion()){
+      S.dailyQuestionDate=todayStr();
+      S.dailyQuestionDone=true;
+    }
+    if(!S.firstSealDone){S.firstSealDone=true;S.onboardingDone=true}
     S.streak=(S.streak||0)+1;
     if(fromCreate){
       $('createInput').value='';
+      $('goalInput').value='';
       pendingMedia=null;
       $('mediaPreview').classList.remove('show');
       $('mediaPreviewInner').innerHTML='';
       updateMediaPickState();
       overlay.classList.remove('open');
+      $('onboardOverlay')?.classList.remove('open');
     }
     save();renderAll();
-    if(isDemoFirst)setTimeout(()=>{if(ready().length)toast('カプセルが開封可能になりました！')},60000);
-    else toast('封じました');
-    if(isPrivate)switchTab('private');
-    else{
-      switchTab('shared');
-      S.sharedTab='timeline';
-      sharedTab='timeline';
-      if(isFriend){
-        const fm=MEMBERS.find(x=>x.n===to);
-        if(fm)openFriendSpace(fm.id);
-      }
+    toast('封じました');
+    switchTab('waiting');
+    if(!isPrivate&&isFriend){
+      switchTab('seal');
+      const fm=MEMBERS.find(x=>x.n===to);
+      if(fm)openFriendSpace(fm.id);
     }
   };
   $('sealOrigami').textContent=displayText||'封じる記憶…';
@@ -2485,11 +2688,12 @@ function sendFutureDm(){
     dm={id:'d'+Date.now(),with:m.n,withId:activeFriendId,unread:0,messages:[]};
     S.dms=S.dms||[];S.dms.push(dm);
   }
-  const openAt=fdmDelayDays?addDays(fdmDelayDays):null;
+  const openAt=addDays(fdmDelayDays||1);
   dm.messages.push({from:me,text,at:Date.now(),openAt});
   $('fdmInput').value='';
   save();renderFriendSpace();renderShared();
-  toast(fdmDelayDays?`${fdmDelayDays===1?'1日':fdmDelayDays===7?'1週間':fdmDelayDays===365?'1年':fdmDelayDays+'日'}後に届くメッセージを封じました`:'メッセージを送信しました');
+  const dl=fdmDelayDays===1?'1日':fdmDelayDays===7?'1週間':fdmDelayDays===30?'1ヶ月':fdmDelayDays===365?'1年':fdmDelayDays+'日';
+  toast(`${dl}後に届くメッセージを封じました`);
   haptic();
 }
 $('fdmSend')?.addEventListener('click',sendFutureDm);
@@ -2641,20 +2845,42 @@ function finishOpen(){
     openingItems.forEach((c,i)=>{
       const el=document.getElementById('tw-'+i);
       if(el)setTimeout(()=>typewriter(el,c.text,()=>{
-        if(i===openingItems.length-1)$('exportBtn').classList.add('show');
+        if(i===openingItems.length-1){
+          $('exportBtn').classList.add('show');
+          showGoalReflect(openingItems[0]);
+        }
       }),i*400);
     });
     $('reactions').classList.add('show');
     S.opened=S.opened||[];
     openingItems.forEach(c=>S.opened.unshift({
       id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,openedAt:Date.now(),mediaId:c.mediaId,
-      themeSong:currentThemeSong(),
-      todaySong:currentTodaySong(),
-      weekTop3:currentWeekTop3(),
+      goal:c.goal,themeSong:currentThemeSong(),todaySong:currentTodaySong(),weekTop3:currentWeekTop3(),
     }));
     S.capsules=S.capsules.filter(c=>!openingItems.find(r=>r.id===c.id));
     save();renderAll();
   },900);
+}
+
+function showGoalReflect(cap){
+  const el=$('goalReflect');
+  if(!el||!cap?.goal){el?.classList.add('hidden');return}
+  el.innerHTML=`
+    <div style="font-size:13px;color:var(--ink-3)">当時の目標</div>
+    <div style="font-size:15px;font-weight:500;margin-top:6px">「${esc(cap.goal)}」</div>
+    <div class="gr-q">叶った？</div>
+    <div class="gr-btns">
+      <button type="button" class="yes" data-g="yes">叶った ✨</button>
+      <button type="button" data-g="no">まだ…</button>
+    </div>`;
+  el.classList.remove('hidden');
+  el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    const achieved=b.dataset.g==='yes';
+    const o=S.opened?.find(x=>x.id===cap.id);
+    if(o){o.goalAchieved=achieved;save()}
+    toast(achieved?'未来の自分、えらい。':'まだ途中。それも思い出。');
+    haptic();
+  }));
 }
 
 $('exportBtn').addEventListener('click',()=>{
@@ -2670,6 +2896,25 @@ $('darkToggle').addEventListener('click',()=>{
 });
 
 updateCreateUI();
+$('dailyQuestionBtn')?.addEventListener('click',()=>{
+  if(isDailyQuestionDone())return;
+  $('createInput').value=todayQuestion();
+  S.sealTo='self';updateCreateUI();
+  overlay.classList.add('open');haptic();
+});
+$('onboardStart')?.addEventListener('click',()=>{
+  S.sealTo='self';S.sealDays=1;updateCreateUI();
+  $('onboardOverlay')?.classList.remove('open');
+  overlay.classList.add('open');
+  $('createInput').value='24時間後の自分へ…';
+  switchTab('seal');haptic();
+});
+$('wrappedClose')?.addEventListener('click',()=>$('wrappedOverlay')?.classList.remove('open'));
+$('wrappedShare')?.addEventListener('click',()=>{
+  haptic();toast('シェアシートを開きます（デモ）');
+});
+$('wrappedOverlay')?.addEventListener('click',e=>{if(e.target===$('wrappedOverlay'))$('wrappedOverlay').classList.remove('open')});
+startWaitTimer();
 (async()=>{
   try{
     if(!(await idbGet('demo_photo'))){
