@@ -2023,6 +2023,67 @@ body::after{display:none}
   margin-top:28px;width:100%;padding:16px;border-radius:var(--r-pill);
   background:var(--accent);color:var(--accent-inv);font-size:15px;font-weight:600;
 }
+.onboard-panel.hidden{display:none}
+.onboard-mood-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:24px}
+.onboard-mood-row button{
+  width:56px;height:56px;border-radius:50%;font-size:28px;background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.08);margin:0;
+}
+.onboard-mood-row button:active{transform:scale(.92);background:var(--ink)}
+.onboard-stats{margin-top:20px;font-size:15px;color:var(--ink-2);letter-spacing:.04em}
+
+/* v2 ホーム */
+.home-hero{padding:8px 20px 24px}
+.home-date{font-size:13px;color:var(--ink-3);letter-spacing:.06em}
+.home-tagline{font-size:26px;font-weight:600;margin-top:6px;letter-spacing:-.02em}
+.home-stats{font-size:12px;color:var(--ink-3);margin-top:8px;letter-spacing:.04em}
+.today-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.today-card{
+  padding:18px 14px;border-radius:var(--r-sm);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.06);text-align:left;
+  transition:transform .2s var(--spring),border-color .2s;
+}
+.today-card:active{transform:scale(.97)}
+.today-card.done{border-color:rgba(255,255,255,.14);opacity:.72}
+.today-card .tc-icon{font-size:26px;line-height:1}
+.today-card .tc-label{font-size:13px;font-weight:600;margin-top:10px}
+.today-card .tc-done{font-size:10px;color:var(--ink-3);margin-top:4px}
+.today-card .tc-preview{font-size:22px;margin-top:6px}
+.home-capsule-widget{margin:0 20px 16px;padding:14px 16px;border-radius:var(--r-sm);
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
+.home-capsule-widget .hw-label{font-size:11px;color:var(--ink-3)}
+.home-secondary{display:none}
+
+/* 身内フィード */
+.inner-feed{padding:0 20px 100px}
+.inner-post{
+  padding:16px 0;border-bottom:1px solid rgba(255,255,255,.06);
+}
+.inner-post-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.inner-post-av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:600}
+.inner-post-name{font-size:14px;font-weight:600}
+.inner-post-meta{font-size:11px;color:var(--ink-3)}
+.inner-post-body{font-size:14px;line-height:1.5}
+.inner-post-media{margin-top:10px;border-radius:var(--r-sm);overflow:hidden}
+.inner-post-media img{width:100%;display:block}
+.inner-react{display:flex;gap:8px;margin-top:10px}
+.inner-react button{
+  padding:6px 12px;border-radius:999px;font-size:12px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--ink-3);
+}
+.inner-react button.on{background:rgba(255,200,100,.15);border-color:rgba(255,200,100,.3);color:var(--ink)}
+.mood-pick-overlay{
+  position:fixed;inset:0;z-index:450;background:rgba(0,0,0,.85);
+  display:flex;align-items:flex-end;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.mood-pick-overlay.open{opacity:1;pointer-events:auto}
+.mood-pick-sheet{
+  width:100%;max-width:430px;padding:24px 20px calc(24px + var(--safe-b));
+  background:var(--bg);border-radius:var(--r) var(--r) 0 0;
+  transform:translateY(100%);transition:transform .4s var(--spring);
+}
+.mood-pick-overlay.open .mood-pick-sheet{transform:translateY(0)}
 </style>
 </head>
 <body>
@@ -2043,25 +2104,27 @@ body::after{display:none}
 
   <button type="button" class="fab-compose hidden" id="openCreateFab" aria-hidden="true">+</button>
 
-  <!-- ① タイムライン -->
+  <!-- ① ホーム -->
   <section class="panel active" id="panel-waiting">
-    <div class="panel-head" style="padding-top:0;padding-bottom:8px">
-      <h1 style="font-size:28px;font-weight:600">タイムライン</h1>
+    <div class="home-hero">
+      <div class="home-date" id="homeDate">—</div>
+      <h1 class="home-tagline">今日を、残そう。</h1>
+      <div class="home-stats" id="homeStats"></div>
+      <div class="today-grid" id="todayGrid"></div>
     </div>
-    <div class="home-widget" id="homeWidget">
-      <div class="hw-label">次に開くカプセル</div>
-      <div class="hw-countdown" id="widgetCountdown">—</div>
-      <div class="hw-sub" id="widgetSub"></div>
-      <div class="hw-bar" id="widgetBar"><div class="hw-fill" id="widgetFill" style="width:0%"></div></div>
-      <button type="button" class="hw-open-btn hidden" id="widgetOpenBtn">開封する</button>
+    <div class="lyt-section hidden" id="lastYearTodaySection">
+      <div class="lyt-label">去年の今日</div>
+      <div class="lyt-title" id="lytTitle">—</div>
+      <div class="lyt-card" id="lytCard"></div>
     </div>
-    <div class="tl-core">
-      <div class="lyt-section hidden" id="lastYearTodaySection">
-        <div class="lyt-label">去年の今日</div>
-        <div class="lyt-title" id="lytTitle">—</div>
-        <div class="lyt-card" id="lytCard"></div>
-      </div>
-      <div class="daily-question" id="dailyQuestionBlock">
+    <div class="home-capsule-widget hidden" id="homeCapsuleWidget">
+      <div class="hw-label">過去から届いた記憶</div>
+      <div class="hw-countdown" id="widgetCountdown" style="font-size:20px;font-weight:600;margin-top:4px">—</div>
+      <div class="hw-sub" id="widgetSub" style="font-size:12px;color:var(--ink-3);margin-top:4px"></div>
+      <button type="button" class="hw-open-btn dq-cta hidden" id="widgetOpenBtn" style="margin-top:12px;width:100%">開ける</button>
+    </div>
+    <div class="home-secondary" id="homeSecondary" aria-hidden="true">
+    <div class="daily-question hidden" id="dailyQuestionBlock">
         <div class="dq-label">今日の問い</div>
         <div class="dq-streak-pill hidden" id="streakPill">🔥 連続 <span id="streakCount">0</span> 日</div>
         <div class="dq-text" id="dailyQuestionText">—</div>
@@ -2077,44 +2140,19 @@ body::after{display:none}
           <div id="dqFriendsList"></div>
         </div>
       </div>
-      <div class="today-photo-section" id="todayPhotoBlock">
+      <div class="today-photo-section hidden" id="todayPhotoBlock">
         <div class="dq-label">今日の写真</div>
         <p style="font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.45">撮ると、友達の今日が見える</p>
         <div class="today-photo-grid" id="todayPhotoGrid"></div>
       </div>
-    </div>
-    <div class="tl-feed-head">
-      <span class="tl-feed-label">フィード</span>
-      <span class="tl-feed-sub">みんなの投稿 · 思い出</span>
-    </div>
     <div class="tl-feed" id="timelineFeed"></div>
     <div class="lyt-section tm-section hidden" id="timeMachineSection">
-      <div class="lyt-label">タイムマシン</div>
-      <p style="font-size:12px;color:var(--ink-3);margin:6px 0 12px;line-height:1.45">過去の今日、あなたはここにいた</p>
       <div class="tm-scroll" id="timeMachineScroll"></div>
     </div>
-    <div class="tl-extras" aria-hidden="true">
-    <div class="season-banner" id="seasonBanner">
-      <div class="sb-tag">季節の一斉イベント</div>
-      <div class="sb-title">卒業カプセル 2026</div>
-      <div class="sb-sub">みんなが卒業前に封じて、1年後に一斉開封。学校単位で広がる。</div>
-      <button type="button" id="joinSeasonBtn">参加する</button>
-    </div>
-    <div class="unlock-festival hidden" id="unlockFestival">
-      <div class="uf-title">🎓 開封祭モード</div>
-      <div class="uf-sub" id="unlockFestivalSub">卒業カプセルが一斉に開きます</div>
-    </div>
-    <div class="cohort-section hidden" id="cohortSection">
-      <div class="cohort-head">
-        <div class="cohort-name" id="cohortName">—</div>
-        <div class="cohort-count" id="cohortCount">—</div>
-      </div>
-      <div class="cohort-feed" id="cohortFeed"></div>
-    </div>
-    <div class="activity-section" id="activitySection">
-      <div class="activity-label">アクティビティ · 24時間</div>
-      <div class="activity-feed" id="activityFeed"></div>
-    </div>
+    <div class="season-banner hidden" id="seasonBanner"></div>
+    <div class="unlock-festival hidden" id="unlockFestival"></div>
+    <div class="cohort-section hidden" id="cohortSection"><div class="cohort-feed" id="cohortFeed"></div></div>
+    <div class="activity-section hidden" id="activitySection"><div class="activity-feed" id="activityFeed"></div></div>
     </div>
   </section>
 
@@ -2146,21 +2184,17 @@ body::after{display:none}
     <div class="archive-view" id="archiveView"></div>
   </section>
 
-  <!-- ⑤ メッセージ -->
+  <!-- ⑤ 身内 -->
   <section class="panel" id="panel-messages">
     <div id="meListView">
       <div class="panel-head" style="padding-top:0">
-        <h1 style="font-size:28px;font-weight:600">メッセージ</h1>
-        <p class="sub">個人チャット · ふたりだけのタイムライン</p>
+        <h1 style="font-size:28px;font-weight:600">身内</h1>
+        <p class="sub">みんなの今日。いいねもコメントもない。</p>
       </div>
       <div class="me-panel" id="mePanel">
         <div id="authSection"></div>
-        <div class="sec-label" style="padding:8px 0">人との関係</div>
-        <div class="shared-top-tabs">
-          <button type="button" class="shared-top-tab on" data-stab="friends">チャット</button>
-        </div>
-        <div class="shared-dm-list hidden" id="sharedDmList"></div>
-        <div class="shared-list" id="sharedList"></div>
+        <div class="inner-feed" id="innerCircleFeed"></div>
+        <div class="shared-list hidden" id="sharedList"></div>
       </div>
     </div>
     <div class="friend-space" id="friendSpace">
@@ -2203,21 +2237,21 @@ body::after{display:none}
 <div class="tab-nav-wrap">
   <nav class="tab-nav">
     <button type="button" class="tab-nav-btn active" data-tab="waiting">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-      タイムライン
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ホーム
     </button>
     <button type="button" class="tab-nav-btn" data-tab="map">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C8 2 4 7 4 12c0 4 4 9 8 10 4-1 8-6 8-10 0-5-4-10-8-10z"/><circle cx="12" cy="12" r="3"/></svg>
       マップ
     </button>
-    <button type="button" class="tab-nav-create" id="openCreate" aria-label="封じる">+</button>
+    <button type="button" class="tab-nav-create" id="openCreate" aria-label="残す">+</button>
     <button type="button" class="tab-nav-btn" data-tab="archive">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       振り返り
     </button>
     <button type="button" class="tab-nav-btn" data-tab="messages">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      メッセージ
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/><path d="M5 20c0-2 2-4 4-4h6c2 0 4 2 4 4"/></svg>
+      身内
     </button>
   </nav>
 </div>
@@ -2275,11 +2309,11 @@ body::after{display:none}
     <div class="dest-multi" id="destMulti">
       <div class="duration-label">送り先 <span style="font-weight:400;color:var(--ink-3)">複数選択可</span></div>
       <div class="dest-chips" id="destChips">
-        <button type="button" class="dest-chip on" data-dest="self">自分へ</button>
-        <button type="button" class="dest-chip" data-dest="friend">親友へ</button>
-        <button type="button" class="dest-chip" data-dest="group">グループ</button>
-        <button type="button" class="dest-chip" data-dest="pair">ふたり</button>
-        <button type="button" class="dest-chip" data-dest="invite">招待</button>
+        <button type="button" class="dest-chip on" data-dest="self">自分だけ</button>
+        <button type="button" class="dest-chip" data-dest="friend">身内に見せる</button>
+        <button type="button" class="dest-chip hidden" data-dest="group">グループ</button>
+        <button type="button" class="dest-chip hidden" data-dest="pair">ふたり</button>
+        <button type="button" class="dest-chip hidden" data-dest="invite">招待</button>
       </div>
       <div class="dest-summary" id="destSummary"></div>
     </div>
@@ -2514,14 +2548,35 @@ body::after{display:none}
 </div>
 
 <div class="onboard-overlay" id="onboardOverlay">
-  <div class="onboard-panel">
-    <h2>24時間後の<br>自分へ、1通。</h2>
-    <p>最初のカプセルを封じよう。<br>明日、過去のあなたから届く。</p>
+  <div class="onboard-panel" id="onboardStepWelcome">
+    <h2>Time Cap へ。</h2>
+    <p>いいねも、知らない人もいない。<br>今日を残して、未来の自分に届けるところ。</p>
     <input type="text" class="goal-input" id="onboardInviteInput" placeholder="招待コード（お持ちの方）" style="margin-top:16px;text-align:center;letter-spacing:.1em">
-    <button type="button" id="onboardStart">封じる</button>
-    <button type="button" id="onboardDemo" style="margin-top:12px;background:var(--bg-2);color:var(--ink-2)">デモで自分用に始める</button>
+    <button type="button" id="onboardNext1">はじめる</button>
+    <button type="button" id="onboardDemo" style="margin-top:12px;background:var(--bg-2);color:var(--ink-2)">デモで試す</button>
+  </div>
+  <div class="onboard-panel hidden" id="onboardStepMood">
+    <h2 style="font-size:22px">まずは、今日の気分は？</h2>
+    <p style="font-size:14px">1タップで残せます。書く必要はありません。</p>
+    <div class="onboard-mood-row" id="onboardMoodPicker"></div>
+  </div>
+  <div class="onboard-panel hidden" id="onboardStepDone">
+    <h2>残りました</h2>
+    <p>これは1年後の今日、戻ってきます。</p>
+    <div class="onboard-stats" id="onboardStats">記録 1 · 連続 1日</div>
+    <button type="button" id="onboardFinish">ホームへ</button>
   </div>
 </div>
+
+<div class="mood-pick-overlay" id="moodPickOverlay">
+  <div class="mood-pick-sheet">
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:8px">今日の気分</h3>
+    <p style="font-size:13px;color:var(--ink-3);margin-bottom:16px">ひとつ選ぶだけ</p>
+    <div class="onboard-mood-row" id="dailyMoodPicker"></div>
+    <button type="button" class="create-pick" id="moodPickClose" style="width:100%;margin-top:16px">閉じる</button>
+  </div>
+</div>
+<input type="file" id="dailyPhotoInput" accept="image/*,.heic,.heif" capture="environment" class="hidden">
 
 <div class="wrapped-overlay" id="wrappedOverlay">
   <div>
@@ -2644,6 +2699,188 @@ const SHELF=[
 const TYPE_ICONS={text:'✏️',photo:'📷',video:'🎥',voice:'🎙️'};
 const TYPE_JA={text:'言葉',photo:'写真',video:'動画',voice:'声'};
 const MOOD_EMOJIS=['☀️','🌧️','🌙','🔥','🫧','💭'];
+const DAILY_RECORD_TYPES={
+  mood:{icon:'🌙',label:'今日の気分'},
+  photo:{icon:'📷',label:'今日の一枚'},
+  song:{icon:'🎵',label:'今日の一曲'},
+  food:{icon:'🍙',label:'今日のごはん'},
+  sky:{icon:'☁️',label:'今日の空'},
+};
+let pendingDailyType=null;
+function ensureDailyRecords(){if(!S.dailyRecords)S.dailyRecords=[]}
+function todayDailyRecords(){
+  ensureDailyRecords();
+  const d=todayStr();
+  return S.dailyRecords.filter(r=>new Date(r.createdAt).toISOString().slice(0,10)===d);
+}
+function hasTodayDaily(type){return todayDailyRecords().some(r=>r.type===type)}
+function recordCountDisplay(){
+  const n=(S.dailyRecords?.length||0);
+  if(S.firstSealDone||S.onboardingDone)return Math.max(1,n);
+  return n;
+}
+function recordStreakDisplay(){
+  if(S.firstSealDone||S.onboardingDone)return Math.max(1,S.currentStreak||0);
+  return S.currentStreak||0;
+}
+function dailyRecordPreview(rec){
+  if(!rec)return '';
+  if(rec.type==='mood')return rec.mood||'';
+  if(rec.type==='song')return rec.songTitle?'🎵':'';
+  if(rec.mediaId)return '📷';
+  return '✓';
+}
+async function createDailyRecord(type,data={}){
+  ensureDailyRecords();
+  const id='dr'+Date.now();
+  const ctx=await captureSealContext();
+  const rec={
+    id,userId:meName(),type,
+    mood:data.mood,songTitle:data.songTitle,songId:data.songId,
+    visibility:data.visibility||'private',
+    createdAt:Date.now(),resurfaceAt:addDays(365),
+    sealContext:ctx,
+  };
+  if(data.mediaDataUrl){
+    rec.mediaId=id;
+    await idbPut(id,data.mediaDataUrl);
+  }
+  S.dailyRecords.unshift(rec);
+  const hadOther=todayDailyRecords().length>1;
+  if(!hadOther){
+    S.currentStreak=(S.currentStreak||0)+1;
+    S.streak=S.currentStreak;
+    S.longestStreak=Math.max(S.longestStreak||0,S.currentStreak);
+  }
+  S.firstSealDone=true;
+  S.onboardingDone=true;
+  save();
+  return rec;
+}
+function finishDailyRecordToast(){
+  toast('残りました。1年後の今日、戻ってきます。');
+  haptic();
+  renderAll();
+}
+async function saveDailyMood(emoji,visibility='private'){
+  await createDailyRecord('mood',{mood:emoji,visibility});
+  finishDailyRecordToast();
+}
+function openDailyRecord(type){
+  if(hasTodayDaily(type)){toast('今日はもう残しています');return}
+  if(type==='mood'){
+    $('moodPickOverlay')?.classList.add('open');
+    return;
+  }
+  if(type==='song'){
+    const top=currentTodaySong();
+    if(top){
+      createDailyRecord('song',{songTitle:top.title,songId:top.title}).then(finishDailyRecordToast);
+      return;
+    }
+    toast('曲を選ぶには残す画面を開いてください');
+    S.pendingDailyType='song';
+    overlay.classList.add('open');
+    return;
+  }
+  pendingDailyType=type;
+  $('dailyPhotoInput')?.click();
+}
+function renderHomeTodayGrid(){
+  const grid=$('todayGrid');
+  if(!grid)return;
+  const today=todayDailyRecords();
+  grid.innerHTML=Object.entries(DAILY_RECORD_TYPES).map(([type,meta])=>{
+    const done=today.find(r=>r.type===type);
+  const preview=done?dailyRecordPreview(done):'';
+    return`<button type="button" class="today-card${done?' done':''}" data-daily="${type}">
+      <div class="tc-icon">${meta.icon}</div>
+      <div class="tc-label">${esc(meta.label)}</div>
+      ${done?`<div class="tc-preview">${preview}</div><div class="tc-done">残した ✓</div>`:'<div class="tc-done">タップして残す</div>'}
+    </button>`;
+  }).join('');
+  grid.querySelectorAll('[data-daily]').forEach(b=>b.addEventListener('click',()=>{openDailyRecord(b.dataset.daily);haptic()}));
+}
+function renderHome(){
+  const d=new Date();
+  $('homeDate').textContent=`今日 ${d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'})}`;
+  $('homeStats').textContent=`記録 ${recordCountDisplay()} · 連続 ${recordStreakDisplay()}日`;
+  renderHomeTodayGrid();
+}
+function demoInnerTodayPosts(){
+  const moods=['☀️','🌧️','🔥','🫧'];
+  return MEMBERS.slice(0,4).map((m,i)=>({
+    name:m.n,char:m.i,color:m.c,
+    type:['mood','photo','food','mood'][i],
+    mood:moods[i],text:['ふつうだった','カフェのラテ','学食のカレー','まったり'][i],
+    at:Date.now()-(i+1)*3600e3,mediaId:i===1?'demo_photo':null,
+  }));
+}
+function innerCircleTodayPosts(){
+  const d=todayStr();
+  const mine=(S.dailyRecords||[]).filter(r=>r.visibility==='inner'&&new Date(r.createdAt).toISOString().slice(0,10)===d)
+    .map(r=>({name:meName(),char:meName().charAt(0),color:'#5A5A5A',...r,at:r.createdAt}));
+  const demo=demoInnerTodayPosts();
+  return[...mine,...demo].sort((a,b)=>b.at-a.at);
+}
+function renderInnerCircle(){
+  renderAuth($('authSection'));
+  const feed=$('innerCircleFeed');
+  if(!feed)return;
+  const posts=innerCircleTodayPosts();
+  if(!posts.length){
+    feed.innerHTML='<div class="empty-state" style="padding:40px 0;font-size:14px;color:var(--ink-3);line-height:1.6">身内のみんなの今日が、ここに静かに並びます。<br>身内に見せる記録を残してみよう。</div>';
+    return;
+  }
+  feed.innerHTML=posts.map(p=>{
+    const body=p.type==='mood'||p.mood?`<div class="inner-post-body" style="font-size:28px">${p.mood||''}</div>`
+      :p.mediaId?`<div class="inner-post-media"><img data-lazy="${esc(p.mediaId)}" alt=""></div>`
+      :`<div class="inner-post-body">${esc(p.text||p.songTitle||'')}</div>`;
+    const ctx=contextStampHtml(p);
+    return`<article class="inner-post">
+      <div class="inner-post-head">
+        <div class="inner-post-av" style="background:${p.color||'#5A5A5A'}">${esc(p.char||'?')}</div>
+        <div><div class="inner-post-name">${esc(p.name)}</div>
+        <div class="inner-post-meta">${timeAgo(p.at)} · ${esc(DAILY_RECORD_TYPES[p.type]?.label||'記録')}</div></div>
+      </div>
+      ${body}${ctx}
+      <div class="inner-react">
+        <button type="button" data-react="shimi">🫧 しみた</button>
+        <button type="button" data-react="nats">🌙 懐かしい</button>
+      </div>
+    </article>`;
+  }).join('');
+  feed.querySelectorAll('[data-react]').forEach(b=>b.addEventListener('click',()=>{
+    b.classList.toggle('on');
+    toast('静かに届きました');
+    haptic();
+  }));
+  loadLazyThumbs(feed);
+}
+function initMoodPickers(){
+  const mkRow=(el,handler)=>{
+    if(!el||el.dataset.ready)return;
+    el.dataset.ready='1';
+    el.innerHTML=MOOD_EMOJIS.map(e=>`<button type="button" data-mood="${e}">${e}</button>`).join('');
+    el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>handler(b.dataset.mood)));
+  };
+  mkRow($('onboardMoodPicker'),async m=>{
+    await saveDailyMood(m);
+    $('onboardStepMood')?.classList.add('hidden');
+    $('onboardStepDone')?.classList.remove('hidden');
+    $('onboardStats').textContent=`記録 ${recordCountDisplay()} · 連続 ${recordStreakDisplay()}日`;
+  });
+  mkRow($('dailyMoodPicker'),async m=>{
+    await saveDailyMood(m);
+    $('moodPickOverlay')?.classList.remove('open');
+  });
+}
+function showOnboardingStep(step){
+  $('onboardStepWelcome')?.classList.toggle('hidden',step!=='welcome');
+  $('onboardStepMood')?.classList.toggle('hidden',step!=='mood');
+  $('onboardStepDone')?.classList.toggle('hidden',step!=='done');
+  $('onboardOverlay')?.classList.add('open');
+}
 const HOME_NOTIFS=[
   {id:'n1',title:'みおが記憶を封じました',sub:'写真 · あと2日で開封',read:false},
   {id:'n2',title:'カプセルが開封可能です',sub:'1件の記憶があなたを待っています',read:false,action:'open'},
@@ -3035,14 +3272,14 @@ function getDestSummaryParts(){
     const c=$('inviteContact')?.value.trim();
     return c?['招待: '+c]:['招待'];
   }
-  if(d.self)parts.push('自分');
+  if(d.self)parts.push('自分だけ');
   if(d.friend){
     const ids=(S.sealFriendIds||[]).filter(Boolean);
     ids.forEach(fid=>{
       const m=MEMBERS.find(x=>x.id===fid);
-      if(m)parts.push('親友: '+m.n);
+      if(m)parts.push('身内: '+m.n);
     });
-    if(d.friend&&!ids.length)parts.push('親友');
+    if(d.friend&&!ids.length)parts.push('身内');
   }
   if(d.group){
     ensureGroups();
@@ -3340,7 +3577,7 @@ function updateCreateUI(){
   $('destSummary').innerHTML=destParts.length
     ?`送り先: <strong>${destParts.map(esc).join(' · ')}</strong>${destCount>1?`（${destCount}か所）`:''}`
     :'';
-  const sealLabel=isNow?'いま残す':'封をする';
+  const sealLabel=isNow?'残す':'封をする';
   $('sealBtn').textContent=destCount>1?`${sealLabel}（${destCount}か所）`:sealLabel;
   $('createTitle').textContent=isNow?'今日、何を残す？':'未来に、何を残す？';
   document.querySelectorAll('.layer-toggle button').forEach(b=>b.classList.toggle('on',b.dataset.layer===layer));
@@ -3519,7 +3756,7 @@ function capFromLabel(c){
 function pushHomeNotif(title,sub,action,meta={}){
   if(S.notifDay!==todayStr()){S.notifDay=todayStr();S.notifCountToday=0}
   const priority=meta.priority??5;
-  if((S.notifCountToday||0)>=3&&priority>3)return;
+  if((S.notifCountToday||0)>=2&&priority>3)return;
   S.homeNotifs=S.homeNotifs||[];
   S.homeNotifs.unshift({id:'hn'+Date.now()+Math.random(),title,sub,read:false,action,priority,...meta});
   S.notifCountToday=(S.notifCountToday||0)+1;
@@ -4238,12 +4475,17 @@ function getMemoriesOnDay(yearsAgo){
   const score=p=>{
     let s=0;
     if(p.mediaId)s+=10;
-    if(p.type==='photo')s+=5;
+    if(p.type==='photo'||p.type==='food'||p.type==='sky')s+=5;
+    if(p.mood)s+=3;
     return s;
   };
   const candidates=[
     ...(S.opened||[]).map(o=>({...o,at:o.openedAt})),
     ...(S.capsules||[]).map(c=>({...c,at:c.createdAt})),
+    ...(S.dailyRecords||[]).map(r=>({
+      ...r,at:r.createdAt,text:r.mood||r.songTitle||DAILY_RECORD_TYPES[r.type]?.label||'',
+      type:r.type,
+    })),
   ].filter(p=>p.at&&p.at>=ts0&&p.at<=ts1);
   if(!candidates.length)return null;
   candidates.sort((a,b)=>score(b)-score(a)||b.at-a.at);
@@ -4594,6 +4836,7 @@ function defaults(){
     archiveTab:'grid',
     archiveMusicKey:null,
     onboardingDone:false,
+    dailyRecords:[],
     dailyQuestionDate:null,
     dailyQuestionDone:false,
   };
@@ -4652,7 +4895,9 @@ if(!S.bonusItems)S.bonusItems=[];
 if(!S.invitations)S.invitations=[];
 if(S.currentStreak===undefined)S.currentStreak=S.streak||0;
 if(!S.longestStreak)S.longestStreak=S.currentStreak||0;
+if(!S.dailyRecords)S.dailyRecords=[];
 if(!S.dailyAnswers)S.dailyAnswers=[];
+ensureDailyRecords();
 if(!S.activityFeed)S.activityFeed=[];
 if(!S.albums)S.albums={};
 if(!S.shownNotifs)S.shownNotifs=[];
@@ -4772,7 +5017,7 @@ function timelineFeedPosts(){
   });
 }
 function renderNextCapsule(){
-  const w=$('homeWidget');
+  const w=$('homeCapsuleWidget');
   if(!w)return;
   const next=getNextCapsule();
   const cdEl=$('widgetCountdown');
@@ -4780,20 +5025,17 @@ function renderNextCapsule(){
   const barEl=$('widgetBar');
   const openBtn=$('widgetOpenBtn');
   if(!next){
-    w.classList.remove('ready');
-    cdEl.textContent='—';
-    subEl.textContent='いま開く予定のカプセルはありません';
-    if(barEl)barEl.classList.add('hidden');
-    openBtn?.classList.add('hidden');
+    w?.classList.add('hidden');
     return;
   }
-  if(barEl)barEl.classList.remove('hidden');
+  w?.classList.remove('hidden');
+  if(barEl)barEl?.classList.add('hidden');
   const ready=new Date(next.openAt)<=Date.now();
   w.classList.toggle('ready',ready);
   const cd=countdownText(next.openAt);
   cdEl.textContent=ready?'開封できる':cd.text;
   subEl.textContent=`${capDestLabel(next)} · ${TYPE_JA[next.type]||next.type}${next.text?' · '+next.text.slice(0,28):''}`;
-  $('widgetFill').style.width=ready?'100%':sealProgress(next)+'%';
+  $('widgetFill')?.style&&( $('widgetFill').style.width=ready?'100%':sealProgress(next)+'%');
   if(openBtn){
     openBtn.classList.toggle('hidden',!ready);
     openBtn.onclick=()=>{if(next)startOpening([next],false);haptic()};
@@ -4886,12 +5128,9 @@ function renderTimeline(){
   checkGlobalUnlock();
   checkBirthday();
   checkOpenPreview();
+  renderHome();
   renderLastYearToday();
-  renderDailyQuestion();
-  renderTodayPhotos();
-  renderTimeMachine();
   renderNextCapsule();
-  renderTimelineFeed();
 }
 
 function renderTodayPhotos(){
@@ -5198,8 +5437,7 @@ function renderShared(){
 }
 
 function renderMessages(){
-  renderAuth($('authSection'));
-  renderShared();
+  renderInnerCircle();
   renderCreateChips();
 }
 
@@ -5573,11 +5811,11 @@ function renderArchive(){
         <div class="ap-avatar" style="width:56px;height:56px;font-size:22px;overflow:hidden;border-radius:50%">${userAvatarInner(getCurrentUser())}</div>
       </div>
       <div style="display:flex;gap:24px;padding:16px 20px 8px">
-        <div><div style="font-size:20px;font-weight:600">${opened.length}</div><div style="font-size:11px;color:var(--ink-3)">開封済み</div></div>
-        <div><div style="font-size:20px;font-weight:600">${sealedN}</div><div style="font-size:11px;color:var(--ink-3)">封印中</div></div>
-        <div><div style="font-size:20px;font-weight:600">${streak}</div><div style="font-size:11px;color:var(--ink-3)">連続</div></div>
+        <div><div style="font-size:20px;font-weight:600">${recordCountDisplay()}</div><div style="font-size:11px;color:var(--ink-3)">記録</div></div>
+        <div><div style="font-size:20px;font-weight:600">${recordStreakDisplay()}</div><div style="font-size:11px;color:var(--ink-3)">連続</div></div>
+        <div><div style="font-size:20px;font-weight:600">${sealedN}</div><div style="font-size:11px;color:var(--ink-3)">未来へ</div></div>
       </div>
-      ${streak?`<p style="padding:0 20px 12px;font-size:13px;color:var(--ink-2)">${esc(name)}は連続${streak}日、毎日の問いに答えています</p>`:''}
+      ${recordStreakDisplay()>0?`<p style="padding:0 20px 12px;font-size:13px;color:var(--ink-2)">${esc(name)}は連続${recordStreakDisplay()}日、今日を残しています</p>`:''}
       <button type="button" class="dq-cta year-wrap-btn" id="openYearWrapBtn">${yr}年まとめを見る</button>
       ${myGifts.length?`<div style="padding:0 20px 8px"><div class="sec-label">もらったギフト</div><div class="gift-collection">${giftCollection}</div></div>`:''}
       ${bonuses?`<div class="bonus-row" style="padding:0 20px 16px;justify-content:flex-start">${bonuses}</div>`:''}
@@ -5634,7 +5872,7 @@ function openWrappedCard(monthKey){
   $('wrappedOverlay')?.classList.add('open');
   haptic();
 }
-function showOnboarding(){$('onboardOverlay')?.classList.add('open')}
+function showOnboarding(){showOnboardingStep('welcome');initMoodPickers()}
 
 function renderProfile(){
   renderMe();
@@ -5830,7 +6068,7 @@ function renderAll(){
   renderAccountPanel($('accountPanelRoot'));
   updateProfileHeader();
   renderSettingsAccountActions();
-  if(!S.onboardingDone&&!S.firstSealDone)showOnboarding();
+  if(!S.onboardingDone&&!S.firstSealDone){showOnboarding();initMoodPickers()}
 }
 
 function timeAgo(ts){
@@ -6372,7 +6610,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
     if(isNowLayer&&mediaItems.some(m=>m?.type==='photo')&&!hadTodayPhoto){
       toast('みんなの今日が見えるようになりました');
     }else if(isNowLayer){
-      toast(count>1?`${count}件、今日に残しました`:'今日に残しました');
+      toast(count>1?`${count}件、残しました`:'残りました。1年後の今日、戻ってきます。');
     }else{
       toast(count>1?`${count}件、記憶を封印しました`:'記憶を封印しました');
     }
@@ -6741,18 +6979,33 @@ $('dailyQuestionBtn')?.addEventListener('click',()=>{
   updateCreateUI();
   overlay.classList.add('open');haptic();
 });
-$('onboardStart')?.addEventListener('click',()=>{
-  if(!isLoggedIn()){toast('まずログインまたは新規登録してください');$('onboardOverlay')?.classList.remove('open');switchTab('messages');renderAuth();return}
+$('onboardNext1')?.addEventListener('click',()=>{
+  if(!isLoggedIn()){toast('まず登録またはログインしてください');$('onboardOverlay')?.classList.remove('open');switchTab('messages');renderAuth();return}
   const inv=$('onboardInviteInput')?.value.trim();
   if(inv)showInviteWelcome(inv);
-  ensureSealDestSet();
-  S.sealDestSet={self:true,friend:false,group:false,pair:false,invite:false};
-  updateCreateUI();
-  document.querySelectorAll('.duration-pill').forEach(p=>p.classList.toggle('on',p.dataset.days==='365'));
-  $('onboardOverlay')?.classList.remove('open');
-  overlay.classList.add('open');
-  $('createInput').value='1年後の自分へ…';
+  showOnboardingStep('mood');
+  initMoodPickers();
   haptic();
+});
+$('onboardFinish')?.addEventListener('click',()=>{
+  $('onboardOverlay')?.classList.remove('open');
+  switchTab('waiting');
+  renderAll();
+  haptic();
+});
+$('moodPickClose')?.addEventListener('click',()=>$('moodPickOverlay')?.classList.remove('open'));
+$('moodPickOverlay')?.addEventListener('click',e=>{if(e.target===$('moodPickOverlay'))$('moodPickOverlay').classList.remove('open')});
+$('dailyPhotoInput')?.addEventListener('change',async e=>{
+  const file=e.target.files?.[0];
+  const type=pendingDailyType||'photo';
+  pendingDailyType=null;
+  e.target.value='';
+  if(!file)return;
+  try{
+    const dataUrl=await compressImage(file);
+    await createDailyRecord(type,{mediaDataUrl:dataUrl});
+    finishDailyRecordToast();
+  }catch(err){toast('写真の読み込みに失敗しました')}
 });
 $('onboardDemo')?.addEventListener('click',async()=>{
   const name=prompt('あなたの名前','ゆうま')||'ゆうま';
@@ -6774,6 +7027,7 @@ $('onboardDemo')?.addEventListener('click',async()=>{
   ensureCohorts();
   save();
   $('onboardOverlay')?.classList.remove('open');
+  showOnboardingStep('welcome');
   renderAll();
   toast('デモモード · '+name+' として始めます');
   haptic();
