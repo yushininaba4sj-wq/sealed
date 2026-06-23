@@ -495,8 +495,41 @@ body::after{display:none}
 .memory-context-card .mcc-when{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;letter-spacing:.04em}
 .memory-context-card .mcc-place{font-weight:600;color:#fff;margin-bottom:4px}
 .memory-context-card .mcc-song{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(255,255,255,.65)}
-.tl-context{font-size:12px;color:var(--ink-3);margin-top:8px;line-height:1.55;letter-spacing:.02em}
+.ctx-stamp{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.ctx-stamp--inline{margin:2px 0 10px}
+.ctx-stamp--overlay{
+  position:absolute;left:0;right:0;bottom:0;padding:32px 14px 12px;margin:0;
+  background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.08) 35%,rgba(0,0,0,.62) 100%);
+  pointer-events:none;
+}
+.ctx-stamp-line{
+  font-family:Georgia,'Hiragino Mincho ProN','Yu Mincho',serif;
+  font-size:11px;line-height:1.5;letter-spacing:.06em;color:rgba(255,255,255,.88);
+  text-shadow:0 1px 8px rgba(0,0,0,.4);
+}
+.ctx-stamp--inline .ctx-stamp-line{color:var(--ink-3);font-size:11px;text-shadow:none}
+.ctx-chip{
+  display:inline-flex;align-items:center;gap:3px;padding:4px 9px;border-radius:999px;
+  font-size:10px;letter-spacing:.05em;color:var(--ink-3);
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+}
+.ctx-chip--muted{opacity:.72}
+.tl-open-body.tl-media-wrap{position:relative;border-radius:var(--r-sm);overflow:hidden}
+.map-pin-wrap{display:flex;flex-direction:column;align-items:center}
+.map-ctx-label{
+  margin-top:5px;padding:3px 9px;border-radius:999px;max-width:128px;
+  font-family:Georgia,'Hiragino Mincho ProN','Yu Mincho',serif;
+  font-size:9px;letter-spacing:.04em;line-height:1.35;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+  background:rgba(10,10,10,.88);color:rgba(255,255,255,.78);
+  border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);
+  box-shadow:0 4px 12px rgba(0,0,0,.35);pointer-events:none;
+  animation:ctxFadeIn .35s ease both;
+}
+.map-point-ctx{margin:12px 0 4px}
+.map-point-ctx .ctx-stamp--inline{margin:0;justify-content:flex-start}
 @keyframes contextReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ctxFadeIn{from{opacity:0;transform:translateY(5px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 .voice-chain-strip{
   margin:12px 0;padding:12px 14px;border-radius:var(--r-sm);
   background:rgba(255,255,255,.06);font-size:12px;color:rgba(255,255,255,.8);text-align:left;
@@ -3613,6 +3646,40 @@ function formatSealContext(ctx){
   ].filter(Boolean);
   return parts.join('、');
 }
+function weatherEmoji(w){
+  if(!w)return '';
+  if(/晴/.test(w))return '☀️';
+  if(/曇|くも/.test(w))return '☁️';
+  if(/雨/.test(w))return '🌧️';
+  if(/雪/.test(w))return '❄️';
+  if(/霧/.test(w))return '🌫️';
+  if(/雷/.test(w))return '⛈️';
+  return '·';
+}
+function mapContextShort(ctx){
+  if(!ctx)return '';
+  return[ctx.place,ctx.weather?`${ctx.weather}${ctx.temp!=null?ctx.temp+'°':''}`:null,ctx.timePhrase?.replace(/^.+曜の/,'')||null].filter(Boolean).join(' · ');
+}
+function contextStampHtml(item,variant='inline'){
+  const ctx=resolveSealContext(item);
+  if(!ctx)return '';
+  const line=formatSealContext(ctx);
+  if(variant==='overlay'&&line){
+    return`<div class="ctx-stamp ctx-stamp--overlay" aria-hidden="true"><span class="ctx-stamp-line">${esc(line)}</span></div>`;
+  }
+  if(variant==='map'){
+    const short=mapContextShort(ctx);
+    return short?`<div class="map-ctx-label">${esc(short)}</div>`:'';
+  }
+  const chips=[];
+  if(ctx.place)chips.push(`<span class="ctx-chip">${esc(ctx.place)}</span>`);
+  if(ctx.weather)chips.push(`<span class="ctx-chip">${weatherEmoji(ctx.weather)} ${esc(ctx.weather)}${ctx.temp!=null?' '+ctx.temp+'°':''}</span>`);
+  if(ctx.dateLabel)chips.push(`<span class="ctx-chip ctx-chip--muted">${esc(ctx.dateLabel)}</span>`);
+  if(ctx.timePhrase)chips.push(`<span class="ctx-chip ctx-chip--muted">${esc(ctx.timePhrase)}</span>`);
+  if(!chips.length&&!line)return '';
+  if(chips.length)return`<div class="ctx-stamp ctx-stamp--inline">${chips.join('')}</div>`;
+  return`<div class="ctx-stamp ctx-stamp--inline"><span class="ctx-stamp-line">${esc(line)}</span></div>`;
+}
 function memoryContextHtml(ctx,song){
   const line=formatSealContext(ctx);
   if(!line&&!song)return '';
@@ -4637,6 +4704,8 @@ let sharedTab='friends';
 let waitTimer=null;
 
 let mapInst=null,mapCluster=null,mapRouteLine=null,mapHeatLayer=null,mapPlayTimer=null,mapPlayheadMarker=null;
+let mapZoomBound=false;
+const MAP_CONTEXT_ZOOM=12;
 let mapSubTab='route';
 
 function switchTab(tab){
@@ -4751,18 +4820,21 @@ function renderTimelineFeed(){
     const isFriendTodayPhoto=p.layer==='now'&&p.type==='photo'&&isToday(p.at)&&!isMe;
     const photoLocked=isFriendTodayPhoto&&!hasPostedTodayPhoto();
     let body='';
+    const ctxStamp=!locked?contextStampHtml(p):'';
     if(locked){
       body=`<div class="tl-body-sealed"><div class="lock-core"><div class="ico">🔒</div><div class="lbl">${esc(p.from)} · 封印中</div><div class="when">${p.openAt?formatWhen({openAt:p.openAt}):''}</div></div></div>`;
     }else if(p.mediaId){
+      const overlay=p.type==='photo'?contextStampHtml(p,'overlay'):'';
       if(photoLocked){
         body=`<div class="tl-open-body tl-photo-locked"><img data-lazy="${esc(p.mediaId)}" alt=""><div class="tp-lock-hint">撮ると、みんなの写真が見える</div></div>`;
+      }else if(p.type==='photo'){
+        body=`<div class="tl-open-body tl-media-wrap"><img data-lazy="${esc(p.mediaId)}" alt="">${overlay}</div>`;
       }else{
         body=`<div class="tl-open-body"><img data-lazy="${esc(p.mediaId)}" alt=""></div>`;
       }
     }
     const caption=p.text&&!locked?`<div class="tl-open-caption">${esc(p.text)}</div>`:'';
-    const ctxLine=!locked?formatSealContext(resolveSealContext(p)):'' ;
-    const ctxHtml=ctxLine?`<div class="tl-context">${esc(ctxLine)}</div>`:'';
+    const ctxInline=!locked&&!p.mediaId?ctxStamp:'';
     const song=p.linkedSong&&!locked?`<div class="arb-song" style="margin-top:8px">🎵 ${esc(p.linkedSong.title)}</div>`:'';
     const canReply=!locked&&!isMe&&MEMBERS.some(x=>x.n===p.from);
     const replyBtn=canReply?`<button type="button" class="tl-reply-btn" data-reply-to="${esc(MEMBERS.find(x=>x.n===p.from)?.id||'')}">返信</button>`:'';
@@ -4776,7 +4848,7 @@ function renderTimelineFeed(){
         <div class="tl-meta">${timeAgo(p.at)}${dest?' · '+esc(dest):''}</div></div>
         ${badge?`<span class="tl-badge">${badge}</span>`:''}
       </div>
-      ${body}${ctxHtml}${caption}${song}
+      ${body}${ctxInline}${caption}${song}
       ${(replyBtn||promoteBtn)?`<div class="tl-actions">${promoteBtn}${replyBtn}</div>`:''}
     </article>`;
   }).join('');
@@ -4798,12 +4870,12 @@ function renderLastYearToday(){
   sec.classList.remove('hidden');
   $('lytTitle').textContent=item.text||'この日の記憶';
   const card=$('lytCard');
-  const ctxLine=formatSealContext(resolveSealContext(item));
+  const ctxStamp=contextStampHtml(item);
   if(item.mediaId){
-    card.innerHTML=`<img data-lazy="${esc(item.mediaId)}" alt=""><p style="font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.45">${esc(item.text||'')}</p>${ctxLine?`<p class="tl-context" style="margin-top:8px">${esc(ctxLine)}</p>`:''}`;
+    card.innerHTML=`<div class="tl-open-body tl-media-wrap"><img data-lazy="${esc(item.mediaId)}" alt="">${contextStampHtml(item,'overlay')}</div><p style="font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.45">${esc(item.text||'')}</p>`;
     loadLazyThumbs(sec);
   }else{
-    card.innerHTML=`<p style="font-size:14px;line-height:1.55;margin:0">${esc(item.text||'')}</p>`;
+    card.innerHTML=`${ctxStamp}<p style="font-size:14px;line-height:1.55;margin:0">${esc(item.text||'')}</p>`;
   }
 }
 function renderTimeline(){
@@ -5027,10 +5099,12 @@ function renderSharedTimeline(){
   const capPosts=S.capsules.filter(c=>!isPrivateCap(c)&&!isPairCap(c)).map(c=>({
     id:c.id,from:c.from,type:c.type,text:c.text,at:c.createdAt||Date.now(),
     sealed:c.sealed,openAt:c.openAt,mediaId:c.mediaId,to:c.to,capsule:c,
+    sealContext:c.sealContext,linkedSong:c.linkedSong,loc:c.loc,
   }));
   const feed=(S.feedPosts||[]).map(p=>({...p,sealed:p.sealed!==false,capsule:null}));
   const openedPosts=(S.opened||[]).filter(o=>o.to==='group'||MEMBERS.some(m=>m.n===o.from)).map(o=>({
     id:o.id,from:o.from,type:o.type,text:o.text,at:o.openedAt,sealed:false,mediaId:o.mediaId,opened:true,
+    sealContext:o.sealContext,linkedSong:o.linkedSong,loc:o.loc,
   }));
   let all=[...capPosts,...feed,...openedPosts].sort((a,b)=>b.at-a.at).slice(0,20);
   if(!all.length){
@@ -5169,6 +5243,12 @@ function initMemoryMap(){
     },
   });
   mapInst.addLayer(mapCluster);
+  if(!mapZoomBound){
+    mapZoomBound=true;
+    mapInst.on('zoomend',()=>{
+      if($('panel-map')?.classList.contains('active'))renderMemoryMap();
+    });
+  }
 }
 
 function renderMemoryMap(){
@@ -5189,17 +5269,22 @@ function renderMemoryMap(){
   const latlngs=[];
   const allLatlngs=[];
   mapHeatLayer=L.layerGroup();
+  const zoom=mapInst.getZoom();
+  const showCtx=zoom>=MAP_CONTEXT_ZOOM;
   groups.forEach(g=>{
     allLatlngs.push([g.loc.lat,g.loc.lng]);
     if(!g.locked)latlngs.push([g.loc.lat,g.loc.lng]);
     const n=g.items.length;
     const size=Math.min(36,12+n*5);
     const glow=Math.min(1,.4+n*0.15);
-    const heatIcon=L.divIcon({
-      html:`<div class="map-heat-dot" style="width:${size}px;height:${size}px;opacity:${g.locked?0.45:glow};box-shadow:0 0 ${8+n*4}px rgba(255,255,255,${glow})"></div>`,
-      className:'map-dot-wrap',iconSize:[size,size],
-    });
     const rep=g.items[g.items.length-1];
+    const ctxLabel=showCtx?contextStampHtml(rep,'map'):'';
+    const pinW=Math.max(size,ctxLabel?110:size);
+    const pinH=size+(ctxLabel?26:0);
+    const heatIcon=L.divIcon({
+      html:`<div class="map-pin-wrap"><div class="map-heat-dot" style="width:${size}px;height:${size}px;opacity:${g.locked?0.45:glow};box-shadow:0 0 ${8+n*4}px rgba(255,255,255,${glow})"></div>${ctxLabel}</div>`,
+      className:'map-dot-wrap',iconSize:[pinW,pinH],iconAnchor:[pinW/2,size/2],
+    });
     const m=L.marker([g.loc.lat,g.loc.lng],{icon:heatIcon});
     m.on('click',()=>openMapPoint(rep));
     mapHeatLayer.addLayer(m);
@@ -5226,7 +5311,8 @@ function renderMemoryMap(){
   const sorted=[...mapPointsAll()].sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
   const last=sorted[Math.max(0,Math.ceil(sorted.length*pct/100)-1)];
   const lbl=last?.openedAt?new Date(last.openedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'}):'全期間';
-  $('mapTimeLabel').textContent=pct>=100?'思い出の軌跡 · 全期間':`思い出の軌跡 · 〜 ${lbl}`;
+  const zoomHint=showCtx?' · 拡大で情景表示中':' · 拡大すると情景が見える';
+  $('mapTimeLabel').textContent=(pct>=100?'思い出の軌跡 · 全期間':`思い出の軌跡 · 〜 ${lbl}`)+zoomHint;
   setTimeout(()=>mapInst?.invalidateSize(),100);
 }
 
@@ -5236,18 +5322,19 @@ async function openMapPoint(p){
   const meta=$('mapPointMeta');
   photo.innerHTML='';
   sheet?.classList.toggle('map-point-locked',!!p.locked);
-  const ctxLine=formatSealContext(resolveSealContext(p));
+  const ctxBlock=contextStampHtml(p);
+  const ctxHtml=ctxBlock?`<div class="map-point-ctx">${ctxBlock}</div>`:'';
   if(p.locked){
     photo.innerHTML=`<div class="mp-lock-visual"><div class="ico">🔒</div><div style="font-size:14px;color:var(--ink-2)">まだ開封されていません</div><div style="font-size:12px;color:var(--ink-3);margin-top:8px">${p.openAt?formatWhen({openAt:p.openAt}):'開封まで写真は見られません'}</div></div>`;
-    meta.innerHTML=`${esc(p.text||'この場所の記憶')}${ctxLine?`<br><span style="font-size:11px;color:var(--ink-3)">${esc(ctxLine)}</span>`:''}`;
+    meta.innerHTML=`${ctxHtml}<div style="margin-top:8px">${esc(p.text||'この場所の記憶')}</div>`;
   }else if(p.mediaId){
     const data=await idbGet(p.mediaId);
-    if(data)photo.innerHTML=`<img src="${data}" alt="">`;
+    if(data)photo.innerHTML=`<div class="tl-open-body tl-media-wrap"><img src="${data}" alt="">${contextStampHtml(p,'overlay')}</div>`;
     else photo.innerHTML='<div class="empty-state" style="padding:24px">写真</div>';
-    meta.innerHTML=`${new Date(p.openedAt).toLocaleDateString('ja-JP')} · ${esc(p.text||'この場所の記憶')}${ctxLine?`<br><span style="font-size:11px;color:var(--ink-3)">${esc(ctxLine)}</span>`:''}${p.linkedSong?`<br><span style="font-size:11px">🎵 ${esc(p.linkedSong.title)}</span>`:''}`;
+    meta.innerHTML=`${ctxHtml}<div style="margin-top:8px;font-size:13px;color:var(--ink-2)">${esc(p.text||'この場所の記憶')}</div>${p.linkedSong?`<div style="font-size:11px;color:var(--ink-3);margin-top:6px">🎵 ${esc(p.linkedSong.title)}</div>`:''}`;
   }else{
     photo.innerHTML='<div class="empty-state" style="padding:24px">📍</div>';
-    meta.innerHTML=`${new Date(p.openedAt).toLocaleDateString('ja-JP')} · ${esc(p.text||'この場所の記憶')}${ctxLine?`<br><span style="font-size:11px;color:var(--ink-3)">${esc(ctxLine)}</span>`:''}`;
+    meta.innerHTML=`${ctxHtml}<div style="margin-top:8px;font-size:13px;color:var(--ink-2)">${esc(p.text||'この場所の記憶')}</div>`;
   }
   sheet?.classList.add('open');
   haptic();
@@ -5373,15 +5460,15 @@ function renderArchiveMemoryList(){
     const thumb=m.mediaId?`<img class="arb-thumb" data-lazy="${esc(m.mediaId)}" alt="">`:'';
     const text=m.text||m.choice||m.promptText||'';
     const song=m.linkedSong?`<div class="arb-song">🎵 ${esc(m.linkedSong.title)}${m.linkedSong.artist?' · '+esc(m.linkedSong.artist):''}</div>`:'';
-    const ctx=formatSealContext(resolveSealContext(m));
+    const ctxStamp=contextStampHtml(m);
     const meta=[m.from&&m.from!==meName()?m.from:'',m.goal?`目標: ${m.goal}`:''].filter(Boolean).join(' · ');
     return`<article class="arb-card${sizeCls}">
       <div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">${esc(typeLabel)}</span></div>
       ${thumb}
       <div class="arb-body">
         ${text?`<div class="arb-text">${esc(text)}</div>`:''}
+        ${ctxStamp}
         ${song}
-        ${ctx?`<div class="arb-meta" style="margin-top:6px">${esc(ctx)}</div>`:''}
         ${meta?`<div class="arb-meta">${esc(meta)}</div>`:''}
       </div>
     </article>`;
