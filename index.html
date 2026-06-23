@@ -480,6 +480,38 @@ body::after{display:none}
 .opening-song-strip .oss-ico{font-size:20px}
 .opening-song-strip .oss-title{font-size:13px;font-weight:600;color:#fff}
 .opening-song-strip .oss-artist{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.opening-song-strip .oss-link{font-size:10px;color:rgba(255,255,255,.45);margin-top:4px}
+.memory-context-card{
+  margin:0 0 14px;padding:14px 16px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+  font-size:12px;line-height:1.55;color:rgba(255,255,255,.85);text-align:left;
+}
+.memory-context-card .mcc-when{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;letter-spacing:.04em}
+.memory-context-card .mcc-place{font-weight:600;color:#fff;margin-bottom:4px}
+.memory-context-card .mcc-song{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(255,255,255,.65)}
+.voice-chain-strip{
+  margin:12px 0;padding:12px 14px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.06);font-size:12px;color:rgba(255,255,255,.8);text-align:left;
+}
+.voice-chain-strip .vcs-label{font-size:10px;color:rgba(255,255,255,.45);margin-bottom:6px}
+.voice-chain-strip .vcs-months{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.voice-chain-strip .vcs-month{
+  padding:4px 8px;border-radius:999px;font-size:10px;
+  background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);
+}
+.voice-chain-strip .vcs-month.on{background:rgba(255,200,100,.25);color:#fff}
+.season-anthem{
+  margin:0 20px 12px;padding:12px 14px;border-radius:var(--r-sm);
+  background:linear-gradient(120deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.08);font-size:13px;line-height:1.45;
+}
+.season-anthem .sa-label{font-size:10px;color:var(--ink-3);letter-spacing:.06em;margin-bottom:4px}
+.season-anthem .sa-title{font-weight:600}
+.map-heat-dot{box-shadow:0 0 12px rgba(255,255,255,.35)}
+.map-route-head{
+  width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid rgba(0,0,0,.4);
+  box-shadow:0 0 16px rgba(255,255,255,.8);
+}
 .opening-actions{
   display:flex;flex-direction:column;gap:8px;margin-top:16px;opacity:0;transition:opacity .5s .6s;
   max-width:300px;margin-left:auto;margin-right:auto;
@@ -1025,12 +1057,94 @@ body::after{display:none}
 .auth-logged .auth-av{
   width:48px;height:48px;border-radius:50%;background:var(--ink);
   color:var(--accent-inv);display:grid;place-items:center;font-size:18px;font-weight:700;
+  overflow:hidden;
 }
+.auth-logged .auth-av img{width:100%;height:100%;object-fit:cover}
 .auth-logged .auth-info{flex:1}
 .auth-logged .auth-email{font-size:12px;color:var(--ink-3);margin-top:2px}
 .auth-logout{
   padding:8px 14px;border-radius:var(--r-pill);font-size:12px;font-weight:600;
   background:var(--bg-2);color:var(--ink-2);
+}
+.auth-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--bg-3)}
+.auth-actions button{
+  flex:1;min-width:calc(50% - 4px);padding:10px 12px;border-radius:var(--r-pill);
+  font-size:12px;font-weight:600;background:var(--bg-2);color:var(--ink-2);
+}
+.auth-actions button.auth-danger{color:#e57373}
+
+.profile-ig{padding:0 20px 8px}
+.profile-ig-top{display:flex;align-items:center;gap:20px;margin-bottom:16px}
+.profile-ig-avatar-wrap{position:relative;flex-shrink:0}
+.profile-ig-avatar{
+  width:88px;height:88px;border-radius:50%;background:var(--ink);color:var(--accent-inv);
+  display:grid;place-items:center;font-size:32px;font-weight:700;overflow:hidden;
+}
+.profile-ig-avatar img{width:100%;height:100%;object-fit:cover}
+.profile-ig-av-btn{
+  position:absolute;right:-4px;bottom:-4px;width:28px;height:28px;border-radius:50%;
+  background:var(--card);border:2px solid var(--bg);font-size:14px;display:grid;place-items:center;
+}
+.profile-ig-stats{display:flex;flex:1;justify-content:space-around;text-align:center}
+.profile-ig-stats .n{font-size:20px;font-weight:700}
+.profile-ig-stats .l{font-size:11px;color:var(--ink-3);margin-top:2px}
+.profile-ig-name{font-size:16px;font-weight:700}
+.profile-ig-handle{font-size:14px;color:var(--ink-3);margin-top:2px}
+.profile-ig-bio{font-size:14px;color:var(--ink-2);margin-top:8px;line-height:1.45;white-space:pre-wrap}
+.profile-ig-edit-btn{
+  width:100%;padding:10px;border-radius:var(--r-pill);font-size:13px;font-weight:600;
+  background:var(--bg-2);color:var(--ink);margin:12px 0 16px;border:1px solid rgba(255,255,255,.08);
+}
+.profile-edit-sheet{margin-bottom:16px}
+.profile-edit-sheet.hidden{display:none}
+.profile-edit-sheet textarea{
+  width:100%;min-height:72px;padding:10px 12px;border-radius:var(--r-sm);border:none;
+  background:var(--bg-3);font-size:14px;color:var(--ink);resize:vertical;font-family:inherit;
+}
+.profile-edit-hint{font-size:11px;color:var(--ink-3);margin-top:4px}
+.account-actions{display:flex;flex-direction:column;gap:8px;margin:8px 0 24px}
+.account-actions button{
+  width:100%;padding:14px 16px;border-radius:var(--r-sm);font-size:14px;font-weight:600;
+  background:var(--bg-2);color:var(--ink);text-align:left;border:1px solid rgba(255,255,255,.06);
+}
+.account-actions button.account-danger{color:#e57373}
+.account-switcher-overlay{
+  position:fixed;inset:0;z-index:520;background:rgba(0,0,0,.75);
+  display:none;align-items:flex-end;justify-content:center;padding:0;
+}
+.account-switcher-overlay.open{display:flex}
+.account-switcher-sheet{
+  width:100%;max-width:480px;max-height:80vh;overflow-y:auto;
+  background:var(--bg);border-radius:var(--r) var(--r) 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.account-switcher-sheet h3{font-size:17px;font-weight:700;margin-bottom:16px}
+.account-row{
+  display:flex;align-items:center;gap:14px;padding:12px;border-radius:var(--r-sm);
+  background:var(--bg-2);margin-bottom:8px;border:1px solid transparent;cursor:pointer;
+}
+.account-row.on{border-color:rgba(255,255,255,.15);background:var(--bg-3)}
+.account-row .ar-av{
+  width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--accent-inv);
+  display:grid;place-items:center;font-size:16px;font-weight:700;overflow:hidden;flex-shrink:0;
+}
+.account-row .ar-av img{width:100%;height:100%;object-fit:cover}
+.account-row .ar-info{flex:1;min-width:0}
+.account-row .ar-name{font-size:14px;font-weight:600}
+.account-row .ar-handle{font-size:12px;color:var(--ink-3)}
+.account-row .ar-check{font-size:16px;color:var(--ink)}
+.account-switcher-add{
+  width:100%;padding:14px;border-radius:var(--r-pill);font-size:14px;font-weight:600;
+  background:var(--ink);color:var(--accent-inv);margin-top:8px;
+}
+#settingsAccountActions button{
+  width:100%;padding:14px 16px;border-radius:var(--r-sm);font-size:14px;font-weight:600;
+  background:var(--bg-2);color:var(--ink);text-align:left;border:1px solid rgba(255,255,255,.06);
+  margin-bottom:8px;
+}
+#settingsAccountActions button.account-danger{color:#e57373}
+.account-switcher-close{
+  width:100%;padding:12px;margin-top:8px;font-size:13px;color:var(--ink-3);background:transparent;
 }
 
 .dm-entry-btn{
@@ -1506,6 +1620,7 @@ body::after{display:none}
 .tl-item.compact .tl-body-sealed .lock-core{padding:12px}
 .tl-item.compact .tl-body-sealed .lock-core .ico{font-size:20px;margin-bottom:4px}
 .tl-extras{display:none}
+.tl-core{padding:0 0 8px}
 .season-banner{
   margin:0 20px 16px;padding:16px 18px;border-radius:var(--r);
   background:linear-gradient(120deg,#1a1a2e,#16213e);border:1px solid rgba(255,255,255,.1);
@@ -1628,6 +1743,11 @@ body::after{display:none}
 .arb-filters button.on{background:var(--ink);color:var(--bg)}
 .arb-list{padding:0 20px 24px;display:flex;flex-direction:column;gap:12px}
 .arb-card{border-radius:var(--r);background:var(--bg-2);border:1px solid rgba(255,255,255,.06);overflow:hidden}
+.arb-masonry{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 20px 24px}
+.arb-masonry .arb-card{margin:0}
+.arb-masonry .arb-card.wide{grid-column:span 2}
+.arb-masonry .arb-card.tall .arb-thumb{min-height:180px}
+.arb-sealed-banner{font-size:13px;font-weight:600;color:var(--ink-2);padding:0 20px 12px}
 .arb-card-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 0;gap:8px}
 .arb-date{font-size:12px;color:var(--ink-3)}
 .arb-type{font-size:11px;font-weight:600;padding:4px 8px;border-radius:999px;background:var(--bg-3);color:var(--ink-2)}
@@ -1880,11 +2000,44 @@ body::after{display:none}
       <div class="hw-bar" id="widgetBar"><div class="hw-fill" id="widgetFill" style="width:0%"></div></div>
       <button type="button" class="hw-open-btn hidden" id="widgetOpenBtn">開封する</button>
     </div>
+    <div class="tl-core">
+      <div class="lyt-section hidden" id="lastYearTodaySection">
+        <div class="lyt-label">去年の今日</div>
+        <div class="lyt-title" id="lytTitle">—</div>
+        <div class="lyt-card" id="lytCard"></div>
+      </div>
+      <div class="daily-question" id="dailyQuestionBlock">
+        <div class="dq-label">今日の問い</div>
+        <div class="dq-streak-pill hidden" id="streakPill">🔥 連続 <span id="streakCount">0</span> 日</div>
+        <div class="dq-text" id="dailyQuestionText">—</div>
+        <div class="dq-tap-row hidden" id="dqTapRow"></div>
+        <button type="button" class="dq-cta hidden" id="dailyQuestionBtn">一言で答える</button>
+        <div class="dq-mode-row hidden" id="dqModeRow">
+          <button type="button" class="on" data-pmode="today">今日見せ合う</button>
+          <button type="button" data-pmode="sealed">未来に封じる</button>
+        </div>
+        <button type="button" class="dq-seal-future hidden" id="dqSealFutureBtn">同じ答えを未来に封じる</button>
+        <div class="dq-friends hidden" id="dqFriends">
+          <div class="dq-friends-lbl">みんなの答え</div>
+          <div id="dqFriendsList"></div>
+        </div>
+      </div>
+      <div class="today-photo-section" id="todayPhotoBlock">
+        <div class="dq-label">今日の写真</div>
+        <p style="font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.45">撮ると、友達の今日が見える</p>
+        <div class="today-photo-grid" id="todayPhotoGrid"></div>
+      </div>
+    </div>
     <div class="tl-feed-head">
       <span class="tl-feed-label">フィード</span>
       <span class="tl-feed-sub">みんなの投稿 · 思い出</span>
     </div>
     <div class="tl-feed" id="timelineFeed"></div>
+    <div class="lyt-section tm-section hidden" id="timeMachineSection">
+      <div class="lyt-label">タイムマシン</div>
+      <p style="font-size:12px;color:var(--ink-3);margin:6px 0 12px;line-height:1.45">過去の今日、あなたはここにいた</p>
+      <div class="tm-scroll" id="timeMachineScroll"></div>
+    </div>
     <div class="tl-extras" aria-hidden="true">
     <div class="season-banner" id="seasonBanner">
       <div class="sb-tag">季節の一斉イベント</div>
@@ -1902,32 +2055,6 @@ body::after{display:none}
         <div class="cohort-count" id="cohortCount">—</div>
       </div>
       <div class="cohort-feed" id="cohortFeed"></div>
-    </div>
-    <div class="daily-question" id="dailyQuestionBlock">
-      <div class="dq-label">今日の問い</div>
-      <div class="dq-streak-pill hidden" id="streakPill">🔥 連続 <span id="streakCount">0</span> 日</div>
-      <div class="dq-text" id="dailyQuestionText">—</div>
-      <div class="dq-tap-row hidden" id="dqTapRow"></div>
-      <button type="button" class="dq-cta hidden" id="dailyQuestionBtn">一言で答える</button>
-      <div class="dq-mode-row hidden" id="dqModeRow">
-        <button type="button" class="on" data-pmode="today">今日見せ合う</button>
-        <button type="button" data-pmode="sealed">未来に封じる</button>
-      </div>
-      <button type="button" class="dq-seal-future hidden" id="dqSealFutureBtn">同じ答えを未来に封じる</button>
-      <div class="dq-friends hidden" id="dqFriends">
-        <div class="dq-friends-lbl">みんなの答え</div>
-        <div id="dqFriendsList"></div>
-      </div>
-    </div>
-    <div class="today-photo-section" id="todayPhotoBlock">
-      <div class="dq-label">今日の写真</div>
-      <p style="font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.45">撮ると、友達の今日が見える</p>
-      <div class="today-photo-grid" id="todayPhotoGrid"></div>
-    </div>
-    <div class="lyt-section tm-section hidden" id="timeMachineSection">
-      <div class="lyt-label">タイムマシン</div>
-      <p style="font-size:12px;color:var(--ink-3);margin:6px 0 12px;line-height:1.45">過去の今日、あなたはここにいた</p>
-      <div class="tm-scroll" id="timeMachineScroll"></div>
     </div>
     <div class="activity-section" id="activitySection">
       <div class="activity-label">アクティビティ · 24時間</div>
@@ -2068,8 +2195,19 @@ body::after{display:none}
     <div style="padding:16px 0">
       <div class="settings-row" id="darkToggle"><span>ダークモード</span><div class="toggle" id="darkSwitch"></div></div>
     </div>
+    <div class="account-actions" id="settingsAccountActions"></div>
   </div>
 </div>
+
+<div class="account-switcher-overlay" id="accountSwitcherOverlay">
+  <div class="account-switcher-sheet">
+    <h3>アカウントを切り替え</h3>
+    <div id="accountSwitcherList"></div>
+    <button type="button" class="account-switcher-add" id="addAccountFromSwitcher">＋ アカウントを追加</button>
+    <button type="button" class="account-switcher-close" id="closeAccountSwitcher">閉じる</button>
+  </div>
+</div>
+<input type="file" id="avatarInput" accept="image/*" class="hidden">
 
 <div class="create-overlay" id="createOverlay">
   <div class="create-sheet">
@@ -2104,23 +2242,17 @@ body::after{display:none}
       <input type="text" class="goal-input" id="inviteContact" placeholder="メール or 電話番号" style="margin-bottom:8px">
       <div class="invite-notice">「誰かが1年後のあなたに何かを残しました」— 受け取るには入るしかない。</div>
     </div>
-    <div class="create-photo-bar" id="createPhotoBar">
-      <div class="duration-label">写真・動画 <span style="font-weight:400;color:var(--ink-3)">フォルダからまとめて可</span></div>
-      <div class="create-media-row">
-        <button type="button" class="create-pick" id="pickPhotoBtn">📷 1枚</button>
-        <button type="button" class="create-pick" id="pickAlbumBtn">🖼 写真を複数</button>
-        <button type="button" class="create-pick" id="pickFolderBtn">📁 フォルダ</button>
-        <button type="button" class="create-pick" id="pickVideoBtn">🎥 動画</button>
-      </div>
-    </div>
     <textarea class="create-input" id="createInput" maxlength="500" placeholder="いまの気持ちを綴る…"></textarea>
     <div class="create-icon-row" id="createIconRow">
+      <button type="button" class="create-icon" data-expand="photo" title="写真">📷</button>
       <button type="button" class="create-icon" data-expand="voice" title="声">🎙️</button>
+      <button type="button" class="create-icon" data-expand="prompt" title="問い">❔</button>
+      <button type="button" class="create-icon" data-expand="tag" title="タグ">#</button>
       <button type="button" class="create-icon" data-expand="mood" title="ムード">🌙</button>
     </div>
     <div class="music-share-row" id="musicShareRow">
       <label class="music-share-toggle">
-        <input type="checkbox" id="shareMusicToggle"> いま聴いてる曲を一緒に残す
+        <input type="checkbox" id="shareMusicToggle"> いま聴いてる曲を自動で紐づけ
       </label>
       <div class="music-share-pick hidden" id="musicSharePick">
         <button type="button" id="pasteMusicBtn">共有リンクを貼り付け（Spotify / Apple Music）</button>
@@ -2129,7 +2261,13 @@ body::after{display:none}
         <div class="music-share-preview hidden" id="musicSharePreview"></div>
       </div>
     </div>
-    <div class="create-expand open" id="expandPhoto">
+    <div class="create-expand" id="expandPhoto">
+      <div class="create-media-row" style="margin-bottom:10px">
+        <button type="button" class="create-pick" id="pickPhotoBtn">📷 1枚</button>
+        <button type="button" class="create-pick" id="pickAlbumBtn">🖼 複数</button>
+        <button type="button" class="create-pick" id="pickFolderBtn">📁 フォルダ</button>
+        <button type="button" class="create-pick" id="pickVideoBtn">🎥 動画</button>
+      </div>
       <label class="selfie-toggle"><input type="checkbox" id="selfieToggle"> 自分も写す（任意）</label>
       <button type="button" class="create-pick hidden" id="pickSelfieBtn" style="margin-top:8px;width:100%">🤳 セルフィーを追加</button>
       <div class="media-preview" id="mediaPreview">
@@ -2144,7 +2282,7 @@ body::after{display:none}
     <div class="create-expand voice-rec" id="expandVoice">
       <div class="rec-dot"></div>
       <div style="font-size:14px;font-weight:500">ひとことだけ、声を残す</div>
-      <div style="font-size:12px;color:var(--ink-3);margin-top:4px">最大10秒</div>
+      <div style="font-size:12px;color:var(--ink-3);margin-top:4px">最大10秒 · 毎月の声で1年後に連続再生</div>
       <div class="voice-wave" id="voiceWave"><span style="height:8px"></span><span style="height:16px"></span><span style="height:24px"></span><span style="height:14px"></span><span style="height:20px"></span></div>
       <div class="voice-timer" id="voiceTimer">0s / 10s</div>
       <div style="display:flex;gap:8px;margin-top:12px;justify-content:center">
@@ -2157,6 +2295,17 @@ body::after{display:none}
       <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px">いまの気分をひとつ</div>
       <div class="mood-palette" id="moodPalette"></div>
     </div>
+    <div class="create-expand" id="expandPrompt">
+      <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px">今日の問いに答える形で残す</div>
+      <div class="dq-text" id="createPromptText" style="font-size:15px;font-weight:600;margin-bottom:10px">—</div>
+      <div class="dq-tap-row" id="createPromptTap"></div>
+    </div>
+    <div class="create-expand" id="expandTag">
+      <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px">タグを付ける</div>
+      <div id="tagInputRow" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
+      <input type="text" class="goal-input" id="tagInput" placeholder="#旅行 #卒業" maxlength="40">
+      <button type="button" class="create-pick" id="addTagBtn" style="margin-top:8px;width:100%">タグを追加</button>
+    </div>
     <div class="duration-label">叶えたいことは？ <span style="font-weight:400;color:var(--ink-3)">開封時に振り返る</span></div>
     <input type="text" class="goal-input" id="goalInput" maxlength="120" placeholder="例：毎日続ける / あの人に伝える">
     <input type="file" id="photoInput" accept="image/*" class="hidden">
@@ -2167,11 +2316,11 @@ body::after{display:none}
     <div class="duration-label">いつ開封しますか？ <span style="font-weight:400;color:var(--ink-3)">複数選択可</span></div>
     <div class="duration-pills multi" id="durationPills">
       <button type="button" class="duration-pill" data-days="now">今すぐ投稿</button>
-      <button type="button" class="duration-pill on" data-days="1">24時間後</button>
       <button type="button" class="duration-pill" data-days="3">3日後</button>
       <button type="button" class="duration-pill" data-days="7">7日後</button>
       <button type="button" class="duration-pill" data-days="30">1ヶ月後</button>
-      <button type="button" class="duration-pill" data-days="365">1年後</button>
+      <button type="button" class="duration-pill" data-days="180">半年後</button>
+      <button type="button" class="duration-pill on" data-days="365">1年後</button>
       <button type="button" class="duration-pill" data-days="custom">カスタム</button>
     </div>
     <div class="custom-days" id="customDays">
@@ -2226,7 +2375,11 @@ body::after{display:none}
     <p class="opening-hint" id="openingHint">シールを上にスワイプして開封</p>
     <div class="opening-song-strip hidden" id="openingSongStrip">
       <div class="oss-ico">🎧</div>
-      <div><div class="oss-title" id="openingSongTitle">—</div><div class="oss-artist" id="openingSongArtist">—</div></div>
+      <div style="flex:1;text-align:left">
+        <div class="oss-title" id="openingSongTitle">—</div>
+        <div class="oss-artist" id="openingSongArtist">—</div>
+        <div class="oss-link hidden" id="openingSongLink"></div>
+      </div>
     </div>
     <div class="reveal-stack" id="revealStack"></div>
     <div class="reactions" id="reactions">
@@ -2347,15 +2500,53 @@ const PROMPTS=[
 const PROMPT_POOL=[
   {id:'tap1',text:'今日のテンションは？',type:'tap',options:['最高','ふつう','限界']},
   {id:'tap2',text:'今日の自分を一言で',type:'tap',options:['がんばった','もう無理','ふつうだった']},
-  {id:'tap3',text:'今いちばん欲しいものは？',type:'tap',options:['時間','お金','眠り']},
+  {id:'tap3',text:'今いちばん欲しいものは？',type:'tap',options:['時間','お金','眠り','自由']},
+  {id:'tap4',text:'今日の帰り道の気分は？',type:'tap',options:['ほくほく','もやもや','へとへと']},
+  {id:'tap5',text:'今の気分の色は？',type:'tap',options:['青','オレンジ','グレー']},
+  {id:'tap6',text:'今日の天気みたいな自分は？',type:'tap',options:['晴れ','くもり','嵐']},
+  {id:'tap7',text:'今週の自分、どっち寄り？',type:'tap',options:['充実','消耗','ふつう']},
+  {id:'tap8',text:'今日のごはん気分は？',type:'tap',options:['がっつり','さっぱり','何でもいい']},
+  {id:'tap9',text:'今いちばん聴きたい曲の気分',type:'tap',options:['アップ','しっとり','テンション上げ']},
+  {id:'tap10',text:'今日のエネルギー残量',type:'tap',options:['満タン','半分','空']},
+  {id:'tap11',text:'今の自分を動物に例えると',type:'tap',options:['猫','犬','カモメ']},
+  {id:'tap12',text:'今日いちばん使ったのは？',type:'tap',options:['スマホ','勉強','寝る時間']},
+  {id:'tap13',text:'今の気持ち、近いのは？',type:'tap',options:['わくわく','ざわざわ','ぼーっと']},
+  {id:'tap14',text:'今日の自分に一言',type:'tap',options:['えらい','おつかれ','また明日']},
+  {id:'tap15',text:'今週末の予定感',type:'tap',options:['楽しみ','未定','寝る']},
   {id:'free1',text:'今いちばん会いたい人は？',type:'free'},
   {id:'free2',text:'3年後の自分に一言。',type:'free'},
   {id:'free3',text:'今日いちばん笑ったことは？',type:'free'},
-  {id:'tap4',text:'今日の帰り道の気分は？',type:'tap',options:['ほくほく','もやもや','へとへと']},
+  {id:'free4',text:'最近こっそり頑張ってることは？',type:'free'},
+  {id:'free5',text:'今の自分の口癖は？',type:'free'},
+  {id:'free6',text:'今いちばん抜け出したいことは？',type:'free'},
+  {id:'free7',text:'今日いちばん嬉しかったことは？',type:'free'},
+  {id:'free8',text:'今の部屋の匂いを言葉にすると',type:'free'},
+  {id:'free9',text:'最近夢に出てきた人は？',type:'free'},
+  {id:'free10',text:'今週いちばん疲れた瞬間は？',type:'free'},
+  {id:'free11',text:'今いちばん聴いてる曲は？',type:'free'},
+  {id:'free12',text:'今日の自分を曲にすると',type:'free'},
+  {id:'free13',text:'最近「ありがとう」と言いたい人',type:'free'},
+  {id:'free14',text:'今の自分に必要なものは？',type:'free'},
+  {id:'free15',text:'今日の空を見た？',type:'free'},
   {id:'hyb1',text:'今の気持ちは？',type:'hybrid',options:['うれしい','しみじみ','ざわざわ']},
+  {id:'hyb2',text:'今日の自分、どんな一日？',type:'hybrid',options:['充実','まあまあ','しんどい']},
+  {id:'hyb3',text:'今のテンション、一言で',type:'hybrid',options:['上がってる','普通','下がってる']},
+  {id:'hyb4',text:'今日のハイライトは？',type:'hybrid',options:['あった','なかった','わからない']},
+  {id:'hyb5',text:'今週の自分、どう？',type:'hybrid',options:['いい感じ','ふつう','しんどい']},
+  {id:'sea-spring',text:'卒業したら、まず何がしたい？',type:'free',condition:'season'},
+  {id:'sea-april',text:'今年こそやめたいことは？',type:'free',condition:'season'},
+  {id:'sea-dec',text:'来年の自分に一言。',type:'free',condition:'season'},
+  {id:'sea-summer',text:'夏が終わる前にやりたいことは？',type:'free',condition:'season'},
   {id:'lim-night',text:'今、眠れずに考えてることは？',type:'free',condition:'night'},
   {id:'lim-rain',text:'雨の日に思い出す人は？',type:'free',condition:'rain'},
   {id:'lim-friday',text:'今週いちばんの事件は？',type:'free',condition:'friday'},
+  {id:'tap16',text:'今の自分、何％眠い？',type:'tap',options:['0%','50%','100%']},
+  {id:'tap17',text:'今日のラッキーアイテム',type:'tap',options:['イヤホン','飲み物','ぬいぐるみ']},
+  {id:'tap18',text:'今週のMVPは',type:'tap',options:['自分','友達','家族']},
+  {id:'free16',text:'今いちばん聴きたい季節は？',type:'free'},
+  {id:'free17',text:'最近「やばい」と思った瞬間',type:'free'},
+  {id:'free18',text:'今の部屋でいちばん好きなもの',type:'free'},
+  {id:'hyb6',text:'今日の自分、点数つけるなら',type:'hybrid',options:['高い','普通','低い']},
   {id:'lim-moon',text:'今、誰を思い出してる？',type:'free',condition:'fullmoon'},
 ];
 const GRADES=['中学1年生','中学2年生','中学3年生','高校1年生','高校2年生','高校3年生','大学1年生','大学2年生','大学3年生','大学4年生','その他'];
@@ -2562,6 +2753,82 @@ function ensureUserIds(){
     if(u)S.auth.userId=u.userId;
   }
 }
+function getCurrentUser(){
+  if(!S.auth?.loggedIn||!S.users)return null;
+  return S.users.find(u=>u.id===S.auth.id)||null;
+}
+function ensureUserRecord(u){
+  if(!u)return u;
+  if(!u.profile)u.profile={school:'',graduationYear:2026,grade:'高校3年生',birthDate:''};
+  if(u.bio===undefined)u.bio='';
+  return u;
+}
+function isUserIdAvailable(userId,exceptId){
+  const n=normalizeUserId(userId);
+  return !S.users?.some(u=>u.id!==exceptId&&normalizeUserId(u.userId)===n);
+}
+function syncProfileFromUser(u){
+  ensureUserRecord(u);
+  S.profile={...u.profile};
+}
+function persistCurrentUserFromSession(){
+  const u=getCurrentUser();
+  if(!u||!S.auth)return;
+  ensureUserRecord(u);
+  u.name=S.auth.name;
+  u.userId=S.auth.userId;
+  if(S.profile)u.profile={...S.profile};
+}
+function migrateUserProfiles(){
+  if(!S.users)return;
+  S.users.forEach(ensureUserRecord);
+  if(S.auth?.loggedIn){
+    const u=getCurrentUser();
+    if(u)syncProfileFromUser(u);
+  }
+}
+function logoutUser(){
+  persistCurrentUserFromSession();
+  S.auth=null;S.authStep=null;S.pendingAuth=null;
+  save();renderAll();toast('ログアウトしました');haptic();
+}
+function switchToUser(target){
+  persistCurrentUserFromSession();
+  const u=typeof target==='string'
+    ?(findUserByUserId(target)||S.users?.find(x=>x.id===target))
+    :target;
+  if(!u)return false;
+  S.auth={name:u.name,userId:u.userId,email:u.email,loggedIn:true,id:u.id};
+  syncProfileFromUser(u);
+  save();renderAll();
+  toast(u.name+' に切り替えました');haptic();
+  return true;
+}
+function startAccountFlow(mode){
+  persistCurrentUserFromSession();
+  S.auth=null;S.authStep=null;S.pendingAuth=null;
+  S.authMode=mode||'signup';
+  save();renderAll();
+  toast(mode==='signup'?'新しいアカウントを作成してください':'ログインしてください');
+  haptic();
+}
+async function setUserAvatar(file){
+  const u=getCurrentUser();
+  if(!u||!file)return false;
+  try{
+    const dataUrl=await compressImage(file,400);
+    const avatarId='av_'+u.id;
+    await idbPut(avatarId,dataUrl);
+    u.avatarId=avatarId;
+    save();renderAll();
+    toast('プロフィール写真を更新しました');haptic();
+    return true;
+  }catch(e){toast('写真の保存に失敗しました');return false}
+}
+function userAvatarInner(u,fallbackSize){
+  if(u?.avatarId)return `<img data-lazy="${esc(u.avatarId)}" alt="">`;
+  return esc((u?.name||'?').charAt(0));
+}
 async function hashPass(pass){
   if(!crypto?.subtle)return btoa(unescape(encodeURIComponent(pass+':timecap')));
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass+':timecap'));
@@ -2631,7 +2898,7 @@ function notifyDmCapsule(friendId,cap){
   const dm=ensureDm(friendId);
   if(!dm)return;
   dm.messages.push({
-    from:cap.from,text:cap.text||'',at:Date.now(),openAt:null,
+    from:cap.from,text:cap.from+'から、未来に何かが届く予定です',at:Date.now(),openAt:null,
     kind:'capsule',capId:cap.id,
     capsuleMeta:{type:cap.type,when:formatWhen(cap),sealed:cap.sealed},
   });
@@ -2687,7 +2954,7 @@ function buildSealTargets(){
     if(!m)return {error:'ふたりの相手を選んでください'};
     targets.push({type:'pair',to:m.n,vis:'pair',pairWith:m.n});
   }
-  if(!targets.length)return {error:'送り先を1つ以上選んでください'};
+  if(!targets.length)targets.push({type:'self',to:'self',vis:'future'});
   return {targets};
 }
 function isImageFile(f){
@@ -2834,7 +3101,7 @@ function ensureInviteCode(){
 function groupNameById(id){return S.groups?.find(g=>g.id===id)?.name||GROUP}
 function getSelectedOpenDays(){
   const pills=[...document.querySelectorAll('.duration-pill.on')];
-  if(!pills.length)return[1];
+  if(!pills.length)return[365];
   const days=[];
   pills.forEach(p=>{
     if(p.dataset.days==='custom')days.push(+($('customDaysInput')?.value||14));
@@ -2961,6 +3228,7 @@ function updateCreateUI(){
   if($('shareMusicToggle'))$('shareMusicToggle').checked=!!S.shareMusicOnPost;
   updateMusicShareUI();
   renderCreateChips();
+  renderCreatePrompt();
 }
 function renderCreateChips(){
   if(!S.sealFriendIds)S.sealFriendIds=S.sealFriendId?[S.sealFriendId]:[];
@@ -2991,8 +3259,11 @@ function updateMediaPickState(){
   $('pickAlbumBtn')?.classList.toggle('has-media',!!pendingMedia?.albumCount);
   $('pickFolderBtn')?.classList.toggle('has-media',!!pendingMedia?.albumCount);
   $('pickVideoBtn')?.classList.toggle('has-media',pendingMedia?.type==='video');
+  document.querySelector('.create-icon[data-expand="photo"]')?.classList.toggle('has-content',!!pendingMedia);
   document.querySelector('.create-icon[data-expand="voice"]')?.classList.toggle('has-content',!!pendingVoice);
   document.querySelector('.create-icon[data-expand="mood"]')?.classList.toggle('has-content',!!S.sealMood);
+  document.querySelector('.create-icon[data-expand="prompt"]')?.classList.toggle('has-content',!!(S.createPromptChoice||S.createPromptText));
+  document.querySelector('.create-icon[data-expand="tag"]')?.classList.toggle('has-content',!!parseTagsFromInput().length);
   $('pickSelfieBtn')?.classList.toggle('hidden',!$('selfieToggle')?.checked||!pendingMedia);
 }
 function initCreateExpands(){
@@ -3021,6 +3292,7 @@ function initCreateExpands(){
 }
 function resetCreateExtras(){
   pendingVoice=null;pendingSelfie=null;pendingMusicShare=null;S.sealMood=null;
+  S.createPromptChoice=null;S.createPromptText=null;
   voiceSeconds=0;
   $('voiceTimer').textContent='0s / 10s';
   $('voiceRecordBtn')?.classList.remove('hidden');
@@ -3028,6 +3300,8 @@ function resetCreateExtras(){
   $('voiceClearBtn')?.classList.add('hidden');
   if($('selfieToggle'))$('selfieToggle').checked=false;
   $('pickSelfieBtn')?.classList.add('hidden');
+  $('tagInputRow').innerHTML='';
+  if($('tagInput'))$('tagInput').value='';
   document.querySelectorAll('.create-expand').forEach(p=>p.classList.remove('open'));
   $('createIconRow')?.querySelectorAll('.create-icon').forEach(b=>b.classList.remove('on'));
   $('moodPalette')?.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
@@ -3112,8 +3386,12 @@ function capFromLabel(c){
   return c.from;
 }
 function pushHomeNotif(title,sub,action,meta={}){
+  if(S.notifDay!==todayStr()){S.notifDay=todayStr();S.notifCountToday=0}
+  const priority=meta.priority??5;
+  if((S.notifCountToday||0)>=3&&priority>3)return;
   S.homeNotifs=S.homeNotifs||[];
-  S.homeNotifs.unshift({id:'hn'+Date.now()+Math.random(),title,sub,read:false,action,...meta});
+  S.homeNotifs.unshift({id:'hn'+Date.now()+Math.random(),title,sub,read:false,action,priority,...meta});
+  S.notifCountToday=(S.notifCountToday||0)+1;
   save();
 }
 function linkedSongSnapshot(){
@@ -3124,17 +3402,154 @@ function linkedSongSnapshot(){
   }
   return null;
 }
-function playOpeningSong(song){
+function autoMusicSnapshot(){
+  const manual=linkedSongSnapshot();
+  if(manual)return manual;
+  const sp=S.spotify?.nowPlaying||S.spotify?.tracks?.[0];
+  if(sp)return{title:sp.title,artist:sp.artist||'',source:'spotify',url:sp.url,plays:sp.plays,at:Date.now(),auto:true};
+  const s=pendingMusicShare||currentTodaySong();
+  if(!s)return null;
+  return{title:s.title,artist:s.artist||'',source:s.source||'spotify',url:s.url,plays:s.plays,at:Date.now(),auto:true};
+}
+function weatherCodeJa(code){
+  const m={0:'快晴',1:'晴れ',2:'くもり',3:'くもり',45:'霧',48:'霧',51:'小雨',53:'雨',61:'雨',63:'雨',71:'雪',80:'にわか雨',95:'雷雨'};
+  return m[code]??'—';
+}
+async function captureSealContext(geo){
+  const d=new Date();
+  const ctx={
+    sealedAt:Date.now(),
+    dateLabel:d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'}),
+    timeLabel:d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}),
+    dayPart:d.getHours()<5?'深夜':d.getHours()<12?'朝':d.getHours()<18?'昼':'夜',
+  };
+  let lat=geo?.lat,lng=geo?.lng;
+  if((lat==null||lng==null)&&navigator.geolocation){
+    try{
+      const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:3500,maximumAge:600000}));
+      lat=pos.coords.latitude;lng=pos.coords.longitude;
+      ctx.coords={lat,lng};
+    }catch(e){}
+  }else if(lat!=null&&lng!=null)ctx.coords={lat,lng};
+  if(lat!=null&&lng!=null){
+    try{
+      const wr=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&timezone=auto`);
+      if(wr.ok){
+        const wj=await wr.json();
+        ctx.temp=Math.round(wj.current?.temperature_2m);
+        ctx.weather=weatherCodeJa(wj.current?.weather_code);
+      }
+    }catch(e){}
+    try{
+      const gr=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ja`,{headers:{'Accept-Language':'ja'}});
+      if(gr.ok){
+        const gj=await gr.json();
+        const a=gj.address||{};
+        ctx.place=a.city||a.town||a.village||a.suburb||a.state||gj.display_name?.split(',')[0];
+      }
+    }catch(e){}
+  }
+  return ctx;
+}
+function formatSealContext(ctx){
+  if(!ctx)return '';
+  const parts=[
+    ctx.dateLabel,
+    ctx.place,
+    ctx.weather&&ctx.temp!=null?`${ctx.weather}${ctx.temp}℃`:ctx.weather,
+    ctx.timeLabel?`${ctx.dayPart||''}${ctx.timeLabel}`.trim():'',
+  ].filter(Boolean);
+  return parts.join(' · ');
+}
+function memoryContextHtml(ctx,song){
+  const line=formatSealContext(ctx);
+  if(!line&&!song)return '';
+  const songLine=song?`🎵 ${esc(song.title)}${song.artist?' · '+esc(song.artist):''}`:'';
+  return`<div class="memory-context-card">
+    ${line?`<div class="mcc-when">${esc(line)}</div>`:''}
+    ${ctx?.place?`<div class="mcc-place">📍 ${esc(ctx.place)}</div>`:''}
+    ${songLine?`<div class="mcc-song">${songLine}</div>`:''}
+  </div>`;
+}
+function monthVoiceKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function monthlyVoiceQuestion(){return '今いちばん伝えたいことは？'}
+function voiceSeriesItems(seriesId,includeCap){
+  const all=[...(S.opened||[]),...(S.capsules||[])];
+  if(includeCap&&!all.find(x=>x.id===includeCap.id))all.push(includeCap);
+  return all.filter(c=>c.voiceSeriesId===seriesId&&c.type==='voice'&&c.mediaId)
+    .sort((a,b)=>(a.voiceMonthKey||'').localeCompare(b.voiceMonthKey||''));
+}
+async function playVoiceChain(seriesId,currentCap){
+  const items=voiceSeriesItems(seriesId,currentCap);
+  if(items.length<2)return false;
+  for(const v of items){
+    const data=await idbGet(v.mediaId);
+    if(!data)continue;
+    await new Promise(res=>{
+      const au=new Audio(data);
+      au.volume=.9;
+      au.onended=res;
+      au.onerror=res;
+      au.play().catch(res);
+    });
+  }
+  return true;
+}
+function seasonTopLinkedSong(seasonKey){
+  const seasonMonths={spring:[2,3,4],summer:[5,6,7],autumn:[8,9,10],winter:[11,0,1]};
+  const [y,season]=(seasonKey||'').split('-');
+  const months=seasonMonths[season]||[];
+  const counts={};
+  const tally=c=>{
+    if(!c.linkedSong?.title)return;
+    const d=new Date(c.createdAt||c.openedAt||0);
+    if(d.getFullYear()!=+y||!months.includes(d.getMonth()))return;
+    const k=c.linkedSong.title+'|'+ (c.linkedSong.artist||'');
+    counts[k]=(counts[k]||0)+1;
+  };
+  (S.capsules||[]).forEach(tally);
+  (S.opened||[]).forEach(tally);
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  if(!top)return null;
+  const [title,artist]=top[0].split('|');
+  return{title,artist:artist||'',count:top[1]};
+}
+function openMemoryShareCard(cap){
+  if(!cap)return;
+  const ctx=cap.sealContext;
+  const line=formatSealContext(ctx);
+  $('wrappedCard').innerHTML=`
+    <div class="wc-brand">TIME CAP</div>
+    <div class="wc-period">開封の瞬間</div>
+    ${line?`<div class="wc-stat">${esc(line)}</div>`:''}
+    ${cap.linkedSong?`<div class="wc-theme"><div class="wc-theme-lbl">封じたときの一曲</div>
+      <div class="wc-theme-title">${esc(cap.linkedSong.title)}</div>
+      <div class="wc-theme-artist">${esc(cap.linkedSong.artist||'')}</div></div>`:''}
+    <div class="wc-stat" style="margin-top:12px">${esc((cap.text||'').slice(0,80))}</div>
+    <div class="wrapped-footer">${APP_URL}</div>
+    ${shareCardFooter()}`;
+  $('wrappedOverlay')?.classList.add('open');
+}
+function playOpeningSong(song,ctx){
   const strip=$('openingSongStrip');
   if(!song||!strip)return;
   strip.classList.remove('hidden');
   $('openingSongTitle').textContent=song.title||'—';
   $('openingSongArtist').textContent=song.artist||'';
+  const linkEl=$('openingSongLink');
+  if(linkEl){
+    if(song.url){
+      linkEl.textContent=song.source==='apple'?'Apple Musicで聴く':'Spotifyで聴く';
+      linkEl.classList.remove('hidden');
+      linkEl.onclick=()=>window.open(song.url,'_blank');
+    }else linkEl.classList.add('hidden');
+  }
   strip.style.opacity='0';
   requestAnimationFrame(()=>{strip.style.opacity='1'});
-  playTone(196,1,'sine',.05);
-  setTimeout(()=>playTone(247,.8,'sine',.04),350);
-  setTimeout(()=>playTone(294,1.2,'sine',.03),700);
+  playTone(196,1.2,'sine',.06);
+  setTimeout(()=>playTone(247,1,'sine',.05),400);
+  setTimeout(()=>playTone(294,1.4,'sine',.04),800);
+  if(ctx?.place)toast(`📍 ${ctx.place} · ${song.title}`);
 }
 let lastOpenedItem=null;
 let transferSourceId=null;
@@ -3149,15 +3564,25 @@ async function transferCapsule(source,days){
       if(data){await idbPut(capId,data);mediaId=capId}
     }catch(e){}
   }
+  let selfieMediaId=source.selfieMediaId;
+  if(selfieMediaId){
+    try{
+      const sf=await idbGet(selfieMediaId);
+      if(sf){const nid=capId+'_sf';await idbPut(nid,sf);selfieMediaId=nid}
+    }catch(e){}
+  }
   const cap={
     id:capId,from:source.from||meName(),to:source.to||'self',type:source.type||'text',
     text:source.text||'',sealed:true,openAt:addDays(days),days,postNow:false,layer:'sealed',
     mediaId,createdAt:Date.now(),loc:source.loc,tags:source.tags,
-    transferredFrom:source.id,linkedSong:linkedSongSnapshot()||source.linkedSong,
-    promptId:source.promptId,promptText:source.promptText,choice:source.choice,
+    transferredFrom:source.id,linkedSong:source.linkedSong||linkedSongSnapshot(),
+    sealContext:source.sealContext,promptId:source.promptId,promptText:source.promptText,
+    choice:source.choice,mood:source.mood,goal:source.goal,selfieMediaId,
+    voiceSeriesId:source.voiceSeriesId,voiceMonthKey:source.voiceMonthKey,
   };
   S.capsules.unshift(cap);
   pushActivity('post_created',{postId:capId});
+  pushHomeNotif('未来へ転送しました',(source.text||'').slice(0,30)+' · '+days+'日後に開封','waiting');
   save();renderAll();
   toast('もう一度、未来に送りました');
   haptic();
@@ -3165,6 +3590,7 @@ async function transferCapsule(source,days){
 function sealPromptToFuture(choice,text,days){
   const prompt=getTodayPrompt();
   if(!prompt)return;
+  captureSealContext().then(ctx=>{
   const capId='c'+Date.now()+'_pq';
   const cap={
     id:capId,from:meName(),to:'self',type:'prompt',visibility:'future',
@@ -3172,13 +3598,14 @@ function sealPromptToFuture(choice,text,days){
     layer:'sealed',createdAt:Date.now(),
     promptId:prompt.id,promptText:prompt.text,promptType:prompt.type,
     choice,text:choice?text||'':text,options:prompt.options,
-    linkedSong:linkedSongSnapshot(),
+    linkedSong:autoMusicSnapshot(),sealContext:ctx,
   };
   S.capsules.unshift(cap);
   pushActivity('post_created',{postId:capId});
   save();renderAll();
   toast('問いへの答えを未来に封じました');
   haptic();
+  });
 }
 function showPromptDialogue(cap,onDone){
   const ov=$('promptDialogueOverlay');
@@ -3227,14 +3654,33 @@ function checkUnlockNotifs(){
       const key='n24_'+c.id+'_'+todayStr();
       if(!S.shownNotifs.includes(key)){
         S.shownNotifs.push(key);
-        pushHomeNotif('明日、'+capFromLabel(c)+'が開きます',capDestLabel(c)+'への記憶','open');
+        const selfCap=c.to==='self';
+        const title=selfCap?'明日、1年前のあなたが開きます':'明日、'+capFromLabel(c)+'が開きます';
+        const sub=selfCap?'封が解ける前夜。ドキドキの時間です。':`${capDestLabel(c)}への記憶。「${(c.text||'').slice(0,24)}」`;
+        pushHomeNotif(title,sub,'open',{priority:2});
+        if(!S.shownPreviews?.includes('preview_'+c.id+'_1')){
+          S.shownPreviews=S.shownPreviews||[];
+          S.shownPreviews.push('preview_'+c.id+'_1');
+          setTimeout(()=>{
+            $('openPreviewTitle').textContent='明日、'+capFromLabel(c)+'が開きます';
+            $('openPreviewBody').textContent=`${formatSealContext(c.sealContext)||capDestLabel(c)+'への記憶'}。開く前夜のドキドキが、思い出を濃くします。`;
+            $('openPreviewOverlay')?.classList.add('open');
+          },800);
+        }
+      }
+    }
+    if(d===3){
+      const key='n72_'+c.id+'_'+todayStr();
+      if(!S.shownNotifs.includes(key)){
+        S.shownNotifs.push(key);
+        pushHomeNotif('あと3日で開きます',capFromLabel(c)+' · '+capDestLabel(c),'open',{priority:3});
       }
     }
     if(ms<=3600000&&ms>0){
       const key='n1h_'+c.id;
       if(!S.shownNotifs.includes(key)){
         S.shownNotifs.push(key);
-        pushHomeNotif('あと1時間。封が解けます',(c.text||'').slice(0,36),'open');
+        pushHomeNotif('あと1時間。封が解けます',(c.text||'').slice(0,36),'open',{priority:2});
       }
     }
   });
@@ -3242,7 +3688,7 @@ function checkUnlockNotifs(){
     const key='nready_'+c.id+'_'+todayStr();
     if(S.shownNotifs.includes(key))return;
     S.shownNotifs.push(key);
-    pushHomeNotif('過去から、何かが届きました',capFromLabel(c)+'から · '+capDestLabel(c),'open');
+    pushHomeNotif('過去から、何かが届きました',capFromLabel(c)+'から · '+capDestLabel(c),'open',{priority:1});
   });
 }
 function mapPointsFiltered(){
@@ -3270,8 +3716,32 @@ function todayQuestion(){
   return p?.text||PROMPTS[Math.floor(Date.now()/864e5)%PROMPTS.length];
 }
 function isPromptDay(d=new Date()){
-  const h=(d.getDate()+d.getMonth()*31+d.getFullYear())%7;
-  return h!==0&&h!==6;
+  return !isPromptOffDay(d);
+}
+function weekKey(d=new Date()){
+  const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  const day=x.getUTCDay()||7;
+  x.setUTCDate(x.getUTCDate()+4-day);
+  const ys=new Date(Date.UTC(x.getUTCFullYear(),0,1));
+  return x.getUTCFullYear()+'-W'+String(Math.ceil((((x-ys)/864e5)+1)/7)).padStart(2,'0');
+}
+function isPromptOffDay(d=new Date()){
+  const wk=weekKey(d);
+  let h=0;
+  for(let i=0;i<wk.length;i++)h=(h*31+wk.charCodeAt(i))|0;
+  const d1=Math.abs(h)%7;
+  const d2=Math.abs(h*7+3)%7;
+  const off=d1===d2?[(d1+3)%7,d1]:[d1,d2];
+  return off.includes(d.getDay());
+}
+function checkMorningPromptNotif(){
+  const p=getTodayPrompt();
+  if(!p)return;
+  const key='prompt_am_'+todayStr();
+  if(S.shownNotifs?.includes(key))return;
+  S.shownNotifs=S.shownNotifs||[];
+  S.shownNotifs.push(key);
+  pushHomeNotif('今日の問いが届きました',p.text,'timeline',{priority:5});
 }
 function isRainToday(){
   if(S.weatherRain!==undefined)return S.weatherRain;
@@ -3283,13 +3753,19 @@ function isFullMoonTonight(){
   return d.getDate()>=14&&d.getDate()<=16;
 }
 function getLimitedPrompt(){
-  const d=new Date(),h=d.getHours();
+  const d=new Date(),h=d.getHours(),m=d.getMonth()+1;
   const limited=PROMPT_POOL.filter(p=>p.condition);
   for(const p of limited){
     if(p.condition==='night'&&h>=0&&h<3)return p;
     if(p.condition==='friday'&&d.getDay()===5&&h>=18)return p;
     if(p.condition==='rain'&&isRainToday())return p;
     if(p.condition==='fullmoon'&&isFullMoonTonight())return p;
+    if(p.condition==='season'){
+      if(p.id==='sea-spring'&&(m===2||m===3))return p;
+      if(p.id==='sea-april'&&(m===4||m===1))return p;
+      if(p.id==='sea-dec'&&m===12&&d.getDate()>=28)return p;
+      if(p.id==='sea-summer'&&m===8)return p;
+    }
   }
   return null;
 }
@@ -3300,6 +3776,34 @@ function getTodayPrompt(){
   const regular=PROMPT_POOL.filter(p=>!p.condition);
   const idx=(new Date().getDate()+new Date().getMonth()*31)%regular.length;
   return regular[idx];
+}
+function renderCreatePrompt(){
+  const prompt=getTodayPrompt();
+  const text=$('createPromptText');
+  const tap=$('createPromptTap');
+  if(!text||!tap)return;
+  if(!prompt){
+    text.textContent='今日は問いがありません';
+    tap.innerHTML='';
+    return;
+  }
+  text.textContent=prompt.text;
+  if(prompt.type==='tap'||prompt.type==='hybrid'){
+    tap.innerHTML=(prompt.options||[]).map(o=>`
+      <button type="button" class="dq-tap-btn${S.createPromptChoice===o?' on':''}" data-choice="${esc(o)}">${esc(o)}</button>`).join('');
+    tap.querySelectorAll('.dq-tap-btn').forEach(b=>b.addEventListener('click',()=>{
+      S.createPromptChoice=S.createPromptChoice===b.dataset.choice?null:b.dataset.choice;
+      renderCreatePrompt();
+      updateMediaPickState();
+      haptic();
+    }));
+  }else{
+    tap.innerHTML=`<input type="text" class="goal-input" id="createPromptFree" placeholder="一言で" maxlength="120" value="${esc(S.createPromptText||'')}">`;
+    $('createPromptFree')?.addEventListener('input',e=>{
+      S.createPromptText=e.target.value;
+      updateMediaPickState();
+    });
+  }
 }
 function ensureProfile(){
   if(!S.profile)S.profile={school:'',graduationYear:2026,grade:'高校3年生',birthDate:''};
@@ -3368,7 +3872,7 @@ function checkLimitedPromptNotif(){
   const key='lim_'+p.id+'_'+todayStr();
   if(S.shownNotifs?.includes(key))return;
   S.shownNotifs.push(key);
-  pushHomeNotif('今夜だけの問いが出ました',p.text,'timeline');
+  pushHomeNotif('今夜だけの問いが出ました',p.text,'timeline',{priority:5});
   save();
 }
 function checkGlobalUnlock(){
@@ -3417,12 +3921,27 @@ function renderCohortSection(){
 }
 function saveProfileFromForm(){
   ensureProfile();
+  const u=getCurrentUser();
+  const displayName=$('editDisplayName')?.value.trim();
+  const newUserId=normalizeUserId($('editUserId')?.value||'');
+  const bio=$('editBio')?.value.trim()||'';
+  if($('editDisplayName')){
+    if(!displayName){toast('表示名を入力してください');return}
+    if(u){u.name=displayName;S.auth.name=displayName}
+  }
+  if($('editUserId')&&newUserId){
+    if(!isValidUserId(newUserId)){toast('ユーザー名は3〜20文字の英小文字・数字・アンダースコア');return}
+    if(u&&!isUserIdAvailable(newUserId,u.id)){toast('このユーザー名は使われています');return}
+    if(u){u.userId=newUserId;S.auth.userId=newUserId}
+  }
+  if(u)u.bio=bio;
   S.profile.school=$('profileSchool')?.value.trim()||'';
   S.profile.graduationYear=+($('profileGradYear')?.value||2026);
   S.profile.grade=$('profileGrade')?.value||'';
   S.profile.birthDate=$('profileBirth')?.value||'';
+  if(u)u.profile={...S.profile};
   ensureCohorts();
-  save();renderArchive();renderTimeline();
+  save();renderArchive();renderTimeline();updateProfileHeader();
   toast('プロフィールを保存しました');
   haptic();
 }
@@ -3517,15 +4036,10 @@ function checkLastYearTodayNotif(){
   const item=getLastYearToday();
   if(!item)return;
   const key='lyt_'+todayStr();
+  if(S.shownNotifs?.includes(key))return;
   S.shownNotifs=S.shownNotifs||[];
-  if(S.shownNotifs.includes(key))return;
   S.shownNotifs.push(key);
-  S.homeNotifs=S.homeNotifs||[];
-  S.homeNotifs.unshift({
-    id:'lyt'+Date.now(),title:'去年の今日、こんな日でした',
-    sub:(item.text||'この日の記憶').slice(0,40),read:false,action:'timeline',
-  });
-  save();
+  pushHomeNotif('去年の今日、こんな日でした',(item.text||'この日の記憶').slice(0,40),'timeline',{priority:4});
 }
 let promoteSourceId=null;
 async function promoteToFuture(sourceId,days){
@@ -3769,6 +4283,7 @@ function mapPointsAll(){
     .map(c=>({
       id:c.id,loc:c.loc,text:c.text,openAt:c.openAt,mediaId:c.mediaId,
       locked:true,openedAt:c.createdAt||0,source:'sealed',
+      sealContext:c.sealContext,linkedSong:c.linkedSong,
     }));
   return[...opened,...sealed].sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
 }
@@ -3877,6 +4392,7 @@ if(!S.feedPosts)S.feedPosts=defaults().feedPosts;
 if(!S.feedFilter)S.feedFilter='friends';
 if(!S.users)S.users=[];
 ensureUserIds();
+migrateUserProfiles();
 if(S.auth===undefined)S.auth=null;
 if(!S.dailyState)S.dailyState=defaults().dailyState;
 if(S.dailyState.date!==todayStr()){
@@ -3904,7 +4420,7 @@ if(!S.sealFriendIds)S.sealFriendIds=S.sealFriendId?[S.sealFriendId]:[];
 if(!S.sealGroupIds)S.sealGroupIds=S.groups?.[0]?[S.groups[0].id]:[];
 ensureSealDestSet();
 if(!S.archiveMemFilter)S.archiveMemFilter='all';
-if(!S.sealOpenDays)S.sealOpenDays=[1];
+if(!S.sealOpenDays)S.sealOpenDays=[365];
 if(!S.pendingInvites)S.pendingInvites=[];
 if(!S.seasonEvent)S.seasonEvent={joined:false,key:'grad2026',theme:'3年後のじぶんへ'};
 ensureProfile();
@@ -3968,7 +4484,7 @@ let fsTab='posts';
 let sharedTab='friends';
 let waitTimer=null;
 
-let mapInst=null,mapCluster=null,mapRouteLine=null,mapHeatLayer=null,mapPlayTimer=null;
+let mapInst=null,mapCluster=null,mapRouteLine=null,mapHeatLayer=null,mapPlayTimer=null,mapPlayheadMarker=null;
 let mapSubTab='route';
 
 function switchTab(tab){
@@ -4120,13 +4636,33 @@ function renderTimelineFeed(){
   }));
 }
 
+function renderLastYearToday(){
+  const sec=$('lastYearTodaySection');
+  const item=getLastYearToday();
+  if(!sec)return;
+  if(!item){sec.classList.add('hidden');return}
+  sec.classList.remove('hidden');
+  $('lytTitle').textContent=item.text||'この日の記憶';
+  const card=$('lytCard');
+  if(item.mediaId){
+    card.innerHTML=`<img data-lazy="${esc(item.mediaId)}" alt=""><p style="font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.45">${esc(item.text||'')}</p>`;
+    loadLazyThumbs(sec);
+  }else{
+    card.innerHTML=`<p style="font-size:14px;line-height:1.55;margin:0">${esc(item.text||'')}</p>`;
+  }
+}
 function renderTimeline(){
+  checkMorningPromptNotif();
   checkLastYearTodayNotif();
   checkUnlockNotifs();
   checkLimitedPromptNotif();
   checkGlobalUnlock();
   checkBirthday();
   checkOpenPreview();
+  renderLastYearToday();
+  renderDailyQuestion();
+  renderTodayPhotos();
+  renderTimeMachine();
   renderNextCapsule();
   renderTimelineFeed();
 }
@@ -4487,6 +5023,7 @@ function renderMemoryMap(){
   mapCluster?.clearLayers();
   if(mapRouteLine){mapInst.removeLayer(mapRouteLine);mapRouteLine=null}
   if(mapHeatLayer){mapInst.removeLayer(mapHeatLayer);mapHeatLayer=null}
+  if(mapPlayheadMarker){mapInst.removeLayer(mapPlayheadMarker);mapPlayheadMarker=null}
   const points=mapPointsFiltered();
   if(!points.length){
     mapInst.setView([36.2,138.5],5);
@@ -4501,9 +5038,10 @@ function renderMemoryMap(){
     allLatlngs.push([g.loc.lat,g.loc.lng]);
     if(!g.locked)latlngs.push([g.loc.lat,g.loc.lng]);
     const n=g.items.length;
-    const size=Math.min(28,10+n*4);
+    const size=Math.min(36,12+n*5);
+    const glow=Math.min(1,.4+n*0.15);
     const heatIcon=L.divIcon({
-      html:`<div class="map-heat-dot" style="width:${size}px;height:${size}px;opacity:${g.locked?0.45:Math.min(1,.55+n*0.12)}"></div>`,
+      html:`<div class="map-heat-dot" style="width:${size}px;height:${size}px;opacity:${g.locked?0.45:glow};box-shadow:0 0 ${8+n*4}px rgba(255,255,255,${glow})"></div>`,
       className:'map-dot-wrap',iconSize:[size,size],
     });
     const rep=g.items[g.items.length-1];
@@ -4513,8 +5051,17 @@ function renderMemoryMap(){
   });
   mapInst.addLayer(mapHeatLayer);
   if(latlngs.length>1){
-    mapRouteLine=L.polyline(latlngs,{color:'#ffffff',weight:2,opacity:.55,dashArray:'6 8'});
+    const pct=S.mapTimePct??100;
+    const endIdx=Math.max(2,Math.ceil(latlngs.length*pct/100));
+    const visible=latlngs.slice(0,endIdx);
+    mapRouteLine=L.polyline(visible,{color:'#ffffff',weight:3,opacity:.75,dashArray:pct>=100?null:'4 8'});
     mapRouteLine.addTo(mapInst);
+    const head=visible[visible.length-1];
+    mapPlayheadMarker=L.marker(head,{
+      icon:L.divIcon({html:'<div class="map-route-head"></div>',className:'',iconSize:[14,14]}),
+      zIndexOffset:1000,
+    });
+    mapPlayheadMarker.addTo(mapInst);
   }
   if(allLatlngs.length){
     const bounds=L.latLngBounds(allLatlngs);
@@ -4534,17 +5081,18 @@ async function openMapPoint(p){
   const meta=$('mapPointMeta');
   photo.innerHTML='';
   sheet?.classList.toggle('map-point-locked',!!p.locked);
+  const ctxLine=p.sealContext?formatSealContext(p.sealContext):'';
   if(p.locked){
     photo.innerHTML=`<div class="mp-lock-visual"><div class="ico">🔒</div><div style="font-size:14px;color:var(--ink-2)">まだ開封されていません</div><div style="font-size:12px;color:var(--ink-3);margin-top:8px">${p.openAt?formatWhen({openAt:p.openAt}):'開封まで写真は見られません'}</div></div>`;
-    meta.textContent=`封印中の地点 · ${esc(p.text||'この場所の記憶')}`;
+    meta.innerHTML=`${esc(p.text||'この場所の記憶')}${ctxLine?`<br><span style="font-size:11px;color:var(--ink-3)">${esc(ctxLine)}</span>`:''}`;
   }else if(p.mediaId){
     const data=await idbGet(p.mediaId);
     if(data)photo.innerHTML=`<img src="${data}" alt="">`;
     else photo.innerHTML='<div class="empty-state" style="padding:24px">写真</div>';
-    meta.textContent=`${new Date(p.openedAt).toLocaleDateString('ja-JP')} · ${esc(p.text||'この場所の記憶')}`;
+    meta.innerHTML=`${new Date(p.openedAt).toLocaleDateString('ja-JP')} · ${esc(p.text||'この場所の記憶')}${ctxLine?`<br><span style="font-size:11px;color:var(--ink-3)">${esc(ctxLine)}</span>`:''}${p.linkedSong?`<br><span style="font-size:11px">🎵 ${esc(p.linkedSong.title)}</span>`:''}`;
   }else{
     photo.innerHTML='<div class="empty-state" style="padding:24px">📍</div>';
-    meta.textContent=`${new Date(p.openedAt).toLocaleDateString('ja-JP')} · ${esc(p.text||'この場所の記憶')}`;
+    meta.innerHTML=`${new Date(p.openedAt).toLocaleDateString('ja-JP')} · ${esc(p.text||'この場所の記憶')}${ctxLine?`<br><span style="font-size:11px;color:var(--ink-3)">${esc(ctxLine)}</span>`:''}`;
   }
   sheet?.classList.add('open');
   haptic();
@@ -4652,27 +5200,33 @@ function renderFriendSpace(){
 
 function renderArchiveMemoryList(){
   const filter=S.archiveMemFilter||'all';
-  let items=allMemories(filter==='prompt'||filter==='text'?'all':filter);
-  if(filter==='prompt')items=items.filter(m=>m.type==='prompt'||m.promptId);
+  let items=allMemories(filter==='prompt'||filter==='text'||filter==='tag'?'all':filter);
+  if(filter==='opened')items=items.filter(m=>m.kind==='opened'||!isCapLocked(m));
+  else if(filter==='sealed')items=items.filter(m=>m.kind==='sealed'||isCapLocked(m));
+  else if(filter==='prompt')items=items.filter(m=>m.type==='prompt'||m.promptId);
   else if(filter==='text')items=items.filter(m=>m.type==='text'&&!m.mediaId);
-  return items.map(m=>{
+  else if(filter==='tag'&&S.memFilterTag)items=items.filter(m=>(m.tags||[]).includes(S.memFilterTag));
+  return items.map((m,i)=>{
     const sealed=m.kind==='sealed'||isCapLocked(m);
     const at=m.at||m.openedAt||m.createdAt;
     const date=at?new Date(at).toLocaleDateString('ja-JP',{year:'numeric',month:'short',day:'numeric',weekday:'short'}):'—';
     const typeLabel=m.type==='prompt'||m.promptId?'問い':(TYPE_JA[m.type]||m.type);
+    const sizeCls=i%5===0?' wide':i%3===0?' tall':'';
     if(sealed){
-      return`<article class="arb-card"><div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">🔒 ${esc(typeLabel)}</span></div><div class="arb-sealed">開封まで中身は見えません</div></article>`;
+      return`<article class="arb-card${sizeCls}"><div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">🔒 ${esc(typeLabel)}</span></div><div class="arb-sealed">開封まで中身は見えません</div></article>`;
     }
     const thumb=m.mediaId?`<img class="arb-thumb" data-lazy="${esc(m.mediaId)}" alt="">`:'';
     const text=m.text||m.choice||m.promptText||'';
     const song=m.linkedSong?`<div class="arb-song">🎵 ${esc(m.linkedSong.title)}${m.linkedSong.artist?' · '+esc(m.linkedSong.artist):''}</div>`:'';
+    const ctx=m.sealContext?formatSealContext(m.sealContext):'';
     const meta=[m.from&&m.from!==meName()?m.from:'',m.goal?`目標: ${m.goal}`:''].filter(Boolean).join(' · ');
-    return`<article class="arb-card">
+    return`<article class="arb-card${sizeCls}">
       <div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">${esc(typeLabel)}</span></div>
       ${thumb}
       <div class="arb-body">
         ${text?`<div class="arb-text">${esc(text)}</div>`:''}
         ${song}
+        ${ctx?`<div class="arb-meta" style="margin-top:6px">${esc(ctx)}</div>`:''}
         ${meta?`<div class="arb-meta">${esc(meta)}</div>`:''}
       </div>
     </article>`;
@@ -4708,6 +5262,13 @@ function renderArchive(){
 
   const seasonKey=getSeasonAlbumKey();
   const seasonAlbum=S.albums?.[seasonKey];
+  const seasonAnthem=seasonTopLinkedSong(seasonKey);
+  const anthemHtml=seasonAnthem?`
+    <div class="season-anthem">
+      <div class="sa-label">この季節のみんなの一曲</div>
+      <div class="sa-title">🎵 ${esc(seasonAnthem.title)}</div>
+      ${seasonAnthem.artist?`<div style="font-size:12px;color:var(--ink-3);margin-top:2px">${esc(seasonAnthem.artist)} · ${seasonAnthem.count}件の記憶</div>`:''}
+    </div>`:'';
   const seasonStrip=seasonAlbum?.items?.length?`
     <div style="padding:0 20px 16px">
       <div class="vault-label">${esc(seasonAlbum.label||seasonAlbumLabel(seasonKey))}</div>
@@ -4726,10 +5287,9 @@ function renderArchive(){
   const memFilter=S.archiveMemFilter||'all';
   const memFilters=`<div class="arb-filters">
     <button type="button" class="${memFilter==='all'?'on':''}" data-amf="all">すべて</button>
-    <button type="button" class="${memFilter==='photo'?'on':''}" data-amf="photo">写真</button>
-    <button type="button" class="${memFilter==='text'?'on':''}" data-amf="text">文</button>
-    <button type="button" class="${memFilter==='prompt'?'on':''}" data-amf="prompt">問い</button>
-    <button type="button" class="${memFilter==='video'?'on':''}" data-amf="video">動画</button>
+    <button type="button" class="${memFilter==='opened'?'on':''}" data-amf="opened">開封済み</button>
+    <button type="button" class="${memFilter==='sealed'?'on':''}" data-amf="sealed">封印中</button>
+    <button type="button" class="${memFilter==='tag'?'on':''}" data-amf="tag">タグ別</button>
   </div>`;
   const memoryList=renderArchiveMemoryList();
 
@@ -4740,7 +5300,7 @@ function renderArchive(){
 
   let panel='';
   if(tab==='all'){
-    panel=`${memFilters}<div class="arb-list">${memoryList||'<div class="empty-state" style="padding:40px 0">思い出がありません</div>'}</div>`;
+    panel=`${memFilters}<div class="arb-masonry">${memoryList||'<div class="empty-state" style="padding:40px 0;grid-column:span 2">まだ何も残していない。最初の記憶を封じよう。</div>'}</div>`;
   }else if(tab==='music'){
     panel=`<div class="archive-panel music-section" style="padding:0 20px">
       ${musicTodayCardHtml(false)}${musicWeekBlockHtml()}
@@ -4750,35 +5310,7 @@ function renderArchive(){
       <p style="font-size:12px;color:var(--ink-3);margin:16px 0;line-height:1.5">投稿時は Spotify / Apple Music の共有リンクを貼り付けて曲を残せます</p>
     </div>`;
   }else if(tab==='account'){
-    panel=`<div class="archive-settings">
-      <div id="authSectionArchive"></div>
-      <div class="profile-edit" id="profileEdit">
-        <div class="sec-label">プロフィール · コホート</div>
-        <label>学校名</label>
-        <input type="text" id="profileSchool" placeholder="例：X高校" value="${esc(S.profile?.school||'')}">
-        <label>卒業予定年</label>
-        <input type="number" id="profileGradYear" min="2024" max="2035" value="${S.profile?.graduationYear||2026}">
-        <label>学年</label>
-        <select id="profileGrade">${GRADES.map(g=>`<option value="${esc(g)}"${S.profile?.grade===g?' selected':''}>${esc(g)}</option>`).join('')}</select>
-        <label>誕生日</label>
-        <input type="date" id="profileBirth" value="${esc(S.profile?.birthDate||'')}">
-        <button type="button" class="dq-cta" id="saveProfileBtn" style="width:100%;margin-top:12px">保存</button>
-      </div>
-      <div class="spotify-row" style="margin-top:16px">
-        <div><div style="font-size:14px;font-weight:500">Spotify</div><div style="font-size:12px;color:var(--ink-3)">${S.spotify?.connected?'連携済み':'未連携'}</div></div>
-        <button type="button" id="spotifyConnectArchive">${S.spotify?.connected?'同期':'連携'}</button>
-      </div>
-      <div class="group-manage">
-        <div class="sec-label">グループ</div>
-        <div id="groupListArchive"></div>
-        <div class="group-add-row"><input type="text" id="newGroupNameArchive" placeholder="新しいグループ名"><button type="button" id="addGroupBtnArchive">追加</button></div>
-      </div>
-      <div class="invite-notice" style="margin-top:16px">
-        招待コード: <strong>${esc(S.inviteCode)}</strong>
-        <button type="button" id="copyInviteBtnArchive" style="margin-top:8px;padding:8px 14px;border-radius:999px;font-size:12px;background:var(--bg-3);width:100%">招待リンクをコピー</button>
-      </div>
-      <div class="settings-row" id="darkToggleArchive" style="margin-top:16px"><span>ダークモード</span><div class="toggle ${S.dark?'on':''}" id="darkSwitchArchive"></div></div>
-    </div>`;
+    panel=`<div class="archive-settings" id="accountPanelRoot"></div>`;
   }else{
     panel=`<div style="padding:0 20px">${opened.map(o=>`
       <div class="archive-log-item" style="margin-bottom:12px">
@@ -4793,8 +5325,10 @@ function renderArchive(){
         <div>
           <div style="font-size:11px;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase">振り返り</div>
           <h1 style="font-size:32px;font-weight:600;letter-spacing:-.03em;margin-top:4px">${esc(name)}</h1>
+          ${meUserId()?`<div style="font-size:14px;color:var(--ink-3);margin-top:2px">@${esc(meUserId())}</div>`:''}
+          ${getCurrentUser()?.bio?`<div style="font-size:13px;color:var(--ink-2);margin-top:6px;line-height:1.4">${esc(getCurrentUser().bio)}</div>`:''}
         </div>
-        <div class="ap-avatar" style="width:56px;height:56px;font-size:22px">${esc(name.charAt(0))}</div>
+        <div class="ap-avatar" style="width:56px;height:56px;font-size:22px;overflow:hidden;border-radius:50%">${userAvatarInner(getCurrentUser())}</div>
       </div>
       <div style="display:flex;gap:24px;padding:16px 20px 8px">
         <div><div style="font-size:20px;font-weight:600">${opened.length}</div><div style="font-size:11px;color:var(--ink-3)">開封済み</div></div>
@@ -4806,6 +5340,7 @@ function renderArchive(){
       ${myGifts.length?`<div style="padding:0 20px 8px"><div class="sec-label">もらったギフト</div><div class="gift-collection">${giftCollection}</div></div>`:''}
       ${bonuses?`<div class="bonus-row" style="padding:0 20px 16px;justify-content:flex-start">${bonuses}</div>`:''}
       ${sealedN?`<div class="vault-section"><div class="vault-label">まだ見られない · ${sealedN}件</div><div class="vault-mosaic">${sealedStrip}</div></div>`:''}
+      ${anthemHtml}
       ${seasonStrip}
       ${themeCard}
       <div class="archive-tabs" style="padding:0 20px">
@@ -4817,29 +5352,18 @@ function renderArchive(){
       ${panel}
     </div>`;
   loadLazyThumbs(el);
-  const gl=$('groupListArchive');
-  if(gl)gl.innerHTML=(S.groups||[]).map(g=>`
-    <div class="group-row"><span class="gr-emoji">${g.emoji||'✨'}</span><span class="gr-name">${esc(g.name)}</span></div>`).join('');
-  renderAuth($('authSectionArchive')||$('authSection'));
-  $('copyInviteBtnArchive')?.addEventListener('click',()=>{
-    navigator.clipboard?.writeText(`${APP_URL}?invite=${S.inviteCode}`).then(()=>toast('コピーしました'));
-    haptic();
-  });
-  $('saveProfileBtn')?.addEventListener('click',saveProfileFromForm);
-  $('spotifyConnectArchive')?.addEventListener('click',connectSpotify);
-  $('addGroupBtnArchive')?.addEventListener('click',()=>{
-    const n=$('newGroupNameArchive')?.value.trim();
-    if(!n)return;
-    S.groups.push({id:'g'+Date.now(),name:n,emoji:'👥',memberIds:MEMBERS.map(m=>m.id)});
-    save();renderArchive();toast('グループを追加');
-  });
-  $('darkToggleArchive')?.addEventListener('click',()=>{
-    S.dark=!S.dark;document.documentElement.dataset.theme=S.dark?'':'light';save();renderArchive();haptic();
-  });
+  renderAccountPanel($('accountPanelRoot'));
   el.querySelectorAll('.archive-tab').forEach(t=>t.addEventListener('click',()=>{
     S.archiveTab=t.dataset.atab;save();renderArchive();haptic();
   }));
   el.querySelectorAll('[data-amf]').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.amf==='tag'){
+      const tags=[...new Set([...(S.capsules||[]).flatMap(c=>c.tags||[]),...(S.opened||[]).flatMap(c=>c.tags||[])])];
+      if(!tags.length){toast('タグ付きの記憶がありません');return}
+      const t=prompt('見るタグを入力（例: 旅行）',tags[0]);
+      if(!t)return;
+      S.memFilterTag=t.replace(/^#/,'').trim();
+    }else S.memFilterTag=null;
     S.archiveMemFilter=b.dataset.amf;save();renderArchive();haptic();
   }));
   $('openWrappedBtn')?.addEventListener('click',()=>openWrappedCard(musicKey));
@@ -4870,7 +5394,169 @@ function openWrappedCard(monthKey){
 }
 function showOnboarding(){$('onboardOverlay')?.classList.add('open')}
 
-function renderProfile(){renderMe()}
+function renderProfile(){
+  renderMe();
+  updateProfileHeader();
+  renderSettingsAccountActions();
+}
+function updateProfileHeader(){
+  const u=getCurrentUser();
+  const name=meName();
+  const av=$('profileAvatar');
+  if(av){
+    if(u?.avatarId){
+      idbGet(u.avatarId).then(data=>{
+        if(data)av.innerHTML=`<img src="${data}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">`;
+        else av.textContent=name.charAt(0);
+      });
+    }else av.textContent=name.charAt(0);
+  }
+  if($('profileName'))$('profileName').textContent=name;
+  const bioEl=$('profileBio');
+  if(bioEl){
+    const handle=meUserId()?`@${meUserId()}`:'';
+    bioEl.innerHTML=[handle,u?.bio?esc(u.bio):''].filter(Boolean).join(handle&&u?.bio?'<br>':'');
+  }
+}
+function renderSettingsAccountActions(){
+  const el=$('settingsAccountActions');
+  if(!el)return;
+  if(!isLoggedIn()){
+    el.innerHTML='';
+    return;
+  }
+  el.innerHTML=`
+    <button type="button" id="settingsEditProfile">プロフィールを編集</button>
+    <button type="button" id="settingsSwitchAccount">アカウントを切り替え</button>
+    <button type="button" id="settingsAddAccount">アカウントを追加</button>
+    <button type="button" class="account-danger" id="settingsLogout">ログアウト</button>`;
+  el.querySelector('#settingsEditProfile')?.addEventListener('click',()=>{
+    $('settingsOverlay')?.classList.remove('open');
+    S.archiveTab='account';save();switchTab('archive');renderArchive();haptic();
+  });
+  el.querySelector('#settingsSwitchAccount')?.addEventListener('click',()=>openAccountSwitcher());
+  el.querySelector('#settingsAddAccount')?.addEventListener('click',()=>{startAccountFlow('signup');switchTab('messages')});
+  el.querySelector('#settingsLogout')?.addEventListener('click',logoutUser);
+}
+function openAccountSwitcher(){
+  const list=$('accountSwitcherList');
+  if(!list)return;
+  const cur=S.auth?.id;
+  list.innerHTML=(S.users||[]).map(u=>`
+    <div class="account-row${u.id===cur?' on':''}" data-uid="${esc(u.id)}">
+      <div class="ar-av">${userAvatarInner(u)}</div>
+      <div class="ar-info">
+        <div class="ar-name">${esc(u.name)}</div>
+        <div class="ar-handle">@${esc(u.userId||'')}</div>
+      </div>
+      ${u.id===cur?'<div class="ar-check">✓</div>':''}
+    </div>`).join('')||'<div class="empty-state" style="padding:16px 0">アカウントがありません</div>';
+  list.querySelectorAll('.account-row').forEach(row=>row.addEventListener('click',()=>{
+    const id=row.dataset.uid;
+    if(id===cur){$('accountSwitcherOverlay')?.classList.remove('open');return}
+    switchToUser(id);
+    $('accountSwitcherOverlay')?.classList.remove('open');
+  }));
+  loadLazyThumbs(list);
+  $('accountSwitcherOverlay')?.classList.add('open');
+  haptic();
+}
+function renderAccountPanel(el){
+  if(!el)return;
+  if(!isLoggedIn()){
+    el.innerHTML='<div id="authSectionArchive"></div>';
+    renderAuth($('authSectionArchive'));
+    return;
+  }
+  const u=ensureUserRecord(getCurrentUser());
+  const opened=(S.opened||[]).length;
+  const sealedN=sealedVaultItems().length;
+  const editing=S.profileEditOpen;
+  el.innerHTML=`
+    <div class="profile-ig">
+      <div class="profile-ig-top">
+        <div class="profile-ig-avatar-wrap">
+          <div class="profile-ig-avatar" id="profileIgAvatar">${userAvatarInner(u)}</div>
+          <button type="button" class="profile-ig-av-btn" id="changeAvatarBtn" aria-label="写真を変更">📷</button>
+        </div>
+        <div class="profile-ig-stats">
+          <div><div class="n">${sealedN}</div><div class="l">封印</div></div>
+          <div><div class="n">${opened}</div><div class="l">開封</div></div>
+          <div><div class="n">${S.currentStreak||0}</div><div class="l">連続</div></div>
+        </div>
+      </div>
+      <div class="profile-ig-name">${esc(u.name)}</div>
+      <div class="profile-ig-handle">@${esc(u.userId||'')}</div>
+      ${u.bio?`<div class="profile-ig-bio">${esc(u.bio)}</div>`:'<div class="profile-ig-bio" style="color:var(--ink-3)">自己紹介を追加…</div>'}
+      <button type="button" class="profile-ig-edit-btn" id="toggleProfileEditBtn">${editing?'編集を閉じる':'プロフィールを編集'}</button>
+      <div class="profile-edit profile-edit-sheet${editing?'':' hidden'}" id="profileEditSheet">
+        <div class="sec-label">基本情報</div>
+        <label>表示名</label>
+        <input type="text" id="editDisplayName" value="${esc(u.name)}" maxlength="30" placeholder="ゆうま">
+        <label>ユーザー名</label>
+        <input type="text" id="editUserId" value="${esc(u.userId||'')}" autocapitalize="off" spellcheck="false" placeholder="yushin">
+        <div class="profile-edit-hint">@のあとに表示 · 英小文字・数字・アンダースコア</div>
+        <label>自己紹介</label>
+        <textarea id="editBio" maxlength="150" placeholder="ひとこと自己紹介">${esc(u.bio||'')}</textarea>
+        <div class="sec-label" style="margin-top:16px">プロフィール · コホート</div>
+        <label>学校名</label>
+        <input type="text" id="profileSchool" placeholder="例：X高校" value="${esc(S.profile?.school||'')}">
+        <label>卒業予定年</label>
+        <input type="number" id="profileGradYear" min="2024" max="2035" value="${S.profile?.graduationYear||2026}">
+        <label>学年</label>
+        <select id="profileGrade">${GRADES.map(g=>`<option value="${esc(g)}"${S.profile?.grade===g?' selected':''}>${esc(g)}</option>`).join('')}</select>
+        <label>誕生日</label>
+        <input type="date" id="profileBirth" value="${esc(S.profile?.birthDate||'')}">
+        <button type="button" class="dq-cta" id="saveProfileBtn" style="width:100%;margin-top:12px">保存</button>
+      </div>
+    </div>
+    <div class="account-actions">
+      <button type="button" id="switchAccountBtn">アカウントを切り替え</button>
+      <button type="button" id="addAccountBtn">アカウントを追加</button>
+      <button type="button" id="loginOtherBtn">別のアカウントでログイン</button>
+      <button type="button" class="account-danger" id="logoutAccountBtn">ログアウト</button>
+    </div>
+    <div class="spotify-row" style="margin:0 0 16px">
+      <div><div style="font-size:14px;font-weight:500">Spotify</div><div style="font-size:12px;color:var(--ink-3)">${S.spotify?.connected?'連携済み':'未連携'}</div></div>
+      <button type="button" id="spotifyConnectArchive">${S.spotify?.connected?'同期':'連携'}</button>
+    </div>
+    <div class="group-manage">
+      <div class="sec-label">グループ</div>
+      <div id="groupListArchive"></div>
+      <div class="group-add-row"><input type="text" id="newGroupNameArchive" placeholder="新しいグループ名"><button type="button" id="addGroupBtnArchive">追加</button></div>
+    </div>
+    <div class="invite-notice" style="margin-top:16px">
+      招待コード: <strong>${esc(S.inviteCode)}</strong>
+      <button type="button" id="copyInviteBtnArchive" style="margin-top:8px;padding:8px 14px;border-radius:999px;font-size:12px;background:var(--bg-3);width:100%">招待リンクをコピー</button>
+    </div>
+    <div class="settings-row" id="darkToggleArchive" style="margin-top:16px"><span>ダークモード</span><div class="toggle ${S.dark?'on':''}" id="darkSwitchArchive"></div></div>`;
+  loadLazyThumbs(el);
+  $('groupListArchive').innerHTML=(S.groups||[]).map(g=>`
+    <div class="group-row"><span class="gr-emoji">${g.emoji||'✨'}</span><span class="gr-name">${esc(g.name)}</span></div>`).join('');
+  el.querySelector('#changeAvatarBtn')?.addEventListener('click',()=>$('avatarInput')?.click());
+  el.querySelector('#toggleProfileEditBtn')?.addEventListener('click',()=>{
+    S.profileEditOpen=!S.profileEditOpen;save();renderAccountPanel(el);haptic();
+  });
+  el.querySelector('#saveProfileBtn')?.addEventListener('click',saveProfileFromForm);
+  el.querySelector('#switchAccountBtn')?.addEventListener('click',openAccountSwitcher);
+  el.querySelector('#addAccountBtn')?.addEventListener('click',()=>startAccountFlow('signup'));
+  el.querySelector('#loginOtherBtn')?.addEventListener('click',()=>startAccountFlow('login'));
+  el.querySelector('#logoutAccountBtn')?.addEventListener('click',logoutUser);
+  $('copyInviteBtnArchive')?.addEventListener('click',()=>{
+    navigator.clipboard?.writeText(`${APP_URL}?invite=${S.inviteCode}`).then(()=>toast('コピーしました'));
+    haptic();
+  });
+  $('spotifyConnectArchive')?.addEventListener('click',connectSpotify);
+  $('addGroupBtnArchive')?.addEventListener('click',()=>{
+    const n=$('newGroupNameArchive')?.value.trim();
+    if(!n)return;
+    S.groups.push({id:'g'+Date.now(),name:n,emoji:'👥',memberIds:MEMBERS.map(m=>m.id)});
+    save();renderArchive();toast('グループを追加');
+  });
+  $('darkToggleArchive')?.addEventListener('click',()=>{
+    S.dark=!S.dark;document.documentElement.dataset.theme=S.dark?'':'light';save();renderArchive();haptic();
+  });
+}
 
 function renderNotifBadge(){
   const unread=(S.homeNotifs||[]).filter(n=>!n.read).length;
@@ -4899,7 +5585,9 @@ function renderAll(){
   renderNotifBadge();
   renderNotifDropdown();
   renderAuth($('authSection'));
-  if($('authSectionArchive'))renderAuth($('authSectionArchive'));
+  renderAccountPanel($('accountPanelRoot'));
+  updateProfileHeader();
+  renderSettingsAccountActions();
   if(!S.onboardingDone&&!S.firstSealDone)showOnboarding();
 }
 
@@ -4956,12 +5644,26 @@ function renderAuth(container){
   if(!el)return;
   if(S.auth?.loggedIn){
     const uid=S.auth.userId||'';
-    el.innerHTML=`<div class="auth-card"><div class="auth-logged">
-      <div class="auth-av">${esc(S.auth.name.charAt(0))}</div>
-      <div class="auth-info"><div style="font-weight:600">${esc(S.auth.name)}${uid?` <span style="color:var(--ink-3);font-weight:400">@${esc(uid)}</span>`:''}</div><div class="auth-email">${esc(maskEmail(S.auth.email))}</div></div>
-      <button type="button" class="auth-logout" id="authLogout">ログアウト</button>
-    </div></div>`;
-    el.querySelector('#authLogout')?.addEventListener('click',()=>{S.auth=null;S.authStep=null;S.pendingAuth=null;save();renderAll();toast('ログアウトしました');haptic()});
+    const u=getCurrentUser();
+    el.innerHTML=`<div class="auth-card">
+      <div class="auth-logged">
+        <div class="auth-av" id="authAvMini">${userAvatarInner(u)}</div>
+        <div class="auth-info"><div style="font-weight:600">${esc(S.auth.name)}${uid?` <span style="color:var(--ink-3);font-weight:400">@${esc(uid)}</span>`:''}</div><div class="auth-email">${esc(maskEmail(S.auth.email))}</div></div>
+      </div>
+      <div class="auth-actions">
+        <button type="button" id="authEditProfile">プロフィール編集</button>
+        <button type="button" id="authSwitchAccount">アカウント切替</button>
+        <button type="button" id="authAddAccount">アカウント追加</button>
+        <button type="button" class="auth-danger" id="authLogout">ログアウト</button>
+      </div>
+    </div>`;
+    loadLazyThumbs(el.querySelector('#authAvMini'));
+    el.querySelector('#authLogout')?.addEventListener('click',logoutUser);
+    el.querySelector('#authEditProfile')?.addEventListener('click',()=>{
+      S.archiveTab='account';S.profileEditOpen=true;save();switchTab('archive');renderArchive();haptic();
+    });
+    el.querySelector('#authSwitchAccount')?.addEventListener('click',openAccountSwitcher);
+    el.querySelector('#authAddAccount')?.addEventListener('click',()=>startAccountFlow('signup'));
     return;
   }
   const mode=S.authMode||'login';
@@ -4988,14 +5690,16 @@ function renderAuth(container){
         if(findUserByUserId(pa.userId)){toast('このIDは使われています');return}
         if(S.users.find(u=>u.email===pa.email)){toast('このメールは登録済みです');return}
         const uid='u'+Date.now();
-        S.users.push({id:uid,userId:pa.userId,name:pa.name,email:pa.email,passHash:pa.passHash,createdAt:Date.now()});
+        S.users.push({id:uid,userId:pa.userId,name:pa.name,email:pa.email,passHash:pa.passHash,createdAt:Date.now(),bio:'',profile:{school:'',graduationYear:2026,grade:'高校3年生',birthDate:''}});
         S.auth={name:pa.name,userId:pa.userId,email:pa.email,loggedIn:true,id:uid};
+        syncProfileFromUser(S.users[S.users.length-1]);
         toast('アカウントを作成しました');
       }else{
         const u=findUserByUserId(pa.userId);
         if(!u){toast('アカウントが見つかりません');return}
         if(u.passHash!==pa.passHash){toast('パスワードが違います');return}
         S.auth={name:u.name,userId:u.userId,email:u.email,loggedIn:true,id:u.id};
+        syncProfileFromUser(u);
         toast('ログインしました');
       }
       S.authStep=null;S.pendingAuth=null;
@@ -5076,7 +5780,6 @@ const overlay=$('createOverlay');
 $('openCreate').addEventListener('click',()=>{
   if(!isLoggedIn()){toast('投稿するにはログインしてください');switchTab('messages');renderAuth();return}
   initCreateExpands();updateCreateUI();overlay.classList.add('open');
-  $('expandPhoto')?.classList.add('open');
   haptic();
 });
 overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
@@ -5109,9 +5812,19 @@ document.querySelectorAll('.dest-chip').forEach(b=>{
     if(dest==='invite'){
       const next=!S.sealDestSet.invite;
       S.sealDestSet={self:false,friend:false,group:false,pair:false,invite:next};
+    }else if(dest==='self'){
+      const next=!S.sealDestSet.self;
+      if(next)S.sealDestSet={self:true,friend:false,group:false,pair:false,invite:false};
+      else{
+        S.sealDestSet.self=false;
+        if(!S.sealDestSet.friend&&!S.sealDestSet.group&&!S.sealDestSet.pair)
+          S.sealDestSet.self=true;
+      }
     }else{
       S.sealDestSet.invite=false;
-      S.sealDestSet[dest]=!S.sealDestSet[dest];
+      const next=!S.sealDestSet[dest];
+      S.sealDestSet[dest]=next;
+      if(next)S.sealDestSet.self=false;
       if(!S.sealDestSet.self&&!S.sealDestSet.friend&&!S.sealDestSet.group&&!S.sealDestSet.pair&&!S.sealDestSet.invite)
         S.sealDestSet.self=true;
     }
@@ -5198,6 +5911,21 @@ $('voiceClearBtn')?.addEventListener('click',()=>{
   $('voiceClearBtn')?.classList.add('hidden');
   updateMediaPickState();haptic();
 });
+$('addTagBtn')?.addEventListener('click',()=>{
+  const tags=parseTagsFromInput();
+  if(!tags.length){toast('タグを入力してください');return}
+  const row=$('tagInputRow');
+  if(!row)return;
+  row.innerHTML=tags.map(t=>`<span class="tag-chip" data-tag="${esc(t)}">#${esc(t)} <button type="button" data-rm="${esc(t)}">×</button></span>`).join('');
+  $('tagInput').value='';
+  row.querySelectorAll('[data-rm]').forEach(btn=>btn.addEventListener('click',()=>{
+    btn.parentElement.remove();
+    updateMediaPickState();
+    haptic();
+  }));
+  updateMediaPickState();
+  haptic();
+});
 $('voiceHintDismiss')?.addEventListener('click',()=>{
   S.dismissedVoiceHint=true;save();
   $('voiceHintNudge')?.classList.add('hidden');
@@ -5260,7 +5988,8 @@ $('pasteAppleBtn')?.addEventListener('click',()=>pasteMusicShare('apple'));
 async function sealCapsule({caption,media,fromCreate,fromDaily}){
   const hasVoice=!!pendingVoice;
   const hasMedia=!!pendingMedia;
-  if(!hasMedia&&!hasVoice&&!caption){toast('ひとことか、写真を残そう');return}
+  const hasPrompt=!!(S.createPromptChoice||S.createPromptText);
+  if(!hasMedia&&!hasVoice&&!caption&&!hasPrompt){toast('ひとことか、写真を残そう');return}
   if(fromCreate&&!isLoggedIn()){toast('投稿するにはログインが必要です');switchTab('messages');overlay.classList.remove('open');renderAuth();return}
   const type=hasVoice?'voice':(hasMedia?pendingMedia.type:'text');
   const built=fromCreate?buildSealTargets():{targets:[{type:'self',to:'self',vis:'future'}]};
@@ -5268,18 +5997,29 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
   const targets=built.targets;
   const isPrivate=targets.length===1&&targets[0].to==='self';
   const isFriend=targets.some(t=>t.type==='friend');
-  const tags=[];
+  const tags=parseTagsFromInput();
+  const createPrompt=getTodayPrompt();
+  const promptMeta=(S.createPromptChoice||S.createPromptText)&&createPrompt?{
+    promptId:createPrompt.id,promptText:createPrompt.text,promptType:createPrompt.type,
+    choice:S.createPromptChoice||undefined,text:S.createPromptText||undefined,options:createPrompt.options,
+  }:null;
   let openDaysList=getSelectedOpenDays();
   const isNowLayer=(S.sealLayer||'seal')==='now';
   if(isNowLayer)openDaysList=[0];
-  if(!S.firstSealDone&&isPrivate&&fromCreate&&!openDaysList.length&&!isNowLayer)openDaysList=[1];
-  if(!openDaysList.length)openDaysList=[7];
+  if(!openDaysList.length)openDaysList=[365];
   const goal=$('goalInput')?.value.trim()||'';
   const stripLoc=$('stripLoc')?.checked;
   const baseLoc=(!stripLoc&&media?.geo)?{...media.geo}:undefined;
   const loc=baseLoc;
-  const shareSong=S.shareMusicOnPost?linkedSongSnapshot():null;
+  const fromName=meName();
+  const shareSong=autoMusicSnapshot();
+  const sealContext=await captureSealContext(loc);
   const albumFiles=media?._albumFiles;
+  const voiceMeta=hasVoice?{
+    voiceSeriesId:'voice_series_'+fromName.replace(/\s/g,'_'),
+    voiceMonthKey:monthVoiceKey(),
+    promptText:monthlyVoiceQuestion(),
+  }:null;
   let mediaItems;
   if(hasVoice&&!albumFiles){
     mediaItems=[{type:'voice',dataUrl:pendingVoice.dataUrl}];
@@ -5294,7 +6034,6 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
   const displayText=caption||(hasVoice?'（声）':(hasMedia?`（${TYPE_JA[type]}）`:''));
   const sealMood=S.sealMood||undefined;
   const selfieData=pendingSelfie?.dataUrl;
-  const fromName=meName();
   const seasonTag=S.seasonEvent?.joined?'grad2026':undefined;
   const doSeal=async()=>{
     let count=0;
@@ -5314,8 +6053,8 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
             try{await idbPut(selfieMediaId,selfieData)}catch(e){}
           }
           const cap={
-            id:capId,from:fromName,to:t.to,visibility:isNowLayer?'today':t.vis,type:mItem?.type||type,
-            text:displayText,sealed:!isNowLayer,openAt,days:isNowLayer?0:days,postNow:isNowLayer||days===0,
+            id:capId,from:fromName,to:t.to,visibility:isNowLayer?'today':t.vis,type:promptMeta?'prompt':(mItem?.type||type),
+            text:promptMeta?(promptMeta.choice||promptMeta.text||displayText):displayText,sealed:!isNowLayer,openAt,days:isNowLayer?0:days,postNow:isNowLayer||days===0,
             layer:isNowLayer?'now':'sealed',
             mediaId:mItem?.dataUrl?capId:null,createdAt:Date.now(),
             goal:goal||undefined,loc:itemLoc,tags:tags.length?tags:undefined,
@@ -5323,6 +6062,9 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
             album:isNowLayer&&mItem?.type==='photo'?getSeasonAlbumKey():undefined,
             linkedSong:shareSong||undefined,mood:sealMood,selfieMediaId,
             voiceDuration:mItem?.type==='voice'?pendingVoice?.duration:undefined,
+            sealContext:sealContext||undefined,
+            ...(promptMeta||{}),
+            ...(voiceMeta||{}),
           };
           if(isNowLayer&&cap.type==='photo')addToSeasonAlbum(cap);
           if(t.type==='invite'){
@@ -5335,7 +6077,6 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
             if(t.type==='friend'){
               const fid=MEMBERS.find(x=>x.n===t.to)?.id;
               if(fid)notifyDmCapsule(fid,cap);
-              pushHomeNotif('カプセルを送りました',fromName+' → '+t.to,'messages');
             }else if(t.vis==='pair'){
               pushHomeNotif('秘密のカプセルが届きました',fromName+' からふたりだけの記憶','messages');
             }else pushActivity('post_created',{postId:capId});
@@ -5368,7 +6109,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
     }else if(isNowLayer){
       toast(count>1?`${count}件、今日に残しました`:'今日に残しました');
     }else{
-      toast(count>1?`${count}件封じました`:'封じました');
+      toast(count>1?`${count}件、記憶を封印しました`:'記憶を封印しました');
     }
     switchTab('waiting');
     if(isFriend&&targets[0]){
@@ -5403,6 +6144,14 @@ document.addEventListener('click',e=>{
 $('openSettings')?.addEventListener('click',()=>{$('settingsOverlay')?.classList.add('open');renderProfile();haptic()});
 $('settingsClose')?.addEventListener('click',()=>$('settingsOverlay')?.classList.remove('open'));
 $('settingsOverlay')?.addEventListener('click',e=>{if(e.target===$('settingsOverlay'))$('settingsOverlay').classList.remove('open')});
+$('closeAccountSwitcher')?.addEventListener('click',()=>$('accountSwitcherOverlay')?.classList.remove('open'));
+$('accountSwitcherOverlay')?.addEventListener('click',e=>{if(e.target===$('accountSwitcherOverlay'))$('accountSwitcherOverlay').classList.remove('open')});
+$('addAccountFromSwitcher')?.addEventListener('click',()=>{$('accountSwitcherOverlay')?.classList.remove('open');startAccountFlow('signup')});
+$('avatarInput')?.addEventListener('change',async e=>{
+  const file=e.target.files?.[0];
+  if(file)await setUserAvatar(file);
+  e.target.value='';
+});
 
 /* Friend space */
 $('fsBack')?.addEventListener('click',()=>{closeFriendSpace();renderMessages();haptic()});
@@ -5581,14 +6330,10 @@ function finishOpen(){
   setTimeout(async()=>{
     const cap=openingItems[0];
     const song=cap?.linkedSong||cap?.themeSong||currentTodaySong();
-    playOpeningSong(song);
+    playOpeningSong(song,cap?.sealContext);
+    const voiceChain=cap?.voiceSeriesId?voiceSeriesItems(cap.voiceSeriesId,cap):[];
     const runReveal=async()=>{
-      if(cap?.type==='voice'&&cap.mediaId){
-        const vData=await idbGet(cap.mediaId);
-        if(vData){try{const au=new Audio(vData);au.volume=.9;au.play().catch(()=>{})}catch(e){}}
-      }
       $('openingEnvelope').style.opacity='0';
-      $('revealStack').classList.add('show');
       const mediaBlocks=await Promise.all(openingItems.map(async c=>{
         let media='';
         if(c.type==='prompt'){
@@ -5603,7 +6348,7 @@ function finishOpen(){
                 if(sf)media+=`<div class="thumb" style="margin-top:8px"><img src="${sf}" alt="" style="max-height:140px;object-fit:cover;width:100%;border-radius:12px"></div>`;
               }
             }else if(c.type==='video')media=`<div class="thumb"><video src="${data}" autoplay muted loop playsinline></video></div>`;
-            else if(c.type==='voice')media=`<div class="thumb voice"><div class="wave"><span></span><span></span><span></span><span></span><span></span></div><audio src="${data}" controls style="width:100%;margin-top:10px"></audio></div>`;
+            else if(c.type==='voice')media=`<div class="thumb voice"><div class="wave"><span></span><span></span><span></span><span></span><span></span></div><audio src="${data}" controls autoplay style="width:100%;margin-top:10px"></audio></div>`;
           }
         }
         if(!media&&c.type==='photo')media='<div class="thumb">📷</div>';
@@ -5612,13 +6357,7 @@ function finishOpen(){
         return media;
       }));
       const moodLine=cap?.mood?`<div class="mood-compare">あのとき ${cap.mood}</div>`:'';
-      $('revealStack').innerHTML=openingItems.map((c,i)=>`
-        <div class="reveal-item ${c.type}" style="animation-delay:${i*.25}s">
-          <div class="from">${esc(c.from)} · ${c.type==='prompt'?'問い':(TYPE_JA[c.type]||c.type)}</div>
-          ${i===0?moodLine:''}
-          <div class="text" id="tw-${i}"></div>
-          ${mediaBlocks[i]||''}
-        </div>`).join('');
+      const ctxCard=memoryContextHtml(cap?.sealContext,cap?.linkedSong);
       const afterReveal=()=>{
         $('reactions').classList.add('show');
         $('openingActions')?.classList.add('show');
@@ -5628,6 +6367,7 @@ function finishOpen(){
           id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,openedAt:Date.now(),mediaId:c.mediaId,
           goal:c.goal,loc:c.loc,tags:c.tags,linkedSong:c.linkedSong,mood:c.mood,selfieMediaId:c.selfieMediaId,
           promptId:c.promptId,promptText:c.promptText,choice:c.choice,visibility:c.visibility,pairWith:c.pairWith,
+          sealContext:c.sealContext,voiceSeriesId:c.voiceSeriesId,voiceMonthKey:c.voiceMonthKey,
           themeSong:c.linkedSong||currentThemeSong(),todaySong:currentTodaySong(),weekTop3:currentWeekTop3(),
         }));
         S.capsules=S.capsules.filter(c=>!openingItems.find(r=>r.id===c.id));
@@ -5637,12 +6377,32 @@ function finishOpen(){
         showMoodNowPick(cap);
         if(cap?.type!=='voice')showVoiceHintNudge();
       };
+      $('revealStack').classList.add('show');
+      if(cap?.voiceSeriesId&&voiceChain.length>=2){
+        const months=voiceChain.map(v=>v.voiceMonthKey?.slice(5)||'?');
+        $('revealStack').innerHTML=(ctxCard||'')+`<div class="voice-chain-strip">
+          <div class="vcs-label">${esc(cap.promptText||monthlyVoiceQuestion())} · ${voiceChain.length}ヶ月分</div>
+          あなたの声の変化を、時間順に再生します
+          <div class="vcs-months">${months.map((m,i)=>`<span class="vcs-month${i===months.length-1?' on':''}">${esc(m)}月</span>`).join('')}</div>
+        </div>`;
+        await playVoiceChain(cap.voiceSeriesId,cap);
+        afterReveal();
+        return;
+      }
+      $('revealStack').innerHTML=(ctxCard||'')+openingItems.map((c,i)=>`
+        <div class="reveal-item ${c.type}" style="animation-delay:${i*.25}s">
+          <div class="from">${esc(c.from)} · ${c.type==='prompt'?'問い':(TYPE_JA[c.type]||c.type)}</div>
+          ${i===0?moodLine:''}
+          <div class="text" id="tw-${i}"></div>
+          ${mediaBlocks[i]||''}
+        </div>`).join('');
       openingItems.forEach((c,i)=>{
         const el=document.getElementById('tw-'+i);
         const txt=c.type==='prompt'?(c.choice||c.text||''):(c.type==='voice'&&!c.text?'':c.text);
         if(el)setTimeout(()=>typewriter(el,txt||'（声の記憶）',()=>{
           if(i===openingItems.length-1)afterReveal();
         }),i*400);
+        else if(i===openingItems.length-1)setTimeout(afterReveal,600);
       });
     };
     if(cap?.promptId){
@@ -5722,10 +6482,10 @@ $('onboardStart')?.addEventListener('click',()=>{
   ensureSealDestSet();
   S.sealDestSet={self:true,friend:false,group:false,pair:false,invite:false};
   updateCreateUI();
-  document.querySelectorAll('.duration-pill').forEach(p=>p.classList.toggle('on',p.dataset.days==='1'));
+  document.querySelectorAll('.duration-pill').forEach(p=>p.classList.toggle('on',p.dataset.days==='365'));
   $('onboardOverlay')?.classList.remove('open');
   overlay.classList.add('open');
-  $('createInput').value='24時間後の自分へ…';
+  $('createInput').value='1年後の自分へ…';
   haptic();
 });
 $('onboardDemo')?.addEventListener('click',async()=>{
@@ -5738,8 +6498,9 @@ $('onboardDemo')?.addEventListener('click',async()=>{
   S.opened=[];
   S.feedPosts=[];
   const demoId=normalizeUserId(name)||'demo';
-  S.users=[{id:'demo',userId:demoId,name,email,passHash:hash,createdAt:Date.now()}];
+  S.users=[{id:'demo',userId:demoId,name,email,passHash:hash,createdAt:Date.now(),bio:'',profile:{school:'',graduationYear:2026,grade:'高校3年生',birthDate:''}}];
   S.auth={name,userId:demoId,email,loggedIn:true,id:'demo'};
+  syncProfileFromUser(S.users[0]);
   S.sealDestSet={self:true,friend:false,group:false,pair:false,invite:false};
   S.firstSealDone=false;
   S.onboardingDone=false;
@@ -5788,8 +6549,7 @@ $('transferBtn')?.addEventListener('click',()=>{
 });
 $('shareOpenBtn')?.addEventListener('click',()=>{
   haptic();
-  toast('開封カードを生成中…');
-  openWrappedCard(S.musicMonths?.[0]?.key);
+  openMemoryShareCard(lastOpenedItem);
 });
 $('closeOpenBtn')?.addEventListener('click',()=>{
   $('opening')?.classList.remove('active');
@@ -5876,15 +6636,39 @@ async function syncSpotifyTracks(){
   const token=S.spotify?.token;
   if(!token)return;
   try{
-    const r=await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=10',{headers:{Authorization:'Bearer '+token}});
-    if(!r.ok)throw 0;
-    const data=await r.json();
-    const tracks=(data.items||[]).map((it,i)=>({
-      rank:i+1,title:it.track?.name,artist:it.track?.artists?.[0]?.name,plays:1,
-    }));
+    const headers={Authorization:'Bearer '+token};
+    const [recentR,topR,playR]=await Promise.all([
+      fetch('https://api.spotify.com/v1/me/player/recently-played?limit=10',{headers}),
+      fetch('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=10',{headers}),
+      fetch('https://api.spotify.com/v1/me/player/currently-playing',{headers}),
+    ]);
+    const recentItems=recentR.ok?(await recentR.json()).items||[]:[];
+    const topItems=topR.ok?(await topR.json()).items||[]:[];
+    const mapTrack=(t,i,plays)=>({
+      rank:i+1,title:t.name,artist:t.artists?.[0]?.name||'',
+      plays:plays||Math.max(1,10-i),url:t.external_urls?.spotify,id:t.id,
+    });
+    const tracks=topItems.length
+      ?topItems.map((t,i)=>mapTrack(t,i,Math.max(1,20-i*2)))
+      :recentItems.map((it,i)=>mapTrack(it.track,i,1));
+    S.spotify=S.spotify||{};
     S.spotify.tracks=tracks;
-    if(tracks[0]&&S.musicToday){
-      S.musicToday.top={title:tracks[0].title,artist:tracks[0].artist,plays:1};
+    if(playR.ok&&playR.status!==204){
+      const pd=await playR.json();
+      const tr=pd.item;
+      if(tr)S.spotify.nowPlaying={title:tr.name,artist:tr.artists?.[0]?.name||'',url:tr.external_urls?.spotify,id:tr.id};
+    }
+    ensureMusicPeriods();
+    if(tracks[0])S.musicToday.top={title:tracks[0].title,artist:tracks[0].artist,plays:tracks[0].plays||1};
+    S.musicWeek.top3=tracks.slice(0,3).map(t=>({rank:t.rank,title:t.title,artist:t.artist,plays:t.plays||1}));
+    S.musicWeek.label=weekLabel();
+    S.musicMonths=S.musicMonths||defaultMusicMonths();
+    const mk=musicMonthKey();
+    let month=S.musicMonths.find(m=>m.key===mk);
+    if(!month&&S.musicMonths[0])month=S.musicMonths[0];
+    if(month){
+      month.ranking=tracks.slice(0,5).map(t=>({rank:t.rank,title:t.title,artist:t.artist,plays:t.plays||1}));
+      if(month.ranking[0]){month.themeSong={...month.ranking[0]};month.highlight={...month.ranking[0]};}
     }
     save();renderArchive();toast('Spotifyから同期しました');
   }catch(e){toast('同期に失敗しました')}
@@ -5893,7 +6677,7 @@ function connectSpotify(){
   if(S.spotify?.connected&&S.spotify?.token){syncSpotifyTracks();return}
   if(SPOTIFY_CLIENT_ID){
     const redirect=encodeURIComponent(location.origin+location.pathname);
-    location.href=`https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${redirect}&scope=${encodeURIComponent('user-read-recently-played user-top-read')}`;
+    location.href=`https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${redirect}&scope=${encodeURIComponent('user-read-recently-played user-top-read user-read-currently-playing')}`;
     return;
   }
   S.spotify={connected:true,tracks:[
