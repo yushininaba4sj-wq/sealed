@@ -277,6 +277,19 @@ body::after{display:none}
 .dest-toggle{display:flex;gap:8px;margin-bottom:22px;padding:4px;background:var(--bg-2);border-radius:var(--r-pill)}
 .dest-toggle button{flex:1;padding:10px;border-radius:var(--r-pill);font-size:13px;font-weight:600;color:var(--ink-2);transition:all .3s var(--spring)}
 .dest-toggle button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.dest-multi{margin-bottom:16px}
+.dest-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.dest-chip{padding:9px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink-2);background:var(--bg-2);border:1px solid rgba(255,255,255,.08);transition:all .25s var(--spring)}
+.dest-chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.music-share-row{margin:12px 0 16px;padding:14px;border-radius:var(--r);background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
+.music-share-toggle{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;cursor:pointer}
+.music-share-toggle input{width:18px;height:18px;accent-color:var(--ink)}
+.music-share-pick{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.music-share-pick button{padding:10px 14px;border-radius:var(--r-sm);font-size:13px;font-weight:500;background:var(--bg-3);color:var(--ink);text-align:left}
+.music-share-preview{font-size:13px;color:var(--ink-2);padding:10px 12px;border-radius:var(--r-sm);background:var(--bg-3);line-height:1.45}
+.music-share-preview strong{color:var(--ink);font-weight:600}
+.album-grid-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px}
+.album-grid-preview img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px}
 
 .create-input{
   width:100%;border:none;outline:none;resize:none;min-height:88px;
@@ -1567,6 +1580,22 @@ body::after{display:none}
 .mem-bento .mb-cell img{width:100%;height:100%;object-fit:cover}
 .mem-bento .mb-sealed .mb-blur{position:absolute;inset:0;filter:blur(10px);background:var(--bg-3);opacity:.9}
 .mem-bento .mb-label{position:absolute;bottom:8px;left:10px;font-size:11px;color:var(--ink-2);z-index:1}
+.arb-filters{display:flex;gap:8px;padding:0 20px 12px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+.arb-filters button{flex-shrink:0;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:500;background:var(--bg-2);color:var(--ink-2)}
+.arb-filters button.on{background:var(--ink);color:var(--bg)}
+.arb-list{padding:0 20px 24px;display:flex;flex-direction:column;gap:12px}
+.arb-card{border-radius:var(--r);background:var(--bg-2);border:1px solid rgba(255,255,255,.06);overflow:hidden}
+.arb-card-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 0;gap:8px}
+.arb-date{font-size:12px;color:var(--ink-3)}
+.arb-type{font-size:11px;font-weight:600;padding:4px 8px;border-radius:999px;background:var(--bg-3);color:var(--ink-2)}
+.arb-thumb{width:100%;max-height:220px;object-fit:cover;display:block;background:var(--bg-3)}
+.arb-body{padding:12px 14px 14px}
+.arb-text{font-size:15px;line-height:1.55;color:var(--ink);white-space:pre-wrap}
+.arb-meta{font-size:12px;color:var(--ink-3);margin-top:8px;line-height:1.45}
+.arb-sealed{padding:32px 14px;text-align:center;color:var(--ink-3);font-size:13px}
+.arb-song{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 10px;border-radius:999px;background:var(--bg-3);font-size:12px;color:var(--ink-2)}
+.archive-settings{padding:0 20px 32px}
+.archive-settings .sec-label{margin:20px 0 10px}
 .mem-filter{display:flex;gap:8px;padding:0 20px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .mem-filter button{
   flex-shrink:0;padding:8px 14px;border-radius:var(--r-pill);font-size:12px;font-weight:500;
@@ -2008,12 +2037,15 @@ body::after{display:none}
       <button type="button" class="on" data-layer="seal">封じる</button>
       <button type="button" data-layer="now">いま</button>
     </div>
-    <div class="dest-toggle">
-      <button type="button" class="on" data-to="self" data-vis="future">自分へ</button>
-      <button type="button" data-to="friend" data-vis="shared">親友へ</button>
-      <button type="button" data-to="pair" data-vis="pair">ふたり</button>
-      <button type="button" data-to="group" data-vis="group">グループ</button>
-      <button type="button" data-to="invite" data-vis="invite">招待</button>
+    <div class="dest-multi" id="destMulti">
+      <div class="duration-label">送り先 <span style="font-weight:400;color:var(--ink-3)">複数選択可</span></div>
+      <div class="dest-chips" id="destChips">
+        <button type="button" class="dest-chip on" data-dest="self">自分へ</button>
+        <button type="button" class="dest-chip" data-dest="friend">親友へ</button>
+        <button type="button" class="dest-chip" data-dest="group">グループ</button>
+        <button type="button" class="dest-chip" data-dest="pair">ふたり</button>
+        <button type="button" class="dest-chip" data-dest="invite">招待</button>
+      </div>
     </div>
     <p class="pair-hint hidden" id="pairHint">🔒 秘密カプセル · ふたりだけが見られます。タイムラインには載りません。</p>
     <div class="create-friend-pick hidden" id="createFriendPick">
@@ -2033,14 +2065,23 @@ body::after{display:none}
     <div class="create-icon-row" id="createIconRow">
       <button type="button" class="create-icon" data-expand="photo" title="写真">📷</button>
       <button type="button" class="create-icon" data-expand="voice" title="声">🎙️</button>
-      <button type="button" class="create-icon" data-expand="prompt" title="問い">❔</button>
-      <button type="button" class="create-icon" data-expand="tags" title="タグ">#</button>
       <button type="button" class="create-icon" data-expand="mood" title="ムード">🌙</button>
+    </div>
+    <div class="music-share-row" id="musicShareRow">
+      <label class="music-share-toggle">
+        <input type="checkbox" id="shareMusicToggle"> いま聴いてる曲を一緒に残す
+      </label>
+      <div class="music-share-pick hidden" id="musicSharePick">
+        <button type="button" id="pasteSpotifyBtn">Spotifyの共有リンクを貼り付け</button>
+        <button type="button" id="pasteAppleBtn">Apple Musicの共有リンクを貼り付け</button>
+        <div class="music-share-preview hidden" id="musicSharePreview"></div>
+      </div>
     </div>
     <div class="create-expand" id="expandPhoto">
       <div class="create-media-row">
         <button type="button" class="create-pick" id="pickPhotoBtn">📷 撮る / 選ぶ</button>
-        <button type="button" class="create-pick" id="pickAlbumBtn">🖼 フォルダ</button>
+        <button type="button" class="create-pick" id="pickAlbumBtn">🖼 写真フォルダ</button>
+        <button type="button" class="create-pick" id="pickFolderBtn">📁 フォルダ一括</button>
         <button type="button" class="create-pick" id="pickVideoBtn">🎥 動画</button>
       </div>
       <label class="selfie-toggle"><input type="checkbox" id="selfieToggle"> 自分も写す（任意）</label>
@@ -2066,11 +2107,6 @@ body::after{display:none}
         <button type="button" class="create-pick hidden" id="voiceClearBtn">やり直す</button>
       </div>
     </div>
-    <div class="create-expand" id="expandTags">
-      <div class="tag-input-row" id="tagInputRow">
-        <input type="text" id="tagInput" placeholder="#旅行 #卒業 …" maxlength="20">
-      </div>
-    </div>
     <div class="create-expand" id="expandMood">
       <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px">いまの気分をひとつ</div>
       <div class="mood-palette" id="moodPalette"></div>
@@ -2080,6 +2116,7 @@ body::after{display:none}
     <input type="file" id="photoInput" accept="image/*" class="hidden">
     <input type="file" id="selfieInput" accept="image/*" capture="user" class="hidden">
     <input type="file" id="albumInput" accept="image/*" multiple class="hidden">
+    <input type="file" id="folderInput" accept="image/*" multiple webkitdirectory class="hidden">
     <input type="file" id="videoInput" accept="video/*" capture="environment" class="hidden">
     <div class="duration-label">いつ開封しますか？ <span style="font-weight:400;color:var(--ink-3)">複数選択可</span></div>
     <div class="duration-pills multi" id="durationPills">
@@ -2393,6 +2430,7 @@ let pendingVoice=null;
 let pendingSelfie=null;
 let voiceRecorder=null,voiceChunks=[],voiceTimer=null,voiceSeconds=0;
 let createExpandOpen=null;
+let pendingMusicShare=null;
 
 function idbOpen(){
   return new Promise((res,rej)=>{
@@ -2450,6 +2488,123 @@ function mapPointsFromOpened(){
     .sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
 }
 function meName(){return S.auth?.loggedIn?S.auth.name:USER}
+function isLoggedIn(){return !!S.auth?.loggedIn}
+async function hashPass(pass){
+  if(!crypto?.subtle)return btoa(unescape(encodeURIComponent(pass+':timecap')));
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass+':timecap'));
+  return[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function ensureSealDestSet(){
+  if(!S.sealDestSet){
+    const to=S.sealTo||'self';
+    S.sealDestSet={self:to==='self',friend:to==='friend',group:to==='group',pair:to==='pair',invite:to==='invite'};
+  }
+}
+function buildSealTargets(){
+  ensureSealDestSet();
+  const d=S.sealDestSet;
+  const targets=[];
+  if(d.invite){
+    const contact=$('inviteContact')?.value.trim();
+    if(!contact)return {error:'連絡先を入力してください'};
+    return {targets:[{type:'invite',to:contact,vis:'invite',contact}]};
+  }
+  if(d.self)targets.push({type:'self',to:'self',vis:'future'});
+  if(d.friend){
+    const ids=(S.sealFriendIds||[]).length?S.sealFriendIds:[];
+    ids.filter(Boolean).forEach(fid=>{
+      const m=MEMBERS.find(x=>x.id===fid);
+      if(m)targets.push({type:'friend',to:m.n,vis:'shared'});
+    });
+    if(d.friend&&!ids.length)return {error:'親友を選んでください'};
+  }
+  if(d.group){
+    ensureGroups();
+    const gids=(S.sealGroupIds||[]).length?S.sealGroupIds:[];
+    gids.filter(Boolean).forEach(gid=>targets.push({type:'group',to:'group',groupId:gid,vis:'group'}));
+    if(d.group&&!gids.length)return {error:'グループを選んでください'};
+  }
+  if(d.pair){
+    const fid=(S.sealFriendIds||[])[0];
+    const m=MEMBERS.find(x=>x.id===fid);
+    if(!m)return {error:'ふたりの相手を選んでください'};
+    targets.push({type:'pair',to:m.n,vis:'pair',pairWith:m.n});
+  }
+  if(!targets.length)return {error:'送り先を1つ以上選んでください'};
+  return {targets};
+}
+async function resolveMusicShareUrl(raw){
+  let url=(raw||'').trim();
+  if(!url)return null;
+  if(url.startsWith('spotify:'))url='https://open.spotify.com/'+url.replace('spotify:','').replace(':','/');
+  if(/open\.spotify\.com/.test(url)){
+    try{
+      const r=await fetch('https://open.spotify.com/oembed?url='+encodeURIComponent(url.split('?')[0]));
+      if(r.ok){
+        const j=await r.json();
+        const parts=(j.title||'').split(' - ');
+        return{title:parts[0]||j.title||'Spotify',artist:parts[1]||j.author_name||'',source:'spotify',url};
+      }
+    }catch(e){}
+    return{title:'Spotifyの曲',artist:'',source:'spotify',url};
+  }
+  if(/music\.apple\.com/.test(url)){
+    const slug=decodeURIComponent((url.match(/\/([^/?]+)(?:\?|$)/g)||[]).pop()?.replace(/^\//,'').split('?')[0]||'').replace(/-/g,' ');
+    return{title:slug||'Apple Musicの曲',artist:'',source:'apple',url};
+  }
+  return null;
+}
+function updateMusicShareUI(){
+  const on=!!$('shareMusicToggle')?.checked;
+  S.shareMusicOnPost=on;
+  $('musicSharePick')?.classList.toggle('hidden',!on);
+  const prev=$('musicSharePreview');
+  if(!prev)return;
+  if(on&&pendingMusicShare){
+    prev.classList.remove('hidden');
+    const src=pendingMusicShare.source==='apple'?'Apple Music':'Spotify';
+    prev.innerHTML=`<strong>${esc(pendingMusicShare.title)}</strong>${pendingMusicShare.artist?' · '+esc(pendingMusicShare.artist):''}<br><span style="font-size:11px;color:var(--ink-3)">${src}</span>`;
+  }else if(on){
+    const s=currentTodaySong();
+    if(s&&!pendingMusicShare){
+      prev.classList.remove('hidden');
+      prev.innerHTML=`<strong>${esc(s.title)}</strong> · ${esc(s.artist)}<br><span style="font-size:11px;color:var(--ink-3)">連携中の曲（未選択ならリンクを貼り付け）</span>`;
+    }else prev.classList.add('hidden');
+  }else prev.classList.add('hidden');
+}
+async function pasteMusicShare(source){
+  let text='';
+  try{text=await navigator.clipboard.readText()}catch(e){}
+  if(!text)text=prompt(source==='apple'?'Apple Musicの共有リンクを貼り付け':'Spotifyの共有リンクを貼り付け','')||'';
+  if(!text)return;
+  const song=await resolveMusicShareUrl(text);
+  if(!song){toast('リンクを読み取れませんでした');return}
+  pendingMusicShare=song;
+  if($('shareMusicToggle'))$('shareMusicToggle').checked=true;
+  S.shareMusicOnPost=true;
+  updateMusicShareUI();
+  save();
+  toast(source==='apple'?'Apple Musicを追加':'Spotifyを追加');
+  haptic();
+}
+async function handleAlbumFiles(files){
+  const imgs=files.filter(f=>f.type.startsWith('image/'));
+  if(!imgs.length){toast('画像が見つかりません');return}
+  const file=imgs[0];
+  const geo=await extractGeoFromFile(file);
+  const dataUrl=await compressImage(file);
+  pendingMedia={type:'photo',dataUrl,geo,albumCount:imgs.length,_albumFiles:imgs};
+  let grid='';
+  if(imgs.length>1){
+    const thumbs=await Promise.all(imgs.slice(0,8).map(f=>compressImage(f,400)));
+    grid=`<div class="album-grid-preview">${thumbs.map(u=>`<img src="${u}" alt="">`).join('')}${imgs.length>8?`<div style="display:grid;place-items:center;font-size:12px;color:var(--ink-3);background:var(--bg-3);border-radius:6px">+${imgs.length-8}</div>`:''}</div>`;
+  }
+  $('mediaPreviewInner').innerHTML=`<img src="${dataUrl}" alt="preview">${imgs.length>1?`<div style="font-size:12px;color:var(--ink-3);margin-top:8px">${imgs.length}枚 · 封じるとそれぞれカプセルになります</div>`:''}${grid}`;
+  $('mediaPreview').classList.add('show');
+  $('locNotice')?.classList.toggle('hidden',!geo);
+  updateMediaPickState();
+  toast(`${imgs.length}枚選択`);
+}
 function ensureGroups(){
   if(!S.groups?.length){
     S.groups=[{id:'g1',name:S.groupName||GROUP,emoji:'✨',memberIds:MEMBERS.map(m=>m.id)}];
@@ -2541,19 +2696,17 @@ async function loadLazyThumbs(root){
   });
 }
 function updateCreateUI(){
-  const to=S.sealTo||'self';
+  ensureSealDestSet();
+  const d=S.sealDestSet;
   const layer=S.sealLayer||'seal';
   const isNow=layer==='now';
-  const isFriend=to==='friend';
-  const isPair=to==='pair';
-  const isGroup=to==='group';
-  const isInvite=to==='invite';
-  $('createFriendPick')?.classList.toggle('hidden',!isFriend&&!isPair);
-  $('createGroupPick')?.classList.toggle('hidden',!isGroup);
-  $('createInvitePick')?.classList.toggle('hidden',!isInvite);
-  $('pairHint')?.classList.toggle('hidden',!isPair);
+  const showFriend=!!d.friend||!!d.pair;
+  $('createFriendPick')?.classList.toggle('hidden',!showFriend);
+  $('createGroupPick')?.classList.toggle('hidden',!d.group);
+  $('createInvitePick')?.classList.toggle('hidden',!d.invite);
+  $('pairHint')?.classList.toggle('hidden',!d.pair);
   const friendLbl=$('createFriendPick')?.querySelector('.duration-label');
-  if(friendLbl)friendLbl.textContent=isPair?'誰とふたりだけ？':'誰に送る？（複数選択可）';
+  if(friendLbl)friendLbl.textContent=d.pair&&!d.friend?'誰とふたりだけ？':'親友（複数選択可）';
   $('durationPills')?.closest('.duration-label')?.classList.toggle('hidden',isNow);
   $('durationPills')?.parentElement?.querySelector('.duration-label')?.classList.toggle('hidden',isNow);
   document.querySelectorAll('#durationPills')?.forEach?.(()=>{});
@@ -2564,12 +2717,14 @@ function updateCreateUI(){
   $('createTitle').textContent=isNow?'今日、何を残す？':'未来に、何を残す？';
   document.querySelectorAll('.layer-toggle button').forEach(b=>b.classList.toggle('on',b.dataset.layer===layer));
   ensureGroups();
-  if(isFriend&&!S.sealFriendIds?.length&&MEMBERS[0])S.sealFriendIds=[MEMBERS[0].id];
-  if(isPair&&!S.sealFriendIds?.length&&MEMBERS[0])S.sealFriendIds=[MEMBERS[0].id];
-  if(isGroup&&!S.sealGroupIds?.length&&S.groups[0])S.sealGroupIds=[S.groups[0].id];
-  document.querySelectorAll('.dest-toggle button').forEach(b=>{
-    b.classList.toggle('on',b.dataset.to===to);
+  if(d.friend&&!S.sealFriendIds?.length&&MEMBERS[0])S.sealFriendIds=[MEMBERS[0].id];
+  if(d.pair&&!S.sealFriendIds?.length&&MEMBERS[0])S.sealFriendIds=[MEMBERS[0].id];
+  if(d.group&&!S.sealGroupIds?.length&&S.groups[0])S.sealGroupIds=[S.groups[0].id];
+  document.querySelectorAll('.dest-chip').forEach(b=>{
+    b.classList.toggle('on',!!d[b.dataset.dest]);
   });
+  if($('shareMusicToggle'))$('shareMusicToggle').checked=!!S.shareMusicOnPost;
+  updateMusicShareUI();
   renderCreateChips();
 }
 function renderCreateChips(){
@@ -2581,7 +2736,8 @@ function renderCreateChips(){
   $('createFriendRow')?.querySelectorAll('.create-friend-chip').forEach(b=>b.addEventListener('click',()=>{
     const id=b.dataset.fid;
     if(!S.sealFriendIds)S.sealFriendIds=[];
-    if((S.sealTo||'self')==='pair'){
+    ensureSealDestSet();
+    if(S.sealDestSet.pair&&!S.sealDestSet.friend){
       S.sealFriendIds=S.sealFriendIds.includes(id)?[]:[id];
     }else{
       S.sealFriendIds=S.sealFriendIds.includes(id)?S.sealFriendIds.filter(x=>x!==id):[...S.sealFriendIds,id];
@@ -2600,7 +2756,6 @@ function updateMediaPickState(){
   $('pickVideoBtn')?.classList.toggle('has-media',pendingMedia?.type==='video');
   document.querySelector('.create-icon[data-expand="photo"]')?.classList.toggle('has-content',!!pendingMedia||!!pendingSelfie);
   document.querySelector('.create-icon[data-expand="voice"]')?.classList.toggle('has-content',!!pendingVoice);
-  document.querySelector('.create-icon[data-expand="tags"]')?.classList.toggle('has-content',!!document.querySelector('#tagInputRow .tag-chip'));
   document.querySelector('.create-icon[data-expand="mood"]')?.classList.toggle('has-content',!!S.sealMood);
   $('pickSelfieBtn')?.classList.toggle('hidden',!$('selfieToggle')?.checked||!pendingMedia);
 }
@@ -2617,12 +2772,6 @@ function initCreateExpands(){
   $('createIconRow')?.querySelectorAll('.create-icon').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const key=btn.dataset.expand;
-      if(key==='prompt'){
-        const p=getTodayPrompt();
-        if(p){$('createInput').value=p.text;toast('今日の問いを入力欄に入れました')}
-        else toast('今日は問いがありません');
-        haptic();return;
-      }
       const panel=$('expand'+key.charAt(0).toUpperCase()+key.slice(1));
       if(!panel)return;
       const open=createExpandOpen===key?null:key;
@@ -2635,7 +2784,7 @@ function initCreateExpands(){
   });
 }
 function resetCreateExtras(){
-  pendingVoice=null;pendingSelfie=null;S.sealMood=null;
+  pendingVoice=null;pendingSelfie=null;pendingMusicShare=null;S.sealMood=null;
   voiceSeconds=0;
   $('voiceTimer').textContent='0s / 10s';
   $('voiceRecordBtn')?.classList.remove('hidden');
@@ -2732,9 +2881,12 @@ function pushHomeNotif(title,sub,action,meta={}){
   save();
 }
 function linkedSongSnapshot(){
-  const s=currentTodaySong();
-  if(!s)return null;
-  return{title:s.title,artist:s.artist,plays:s.plays,at:Date.now()};
+  if(S.shareMusicOnPost&&pendingMusicShare)return{...pendingMusicShare,at:Date.now()};
+  if(S.shareMusicOnPost){
+    const s=currentTodaySong();
+    if(s)return{title:s.title,artist:s.artist,plays:s.plays,source:'spotify',at:Date.now()};
+  }
+  return null;
 }
 function playOpeningSong(song){
   const strip=$('openingSongStrip');
@@ -3513,6 +3665,8 @@ ensureGroups();
 ensureInviteCode();
 if(!S.sealFriendIds)S.sealFriendIds=S.sealFriendId?[S.sealFriendId]:[];
 if(!S.sealGroupIds)S.sealGroupIds=S.groups?.[0]?[S.groups[0].id]:[];
+ensureSealDestSet();
+if(!S.archiveMemFilter)S.archiveMemFilter='all';
 if(!S.sealOpenDays)S.sealOpenDays=[1];
 if(!S.pendingInvites)S.pendingInvites=[];
 if(!S.seasonEvent)S.seasonEvent={joined:false,key:'grad2026',theme:'3年後のじぶんへ'};
@@ -4025,7 +4179,7 @@ function renderShared(){
 }
 
 function renderMessages(){
-  renderAuth();
+  renderAuth($('authSection'));
   renderShared();
   renderCreateChips();
 }
@@ -4246,6 +4400,35 @@ function renderFriendSpace(){
   if(fsTab==='trail')renderFriendTrail(m);
 }
 
+function renderArchiveMemoryList(){
+  const filter=S.archiveMemFilter||'all';
+  let items=allMemories(filter==='prompt'||filter==='text'?'all':filter);
+  if(filter==='prompt')items=items.filter(m=>m.type==='prompt'||m.promptId);
+  else if(filter==='text')items=items.filter(m=>m.type==='text'&&!m.mediaId);
+  return items.map(m=>{
+    const sealed=m.kind==='sealed'||isCapLocked(m);
+    const at=m.at||m.openedAt||m.createdAt;
+    const date=at?new Date(at).toLocaleDateString('ja-JP',{year:'numeric',month:'short',day:'numeric',weekday:'short'}):'—';
+    const typeLabel=m.type==='prompt'||m.promptId?'問い':(TYPE_JA[m.type]||m.type);
+    if(sealed){
+      return`<article class="arb-card"><div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">🔒 ${esc(typeLabel)}</span></div><div class="arb-sealed">開封まで中身は見えません</div></article>`;
+    }
+    const thumb=m.mediaId?`<img class="arb-thumb" data-lazy="${esc(m.mediaId)}" alt="">`:'';
+    const text=m.text||m.choice||m.promptText||'';
+    const song=m.linkedSong?`<div class="arb-song">🎵 ${esc(m.linkedSong.title)}${m.linkedSong.artist?' · '+esc(m.linkedSong.artist):''}</div>`:'';
+    const meta=[m.from&&m.from!==meName()?m.from:'',m.goal?`目標: ${m.goal}`:''].filter(Boolean).join(' · ');
+    return`<article class="arb-card">
+      <div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">${esc(typeLabel)}</span></div>
+      ${thumb}
+      <div class="arb-body">
+        ${text?`<div class="arb-text">${esc(text)}</div>`:''}
+        ${song}
+        ${meta?`<div class="arb-meta">${esc(meta)}</div>`:''}
+      </div>
+    </article>`;
+  }).join('');
+}
+
 function renderArchive(){
   const el=$('archiveView');
   ensureGroups();
@@ -4290,14 +4473,15 @@ function renderArchive(){
       <div class="ap-theme-artist">${esc(theme.artist)}</div>
     </div>`:'';
 
-  const memories=allMemories('all').slice(0,9);
-  const bento=memories.map((m,i)=>{
-    const sealed=m.kind==='sealed'||isCapLocked(m);
-    const cls=i===0?'mb-cell wide':i===4?'mb-cell tall':'mb-cell';
-    if(sealed)return`<div class="${cls} mb-sealed"><div class="mb-blur"></div><div class="mb-label">封印</div></div>`;
-    if(m.mediaId)return`<div class="${cls}"><img data-lazy="${esc(m.mediaId)}" alt=""></div>`;
-    return`<div class="${cls}"><div class="mb-label" style="padding:12px">${esc((m.text||'').slice(0,24))}</div></div>`;
-  }).join('');
+  const memFilter=S.archiveMemFilter||'all';
+  const memFilters=`<div class="arb-filters">
+    <button type="button" class="${memFilter==='all'?'on':''}" data-amf="all">すべて</button>
+    <button type="button" class="${memFilter==='photo'?'on':''}" data-amf="photo">写真</button>
+    <button type="button" class="${memFilter==='text'?'on':''}" data-amf="text">文</button>
+    <button type="button" class="${memFilter==='prompt'?'on':''}" data-amf="prompt">問い</button>
+    <button type="button" class="${memFilter==='video'?'on':''}" data-amf="video">動画</button>
+  </div>`;
+  const memoryList=renderArchiveMemoryList();
 
   const musicRank=(monthData?.ranking||[]).slice(0,5).map(t=>`
     <div class="music-rank-item${t.rank===1?' theme':''}">
@@ -4306,13 +4490,44 @@ function renderArchive(){
 
   let panel='';
   if(tab==='all'){
-    panel=`<div class="mem-bento" style="padding-top:0">${bento||'<div class="empty-state" style="grid-column:1/-1;padding:40px">思い出がありません</div>'}</div>`;
+    panel=`${memFilters}<div class="arb-list">${memoryList||'<div class="empty-state" style="padding:40px 0">思い出がありません</div>'}</div>`;
   }else if(tab==='music'){
     panel=`<div class="archive-panel music-section" style="padding:0 20px">
       ${musicTodayCardHtml(false)}${musicWeekBlockHtml()}
       <button type="button" class="dq-cta" id="openWrappedBtn" style="margin:16px 0">期間まとめをシェア</button>
       <div class="music-month-label">${esc(monthData?.label||'')} · ランキング</div>
       <div class="music-rank">${musicRank}</div>
+      <p style="font-size:12px;color:var(--ink-3);margin:16px 0;line-height:1.5">投稿時は Spotify / Apple Music の共有リンクを貼り付けて曲を残せます</p>
+    </div>`;
+  }else if(tab==='account'){
+    panel=`<div class="archive-settings">
+      <div id="authSectionArchive"></div>
+      <div class="profile-edit" id="profileEdit">
+        <div class="sec-label">プロフィール · コホート</div>
+        <label>学校名</label>
+        <input type="text" id="profileSchool" placeholder="例：X高校" value="${esc(S.profile?.school||'')}">
+        <label>卒業予定年</label>
+        <input type="number" id="profileGradYear" min="2024" max="2035" value="${S.profile?.graduationYear||2026}">
+        <label>学年</label>
+        <select id="profileGrade">${GRADES.map(g=>`<option value="${esc(g)}"${S.profile?.grade===g?' selected':''}>${esc(g)}</option>`).join('')}</select>
+        <label>誕生日</label>
+        <input type="date" id="profileBirth" value="${esc(S.profile?.birthDate||'')}">
+        <button type="button" class="dq-cta" id="saveProfileBtn" style="width:100%;margin-top:12px">保存</button>
+      </div>
+      <div class="spotify-row" style="margin-top:16px">
+        <div><div style="font-size:14px;font-weight:500">Spotify</div><div style="font-size:12px;color:var(--ink-3)">${S.spotify?.connected?'連携済み':'未連携'}</div></div>
+        <button type="button" id="spotifyConnectArchive">${S.spotify?.connected?'同期':'連携'}</button>
+      </div>
+      <div class="group-manage">
+        <div class="sec-label">グループ</div>
+        <div id="groupListArchive"></div>
+        <div class="group-add-row"><input type="text" id="newGroupNameArchive" placeholder="新しいグループ名"><button type="button" id="addGroupBtnArchive">追加</button></div>
+      </div>
+      <div class="invite-notice" style="margin-top:16px">
+        招待コード: <strong>${esc(S.inviteCode)}</strong>
+        <button type="button" id="copyInviteBtnArchive" style="margin-top:8px;padding:8px 14px;border-radius:999px;font-size:12px;background:var(--bg-3);width:100%">招待リンクをコピー</button>
+      </div>
+      <div class="settings-row" id="darkToggleArchive" style="margin-top:16px"><span>ダークモード</span><div class="toggle ${S.dark?'on':''}" id="darkSwitchArchive"></div></div>
     </div>`;
   }else{
     panel=`<div style="padding:0 20px">${opened.map(o=>`
@@ -4340,45 +4555,22 @@ function renderArchive(){
       <button type="button" class="dq-cta year-wrap-btn" id="openYearWrapBtn">${yr}年まとめを見る</button>
       ${myGifts.length?`<div style="padding:0 20px 8px"><div class="sec-label">もらったギフト</div><div class="gift-collection">${giftCollection}</div></div>`:''}
       ${bonuses?`<div class="bonus-row" style="padding:0 20px 16px;justify-content:flex-start">${bonuses}</div>`:''}
-      <div class="invite-notice" style="margin:0 20px 16px">
-        招待コード: <strong>${esc(S.inviteCode)}</strong>
-        <button type="button" id="copyInviteBtnArchive" style="margin-top:8px;padding:8px 14px;border-radius:999px;font-size:12px;background:var(--bg-3);width:100%">招待リンクをコピー</button>
-      </div>
-      <div class="profile-edit" id="profileEdit">
-        <div class="sec-label" style="margin:0 0 8px">プロフィール · コホート</div>
-        <label>学校名</label>
-        <input type="text" id="profileSchool" placeholder="例：X高校" value="${esc(S.profile?.school||'')}">
-        <label>卒業予定年</label>
-        <input type="number" id="profileGradYear" min="2024" max="2035" value="${S.profile?.graduationYear||2026}">
-        <label>学年</label>
-        <select id="profileGrade">${GRADES.map(g=>`<option value="${esc(g)}"${S.profile?.grade===g?' selected':''}>${esc(g)}</option>`).join('')}</select>
-        <label>誕生日</label>
-        <input type="date" id="profileBirth" value="${esc(S.profile?.birthDate||'')}">
-        <button type="button" class="dq-cta" id="saveProfileBtn" style="width:100%;margin-top:12px">保存</button>
-      </div>
-      <div class="spotify-row" style="padding:0 20px;margin-bottom:8px">
-        <div><div style="font-size:14px;font-weight:500">Spotify</div><div style="font-size:12px;color:var(--ink-3)">${S.spotify?.connected?'連携済み':'未連携'}</div></div>
-        <button type="button" id="spotifyConnectArchive">${S.spotify?.connected?'同期':'連携'}</button>
-      </div>
-      <div class="group-manage" style="padding:0 20px">
-        <div class="sec-label">グループ</div>
-        <div id="groupListArchive"></div>
-        <div class="group-add-row"><input type="text" id="newGroupNameArchive" placeholder="新しいグループ名"><button type="button" id="addGroupBtnArchive">追加</button></div>
-      </div>
-      <div class="settings-row" id="darkToggleArchive" style="margin:16px 20px"><span>ダークモード</span><div class="toggle ${S.dark?'on':''}" id="darkSwitchArchive"></div></div>
       ${sealedN?`<div class="vault-section"><div class="vault-label">まだ見られない · ${sealedN}件</div><div class="vault-mosaic">${sealedStrip}</div></div>`:''}
       ${seasonStrip}
       ${themeCard}
       <div class="archive-tabs" style="padding:0 20px">
         <button type="button" class="archive-tab${tab==='all'?' on':''}" data-atab="all">思い出</button>
         <button type="button" class="archive-tab${tab==='music'?' on':''}" data-atab="music">音楽</button>
+        <button type="button" class="archive-tab${tab==='account'?' on':''}" data-atab="account">アカウント</button>
         <button type="button" class="archive-tab${tab==='log'?' on':''}" data-atab="log">ログ</button>
       </div>
       ${panel}
     </div>`;
   loadLazyThumbs(el);
-  $('groupListArchive').innerHTML=(S.groups||[]).map(g=>`
+  const gl=$('groupListArchive');
+  if(gl)gl.innerHTML=(S.groups||[]).map(g=>`
     <div class="group-row"><span class="gr-emoji">${g.emoji||'✨'}</span><span class="gr-name">${esc(g.name)}</span></div>`).join('');
+  renderAuth($('authSectionArchive')||$('authSection'));
   $('copyInviteBtnArchive')?.addEventListener('click',()=>{
     navigator.clipboard?.writeText(`${APP_URL}?invite=${S.inviteCode}`).then(()=>toast('コピーしました'));
     haptic();
@@ -4396,6 +4588,9 @@ function renderArchive(){
   });
   el.querySelectorAll('.archive-tab').forEach(t=>t.addEventListener('click',()=>{
     S.archiveTab=t.dataset.atab;save();renderArchive();haptic();
+  }));
+  el.querySelectorAll('[data-amf]').forEach(b=>b.addEventListener('click',()=>{
+    S.archiveMemFilter=b.dataset.amf;save();renderArchive();haptic();
   }));
   $('openWrappedBtn')?.addEventListener('click',()=>openWrappedCard(musicKey));
   $('openYearWrapBtn')?.addEventListener('click',()=>openYearWrapCard(yr));
@@ -4453,6 +4648,8 @@ function renderAll(){
   else if($('panel-archive')?.classList.contains('active'))renderArchive();
   renderNotifBadge();
   renderNotifDropdown();
+  renderAuth($('authSection'));
+  if($('authSectionArchive'))renderAuth($('authSectionArchive'));
   if(!S.onboardingDone&&!S.firstSealDone)showOnboarding();
 }
 
@@ -4504,8 +4701,8 @@ function renderNotifDropdown(){
   });
 }
 
-function renderAuth(){
-  const el=$('authSection');
+function renderAuth(container){
+  const el=container||$('authSection');
   if(!el)return;
   if(S.auth?.loggedIn){
     el.innerHTML=`<div class="auth-card"><div class="auth-logged">
@@ -4513,31 +4710,46 @@ function renderAuth(){
       <div class="auth-info"><div style="font-weight:600">${esc(S.auth.name)}</div><div class="auth-email">${esc(S.auth.email)}</div></div>
       <button type="button" class="auth-logout" id="authLogout">ログアウト</button>
     </div></div>`;
-    $('authLogout')?.addEventListener('click',()=>{S.auth=null;save();renderAll();toast('ログアウトしました');haptic()});
+    el.querySelector('#authLogout')?.addEventListener('click',()=>{S.auth=null;save();renderAll();toast('ログアウトしました');haptic()});
     return;
   }
   const mode=S.authMode||'login';
   el.innerHTML=`<div class="auth-card"><h3>${mode==='login'?'ログイン':'アカウント作成'}</h3>
+    <p class="auth-sub">メールとパスワードで登録 · データはこの端末に保存されます</p>
     <div class="auth-tabs">
       <button type="button" class="${mode==='login'?'on':''}" data-authmode="login">ログイン</button>
       <button type="button" class="${mode==='signup'?'on':''}" data-authmode="signup">新規登録</button>
     </div>
-    <div class="auth-field"><label>名前</label><input type="text" id="authName" placeholder="ゆうま"></div>
-    <div class="auth-field"><label>メール</label><input type="email" id="authEmail" placeholder="you@example.com"></div>
-    <div class="auth-field"><label>パスワード</label><input type="password" id="authPass"></div>
-    <button type="button" class="auth-submit" id="authSubmit">${mode==='login'?'ログイン':'作成'}</button>
+    <div class="auth-field"><label>名前</label><input type="text" id="authName" placeholder="ゆうま" autocomplete="name"></div>
+    <div class="auth-field"><label>メール</label><input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="auth-field"><label>パスワード</label><input type="password" id="authPass" autocomplete="${mode==='signup'?'new-password':'current-password'}" minlength="6"></div>
+    ${mode==='signup'?'<div class="auth-field"><label>パスワード（確認）</label><input type="password" id="authPass2" autocomplete="new-password" minlength="6"></div>':''}
+    <button type="button" class="auth-submit" id="authSubmit">${mode==='login'?'ログイン':'アカウントを作成'}</button>
   </div>`;
-  el.querySelectorAll('[data-authmode]').forEach(b=>b.addEventListener('click',()=>{S.authMode=b.dataset.authmode;renderAuth();haptic()}));
-  $('authSubmit')?.addEventListener('click',()=>{
-    const name=$('authName').value.trim(),email=$('authEmail').value.trim(),pass=$('authPass').value;
+  el.querySelectorAll('[data-authmode]').forEach(b=>b.addEventListener('click',()=>{S.authMode=b.dataset.authmode;renderAuth(el);haptic()}));
+  el.querySelector('#authSubmit')?.addEventListener('click',async()=>{
+    const name=el.querySelector('#authName').value.trim();
+    const email=el.querySelector('#authEmail').value.trim().toLowerCase();
+    const pass=el.querySelector('#authPass').value;
     if(!name||!email||!pass){toast('すべて入力してください');return}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('メール形式が正しくありません');return}
+    if(pass.length<6){toast('パスワードは6文字以上');return}
+    const hash=await hashPass(pass);
     if(mode==='signup'){
-      if(S.users.find(u=>u.email===email)){toast('登録済みです');return}
-      S.users.push({name,email,pass});S.auth={name,email,loggedIn:true};toast('作成しました');
+      const pass2=el.querySelector('#authPass2')?.value;
+      if(pass!==pass2){toast('パスワードが一致しません');return}
+      if(S.users.find(u=>u.email===email)){toast('このメールは登録済みです');return}
+      S.users.push({id:'u'+Date.now(),name,email,passHash:hash,createdAt:Date.now()});
+      S.auth={name,email,loggedIn:true,id:S.users.at(-1).id};
+      toast('アカウントを作成しました');
     }else{
-      const u=S.users.find(x=>x.email===email&&x.pass===pass);
-      if(!u){toast('認証に失敗');return}
-      S.auth={name:u.name,email:u.email,loggedIn:true};toast('ログインしました');
+      const u=S.users.find(x=>x.email===email);
+      if(!u){toast('アカウントが見つかりません');return}
+      const ok=u.passHash?u.passHash===hash:u.pass===pass;
+      if(!ok){toast('パスワードが違います');return}
+      if(!u.passHash){u.passHash=hash;delete u.pass}
+      S.auth={name:u.name,email:u.email,loggedIn:true,id:u.id};
+      toast('ログインしました');
     }
     save();renderAll();haptic();
   });
@@ -4558,7 +4770,10 @@ window.addEventListener('scroll',()=>{
 
 /* Create */
 const overlay=$('createOverlay');
-$('openCreate').addEventListener('click',()=>{initCreateExpands();overlay.classList.add('open');haptic()});
+$('openCreate').addEventListener('click',()=>{
+  if(!isLoggedIn()){toast('投稿するにはログインしてください');switchTab('messages');renderAuth();return}
+  initCreateExpands();updateCreateUI();overlay.classList.add('open');haptic();
+});
 overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
 
 /* Gyroscope — legacy home pills only */
@@ -4573,12 +4788,19 @@ if(window.DeviceOrientationEvent){
   },{passive:true});
 }
 
-document.querySelectorAll('.dest-toggle button').forEach(b=>{
+document.querySelectorAll('.dest-chip').forEach(b=>{
   b.addEventListener('click',()=>{
-    document.querySelectorAll('.dest-toggle button').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');
-    S.sealTo=b.dataset.to;
-    S.sealVisibility=b.dataset.vis||'future';
+    ensureSealDestSet();
+    const dest=b.dataset.dest;
+    if(dest==='invite'){
+      const next=!S.sealDestSet.invite;
+      S.sealDestSet={self:false,friend:false,group:false,pair:false,invite:next};
+    }else{
+      S.sealDestSet.invite=false;
+      S.sealDestSet[dest]=!S.sealDestSet[dest];
+      if(!S.sealDestSet.self&&!S.sealDestSet.friend&&!S.sealDestSet.group&&!S.sealDestSet.pair&&!S.sealDestSet.invite)
+        S.sealDestSet.self=true;
+    }
     save();haptic();updateCreateUI();
   });
 });
@@ -4677,50 +4899,40 @@ document.querySelectorAll('.duration-pill').forEach(b=>{
 });
 
 $('pickAlbumBtn')?.addEventListener('click',()=>$('albumInput')?.click());
+$('pickFolderBtn')?.addEventListener('click',()=>$('folderInput')?.click());
 $('albumInput')?.addEventListener('change',async e=>{
   const files=[...e.target.files||[]];
   if(!files.length)return;
-  try{
-    const file=files[0];
-    const geo=await extractGeoFromFile(file);
-    const dataUrl=await compressImage(file);
-    pendingMedia={type:'photo',dataUrl,geo,albumCount:files.length};
-    $('mediaPreviewInner').innerHTML=`<img src="${dataUrl}" alt="preview">${files.length>1?`<div style="font-size:12px;color:var(--ink-3);margin-top:8px">+${files.length-1}枚（封じる時にそれぞれ作成）</div>`:''}`;
-    $('mediaPreview').classList.add('show');
-    pendingMedia._albumFiles=files;
-    $('locNotice')?.classList.toggle('hidden',!geo);
-    updateMediaPickState();
-    toast(`${files.length}枚選択`);
-  }catch(err){toast('写真の読み込みに失敗しました')}
+  try{await handleAlbumFiles(files)}catch(err){toast('写真の読み込みに失敗しました')}
+  e.target.value='';
+});
+$('folderInput')?.addEventListener('change',async e=>{
+  const files=[...e.target.files||[]];
+  if(!files.length)return;
+  try{await handleAlbumFiles(files)}catch(err){toast('フォルダの読み込みに失敗しました')}
   e.target.value='';
 });
 
-$('tagInput')?.addEventListener('keydown',e=>{
-  if(e.key!=='Enter'&&e.key!==',')return;
-  e.preventDefault();
-  const v=$('tagInput').value.trim().replace(/^#/,'');
-  if(!v)return;
-  const row=$('tagInputRow');
-  const chip=document.createElement('span');
-  chip.className='tag-chip';chip.dataset.tag=v;
-  chip.innerHTML=`#${esc(v)} <button type="button">×</button>`;
-  chip.querySelector('button').onclick=()=>{chip.remove()};
-  row.insertBefore(chip,$('tagInput'));
-  $('tagInput').value='';
+$('shareMusicToggle')?.addEventListener('change',()=>{
+  S.shareMusicOnPost=!!$('shareMusicToggle').checked;
+  if(!S.shareMusicOnPost)pendingMusicShare=null;
+  updateMusicShareUI();save();haptic();
 });
+$('pasteSpotifyBtn')?.addEventListener('click',()=>pasteMusicShare('spotify'));
+$('pasteAppleBtn')?.addEventListener('click',()=>pasteMusicShare('apple'));
 
 async function sealCapsule({caption,media,fromCreate,fromDaily}){
   const hasVoice=!!pendingVoice;
   const hasMedia=!!pendingMedia;
   if(!hasMedia&&!hasVoice&&!caption){toast('ひとことか、写真を残そう');return}
+  if(fromCreate&&!isLoggedIn()){toast('投稿するにはログインが必要です');switchTab('messages');overlay.classList.remove('open');renderAuth();return}
   const type=hasVoice?'voice':(hasMedia?pendingMedia.type:'text');
-  const dest=fromCreate?(S.sealTo||'self'):'self';
-  const isPrivate=dest==='self';
-  const isFriend=dest==='friend';
-  const isPair=dest==='pair';
-  const isGroup=dest==='group';
-  const isInvite=dest==='invite';
-  const tags=parseTagsFromInput();
+  const built=fromCreate?buildSealTargets():{targets:[{type:'self',to:'self',vis:'future'}]};
+  if(built.error){toast(built.error);return}
+  const targets=built.targets;
+  const isPrivate=targets.length===1&&targets[0].to==='self';
+  const isFriend=targets.some(t=>t.type==='friend');
+  const tags=[];
   let openDaysList=getSelectedOpenDays();
   const isNowLayer=(S.sealLayer||'seal')==='now';
   if(isNowLayer)openDaysList=[0];
@@ -4730,29 +4942,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
   const stripLoc=$('stripLoc')?.checked;
   const baseLoc=(!stripLoc&&media?.geo)?{...media.geo}:undefined;
   const loc=baseLoc;
-  const targets=[];
-  if(isInvite){
-    const contact=$('inviteContact')?.value.trim();
-    if(!contact){toast('連絡先を入力してください');return}
-    targets.push({type:'invite',to:contact,vis:'invite',contact});
-  }else if(isFriend){
-    const ids=(S.sealFriendIds||[]).length?S.sealFriendIds:[MEMBERS[0]?.id];
-    ids.filter(Boolean).forEach(fid=>{
-      const m=MEMBERS.find(x=>x.id===fid);
-      if(m)targets.push({type:'friend',to:m.n,vis:'shared'});
-    });
-    if(!targets.length){toast('送り先を選んでください');return}
-  }else if(isPair){
-    const fid=(S.sealFriendIds||[])[0]||MEMBERS[0]?.id;
-    const m=MEMBERS.find(x=>x.id===fid);
-    if(!m){toast('相手を選んでください');return}
-    targets.push({type:'pair',to:m.n,vis:'pair',pairWith:m.n});
-  }else if(isGroup){
-    ensureGroups();
-    const gids=(S.sealGroupIds||[]).length?S.sealGroupIds:[S.groups[0]?.id];
-    gids.filter(Boolean).forEach(gid=>targets.push({type:'group',to:'group',groupId:gid,vis:'group'}));
-    if(!targets.length){toast('グループを選んでください');return}
-  }else targets.push({type:'self',to:'self',vis:'future'});
+  const shareSong=S.shareMusicOnPost?linkedSongSnapshot():null;
   const albumFiles=media?._albumFiles;
   let mediaItems;
   if(hasVoice&&!albumFiles){
@@ -4795,7 +4985,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
             goal:goal||undefined,loc:itemLoc,tags:tags.length?tags:undefined,
             groupId:t.groupId,seasonEvent:seasonTag,pairWith:t.pairWith,
             album:isNowLayer&&mItem?.type==='photo'?getSeasonAlbumKey():undefined,
-            linkedSong:linkedSongSnapshot(),mood:sealMood,selfieMediaId,
+            linkedSong:shareSong||undefined,mood:sealMood,selfieMediaId,
             voiceDuration:mItem?.type==='voice'?pendingVoice?.duration:undefined,
           };
           if(isNowLayer&&cap.type==='photo')addToSeasonAlbum(cap);
@@ -4821,8 +5011,10 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
     S.streak=(S.streak||0)+1;
     if(fromCreate){
       $('createInput').value='';$('goalInput').value='';$('inviteContact').value='';
-      $('tagInputRow')?.querySelectorAll('.tag-chip').forEach(c=>c.remove());
       pendingMedia=null;
+      pendingMusicShare=null;
+      if($('shareMusicToggle'))$('shareMusicToggle').checked=false;
+      S.shareMusicOnPost=false;
       resetCreateExtras();
       $('mediaPreview').classList.remove('show');$('mediaPreviewInner').innerHTML='';
       $('locNotice')?.classList.add('hidden');
@@ -5188,29 +5380,37 @@ updateCreateUI();
 $('dailyQuestionBtn')?.addEventListener('click',()=>{
   if(isDailyQuestionDone())return;
   $('createInput').value=todayQuestion();
-  S.sealTo='self';updateCreateUI();
+  S.sealTo='self';
+  ensureSealDestSet();
+  S.sealDestSet={self:true,friend:false,group:false,pair:false,invite:false};
+  updateCreateUI();
   overlay.classList.add('open');haptic();
 });
 $('onboardStart')?.addEventListener('click',()=>{
+  if(!isLoggedIn()){toast('まずログインまたは新規登録してください');$('onboardOverlay')?.classList.remove('open');switchTab('messages');renderAuth();return}
   const inv=$('onboardInviteInput')?.value.trim();
   if(inv)showInviteWelcome(inv);
-  S.sealTo='self';updateCreateUI();
+  ensureSealDestSet();
+  S.sealDestSet={self:true,friend:false,group:false,pair:false,invite:false};
+  updateCreateUI();
   document.querySelectorAll('.duration-pill').forEach(p=>p.classList.toggle('on',p.dataset.days==='1'));
   $('onboardOverlay')?.classList.remove('open');
   overlay.classList.add('open');
   $('createInput').value='24時間後の自分へ…';
   haptic();
 });
-$('onboardDemo')?.addEventListener('click',()=>{
+$('onboardDemo')?.addEventListener('click',async()=>{
   const name=prompt('あなたの名前','ゆうま')||'ゆうま';
+  const email=name+'@demo.local';
+  const hash=await hashPass('demo');
   S=defaults();
   S.demoMode=true;
   S.capsules=[];
   S.opened=[];
   S.feedPosts=[];
-  S.auth={name,email:name+'@demo.local',loggedIn:true};
-  S.profile={school:'X高校',graduationYear:2026,grade:'高校3年生',birthDate:''};
-  S.users=[{name,email:name+'@demo.local',pass:'demo'}];
+  S.users=[{id:'demo',name,email,passHash:hash,createdAt:Date.now()}];
+  S.auth={name,email,loggedIn:true,id:'demo'};
+  S.sealDestSet={self:true,friend:false,group:false,pair:false,invite:false};
   S.firstSealDone=false;
   S.onboardingDone=false;
   ensureInviteCode();
@@ -5400,6 +5600,22 @@ $('inviteWelcomeOk')?.addEventListener('click',()=>{
 });
 const urlInvite=new URLSearchParams(location.search).get('invite');
 if(urlInvite&&!S.invitedBy)showInviteWelcome(urlInvite);
+(async()=>{
+  const params=new URLSearchParams(location.search);
+  const share=params.get('music')||params.get('share');
+  if(!share)return;
+  const song=await resolveMusicShareUrl(decodeURIComponent(share));
+  if(song){
+    pendingMusicShare=song;
+    S.shareMusicOnPost=true;
+    save();
+    toast('共有リンクから曲を読み取りました');
+    if(isLoggedIn()){initCreateExpands();updateCreateUI();$('createOverlay')?.classList.add('open');}
+  }
+  params.delete('music');params.delete('share');
+  const q=params.toString();
+  history.replaceState(null,'',location.pathname+(q?'?'+q:'')+location.hash);
+})();
 $('wrappedClose')?.addEventListener('click',()=>$('wrappedOverlay')?.classList.remove('open'));
 $('wrappedShare')?.addEventListener('click',()=>{
   haptic();toast('シェアシートを開きます（デモ）');
