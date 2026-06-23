@@ -8,6 +8,12 @@
 <meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
 <style>
 :root{
   --bg:#000000;
@@ -944,19 +950,65 @@ body::after{display:none}
 .app-header-actions{display:flex;gap:4px;align-items:center}
 .icon-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--ink)}
 .icon-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6}
-.fab-compose{
-  position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 16px);right:20px;
-  width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-inv);
-  box-shadow:var(--shadow-lg);font-size:24px;z-index:90;display:grid;place-items:center;
+.fab-compose{display:none!important}
+.tab-nav{
+  max-width:430px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 72px 1fr;
+  height:var(--nav-h);align-items:end;padding:0 8px;
 }
+.tab-nav-create{
+  width:56px;height:56px;border-radius:50%;background:var(--accent);color:var(--accent-inv);
+  font-size:28px;font-weight:300;box-shadow:var(--shadow-lg);margin-bottom:8px;justify-self:center;
+  display:grid;place-items:center;
+}
+.tab-nav-create:active{transform:scale(.94)}
+
+/* 思い出マップ */
+.map-panel-head{padding:0 20px 8px}
+.map-sub-tabs{display:flex;gap:20px;padding:0 20px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.map-sub-tab{font-size:14px;font-weight:500;color:var(--ink-3);padding-bottom:8px;position:relative}
+.map-sub-tab.on{color:var(--ink)}
+.map-sub-tab.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--ink)}
+.memory-map{height:calc(100dvh - var(--nav-h) - 160px);min-height:280px;width:100%;z-index:1}
+.leaflet-container{background:var(--bg-2)!important;font-family:var(--font)}
+.map-dot-wrap{background:none;border:none}
+.map-dot{
+  width:12px;height:12px;border-radius:50%;background:var(--ink);
+  border:2px solid var(--bg);box-shadow:0 0 0 1px rgba(255,255,255,.3);
+}
+.map-cluster-dot{
+  width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.25);color:var(--ink);font-size:11px;font-weight:600;
+  display:grid;place-items:center;
+}
+.map-route-view{padding-bottom:100px}
+.map-privacy{font-size:11px;color:var(--ink-3);padding:10px 20px;line-height:1.45}
+.map-share-btn{
+  margin:0 20px 16px;width:calc(100% - 40px);padding:14px;border-radius:var(--r-pill);
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.08);font-size:13px;font-weight:600;
+}
+.map-music-view{padding-bottom:100px}
+.map-point-sheet{
+  position:fixed;inset:0;z-index:350;background:rgba(0,0,0,.85);
+  opacity:0;pointer-events:none;transition:opacity .35s;display:flex;align-items:flex-end;
+}
+.map-point-sheet.open{opacity:1;pointer-events:auto}
+.map-point-panel{
+  width:100%;max-width:430px;margin:0 auto;padding:20px 20px calc(24px + var(--safe-b));
+  background:var(--bg);border-radius:var(--r) var(--r) 0 0;transform:translateY(100%);transition:transform .4s var(--spring);
+}
+.map-point-sheet.open .map-point-panel{transform:translateY(0)}
+.map-point-panel img{width:100%;border-radius:var(--r-sm);max-height:50vh;object-fit:cover}
+.map-point-meta{font-size:13px;color:var(--ink-3);margin-top:12px}
+.loc-notice{
+  margin-bottom:14px;padding:12px 14px;border-radius:var(--r-sm);background:var(--bg-2);
+  font-size:12px;color:var(--ink-2);line-height:1.5;border:1px solid rgba(255,255,255,.06);
+}
+.loc-notice label{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px}
+.me-panel{padding:0 20px 100px}
 .tab-nav-wrap{
   position:fixed;bottom:0;left:0;right:0;z-index:100;
   padding-bottom:var(--safe-b);background:var(--bg);
   border-top:1px solid rgba(255,255,255,.06);
-}
-.tab-nav{
-  max-width:430px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;
-  height:var(--nav-h);
 }
 .tab-nav button{
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
@@ -1305,43 +1357,76 @@ body::after{display:none}
         <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="notif-badge hidden" id="notifBadge">0</span>
       </button>
-      <button type="button" class="icon-btn" id="openSettings" aria-label="設定">
+      <button type="button" class="icon-btn hidden" id="openSettings" aria-hidden="true">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       </button>
     </div>
   </header>
 
-  <button type="button" class="fab-compose" id="openCreate" aria-label="封じる">+</button>
+  <button type="button" class="fab-compose hidden" id="openCreateFab" aria-hidden="true">+</button>
 
-  <!-- ① 待合室 — ホーム -->
+  <!-- ① ホーム（待合室） -->
   <section class="panel active" id="panel-waiting">
     <div class="panel-head" style="padding-top:0">
-      <h1 style="font-size:28px;font-weight:600">待合室</h1>
+      <h1 style="font-size:28px;font-weight:600">ホーム</h1>
       <p class="sub">封じた記憶が、開封を待っている</p>
+    </div>
+    <div class="daily-question" id="dailyQuestionBlock">
+      <div class="dq-label">今日の問い</div>
+      <div class="dq-text" id="dailyQuestionText">—</div>
+      <button type="button" class="dq-cta" id="dailyQuestionBtn">この問いを封じる</button>
     </div>
     <div class="waiting-list" id="waitingList"></div>
   </section>
 
-  <!-- ② 封じる — 能動 -->
-  <section class="panel" id="panel-seal">
-    <div id="sharedListView">
+  <!-- ② 思い出マップ -->
+  <section class="panel" id="panel-map">
+    <div class="map-panel-head panel-head" style="padding-top:0;padding-bottom:0">
+      <h1 style="font-size:28px;font-weight:600">思い出マップ</h1>
+      <p class="sub">足跡の記録 · 線が主役</p>
+    </div>
+    <div class="map-sub-tabs">
+      <button type="button" class="map-sub-tab on" data-mtab="route">軌跡</button>
+      <button type="button" class="map-sub-tab" data-mtab="music">音楽</button>
+    </div>
+    <div id="mapRouteView" class="map-route-view">
+      <div id="memoryMap" class="memory-map"></div>
+      <p class="map-privacy">写真に含まれる位置情報（Exif）だけを読みます。常時トラッキングはしません。位置のない写真は線に乗りません。</p>
+      <button type="button" class="map-share-btn" id="mapShareBtn">軌跡をシェア</button>
+    </div>
+    <div id="mapMusicView" class="map-music-view hidden">
+      <div class="archive-view" id="archiveView"></div>
+    </div>
+  </section>
+
+  <!-- ③ 自分 -->
+  <section class="panel" id="panel-me">
+    <div id="meListView">
       <div class="panel-head" style="padding-top:0">
-        <h1 style="font-size:28px;font-weight:600">封じる</h1>
-        <p class="sub">今の気持ちを、未来へ届ける</p>
+        <h1 style="font-size:28px;font-weight:600">自分</h1>
+        <p class="sub">封じた · 開けた · 連続</p>
       </div>
-      <div class="daily-question" id="dailyQuestionBlock">
-        <div class="dq-label">今日の問い</div>
-        <div class="dq-text" id="dailyQuestionText">—</div>
-        <button type="button" class="dq-cta" id="dailyQuestionBtn">この問いを封じる</button>
+      <div class="me-panel" id="mePanel">
+        <div id="authSection"></div>
+        <div class="profile-header" id="profileHeader" style="padding:16px 0">
+          <div class="profile-avatar" id="profileAvatar">ゆ</div>
+          <div class="profile-name" id="profileName">ゆうま</div>
+          <div class="profile-bio" id="profileBio"></div>
+        </div>
+        <div class="stats-row" style="padding:0 0 16px">
+          <div class="stat-card"><div class="n" id="statSealed">0</div><div class="l">封じた</div></div>
+          <div class="stat-card"><div class="n" id="statOpened">0</div><div class="l">開けた</div></div>
+          <div class="stat-card"><div class="n" id="statStreak">0</div><div class="l">連続</div></div>
+        </div>
+        <div class="settings-row" id="darkToggle" style="margin-bottom:20px"><span>ダークモード</span><div class="toggle" id="darkSwitch"></div></div>
+        <div class="sec-label" style="padding:8px 0">人との関係</div>
+        <div class="shared-top-tabs">
+          <button type="button" class="shared-top-tab on" data-stab="friends">親友・2人</button>
+          <button type="button" class="shared-top-tab" data-stab="dm">未来DM</button>
+        </div>
+        <div class="shared-dm-list hidden" id="sharedDmList"></div>
+        <div class="shared-list" id="sharedList"></div>
       </div>
-      <div class="sec-label" style="padding-top:8px">人との関係</div>
-      <div class="shared-top-tabs">
-        <button type="button" class="shared-top-tab on" data-stab="friends">親友・2人</button>
-        <button type="button" class="shared-top-tab" data-stab="dm">未来DM</button>
-      </div>
-      <div class="shared-timeline hidden" id="sharedTimeline"></div>
-      <div class="shared-dm-list hidden" id="sharedDmList"></div>
-      <div class="shared-list" id="sharedList"></div>
     </div>
     <div class="friend-space" id="friendSpace">
       <div class="fs-top">
@@ -1374,10 +1459,9 @@ body::after{display:none}
     </div>
   </section>
 
-  <!-- ③ 振り返り — 受動 -->
-  <section class="panel" id="panel-archive">
-    <div class="archive-view" id="archiveView"></div>
-  </section>
+  <!-- legacy: 封じるは中央＋のみ -->
+  <section class="panel hidden" id="panel-seal" aria-hidden="true"></section>
+  <section class="panel hidden" id="panel-archive" aria-hidden="true"></section>
 
   <!-- legacy hidden for JS compat -->
   <div class="hidden" id="groupSync"><div id="syncStatus"></div><div id="syncOnline"></div><div id="syncCountdown"></div><button id="syncBtn"></button></div>
@@ -1388,20 +1472,29 @@ body::after{display:none}
   <nav class="tab-nav">
     <button type="button" class="tab-nav-btn active" data-tab="waiting">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-      待合室
+      ホーム
     </button>
-    <button type="button" class="tab-nav-btn" data-tab="seal">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      封じる
+    <button type="button" class="tab-nav-btn" data-tab="map">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C8 2 4 7 4 12c0 4 4 9 8 10 4-1 8-6 8-10 0-5-4-10-8-10z"/><circle cx="12" cy="12" r="3"/></svg>
+      マップ
     </button>
-    <button type="button" class="tab-nav-btn" data-tab="archive">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      振り返り
+    <button type="button" class="tab-nav-create" id="openCreate" aria-label="封じる">+</button>
+    <button type="button" class="tab-nav-btn" data-tab="me">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+      自分
     </button>
   </nav>
 </div>
 
-<div class="settings-overlay" id="settingsOverlay">
+<div class="map-point-sheet" id="mapPointSheet">
+  <div class="map-point-panel">
+    <button type="button" class="fs-back" id="mapPointClose" style="margin-bottom:12px">×</button>
+    <div id="mapPointPhoto"></div>
+    <div class="map-point-meta" id="mapPointMeta"></div>
+  </div>
+</div>
+
+<div class="settings-overlay hidden" id="settingsOverlay" aria-hidden="true">
   <div class="settings-panel">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
       <h2 style="font-size:20px;font-weight:600">設定</h2>
@@ -1453,6 +1546,10 @@ body::after{display:none}
     <div class="media-preview" id="mediaPreview">
       <button type="button" class="remove" id="removeMedia">×</button>
       <div id="mediaPreviewInner"></div>
+    </div>
+    <div class="loc-notice hidden" id="locNotice">
+      この写真に含まれる位置情報（Exif）を読み取ります。常時の位置トラッキングは行いません。
+      <label><input type="checkbox" id="stripLoc"> 位置を外して封じる</label>
     </div>
     <div class="duration-label">いつ開封しますか？</div>
     <div class="duration-pills" id="durationPills">
@@ -1532,7 +1629,7 @@ body::after{display:none}
 <div class="onboard-overlay" id="onboardOverlay">
   <div class="onboard-panel">
     <h2>24時間後の<br>自分へ、1通。</h2>
-    <p>最初のカプセルを封じよう。<br>明日、過去のあなたから届く。</p>
+    <p>最初のカプセルを封じよう。<br>明日、過去のあなたから届く。<br><span style="font-size:13px;color:var(--ink-3)">位置は写真のExifだけ。常時トラッキングはしません。</span></p>
     <button type="button" id="onboardStart">封じる</button>
   </div>
 </div>
@@ -1548,7 +1645,7 @@ body::after{display:none}
 </div>
 
 <script>
-const KEY='timecap_v6';
+const KEY='timecap_v7';
 const IDB_NAME='timecap_media_v1';
 const USER='ゆうま';
 const GROUP='私たち';
@@ -1660,6 +1757,19 @@ function compressImage(file,maxW=900,q=.72){
     img.onerror=rej;img.src=url;
   });
 }
+async function extractGeoFromFile(file){
+  if(typeof exifr==='undefined')return null;
+  try{
+    const g=await exifr.gps(file);
+    if(g&&Number.isFinite(g.latitude))return {lat:g.latitude,lng:g.longitude};
+  }catch(e){}
+  return null;
+}
+function mapPointsFromOpened(){
+  return(S.opened||[])
+    .filter(o=>o.loc&&Number.isFinite(o.loc.lat)&&Number.isFinite(o.loc.lng))
+    .sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
+}
 function readFileAsDataUrl(file){
   return new Promise((res,rej)=>{
     const r=new FileReader();
@@ -1742,6 +1852,10 @@ function bucketFor(iso){
   if(d<=3)return '3d';if(d<=30)return '30d';return '365d';
 }
 function musicMonthKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+/* ── 期間まとめ（汎用テンプレ）genre: music ──
+ * 振り返りの核は「1つのまとめ＋シェアカード」。人・声・ルート・推しは別実装せず
+ * 同じテンプレに genre を足す。ARCHITECTURE.md 参照。 */
+const PERIOD_GENRE_MUSIC='music';
 function musicWeekKey(d=new Date()){
   const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
   const day=x.getUTCDay()||7;
@@ -1817,8 +1931,10 @@ function defaultMusicMonths(){
   const mk=(offset,tracks,themeIdx=0)=>({
     key:musicMonthKey(new Date(now.getFullYear(),now.getMonth()-offset,1)),
     label:new Date(now.getFullYear(),now.getMonth()-offset,1).toLocaleDateString('ja-JP',{year:'numeric',month:'long'}),
+    genre:PERIOD_GENRE_MUSIC,
     ranking:tracks.map((t,i)=>({rank:i+1,...t})),
     themeSong:{...tracks[themeIdx],rank:1},
+    highlight:{...tracks[themeIdx],rank:1},
   });
   return[
     mk(0,[
@@ -1889,9 +2005,10 @@ function defaults(){
       postsCount:4,activeMembersCount:5,isUnlocked:false,
     },
     opened:[
-      {id:'o1',from:'そう',type:'photo',text:'試験終わった！',openedAt:now-5*864e5},
-      {id:'o2',from:'ゆい',type:'video',text:'あの頃ずっと聴いてた曲',openedAt:now-12*864e5},
-      {id:'o-demo',from:'みお',type:'photo',text:'開封済みの写真サンプル',openedAt:now-864e5,mediaId:'demo_photo'},
+      {id:'o1',from:'そう',type:'photo',text:'試験終わった！',openedAt:now-5*864e5,loc:{lat:35.0116,lng:135.7681}},
+      {id:'o2',from:'ゆい',type:'video',text:'あの頃ずっと聴いてた曲',openedAt:now-12*864e5,loc:{lat:34.6937,lng:135.5023}},
+      {id:'o-demo',from:'みお',type:'photo',text:'開封済みの写真サンプル',openedAt:now-864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671}},
+      {id:'o-map3',from:'ゆうま',type:'photo',text:'旅の途中',openedAt:now-3*864e5,loc:{lat:35.4437,lng:139.6380}},
     ],
     readNotifs:[],
     auth:null,
@@ -1956,6 +2073,7 @@ if(!S.musicMonths)S.musicMonths=defaultMusicMonths();
 ensureMusicPeriods();
 if(!S.archiveTab)S.archiveTab='grid';
 if(S.archiveMusicKey===undefined)S.archiveMusicKey=null;
+if(!S.mapTab)S.mapTab='route';
 if(!S.sharedTab)S.sharedTab='friends';
 if(S.onboardingDone===undefined)S.onboardingDone=false;
 migrateMessages();
@@ -2000,15 +2118,24 @@ let fsTab='posts';
 let sharedTab='friends';
 let waitTimer=null;
 
+let mapInst=null,mapCluster=null,mapRouteLine=null;
+let mapSubTab='route';
+
 function switchTab(tab){
   if(tab==='private')tab='waiting';
-  if(tab==='shared')tab='seal';
+  if(tab==='shared'||tab==='seal')tab='me';
+  if(tab==='archive')tab='map';
   document.querySelectorAll('.tab-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+tab));
-  if(tab!=='seal')closeFriendSpace();
+  document.querySelectorAll('.panel').forEach(p=>{
+    if(p.id==='panel-seal'||p.id==='panel-archive')return;
+    p.classList.toggle('active',p.id==='panel-'+tab);
+  });
+  if(tab!=='me')closeFriendSpace();
   $('fdmCompose')?.classList.add('hidden');
   if(tab==='waiting')startWaitTimer();
   else stopWaitTimer();
+  if(tab==='map'){setTimeout(()=>{initMemoryMap();renderMemoryMap()},80)}
+  if(tab==='me')renderMe();
   haptic();
 }
 document.querySelectorAll('.tab-nav-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
@@ -2016,7 +2143,7 @@ document.querySelectorAll('.tab-nav-btn').forEach(b=>b.addEventListener('click',
 function closeFriendSpace(){
   activeFriendId=null;
   $('friendSpace')?.classList.remove('active');
-  $('sharedListView')?.classList.remove('hidden');
+  $('meListView')?.classList.remove('hidden');
   $('fdmCompose')?.classList.add('hidden');
 }
 
@@ -2025,17 +2152,19 @@ function openFriendSpace(memberId){
   const m=MEMBERS.find(x=>x.id===memberId);
   if(!m)return;
   $('fsName').textContent=m.n;
-  $('sharedListView').classList.add('hidden');
+  $('meListView').classList.add('hidden');
   $('friendSpace').classList.add('active');
   fsTab='posts';
   document.querySelectorAll('.fs-tab').forEach(t=>t.classList.toggle('on',t.dataset.fstab==='posts'));
   $('fsPosts').classList.remove('hidden');
   $('fsChat').classList.add('hidden');
+  switchTab('me');
   renderFriendSpace();
   haptic();
 }
 
 function renderWaitingRoom(){
+  renderDailyQuestion();
   const el=$('waitingList');
   if(!el)return;
   const caps=S.capsules.filter(c=>c.sealed&&!canViewCapContent(c))
@@ -2192,14 +2321,118 @@ function renderSharedFriends(){
 }
 
 function renderShared(){
-  renderDailyQuestion();
   sharedTab=S.sharedTab||'friends';
   document.querySelectorAll('.shared-top-tab').forEach(t=>t.classList.toggle('on',t.dataset.stab===sharedTab));
-  $('sharedTimeline')?.classList.add('hidden');
   $('sharedDmList')?.classList.toggle('hidden',sharedTab!=='dm');
   $('sharedList')?.classList.toggle('hidden',sharedTab!=='friends');
   if(sharedTab==='dm')renderSharedDms();
   else renderSharedFriends();
+}
+
+function renderMe(){
+  renderAuth();
+  renderShared();
+  const name=S.auth?.loggedIn?S.auth.name:USER;
+  $('profileAvatar').textContent=name.charAt(0);
+  $('profileName').textContent=name;
+  $('profileBio').innerHTML=S.auth?.loggedIn?esc(S.auth.email):'時間遅延型の感情保存';
+  $('darkSwitch')?.classList.toggle('on',S.dark);
+  $('statSealed').textContent=pending().length;
+  $('statOpened').textContent=(S.opened||[]).length;
+  $('statStreak').textContent=S.streak||0;
+  $('createFriendRow').innerHTML=MEMBERS.map(m=>`
+    <button type="button" class="create-friend-chip${S.sealFriendId===m.id?' on':''}" data-fid="${m.id}">${esc(m.n)}</button>`).join('');
+  $('createFriendRow')?.querySelectorAll('.create-friend-chip').forEach(b=>b.addEventListener('click',()=>{
+    S.sealFriendId=b.dataset.fid;save();renderMe();
+    document.querySelectorAll('.create-friend-chip').forEach(x=>x.classList.toggle('on',x.dataset.fid===S.sealFriendId));
+  }));
+}
+
+function initMemoryMap(){
+  if(mapInst||typeof L==='undefined')return;
+  const el=$('memoryMap');
+  if(!el)return;
+  mapInst=L.map(el,{zoomControl:false,attributionControl:false}).setView([36.2,138.5],5);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+    subdomains:'abcd',maxZoom:19,
+  }).addTo(mapInst);
+  mapCluster=L.markerClusterGroup({
+    showCoverageOnHover:false,maxClusterRadius:45,
+    iconCreateFunction(cluster){
+      const n=cluster.getChildCount();
+      return L.divIcon({html:`<div class="map-cluster-dot">${n}</div>`,className:'map-dot-wrap',iconSize:[28,28]});
+    },
+  });
+  mapInst.addLayer(mapCluster);
+}
+
+function renderMemoryMap(){
+  if(typeof L==='undefined')return;
+  initMemoryMap();
+  if(!mapInst)return;
+  mapCluster?.clearLayers();
+  if(mapRouteLine){mapInst.removeLayer(mapRouteLine);mapRouteLine=null}
+  const points=mapPointsFromOpened();
+  if(!points.length){
+    mapInst.setView([36.2,138.5],5);
+    return;
+  }
+  const dotIcon=L.divIcon({html:'<div class="map-dot"></div>',className:'map-dot-wrap',iconSize:[12,12]});
+  const latlngs=[];
+  points.forEach(p=>{
+    latlngs.push([p.loc.lat,p.loc.lng]);
+    const m=L.marker([p.loc.lat,p.loc.lng],{icon:dotIcon});
+    m.on('click',()=>openMapPoint(p));
+    mapCluster.addLayer(m);
+  });
+  if(latlngs.length>1){
+    mapRouteLine=L.polyline(latlngs,{color:'#ffffff',weight:2,opacity:.55,dashArray:'6 8'});
+    mapRouteLine.addTo(mapInst);
+  }
+  const bounds=L.latLngBounds(latlngs);
+  mapInst.fitBounds(bounds.pad(.15));
+  setTimeout(()=>mapInst?.invalidateSize(),100);
+}
+
+async function openMapPoint(p){
+  const sheet=$('mapPointSheet');
+  const photo=$('mapPointPhoto');
+  const meta=$('mapPointMeta');
+  photo.innerHTML='';
+  if(p.mediaId){
+    const data=await idbGet(p.mediaId);
+    if(data)photo.innerHTML=`<img src="${data}" alt="">`;
+    else photo.innerHTML='<div class="empty-state" style="padding:24px">写真</div>';
+  }else photo.innerHTML='<div class="empty-state" style="padding:24px">📍</div>';
+  meta.textContent=`${new Date(p.openedAt).toLocaleDateString('ja-JP')} · ${esc(p.text||'この場所の記憶')}`;
+  sheet?.classList.add('open');
+  haptic();
+}
+
+function renderMapPanel(){
+  mapSubTab=S.mapTab||'route';
+  document.querySelectorAll('.map-sub-tab').forEach(t=>t.classList.toggle('on',t.dataset.mtab===mapSubTab));
+  $('mapRouteView')?.classList.toggle('hidden',mapSubTab!=='route');
+  $('mapMusicView')?.classList.toggle('hidden',mapSubTab!=='music');
+  if(mapSubTab==='music')renderArchive();
+  if(mapSubTab!=='route'||!$('panel-map')?.classList.contains('active'))return;
+  renderMemoryMap();
+}
+
+function openMapShareCard(){
+  const points=mapPointsFromOpened();
+  const n=points.length;
+  $('wrappedCard').innerHTML=`
+    <div class="wc-brand">TIME CAP</div>
+    <div class="wc-period">思い出<br>マップ</div>
+    <div class="wc-stat">${n}地点を巡った<br>足跡の記録</div>
+    <div class="wc-theme">
+      <div class="wc-theme-lbl">軌跡</div>
+      <div class="wc-theme-title" style="font-size:16px;line-height:1.5">${n?esc(points.map((p,i)=>(i+1)+'. '+new Date(p.openedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'})).join(' → ')):'まだ線がありません'}</div>
+      <div class="wc-theme-artist">音楽が耳 · マップが足跡</div>
+    </div>`;
+  $('wrappedOverlay')?.classList.add('open');
+  haptic();
 }
 
 function renderFriendSpace(){
@@ -2343,10 +2576,11 @@ function renderArchive(){
 }
 
 function openWrappedCard(monthKey){
+  /* ジャンル非依存のシェアカード。highlight / ranking はテンプレ共通フィールド */
   const m=(S.musicMonths||[]).find(x=>x.key===monthKey)||S.musicMonths?.[0];
   if(!m)return;
   const opened=(S.opened||[]).length;
-  const theme=m.themeSong||m.ranking?.[0];
+  const theme=m.highlight||m.themeSong||m.ranking?.[0];
   const top3=(m.ranking||[]).slice(0,3).map(t=>`${t.rank}. ${t.title}`).join('<br>');
   $('wrappedCard').innerHTML=`
     <div class="wc-brand">TIME CAP</div>
@@ -2363,23 +2597,7 @@ function openWrappedCard(monthKey){
 }
 function showOnboarding(){$('onboardOverlay')?.classList.add('open')}
 
-function renderProfile(){
-  renderAuth();
-  const name=S.auth?.loggedIn?S.auth.name:USER;
-  $('profileAvatar').textContent=name.charAt(0);
-  $('profileName').textContent=name;
-  $('profileBio').innerHTML=S.auth?.loggedIn?esc(S.auth.email):'時間遅延型の感情保存';
-  $('darkSwitch')?.classList.toggle('on',S.dark);
-  $('statSealed').textContent=pending().length;
-  $('statOpened').textContent=(S.opened||[]).length;
-  $('statStreak').textContent=S.streak||0;
-  $('createFriendRow').innerHTML=MEMBERS.map(m=>`
-    <button type="button" class="create-friend-chip${S.sealFriendId===m.id?' on':''}" data-fid="${m.id}">${esc(m.n)}</button>`).join('');
-  $('createFriendRow')?.querySelectorAll('.create-friend-chip').forEach(b=>b.addEventListener('click',()=>{
-    S.sealFriendId=b.dataset.fid;save();renderProfile();
-    document.querySelectorAll('.create-friend-chip').forEach(x=>x.classList.toggle('on',x.dataset.fid===S.sealFriendId));
-  }));
-}
+function renderProfile(){renderMe()}
 
 function renderNotifBadge(){
   const unread=(S.homeNotifs||[]).filter(n=>!n.read).length;
@@ -2393,10 +2611,9 @@ function renderNotifBadge(){
 function renderAll(){
   migrateMessages();
   renderWaitingRoom();
-  renderShared();
+  renderMapPanel();
   if(activeFriendId)renderFriendSpace();
-  renderArchive();
-  renderProfile();
+  else if($('panel-me')?.classList.contains('active'))renderMe();
   renderNotifBadge();
   renderNotifDropdown();
   if(!S.onboardingDone&&!S.firstSealDone)showOnboarding();
@@ -2430,7 +2647,7 @@ function renderNotifDropdown(){
       if(n&&!n.read){n.read=true;save();renderNotifBadge();item.classList.remove('unread')}
       $('notifDropdown')?.classList.remove('open');
       if(item.dataset.action==='open'&&ready().length)startGroupSync(ready());
-      else if(item.dataset.action==='dm'){switchTab('seal');if(item.dataset.dmid){const dm=S.dms.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}}
+      else if(item.dataset.action==='dm'){switchTab('me');if(item.dataset.dmid){const dm=S.dms.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}}
       haptic();
     });
   });
@@ -2522,12 +2739,15 @@ $('photoInput').addEventListener('change',async e=>{
   const file=e.target.files?.[0];
   if(!file)return;
   try{
+    const geo=await extractGeoFromFile(file);
     const dataUrl=await compressImage(file);
-    pendingMedia={type:'photo',dataUrl};
+    pendingMedia={type:'photo',dataUrl,geo};
     $('mediaPreviewInner').innerHTML=`<img src="${dataUrl}" alt="preview">`;
     $('mediaPreview').classList.add('show');
+    $('locNotice')?.classList.toggle('hidden',!geo);
+    if($('stripLoc'))$('stripLoc').checked=false;
     updateMediaPickState();
-    toast('写真を選択しました');
+    toast(geo?'写真を選択（位置情報あり）':'写真を選択しました');
   }catch(err){toast('写真の読み込みに失敗しました')}
   e.target.value='';
 });
@@ -2551,6 +2771,7 @@ $('removeMedia').addEventListener('click',()=>{
   pendingMedia=null;
   $('mediaPreview').classList.remove('show');
   $('mediaPreviewInner').innerHTML='';
+  $('locNotice')?.classList.add('hidden');
   updateMediaPickState();
 });
 
@@ -2594,6 +2815,8 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
     openAt=addDays(days);
   }
   const goal=$('goalInput')?.value.trim()||'';
+  const stripLoc=$('stripLoc')?.checked;
+  const loc=(!stripLoc&&media?.geo)?{...media.geo}:undefined;
   const capId='c'+Date.now();
   if(media){
     try{await idbPut(capId,media.dataUrl)}catch(e){toast('メディアの保存に失敗');return}
@@ -2605,7 +2828,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
       id:capId,from:fromName,to,visibility:vis,type,
       text:displayText,sealed:true,openAt,days,
       mediaId:media?capId:null,createdAt:Date.now(),
-      goal:goal||undefined,
+      goal:goal||undefined,loc,
     });
     if(fromDaily||caption===todayQuestion()){
       S.dailyQuestionDate=todayStr();
@@ -2619,6 +2842,8 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
       pendingMedia=null;
       $('mediaPreview').classList.remove('show');
       $('mediaPreviewInner').innerHTML='';
+      $('locNotice')?.classList.add('hidden');
+      if($('stripLoc'))$('stripLoc').checked=false;
       updateMediaPickState();
       overlay.classList.remove('open');
       $('onboardOverlay')?.classList.remove('open');
@@ -2627,7 +2852,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
     toast('封じました');
     switchTab('waiting');
     if(!isPrivate&&isFriend){
-      switchTab('seal');
+      switchTab('me');
       const fm=MEMBERS.find(x=>x.n===to);
       if(fm)openFriendSpace(fm.id);
     }
@@ -2654,12 +2879,18 @@ $('settingsClose')?.addEventListener('click',()=>$('settingsOverlay')?.classList
 $('settingsOverlay')?.addEventListener('click',e=>{if(e.target===$('settingsOverlay'))$('settingsOverlay').classList.remove('open')});
 
 /* Friend space */
-$('fsBack')?.addEventListener('click',()=>{closeFriendSpace();renderShared();haptic()});
+$('fsBack')?.addEventListener('click',()=>{closeFriendSpace();renderMe();haptic()});
+document.querySelectorAll('.map-sub-tab').forEach(t=>t.addEventListener('click',()=>{
+  S.mapTab=t.dataset.mtab;mapSubTab=S.mapTab;save();renderMapPanel();haptic();
+}));
+$('mapPointClose')?.addEventListener('click',()=>$('mapPointSheet')?.classList.remove('open'));
+$('mapPointSheet')?.addEventListener('click',e=>{if(e.target===$('mapPointSheet'))$('mapPointSheet').classList.remove('open')});
+$('mapShareBtn')?.addEventListener('click',openMapShareCard);
 document.querySelectorAll('.shared-top-tab').forEach(t=>t.addEventListener('click',()=>{
   S.sharedTab=t.dataset.stab;
   sharedTab=S.sharedTab;
   closeFriendSpace();
-  renderShared();
+  renderMe();
   haptic();
 }));
 document.querySelectorAll('.fs-tab').forEach(t=>t.addEventListener('click',()=>{
@@ -2855,7 +3086,7 @@ function finishOpen(){
     S.opened=S.opened||[];
     openingItems.forEach(c=>S.opened.unshift({
       id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,openedAt:Date.now(),mediaId:c.mediaId,
-      goal:c.goal,themeSong:currentThemeSong(),todaySong:currentTodaySong(),weekTop3:currentWeekTop3(),
+      goal:c.goal,loc:c.loc,themeSong:currentThemeSong(),todaySong:currentTodaySong(),weekTop3:currentWeekTop3(),
     }));
     S.capsules=S.capsules.filter(c=>!openingItems.find(r=>r.id===c.id));
     save();renderAll();
@@ -2907,7 +3138,7 @@ $('onboardStart')?.addEventListener('click',()=>{
   $('onboardOverlay')?.classList.remove('open');
   overlay.classList.add('open');
   $('createInput').value='24時間後の自分へ…';
-  switchTab('seal');haptic();
+  haptic();
 });
 $('wrappedClose')?.addEventListener('click',()=>$('wrappedOverlay')?.classList.remove('open'));
 $('wrappedShare')?.addEventListener('click',()=>{
