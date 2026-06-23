@@ -482,13 +482,21 @@ body::after{display:none}
 .opening-song-strip .oss-artist{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
 .opening-song-strip .oss-link{font-size:10px;color:rgba(255,255,255,.45);margin-top:4px}
 .memory-context-card{
-  margin:0 0 14px;padding:14px 16px;border-radius:var(--r-sm);
-  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
-  font-size:12px;line-height:1.55;color:rgba(255,255,255,.85);text-align:left;
+  margin:0 0 20px;padding:18px 20px;border-radius:var(--r-sm);
+  background:linear-gradient(145deg,rgba(18,18,18,.96),rgba(38,38,38,.88));
+  border:1px solid rgba(255,255,255,.12);
+  font-size:12px;line-height:1.65;color:rgba(255,255,255,.88);text-align:left;
+  animation:contextReveal .85s ease-out both;
+}
+.memory-context-card .mcc-line{
+  font-family:Georgia,'Hiragino Mincho ProN','Yu Mincho',serif;
+  font-size:15px;line-height:1.7;color:rgba(255,255,255,.94);letter-spacing:.03em;
 }
 .memory-context-card .mcc-when{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;letter-spacing:.04em}
 .memory-context-card .mcc-place{font-weight:600;color:#fff;margin-bottom:4px}
-.memory-context-card .mcc-song{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(255,255,255,.65)}
+.memory-context-card .mcc-song{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(255,255,255,.65)}
+.tl-context{font-size:12px;color:var(--ink-3);margin-top:8px;line-height:1.55;letter-spacing:.02em}
+@keyframes contextReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .voice-chain-strip{
   margin:12px 0;padding:12px 14px;border-radius:var(--r-sm);
   background:rgba(255,255,255,.06);font-size:12px;color:rgba(255,255,255,.8);text-align:left;
@@ -3224,11 +3232,13 @@ function timelinePosts(){
     sealed:c.sealed,tags:c.tags||[],loc:c.loc,capsule:c,
     layer:c.layer,promoted:!!c.promoted,
     opened:canViewCapContent(c)||c.sealed===false||c.layer==='now',visibility:c.visibility,
+    sealContext:c.sealContext,linkedSong:c.linkedSong,
   }));
   const opened=(S.opened||[]).filter(o=>!isPairCap(o)&&!isDirectCap(o)).map(o=>({
     id:o.id,from:o.from,to:o.to||'self',type:o.type,text:o.text,
     at:o.openedAt,openAt:o.openedAt,mediaId:o.mediaId,
     sealed:false,tags:o.tags||[],opened:true,capsule:null,
+    sealContext:o.sealContext,linkedSong:o.linkedSong,loc:o.loc,
   }));
   return[...caps,...opened].sort((a,b)=>b.at-a.at);
 }
@@ -3500,62 +3510,115 @@ function autoMusicSnapshot(){
   return{title:s.title,artist:s.artist||'',source:s.source||'spotify',url:s.url,plays:s.plays,at:Date.now(),auto:true};
 }
 function weatherCodeJa(code){
-  const m={0:'快晴',1:'晴れ',2:'くもり',3:'くもり',45:'霧',48:'霧',51:'小雨',53:'雨',61:'雨',63:'雨',71:'雪',80:'にわか雨',95:'雷雨'};
+  const m={0:'快晴',1:'晴れ',2:'くもり',3:'曇り',45:'霧',48:'霧',51:'小雨',53:'雨',55:'雨',61:'雨',63:'雨',65:'大雨',71:'雪',80:'にわか雨',95:'雷雨'};
   return m[code]??'—';
+}
+function sealDayPart(h){
+  if(h<5)return'深夜';
+  if(h<12)return'朝';
+  if(h<18)return'昼';
+  if(h<22)return'夜';
+  return'深夜';
+}
+function sealTimePhrase(d){
+  const wd=['日','月','火','水','木','金','土'][d.getDay()];
+  const h=d.getHours();
+  return`${wd}曜の${sealDayPart(h)}${h}時`;
+}
+function pickPlaceName(a,displayName){
+  if(!a)return displayName?.split(/[,、]/)[0]?.trim()||'';
+  const state=a.state||a.province||'';
+  if(/東京/.test(state)||/東京/.test(a.city||''))return'東京';
+  if(/大阪/.test(state)||/大阪/.test(a.city||''))return'大阪';
+  if(/京都/.test(state)||/京都/.test(a.city||''))return'京都';
+  const city=a.city||a.town||a.village||a.municipality||a.suburb||a.quarter||a.neighbourhood;
+  if(city)return String(city).replace(/^(東京都|大阪府|京都府|北海道)/,'').replace(/市$/,'')||city;
+  if(state)return String(state).replace(/(都|府|県)$/,'');
+  return displayName?.split(/[,、]/)[0]?.trim()||'';
+}
+async function fetchWeatherAt(lat,lng){
+  const wr=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&timezone=auto`);
+  if(!wr.ok)return null;
+  const wj=await wr.json();
+  return{
+    temp:Math.round(wj.current?.temperature_2m),
+    weather:weatherCodeJa(wj.current?.weather_code),
+  };
+}
+async function fetchPlaceAt(lat,lng){
+  const gr=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ja`,{headers:{'Accept-Language':'ja'}});
+  if(!gr.ok)return null;
+  const gj=await gr.json();
+  return pickPlaceName(gj.address,gj.display_name);
 }
 async function captureSealContext(geo){
   const d=new Date();
   const ctx={
-    sealedAt:Date.now(),
-    dateLabel:d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'}),
-    timeLabel:d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}),
-    dayPart:d.getHours()<5?'深夜':d.getHours()<12?'朝':d.getHours()<18?'昼':'夜',
+    sealedAt:d.getTime(),
+    dateLabel:`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`,
+    timePhrase:sealTimePhrase(d),
+    timeLabel:d.toLocaleTimeString('ja-JP',{hour:'numeric',minute:'2-digit'}),
+    dayPart:sealDayPart(d.getHours()),
   };
   let lat=geo?.lat,lng=geo?.lng;
   if((lat==null||lng==null)&&navigator.geolocation){
     try{
-      const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:3500,maximumAge:600000}));
+      const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:5000,maximumAge:300000,enableHighAccuracy:false}));
       lat=pos.coords.latitude;lng=pos.coords.longitude;
-      ctx.coords={lat,lng};
     }catch(e){}
-  }else if(lat!=null&&lng!=null)ctx.coords={lat,lng};
+  }
   if(lat!=null&&lng!=null){
+    ctx.coords={lat,lng};
     try{
-      const wr=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&timezone=auto`);
-      if(wr.ok){
-        const wj=await wr.json();
-        ctx.temp=Math.round(wj.current?.temperature_2m);
-        ctx.weather=weatherCodeJa(wj.current?.weather_code);
-      }
-    }catch(e){}
-    try{
-      const gr=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ja`,{headers:{'Accept-Language':'ja'}});
-      if(gr.ok){
-        const gj=await gr.json();
-        const a=gj.address||{};
-        ctx.place=a.city||a.town||a.village||a.suburb||a.state||gj.display_name?.split(',')[0];
-      }
+      const [weather,place]=await Promise.all([
+        fetchWeatherAt(lat,lng).catch(()=>null),
+        fetchPlaceAt(lat,lng).catch(()=>null),
+      ]);
+      if(weather){ctx.temp=weather.temp;ctx.weather=weather.weather}
+      if(place)ctx.place=place;
     }catch(e){}
   }
   return ctx;
+}
+function enrichLocFromContext(baseLoc,ctx,strip){
+  if(strip||!ctx)return baseLoc;
+  const out=baseLoc?{...baseLoc}:{};
+  if(ctx.place)out.placeName=ctx.place;
+  if(ctx.coords?.lat!=null){out.lat=ctx.coords.lat;out.lng=ctx.coords.lng}
+  if(ctx.weather)out.weather=ctx.weather;
+  if(ctx.temp!=null)out.temp=ctx.temp;
+  return Object.keys(out).length?out:baseLoc;
+}
+function resolveSealContext(cap){
+  if(cap?.sealContext)return cap.sealContext;
+  if(!cap)return null;
+  const ts=cap.sealedAt||cap.createdAt||cap.openedAt;
+  if(!ts&&!cap.loc)return null;
+  const d=new Date(ts||Date.now());
+  return{
+    sealedAt:ts||d.getTime(),
+    dateLabel:`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`,
+    timePhrase:sealTimePhrase(d),
+    place:cap.loc?.placeName||cap.loc?.name,
+    weather:cap.loc?.weather,temp:cap.loc?.temp,
+  };
 }
 function formatSealContext(ctx){
   if(!ctx)return '';
   const parts=[
     ctx.dateLabel,
     ctx.place,
-    ctx.weather&&ctx.temp!=null?`${ctx.weather}${ctx.temp}℃`:ctx.weather,
-    ctx.timeLabel?`${ctx.dayPart||''}${ctx.timeLabel}`.trim():'',
+    ctx.weather?`${ctx.weather}${ctx.temp!=null?ctx.temp+'℃':''}`:null,
+    ctx.timePhrase||ctx.timeLabel,
   ].filter(Boolean);
-  return parts.join(' · ');
+  return parts.join('、');
 }
 function memoryContextHtml(ctx,song){
   const line=formatSealContext(ctx);
   if(!line&&!song)return '';
   const songLine=song?`🎵 ${esc(song.title)}${song.artist?' · '+esc(song.artist):''}`:'';
-  return`<div class="memory-context-card">
-    ${line?`<div class="mcc-when">${esc(line)}</div>`:''}
-    ${ctx?.place?`<div class="mcc-place">📍 ${esc(ctx.place)}</div>`:''}
+  return`<div class="memory-context-card reveal-context">
+    ${line?`<div class="mcc-line">${esc(line)}</div>`:''}
     ${songLine?`<div class="mcc-song">${songLine}</div>`:''}
   </div>`;
 }
@@ -3604,7 +3667,7 @@ function seasonTopLinkedSong(seasonKey){
 }
 function openMemoryShareCard(cap){
   if(!cap)return;
-  const ctx=cap.sealContext;
+  const ctx=resolveSealContext(cap);
   const line=formatSealContext(ctx);
   $('wrappedCard').innerHTML=`
     <div class="wc-brand">TIME CAP</div>
@@ -4142,11 +4205,12 @@ async function promoteToFuture(sourceId,days){
       if(data){await idbPut(capId,data);mediaId=capId}
     }catch(e){}
   }
+  const sealContext=src.sealContext||await captureSealContext(src.loc);
   const cap={
     id:capId,from:src.from,to:src.to,visibility:src.visibility==='today'?'future':(src.visibility||'future'),
     type:src.type,text:src.text,sealed:true,openAt,days,postNow:false,layer:'sealed',
     mediaId,createdAt:Date.now(),loc:src.loc,tags:src.tags,groupId:src.groupId,
-    promotedFrom:src.id,album:src.album,
+    promotedFrom:src.id,album:src.album,sealContext,linkedSong:src.linkedSong,
   };
   S.capsules.unshift(cap);
   src.promoted=true;
@@ -4697,6 +4761,8 @@ function renderTimelineFeed(){
       }
     }
     const caption=p.text&&!locked?`<div class="tl-open-caption">${esc(p.text)}</div>`:'';
+    const ctxLine=!locked?formatSealContext(resolveSealContext(p)):'' ;
+    const ctxHtml=ctxLine?`<div class="tl-context">${esc(ctxLine)}</div>`:'';
     const song=p.linkedSong&&!locked?`<div class="arb-song" style="margin-top:8px">🎵 ${esc(p.linkedSong.title)}</div>`:'';
     const canReply=!locked&&!isMe&&MEMBERS.some(x=>x.n===p.from);
     const replyBtn=canReply?`<button type="button" class="tl-reply-btn" data-reply-to="${esc(MEMBERS.find(x=>x.n===p.from)?.id||'')}">返信</button>`:'';
@@ -4710,7 +4776,7 @@ function renderTimelineFeed(){
         <div class="tl-meta">${timeAgo(p.at)}${dest?' · '+esc(dest):''}</div></div>
         ${badge?`<span class="tl-badge">${badge}</span>`:''}
       </div>
-      ${body}${caption}${song}
+      ${body}${ctxHtml}${caption}${song}
       ${(replyBtn||promoteBtn)?`<div class="tl-actions">${promoteBtn}${replyBtn}</div>`:''}
     </article>`;
   }).join('');
@@ -4732,8 +4798,9 @@ function renderLastYearToday(){
   sec.classList.remove('hidden');
   $('lytTitle').textContent=item.text||'この日の記憶';
   const card=$('lytCard');
+  const ctxLine=formatSealContext(resolveSealContext(item));
   if(item.mediaId){
-    card.innerHTML=`<img data-lazy="${esc(item.mediaId)}" alt=""><p style="font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.45">${esc(item.text||'')}</p>`;
+    card.innerHTML=`<img data-lazy="${esc(item.mediaId)}" alt=""><p style="font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.45">${esc(item.text||'')}</p>${ctxLine?`<p class="tl-context" style="margin-top:8px">${esc(ctxLine)}</p>`:''}`;
     loadLazyThumbs(sec);
   }else{
     card.innerHTML=`<p style="font-size:14px;line-height:1.55;margin:0">${esc(item.text||'')}</p>`;
@@ -5169,7 +5236,7 @@ async function openMapPoint(p){
   const meta=$('mapPointMeta');
   photo.innerHTML='';
   sheet?.classList.toggle('map-point-locked',!!p.locked);
-  const ctxLine=p.sealContext?formatSealContext(p.sealContext):'';
+  const ctxLine=formatSealContext(resolveSealContext(p));
   if(p.locked){
     photo.innerHTML=`<div class="mp-lock-visual"><div class="ico">🔒</div><div style="font-size:14px;color:var(--ink-2)">まだ開封されていません</div><div style="font-size:12px;color:var(--ink-3);margin-top:8px">${p.openAt?formatWhen({openAt:p.openAt}):'開封まで写真は見られません'}</div></div>`;
     meta.innerHTML=`${esc(p.text||'この場所の記憶')}${ctxLine?`<br><span style="font-size:11px;color:var(--ink-3)">${esc(ctxLine)}</span>`:''}`;
@@ -5306,7 +5373,7 @@ function renderArchiveMemoryList(){
     const thumb=m.mediaId?`<img class="arb-thumb" data-lazy="${esc(m.mediaId)}" alt="">`:'';
     const text=m.text||m.choice||m.promptText||'';
     const song=m.linkedSong?`<div class="arb-song">🎵 ${esc(m.linkedSong.title)}${m.linkedSong.artist?' · '+esc(m.linkedSong.artist):''}</div>`:'';
-    const ctx=m.sealContext?formatSealContext(m.sealContext):'';
+    const ctx=formatSealContext(resolveSealContext(m));
     const meta=[m.from&&m.from!==meName()?m.from:'',m.goal?`目標: ${m.goal}`:''].filter(Boolean).join(' · ');
     return`<article class="arb-card${sizeCls}">
       <div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">${esc(typeLabel)}</span></div>
@@ -6154,6 +6221,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
           const capId='c'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
           const openAt=days===0?new Date().toISOString():addDays(days);
           const itemLoc=(!stripLoc&&mItem?.geo)?{...mItem.geo}:loc;
+          const capLoc=enrichLocFromContext(itemLoc,sealContext,stripLoc);
           if(mItem?.dataUrl){
             try{await idbPut(capId,mItem.dataUrl)}catch(e){toast('メディアの保存に失敗');return}
           }
@@ -6167,7 +6235,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
             text:promptMeta?(promptMeta.choice||promptMeta.text||displayText):displayText,sealed:!isNowLayer,openAt,days:isNowLayer?0:days,postNow:isNowLayer||days===0,
             layer:isNowLayer?'now':'sealed',
             mediaId:mItem?.dataUrl?capId:null,createdAt:Date.now(),
-            goal:goal||undefined,loc:itemLoc,tags:tags.length?tags:undefined,
+            goal:goal||undefined,loc:capLoc,tags:tags.length?tags:undefined,
             groupId:t.groupId,seasonEvent:seasonTag,pairWith:t.pairWith,
             album:isNowLayer&&mItem?.type==='photo'?getSeasonAlbumKey():undefined,
             linkedSong:shareSong||undefined,mood:sealMood,selfieMediaId,
@@ -6468,7 +6536,7 @@ function finishOpen(){
         return media;
       }));
       const moodLine=cap?.mood?`<div class="mood-compare">あのとき ${cap.mood}</div>`:'';
-      const ctxCard=memoryContextHtml(cap?.sealContext,cap?.linkedSong);
+      const ctxCard=memoryContextHtml(resolveSealContext(cap),cap?.linkedSong);
       const afterReveal=()=>{
         $('reactions').classList.add('show');
         $('openingActions')?.classList.add('show');
