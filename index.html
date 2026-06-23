@@ -277,7 +277,15 @@ body::after{display:none}
 .dest-toggle{display:flex;gap:8px;margin-bottom:22px;padding:4px;background:var(--bg-2);border-radius:var(--r-pill)}
 .dest-toggle button{flex:1;padding:10px;border-radius:var(--r-pill);font-size:13px;font-weight:600;color:var(--ink-2);transition:all .3s var(--spring)}
 .dest-toggle button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
-.dest-multi{margin-bottom:16px}
+.dest-multi{margin-bottom:8px}
+.dest-summary{font-size:12px;color:var(--ink-3);margin:0 0 14px;line-height:1.5;min-height:18px}
+.dest-summary strong{color:var(--ink-2);font-weight:600}
+.create-photo-bar{
+  margin-bottom:14px;padding:14px;border-radius:var(--r-sm);
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.05);
+}
+.create-photo-bar .duration-label{margin-bottom:10px}
+.create-photo-bar .create-media-row{margin:0}
 .dest-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .dest-chip{padding:9px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink-2);background:var(--bg-2);border:1px solid rgba(255,255,255,.08);transition:all .25s var(--spring)}
 .dest-chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -595,6 +603,9 @@ body::after{display:none}
   background:var(--bg-2);border:1px solid rgba(255,255,255,.05);
 }
 .create-expand.open{display:block}
+#createPhotoBar .create-pick.has-media{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.music-share-pick button#pasteMusicBtn{font-weight:600}
+.music-share-pick #pasteSpotifyBtn,.music-share-pick #pasteAppleBtn{font-size:12px;padding:8px 12px}
 .mood-palette{display:flex;flex-wrap:wrap;gap:8px}
 .mood-palette button{
   width:44px;height:44px;border-radius:50%;font-size:22px;background:var(--bg-3);
@@ -2077,6 +2088,7 @@ body::after{display:none}
         <button type="button" class="dest-chip" data-dest="pair">ふたり</button>
         <button type="button" class="dest-chip" data-dest="invite">招待</button>
       </div>
+      <div class="dest-summary" id="destSummary"></div>
     </div>
     <p class="pair-hint hidden" id="pairHint">🔒 秘密カプセル · ふたりだけが見られます。タイムラインには載りません。</p>
     <div class="create-friend-pick hidden" id="createFriendPick">
@@ -2092,9 +2104,17 @@ body::after{display:none}
       <input type="text" class="goal-input" id="inviteContact" placeholder="メール or 電話番号" style="margin-bottom:8px">
       <div class="invite-notice">「誰かが1年後のあなたに何かを残しました」— 受け取るには入るしかない。</div>
     </div>
+    <div class="create-photo-bar" id="createPhotoBar">
+      <div class="duration-label">写真・動画 <span style="font-weight:400;color:var(--ink-3)">フォルダからまとめて可</span></div>
+      <div class="create-media-row">
+        <button type="button" class="create-pick" id="pickPhotoBtn">📷 1枚</button>
+        <button type="button" class="create-pick" id="pickAlbumBtn">🖼 写真を複数</button>
+        <button type="button" class="create-pick" id="pickFolderBtn">📁 フォルダ</button>
+        <button type="button" class="create-pick" id="pickVideoBtn">🎥 動画</button>
+      </div>
+    </div>
     <textarea class="create-input" id="createInput" maxlength="500" placeholder="いまの気持ちを綴る…"></textarea>
     <div class="create-icon-row" id="createIconRow">
-      <button type="button" class="create-icon" data-expand="photo" title="写真">📷</button>
       <button type="button" class="create-icon" data-expand="voice" title="声">🎙️</button>
       <button type="button" class="create-icon" data-expand="mood" title="ムード">🌙</button>
     </div>
@@ -2103,18 +2123,13 @@ body::after{display:none}
         <input type="checkbox" id="shareMusicToggle"> いま聴いてる曲を一緒に残す
       </label>
       <div class="music-share-pick hidden" id="musicSharePick">
-        <button type="button" id="pasteSpotifyBtn">Spotifyの共有リンクを貼り付け</button>
-        <button type="button" id="pasteAppleBtn">Apple Musicの共有リンクを貼り付け</button>
+        <button type="button" id="pasteMusicBtn">共有リンクを貼り付け（Spotify / Apple Music）</button>
+        <button type="button" id="pasteSpotifyBtn">Spotify</button>
+        <button type="button" id="pasteAppleBtn">Apple Music</button>
         <div class="music-share-preview hidden" id="musicSharePreview"></div>
       </div>
     </div>
-    <div class="create-expand" id="expandPhoto">
-      <div class="create-media-row">
-        <button type="button" class="create-pick" id="pickPhotoBtn">📷 撮る / 選ぶ</button>
-        <button type="button" class="create-pick" id="pickAlbumBtn">🖼 写真フォルダ</button>
-        <button type="button" class="create-pick" id="pickFolderBtn">📁 フォルダ一括</button>
-        <button type="button" class="create-pick" id="pickVideoBtn">🎥 動画</button>
-      </div>
+    <div class="create-expand open" id="expandPhoto">
       <label class="selfie-toggle"><input type="checkbox" id="selfieToggle"> 自分も写す（任意）</label>
       <button type="button" class="create-pick hidden" id="pickSelfieBtn" style="margin-top:8px;width:100%">🤳 セルフィーを追加</button>
       <div class="media-preview" id="mediaPreview">
@@ -2146,8 +2161,8 @@ body::after{display:none}
     <input type="text" class="goal-input" id="goalInput" maxlength="120" placeholder="例：毎日続ける / あの人に伝える">
     <input type="file" id="photoInput" accept="image/*" class="hidden">
     <input type="file" id="selfieInput" accept="image/*" capture="user" class="hidden">
-    <input type="file" id="albumInput" accept="image/*" multiple class="hidden">
-    <input type="file" id="folderInput" accept="image/*" multiple webkitdirectory class="hidden">
+    <input type="file" id="albumInput" accept="image/*,image/heic,image/heif" multiple class="hidden">
+    <input type="file" id="folderInput" accept="image/*,image/heic,image/heif" multiple webkitdirectory directory class="hidden">
     <input type="file" id="videoInput" accept="video/*" capture="environment" class="hidden">
     <div class="duration-label">いつ開封しますか？ <span style="font-weight:400;color:var(--ink-3)">複数選択可</span></div>
     <div class="duration-pills multi" id="durationPills">
@@ -2317,7 +2332,6 @@ body::after{display:none}
 <script>
 const KEY='timecap_v9';
 const APP_URL='https://sealed-psi.vercel.app';
-const ADMIN_EMAIL='yushininaba4sj@gmail.com';
 const SPOTIFY_CLIENT_ID=''; // 設定するとSpotify連携が有効
 const IDB_NAME='timecap_media_v1';
 const USER='ゆうま';
@@ -2520,30 +2534,62 @@ function mapPointsFromOpened(){
     .sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
 }
 function meName(){return S.auth?.loggedIn?S.auth.name:USER}
+function meUserId(){return S.auth?.userId||''}
 function isLoggedIn(){return !!S.auth?.loggedIn}
+function normalizeUserId(raw){return String(raw||'').trim().replace(/^@+/,'').toLowerCase().replace(/[^a-z0-9_]/g,'')}
+function isValidUserId(id){return /^[a-z0-9_]{3,20}$/.test(id)}
+function findUserByUserId(userId){return S.users?.find(u=>normalizeUserId(u.userId)===normalizeUserId(userId))}
+function maskEmail(email){
+  const [local,domain]=String(email||'').split('@');
+  if(!domain)return '***';
+  const shown=local.length<=2?local[0]+'*':local[0]+'***'+local.slice(-1);
+  return `${shown}@${domain}`;
+}
+function ensureUserIds(){
+  if(!S.users)return;
+  const used=new Set();
+  S.users.forEach(u=>{if(u.userId)used.add(normalizeUserId(u.userId))});
+  S.users.forEach(u=>{
+    if(u.userId)return;
+    let base=normalizeUserId((u.email||'').split('@')[0])||'user';
+    if(base.length<3)base=base+'00';
+    let candidate=base.slice(0,20),i=0;
+    while(used.has(candidate)){i++;candidate=(base.slice(0,17)+String(i)).slice(0,20)}
+    u.userId=candidate;used.add(candidate);
+  });
+  if(S.auth?.loggedIn&&!S.auth.userId){
+    const u=S.users.find(x=>x.id===S.auth.id);
+    if(u)S.auth.userId=u.userId;
+  }
+}
 async function hashPass(pass){
   if(!crypto?.subtle)return btoa(unescape(encodeURIComponent(pass+':timecap')));
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass+':timecap'));
   return[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-function generateOtp(){return String(Math.floor(100000+Math.random()*900000))}
-async function sendVerificationCode(email,code,mode,name){
-  S.emailSent=false;
+async function sendVerificationCode(email,mode,name){
   try{
     const r=await fetch('/api/send-code',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email,code,mode,name}),
+      body:JSON.stringify({email,mode,name}),
     });
     const data=await r.json().catch(()=>({}));
-    if(r.ok&&!data.dev){
-      S.emailSent=true;
-      toast(ADMIN_EMAIL+' に確認コードを送信しました');
-      return true;
-    }
-  }catch(e){}
-  S.emailSent=false;
-  return false;
+    if(r.ok&&data.ok&&data.ticket)return{ok:true,ticket:data.ticket,mask:data.mask||maskEmail(email)};
+    if(data.error==='mail_unavailable')return{ok:false,reason:'mail_unavailable'};
+    return{ok:false,reason:'send_failed'};
+  }catch(e){return{ok:false,reason:'network'}}
+}
+async function verifyCodeWithServer(code,ticket){
+  try{
+    const r=await fetch('/api/verify-code',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ticket,code}),
+    });
+    const data=await r.json().catch(()=>({}));
+    return r.ok&&!!data.ok;
+  }catch(e){return false}
 }
 function pairwiseItems(friendName){
   const me=meName();
@@ -2644,6 +2690,47 @@ function buildSealTargets(){
   if(!targets.length)return {error:'送り先を1つ以上選んでください'};
   return {targets};
 }
+function isImageFile(f){
+  if(f.type?.startsWith('image/'))return true;
+  return /\.(jpe?g|png|gif|webp|heic|heif|bmp|tiff?)$/i.test(f.name||'');
+}
+function getDestSummaryParts(){
+  ensureSealDestSet();
+  const d=S.sealDestSet;
+  const parts=[];
+  if(d.invite){
+    const c=$('inviteContact')?.value.trim();
+    return c?['招待: '+c]:['招待'];
+  }
+  if(d.self)parts.push('自分');
+  if(d.friend){
+    const ids=(S.sealFriendIds||[]).filter(Boolean);
+    ids.forEach(fid=>{
+      const m=MEMBERS.find(x=>x.id===fid);
+      if(m)parts.push('親友: '+m.n);
+    });
+    if(d.friend&&!ids.length)parts.push('親友');
+  }
+  if(d.group){
+    ensureGroups();
+    const gids=(S.sealGroupIds||[]).filter(Boolean);
+    gids.forEach(gid=>{
+      const g=S.groups.find(x=>x.id===gid);
+      if(g)parts.push('グループ: '+(g.emoji?g.emoji+' ':'')+g.name);
+    });
+    if(d.group&&!gids.length)parts.push('グループ');
+  }
+  if(d.pair){
+    const fid=(S.sealFriendIds||[])[0];
+    const m=MEMBERS.find(x=>x.id===fid);
+    parts.push('ふたり'+(m?': '+m.n:''));
+  }
+  return parts.length?parts:['自分'];
+}
+function countSealTargets(){
+  const built=buildSealTargets();
+  return built.error?0:(built.targets?.length||0);
+}
 async function resolveMusicShareUrl(raw){
   let url=(raw||'').trim();
   if(!url)return null;
@@ -2659,9 +2746,12 @@ async function resolveMusicShareUrl(raw){
     }catch(e){}
     return{title:'Spotifyの曲',artist:'',source:'spotify',url};
   }
-  if(/music\.apple\.com/.test(url)){
-    const slug=decodeURIComponent((url.match(/\/([^/?]+)(?:\?|$)/g)||[]).pop()?.replace(/^\//,'').split('?')[0]||'').replace(/-/g,' ');
-    return{title:slug||'Apple Musicの曲',artist:'',source:'apple',url};
+  if(/music\.apple\.com|itunes\.apple\.com/.test(url)){
+    const path=url.split('?')[0];
+    const segs=path.replace(/\/+$/,'').split('/').filter(Boolean);
+    const slug=decodeURIComponent(segs[segs.length-1]||'').replace(/-/g,' ');
+    const kind=segs.includes('album')?'アルバム':segs.includes('playlist')?'プレイリスト':'曲';
+    return{title:slug||'Apple Musicの'+kind,artist:'',source:'apple',url};
   }
   return null;
 }
@@ -2683,24 +2773,41 @@ function updateMusicShareUI(){
     }else prev.classList.add('hidden');
   }else prev.classList.add('hidden');
 }
-async function pasteMusicShare(source){
-  let text='';
-  try{text=await navigator.clipboard.readText()}catch(e){}
-  if(!text)text=prompt(source==='apple'?'Apple Musicの共有リンクを貼り付け':'Spotifyの共有リンクを貼り付け','')||'';
-  if(!text)return;
-  const song=await resolveMusicShareUrl(text);
-  if(!song){toast('リンクを読み取れませんでした');return}
+async function applyMusicShare(song){
+  if(!song)return false;
   pendingMusicShare=song;
   if($('shareMusicToggle'))$('shareMusicToggle').checked=true;
   S.shareMusicOnPost=true;
   updateMusicShareUI();
   save();
-  toast(source==='apple'?'Apple Musicを追加':'Spotifyを追加');
+  toast(song.source==='apple'?'Apple Musicを追加':'Spotifyを追加');
   haptic();
+  return true;
+}
+async function pasteMusicShare(source){
+  let text='';
+  try{text=await navigator.clipboard.readText()}catch(e){}
+  if(!text)text=prompt(source==='apple'?'Apple Musicの共有リンクを貼り付け':source==='spotify'?'Spotifyの共有リンクを貼り付け':'Spotify / Apple Music の共有リンクを貼り付け','')||'';
+  if(!text)return;
+  const song=await resolveMusicShareUrl(text);
+  if(!song){toast('リンクを読み取れませんでした');return}
+  await applyMusicShare(song);
+}
+async function pasteMusicShareAuto(){
+  let text='';
+  try{text=await navigator.clipboard.readText()}catch(e){}
+  if(!text){
+    text=prompt('Spotify / Apple Music の共有リンクを貼り付け','')||'';
+    if(!text)return;
+  }
+  const song=await resolveMusicShareUrl(text);
+  if(!song){toast('Spotify / Apple Music のリンクではありません');return}
+  await applyMusicShare(song);
 }
 async function handleAlbumFiles(files){
-  const imgs=files.filter(f=>f.type.startsWith('image/'));
+  const imgs=[...files].filter(isImageFile);
   if(!imgs.length){toast('画像が見つかりません');return}
+  imgs.sort((a,b)=>(a.webkitRelativePath||a.name).localeCompare(b.webkitRelativePath||b.name)||(a.lastModified||0)-(b.lastModified||0));
   const file=imgs[0];
   const geo=await extractGeoFromFile(file);
   const dataUrl=await compressImage(file);
@@ -2835,7 +2942,13 @@ function updateCreateUI(){
   const durLbl=document.querySelector('#durationPills')?.previousElementSibling;
   if(durLbl&&durLbl.classList.contains('duration-label'))durLbl.classList.toggle('hidden',isNow);
   $('customDays')?.classList.toggle('hidden',isNow);
-  $('sealBtn').textContent=isNow?'いま残す':'封をする';
+  const destParts=getDestSummaryParts();
+  const destCount=countSealTargets();
+  $('destSummary').innerHTML=destParts.length
+    ?`送り先: <strong>${destParts.map(esc).join(' · ')}</strong>${destCount>1?`（${destCount}か所）`:''}`
+    :'';
+  const sealLabel=isNow?'いま残す':'封をする';
+  $('sealBtn').textContent=destCount>1?`${sealLabel}（${destCount}か所）`:sealLabel;
   $('createTitle').textContent=isNow?'今日、何を残す？':'未来に、何を残す？';
   document.querySelectorAll('.layer-toggle button').forEach(b=>b.classList.toggle('on',b.dataset.layer===layer));
   ensureGroups();
@@ -2864,19 +2977,20 @@ function renderCreateChips(){
     }else{
       S.sealFriendIds=S.sealFriendIds.includes(id)?S.sealFriendIds.filter(x=>x!==id):[...S.sealFriendIds,id];
     }
-    save();renderCreateChips();haptic();
+    save();updateCreateUI();haptic();
   }));
   $('createGroupRow')?.querySelectorAll('.create-group-chip').forEach(b=>b.addEventListener('click',()=>{
     const id=b.dataset.gid;
     if(!S.sealGroupIds)S.sealGroupIds=[];
     S.sealGroupIds=S.sealGroupIds.includes(id)?S.sealGroupIds.filter(x=>x!==id):[...S.sealGroupIds,id];
-    save();renderCreateChips();haptic();
+    save();updateCreateUI();haptic();
   }));
 }
 function updateMediaPickState(){
-  $('pickPhotoBtn')?.classList.toggle('has-media',pendingMedia?.type==='photo');
+  $('pickPhotoBtn')?.classList.toggle('has-media',pendingMedia?.type==='photo'&&!pendingMedia?.albumCount);
+  $('pickAlbumBtn')?.classList.toggle('has-media',!!pendingMedia?.albumCount);
+  $('pickFolderBtn')?.classList.toggle('has-media',!!pendingMedia?.albumCount);
   $('pickVideoBtn')?.classList.toggle('has-media',pendingMedia?.type==='video');
-  document.querySelector('.create-icon[data-expand="photo"]')?.classList.toggle('has-content',!!pendingMedia||!!pendingSelfie);
   document.querySelector('.create-icon[data-expand="voice"]')?.classList.toggle('has-content',!!pendingVoice);
   document.querySelector('.create-icon[data-expand="mood"]')?.classList.toggle('has-content',!!S.sealMood);
   $('pickSelfieBtn')?.classList.toggle('hidden',!$('selfieToggle')?.checked||!pendingMedia);
@@ -3762,6 +3876,7 @@ if(!S.dms)S.dms=defaults().dms;
 if(!S.feedPosts)S.feedPosts=defaults().feedPosts;
 if(!S.feedFilter)S.feedFilter='friends';
 if(!S.users)S.users=[];
+ensureUserIds();
 if(S.auth===undefined)S.auth=null;
 if(!S.dailyState)S.dailyState=defaults().dailyState;
 if(S.dailyState.date!==todayStr()){
@@ -4840,9 +4955,10 @@ function renderAuth(container){
   const el=container||$('authSection');
   if(!el)return;
   if(S.auth?.loggedIn){
+    const uid=S.auth.userId||'';
     el.innerHTML=`<div class="auth-card"><div class="auth-logged">
       <div class="auth-av">${esc(S.auth.name.charAt(0))}</div>
-      <div class="auth-info"><div style="font-weight:600">${esc(S.auth.name)}</div><div class="auth-email">${esc(S.auth.email)}</div></div>
+      <div class="auth-info"><div style="font-weight:600">${esc(S.auth.name)}${uid?` <span style="color:var(--ink-3);font-weight:400">@${esc(uid)}</span>`:''}</div><div class="auth-email">${esc(maskEmail(S.auth.email))}</div></div>
       <button type="button" class="auth-logout" id="authLogout">ログアウト</button>
     </div></div>`;
     el.querySelector('#authLogout')?.addEventListener('click',()=>{S.auth=null;S.authStep=null;S.pendingAuth=null;save();renderAll();toast('ログアウトしました');haptic()});
@@ -4851,41 +4967,35 @@ function renderAuth(container){
   const mode=S.authMode||'login';
   if(S.authStep==='verify'&&S.pendingAuth){
     const pa=S.pendingAuth;
-    const emailed=!!S.emailSent;
-    const codeBox=emailed?'':`<div class="auth-code-display">
-      <div class="acd-label">メール未設定のため、コードを画面に表示しています</div>
-      <div class="acd-code">${esc(pa.code)}</div>
-      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">この6桁を下に入力してください</div>
-    </div>`;
+    const mask=pa.emailMask||maskEmail(pa.email);
     el.innerHTML=`<div class="auth-card"><h3>確認コード</h3>
-      <p class="auth-hint">${emailed
-        ?`<strong>${esc(ADMIN_EMAIL)}</strong> に6桁のコードを送信しました。メールを確認して入力してください。`
-        :`メール送信の設定がまだです。下のコードを入力すればログインできます。`}</p>
-      ${codeBox}
+      <p class="auth-hint"><strong>${esc(mask)}</strong> に6桁のコードを送信しました。メールを確認して入力してください。</p>
       <div class="auth-field"><label>6桁コード</label><input type="text" class="auth-code-input" id="authCode" maxlength="6" inputmode="numeric" placeholder="000000" autocomplete="one-time-code"></div>
-      <button type="button" class="auth-submit" id="authVerify">ログイン完了</button>
+      <button type="button" class="auth-submit" id="authVerify">${mode==='signup'?'登録完了':'ログイン完了'}</button>
       <button type="button" class="auth-submit" id="authBack" style="margin-top:8px;background:var(--bg-2);color:var(--ink)">戻る</button>
     </div>`;
-    el.querySelector('#authBack')?.addEventListener('click',()=>{S.authStep=null;save();renderAuth(el);haptic()});
+    el.querySelector('#authBack')?.addEventListener('click',()=>{S.authStep=null;S.pendingAuth=null;save();renderAuth(el);haptic()});
     el.querySelector('#authVerify')?.addEventListener('click',async()=>{
       const code=el.querySelector('#authCode')?.value.trim();
       if(!code){toast('コードを入力してください');return}
       if(!S.pendingAuth||Date.now()>S.pendingAuth.expires){
-        toast('コードの有効期限が切れました');S.authStep=null;save();renderAuth(el);return;
+        toast('コードの有効期限が切れました');S.authStep=null;S.pendingAuth=null;save();renderAuth(el);return;
       }
-      if(code!==S.pendingAuth.code){toast('コードが正しくありません');return}
       const pa=S.pendingAuth;
+      const ok=await verifyCodeWithServer(code,pa.ticket);
+      if(!ok){toast('コードが正しくないか、期限切れです');return}
       if(pa.mode==='signup'){
-        if(S.users.find(u=>u.email===pa.email)){toast('登録済みです');return}
+        if(findUserByUserId(pa.userId)){toast('このIDは使われています');return}
+        if(S.users.find(u=>u.email===pa.email)){toast('このメールは登録済みです');return}
         const uid='u'+Date.now();
-        S.users.push({id:uid,name:pa.name,email:pa.email,passHash:pa.passHash,createdAt:Date.now()});
-        S.auth={name:pa.name,email:pa.email,loggedIn:true,id:uid};
+        S.users.push({id:uid,userId:pa.userId,name:pa.name,email:pa.email,passHash:pa.passHash,createdAt:Date.now()});
+        S.auth={name:pa.name,userId:pa.userId,email:pa.email,loggedIn:true,id:uid};
         toast('アカウントを作成しました');
       }else{
-        const u=S.users.find(x=>x.email===pa.email);
+        const u=findUserByUserId(pa.userId);
         if(!u){toast('アカウントが見つかりません');return}
         if(u.passHash!==pa.passHash){toast('パスワードが違います');return}
-        S.auth={name:u.name,email:u.email,loggedIn:true,id:u.id};
+        S.auth={name:u.name,userId:u.userId,email:u.email,loggedIn:true,id:u.id};
         toast('ログインしました');
       }
       S.authStep=null;S.pendingAuth=null;
@@ -4894,43 +5004,55 @@ function renderAuth(container){
     return;
   }
   el.innerHTML=`<div class="auth-card"><h3>${mode==='login'?'ログイン':'アカウント作成'}</h3>
-    <p class="auth-sub">新規登録・ログインには6桁コードが必要です</p>
+    <p class="auth-sub">${mode==='login'?'IDとパスワードでログイン · 確認コードは登録メールに送信':'表示名とは別にIDを設定 · 確認コードはメールに送信'}</p>
     <div class="auth-tabs">
       <button type="button" class="${mode==='login'?'on':''}" data-authmode="login">ログイン</button>
       <button type="button" class="${mode==='signup'?'on':''}" data-authmode="signup">新規登録</button>
     </div>
-    <div class="auth-field"><label>名前</label><input type="text" id="authName" placeholder="ゆうま" autocomplete="name" ${mode==='login'?'':'required'}></div>
-    <div class="auth-field"><label>メール</label><input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="auth-field"><label>ID</label><input type="text" id="authUserId" placeholder="yushin" autocomplete="username" autocapitalize="off" spellcheck="false"></div>
+    ${mode==='signup'?'<div class="auth-field"><label>表示名</label><input type="text" id="authName" placeholder="ゆうま" autocomplete="name" required></div>':''}
+    ${mode==='signup'?'<div class="auth-field"><label>メール</label><input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"></div>':''}
     <div class="auth-field"><label>パスワード</label><input type="password" id="authPass" autocomplete="${mode==='signup'?'new-password':'current-password'}" minlength="6"></div>
     ${mode==='signup'?'<div class="auth-field"><label>パスワード（確認）</label><input type="password" id="authPass2" autocomplete="new-password" minlength="6"></div>':''}
     <button type="button" class="auth-submit" id="authSubmit">確認コードを送信</button>
   </div>`;
-  el.querySelectorAll('[data-authmode]').forEach(b=>b.addEventListener('click',()=>{S.authMode=b.dataset.authmode;S.authStep=null;renderAuth(el);haptic()}));
+  el.querySelectorAll('[data-authmode]').forEach(b=>b.addEventListener('click',()=>{S.authMode=b.dataset.authmode;S.authStep=null;S.pendingAuth=null;renderAuth(el);haptic()}));
   el.querySelector('#authSubmit')?.addEventListener('click',async()=>{
-    const name=el.querySelector('#authName').value.trim()||(mode==='login'?'':USER);
-    const email=el.querySelector('#authEmail').value.trim().toLowerCase();
+    const userId=normalizeUserId(el.querySelector('#authUserId').value);
     const pass=el.querySelector('#authPass').value;
-    if(!email||!pass){toast('メールとパスワードを入力してください');return}
-    if(mode==='signup'&&!name){toast('名前を入力してください');return}
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('メール形式が正しくありません');return}
+    if(!userId||!pass){toast('IDとパスワードを入力してください');return}
+    if(!isValidUserId(userId)){toast('IDは3〜20文字の英小文字・数字・アンダースコア');return}
     if(pass.length<6){toast('パスワードは6文字以上');return}
     const hash=await hashPass(pass);
+    let email='',name='';
     if(mode==='signup'){
+      name=el.querySelector('#authName').value.trim();
+      email=el.querySelector('#authEmail').value.trim().toLowerCase();
+      if(!name){toast('表示名を入力してください');return}
+      if(!email){toast('メールを入力してください');return}
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('メール形式が正しくありません');return}
       const pass2=el.querySelector('#authPass2')?.value;
       if(pass!==pass2){toast('パスワードが一致しません');return}
+      if(findUserByUserId(userId)){toast('このIDは使われています');return}
       if(S.users.find(u=>u.email===email)){toast('このメールは登録済みです');return}
     }else{
-      const u=S.users.find(x=>x.email===email);
+      const u=findUserByUserId(userId);
       if(!u){toast('アカウントが見つかりません');return}
       const ok=u.passHash?u.passHash===hash:u.pass===pass;
       if(!ok){toast('パスワードが違います');return}
       if(!u.passHash){u.passHash=hash;delete u.pass}
+      email=u.email;name=u.name;
     }
-    const code=generateOtp();
-    S.pendingAuth={mode,name:name||S.users.find(u=>u.email===email)?.name||USER,email,passHash:hash,code,expires:Date.now()+600000};
+    const sent=await sendVerificationCode(email,mode,name);
+    if(!sent.ok){
+      const msg=sent.reason==='mail_unavailable'
+        ?'メール送信の準備ができていません。しばらくしてからお試しください'
+        :'確認コードを送信できませんでした。メールアドレスを確認してください';
+      toast(msg);return;
+    }
+    S.pendingAuth={mode,userId,name,email,passHash:hash,ticket:sent.ticket,emailMask:sent.mask,expires:Date.now()+600000};
     S.authStep='verify';
     save();
-    await sendVerificationCode(email,code,mode,name);
     renderAuth(el);
     haptic();
   });
@@ -4953,9 +5075,20 @@ window.addEventListener('scroll',()=>{
 const overlay=$('createOverlay');
 $('openCreate').addEventListener('click',()=>{
   if(!isLoggedIn()){toast('投稿するにはログインしてください');switchTab('messages');renderAuth();return}
-  initCreateExpands();updateCreateUI();overlay.classList.add('open');haptic();
+  initCreateExpands();updateCreateUI();overlay.classList.add('open');
+  $('expandPhoto')?.classList.add('open');
+  haptic();
 });
 overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
+overlay.addEventListener('paste',async e=>{
+  if(!overlay.classList.contains('open'))return;
+  const text=e.clipboardData?.getData('text')||'';
+  if(!text)return;
+  const song=await resolveMusicShareUrl(text);
+  if(!song)return;
+  e.preventDefault();
+  await applyMusicShare(song);
+});
 
 /* Gyroscope — legacy home pills only */
 if(window.DeviceOrientationEvent){
@@ -4992,8 +5125,14 @@ document.querySelectorAll('.layer-toggle button').forEach(b=>{
   });
 });
 
-$('pickPhotoBtn').addEventListener('click',()=>$('photoInput').click());
-$('pickVideoBtn').addEventListener('click',()=>$('videoInput').click());
+$('pickPhotoBtn').addEventListener('click',()=>{
+  const input=$('photoInput');
+  if(input?.showPicker)input.showPicker();else input?.click();
+});
+$('pickVideoBtn').addEventListener('click',()=>{
+  const input=$('videoInput');
+  if(input?.showPicker)input.showPicker();else input?.click();
+});
 
 $('photoInput').addEventListener('change',async e=>{
   const file=e.target.files?.[0];
@@ -5065,6 +5204,8 @@ $('voiceHintDismiss')?.addEventListener('click',()=>{
 });
 initCreateExpands();
 
+$('inviteContact')?.addEventListener('input',()=>{save();updateCreateUI()});
+
 document.querySelectorAll('.duration-pill').forEach(b=>{
   b.addEventListener('click',()=>{
     if(b.dataset.days==='custom'){
@@ -5079,8 +5220,14 @@ document.querySelectorAll('.duration-pill').forEach(b=>{
   });
 });
 
-$('pickAlbumBtn')?.addEventListener('click',()=>$('albumInput')?.click());
-$('pickFolderBtn')?.addEventListener('click',()=>$('folderInput')?.click());
+$('pickAlbumBtn')?.addEventListener('click',()=>{
+  const input=$('albumInput');
+  if(input?.showPicker)input.showPicker();else input?.click();
+});
+$('pickFolderBtn')?.addEventListener('click',()=>{
+  const input=$('folderInput');
+  if(input?.showPicker)input.showPicker();else input?.click();
+});
 $('albumInput')?.addEventListener('change',async e=>{
   const files=[...e.target.files||[]];
   if(!files.length)return;
@@ -5094,11 +5241,19 @@ $('folderInput')?.addEventListener('change',async e=>{
   e.target.value='';
 });
 
-$('shareMusicToggle')?.addEventListener('change',()=>{
+$('shareMusicToggle')?.addEventListener('change',async()=>{
   S.shareMusicOnPost=!!$('shareMusicToggle').checked;
-  if(!S.shareMusicOnPost)pendingMusicShare=null;
+  if(!S.shareMusicOnPost){pendingMusicShare=null}
+  else if(!pendingMusicShare){
+    try{
+      const text=await navigator.clipboard.readText();
+      const song=await resolveMusicShareUrl(text);
+      if(song)await applyMusicShare(song);
+    }catch(e){}
+  }
   updateMusicShareUI();save();haptic();
 });
+$('pasteMusicBtn')?.addEventListener('click',()=>pasteMusicShareAuto());
 $('pasteSpotifyBtn')?.addEventListener('click',()=>pasteMusicShare('spotify'));
 $('pasteAppleBtn')?.addEventListener('click',()=>pasteMusicShare('apple'));
 
@@ -5582,8 +5737,9 @@ $('onboardDemo')?.addEventListener('click',async()=>{
   S.capsules=[];
   S.opened=[];
   S.feedPosts=[];
-  S.users=[{id:'demo',name,email,passHash:hash,createdAt:Date.now()}];
-  S.auth={name,email,loggedIn:true,id:'demo'};
+  const demoId=normalizeUserId(name)||'demo';
+  S.users=[{id:'demo',userId:demoId,name,email,passHash:hash,createdAt:Date.now()}];
+  S.auth={name,userId:demoId,email,loggedIn:true,id:'demo'};
   S.sealDestSet={self:true,friend:false,group:false,pair:false,invite:false};
   S.firstSealDone=false;
   S.onboardingDone=false;
@@ -5780,10 +5936,7 @@ if(urlInvite&&!S.invitedBy)showInviteWelcome(urlInvite);
   if(!share)return;
   const song=await resolveMusicShareUrl(decodeURIComponent(share));
   if(song){
-    pendingMusicShare=song;
-    S.shareMusicOnPost=true;
-    save();
-    toast('共有リンクから曲を読み取りました');
+    await applyMusicShare(song);
     if(isLoggedIn()){initCreateExpands();updateCreateUI();$('createOverlay')?.classList.add('open');}
   }
   params.delete('music');params.delete('share');
