@@ -1698,6 +1698,7 @@ function defaultMusicMonths(){
     ],0),
   ];
 }
+function canViewCapContent(c){return !!(S.opened||[]).find(o=>o.id===c.id)}
 function currentThemeSong(){
   const m=(S.musicMonths||[]).find(x=>x.key===musicMonthKey());
   return m?.themeSong||m?.ranking?.[0]||null;
@@ -1807,7 +1808,6 @@ ensureMusicPeriods();
 if(!S.archiveTab)S.archiveTab='grid';
 if(S.archiveMusicKey===undefined)S.archiveMusicKey=null;
 if(!S.sharedTab)S.sharedTab='timeline';
-sharedTab=S.sharedTab;
 migrateMessages();
 document.documentElement.dataset.theme=S.dark?'':'light';
 
