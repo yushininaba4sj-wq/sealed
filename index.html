@@ -623,6 +623,20 @@ body::after{display:none}
 .voice-rec .voice-wave span{width:4px;border-radius:2px;background:var(--ink);animation:wave 1s ease-in-out infinite}
 .voice-rec .voice-timer{font-size:13px;color:var(--ink-3);margin-top:8px}
 .create-icon-row{display:flex;gap:10px;margin:12px 0 4px}
+.create-attach-bar{display:flex;gap:8px;margin:0 0 12px}
+.create-attach-bar button{
+  flex:1;padding:12px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:600;
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.08);color:var(--ink-2);
+  transition:background .2s,border-color .2s,transform .2s var(--spring);
+}
+.create-attach-bar button.has-content{background:var(--ink);color:var(--accent-inv);border-color:var(--ink)}
+.create-attach-bar button:active{transform:scale(.98)}
+.voice-preview{
+  display:none;padding:14px;border-radius:var(--r-sm);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.06);margin-bottom:12px;
+}
+.voice-preview.show{display:block}
+.voice-preview audio{width:100%;margin-top:8px}
 .create-icon{
   width:44px;height:44px;border-radius:50%;font-size:20px;
   background:var(--bg-2);border:1px solid rgba(255,255,255,.06);
@@ -2243,6 +2257,19 @@ body::after{display:none}
       <div class="invite-notice">「誰かが1年後のあなたに何かを残しました」— 受け取るには入るしかない。</div>
     </div>
     <textarea class="create-input" id="createInput" maxlength="500" placeholder="いまの気持ちを綴る…"></textarea>
+    <div class="create-attach-bar" id="createAttachBar">
+      <button type="button" id="quickPhotoBtn">📷 写真を選ぶ</button>
+      <button type="button" id="quickVoiceBtn">🎙️ 音声を選ぶ</button>
+    </div>
+    <div class="media-preview" id="mediaPreview">
+      <button type="button" class="remove" id="removeMedia">×</button>
+      <div id="mediaPreviewInner"></div>
+    </div>
+    <div class="voice-preview" id="voicePreview">
+      <div style="font-size:12px;color:var(--ink-3)">選択した音声</div>
+      <audio id="voicePreviewAudio" controls playsinline></audio>
+      <button type="button" class="create-pick" id="removeVoiceBtn" style="margin-top:8px;width:100%">音声を外す</button>
+    </div>
     <div class="create-icon-row" id="createIconRow">
       <button type="button" class="create-icon" data-expand="photo" title="写真">📷</button>
       <button type="button" class="create-icon" data-expand="voice" title="声">🎙️</button>
@@ -2263,17 +2290,13 @@ body::after{display:none}
     </div>
     <div class="create-expand" id="expandPhoto">
       <div class="create-media-row" style="margin-bottom:10px">
-        <button type="button" class="create-pick" id="pickPhotoBtn">📷 1枚</button>
-        <button type="button" class="create-pick" id="pickAlbumBtn">🖼 複数</button>
-        <button type="button" class="create-pick" id="pickFolderBtn">📁 フォルダ</button>
-        <button type="button" class="create-pick" id="pickVideoBtn">🎥 動画</button>
+        <button type="button" class="create-pick" id="pickPhotoBtn">📷 アップロード</button>
+      <button type="button" class="create-pick" id="pickAlbumBtn">🖼 複数</button>
+      <button type="button" class="create-pick" id="pickFolderBtn">📁 フォルダ</button>
+      <button type="button" class="create-pick" id="pickVideoBtn">🎥 動画</button>
       </div>
       <label class="selfie-toggle"><input type="checkbox" id="selfieToggle"> 自分も写す（任意）</label>
       <button type="button" class="create-pick hidden" id="pickSelfieBtn" style="margin-top:8px;width:100%">🤳 セルフィーを追加</button>
-      <div class="media-preview" id="mediaPreview">
-        <button type="button" class="remove" id="removeMedia">×</button>
-        <div id="mediaPreviewInner"></div>
-      </div>
       <div class="loc-notice hidden" id="locNotice">
         この写真に含まれる位置情報（Exif）を読み取ります。常時の位置トラッキングは行いません。
         <label><input type="checkbox" id="stripLoc"> 位置を外して封じる</label>
@@ -2285,8 +2308,9 @@ body::after{display:none}
       <div style="font-size:12px;color:var(--ink-3);margin-top:4px">最大10秒 · 毎月の声で1年後に連続再生</div>
       <div class="voice-wave" id="voiceWave"><span style="height:8px"></span><span style="height:16px"></span><span style="height:24px"></span><span style="height:14px"></span><span style="height:20px"></span></div>
       <div class="voice-timer" id="voiceTimer">0s / 10s</div>
-      <div style="display:flex;gap:8px;margin-top:12px;justify-content:center">
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap">
         <button type="button" class="create-pick" id="voiceRecordBtn">録音する</button>
+        <button type="button" class="create-pick" id="voiceUploadBtn">ファイルから</button>
         <button type="button" class="create-pick hidden" id="voiceStopBtn">止める</button>
         <button type="button" class="create-pick hidden" id="voiceClearBtn">やり直す</button>
       </div>
@@ -2308,11 +2332,12 @@ body::after{display:none}
     </div>
     <div class="duration-label">叶えたいことは？ <span style="font-weight:400;color:var(--ink-3)">開封時に振り返る</span></div>
     <input type="text" class="goal-input" id="goalInput" maxlength="120" placeholder="例：毎日続ける / あの人に伝える">
-    <input type="file" id="photoInput" accept="image/*" class="hidden">
+    <input type="file" id="photoInput" accept="image/*,.heic,.heif" class="hidden">
     <input type="file" id="selfieInput" accept="image/*" capture="user" class="hidden">
     <input type="file" id="albumInput" accept="image/*,image/heic,image/heif" multiple class="hidden">
     <input type="file" id="folderInput" accept="image/*,image/heic,image/heif" multiple webkitdirectory directory class="hidden">
-    <input type="file" id="videoInput" accept="video/*" capture="environment" class="hidden">
+    <input type="file" id="videoInput" accept="video/*" class="hidden">
+    <input type="file" id="voiceFileInput" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.webm,.caf" class="hidden">
     <div class="duration-label">いつ開封しますか？ <span style="font-weight:400;color:var(--ink-3)">複数選択可</span></div>
     <div class="duration-pills multi" id="durationPills">
       <button type="button" class="duration-pill" data-days="now">今すぐ投稿</button>
@@ -3087,8 +3112,66 @@ async function handleAlbumFiles(files){
   $('mediaPreviewInner').innerHTML=`<img src="${dataUrl}" alt="preview">${imgs.length>1?`<div style="font-size:12px;color:var(--ink-3);margin-top:8px">${imgs.length}枚 · 封じるとそれぞれカプセルになります</div>`:''}${grid}`;
   $('mediaPreview').classList.add('show');
   $('locNotice')?.classList.toggle('hidden',!geo);
+  openCreateExpand('photo');
   updateMediaPickState();
   toast(`${imgs.length}枚選択`);
+}
+function openCreateExpand(key){
+  const panel=$('expand'+key.charAt(0).toUpperCase()+key.slice(1));
+  if(!panel)return;
+  createExpandOpen=key;
+  document.querySelectorAll('.create-expand').forEach(p=>p.classList.remove('open'));
+  $('createIconRow')?.querySelectorAll('.create-icon').forEach(b=>b.classList.toggle('on',b.dataset.expand===key));
+  panel.classList.add('open');
+}
+function showVoicePreview(dataUrl,label){
+  const vp=$('voicePreview');
+  const audio=$('voicePreviewAudio');
+  if(audio)audio.src=dataUrl||'';
+  if(vp)vp.classList.toggle('show',!!dataUrl);
+  if(label&&$('voiceTimer'))$('voiceTimer').textContent=label;
+}
+function getAudioDuration(dataUrl){
+  return new Promise(res=>{
+    const a=new Audio();
+    a.preload='metadata';
+    a.onloadedmetadata=()=>res(a.duration||0);
+    a.onerror=()=>res(0);
+    a.src=dataUrl;
+  });
+}
+async function loadVoiceFromFile(file){
+  if(!file)return;
+  if(file.size>8*1024*1024){toast('音声は8MB以下にしてください');return}
+  try{
+    const dataUrl=await readFileAsDataUrl(file);
+    const duration=await getAudioDuration(dataUrl);
+    if(duration>10.5){toast('音声は10秒以内にしてください');return}
+    if(duration<0.3){toast('音声が短すぎます');return}
+    pendingVoice={type:'voice',dataUrl,duration:Math.max(1,Math.ceil(duration)),fromFile:true};
+    voiceSeconds=pendingVoice.duration;
+    showVoicePreview(dataUrl,`${pendingVoice.duration}秒 · 選択済み`);
+    $('voiceClearBtn')?.classList.remove('hidden');
+    $('voiceRecordBtn')?.classList.remove('hidden');
+    $('voiceStopBtn')?.classList.add('hidden');
+    openCreateExpand('voice');
+    updateMediaPickState();
+    toast('音声をアップロードしました');
+    haptic();
+  }catch(e){toast('音声の読み込みに失敗しました')}
+}
+async function applyPhotoFile(file){
+  if(!file)return;
+  const geo=await extractGeoFromFile(file);
+  const dataUrl=await compressImage(file);
+  pendingMedia={type:'photo',dataUrl,geo};
+  $('mediaPreviewInner').innerHTML=`<img src="${dataUrl}" alt="preview">`;
+  $('mediaPreview').classList.add('show');
+  $('locNotice')?.classList.toggle('hidden',!geo);
+  if($('stripLoc'))$('stripLoc').checked=false;
+  openCreateExpand('photo');
+  updateMediaPickState();
+  toast(geo?'写真をアップロード（位置情報あり）':'写真をアップロードしました');
 }
 function ensureGroups(){
   if(!S.groups?.length){
@@ -3259,6 +3342,8 @@ function updateMediaPickState(){
   $('pickAlbumBtn')?.classList.toggle('has-media',!!pendingMedia?.albumCount);
   $('pickFolderBtn')?.classList.toggle('has-media',!!pendingMedia?.albumCount);
   $('pickVideoBtn')?.classList.toggle('has-media',pendingMedia?.type==='video');
+  $('quickPhotoBtn')?.classList.toggle('has-content',!!pendingMedia);
+  $('quickVoiceBtn')?.classList.toggle('has-content',!!pendingVoice);
   document.querySelector('.create-icon[data-expand="photo"]')?.classList.toggle('has-content',!!pendingMedia);
   document.querySelector('.create-icon[data-expand="voice"]')?.classList.toggle('has-content',!!pendingVoice);
   document.querySelector('.create-icon[data-expand="mood"]')?.classList.toggle('has-content',!!S.sealMood);
@@ -3302,6 +3387,8 @@ function resetCreateExtras(){
   $('pickSelfieBtn')?.classList.add('hidden');
   $('tagInputRow').innerHTML='';
   if($('tagInput'))$('tagInput').value='';
+  showVoicePreview(null);
+  if($('voicePreviewAudio'))$('voicePreviewAudio').src='';
   document.querySelectorAll('.create-expand').forEach(p=>p.classList.remove('open'));
   $('createIconRow')?.querySelectorAll('.create-icon').forEach(b=>b.classList.remove('on'));
   $('moodPalette')?.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
@@ -3331,6 +3418,7 @@ async function startVoiceRecord(){
       pendingVoice={type:'voice',dataUrl,duration:voiceSeconds};
       $('voiceClearBtn')?.classList.remove('hidden');
       $('voiceTimer').textContent=`録音済み · ${voiceSeconds}秒`;
+      showVoicePreview(dataUrl,`録音済み · ${voiceSeconds}秒`);
       updateMediaPickState();
     };
     voiceRecorder.start();
@@ -5842,6 +5930,35 @@ $('pickPhotoBtn').addEventListener('click',()=>{
   const input=$('photoInput');
   if(input?.showPicker)input.showPicker();else input?.click();
 });
+$('quickPhotoBtn')?.addEventListener('click',()=>{
+  const input=$('photoInput');
+  if(input?.showPicker)input.showPicker();else input?.click();
+  haptic();
+});
+$('quickVoiceBtn')?.addEventListener('click',()=>{
+  openCreateExpand('voice');
+  const input=$('voiceFileInput');
+  if(input?.showPicker)input.showPicker();else input?.click();
+  haptic();
+});
+$('voiceUploadBtn')?.addEventListener('click',()=>{
+  const input=$('voiceFileInput');
+  if(input?.showPicker)input.showPicker();else input?.click();
+  haptic();
+});
+$('voiceFileInput')?.addEventListener('change',async e=>{
+  const file=e.target.files?.[0];
+  if(file)await loadVoiceFromFile(file);
+  e.target.value='';
+});
+$('removeVoiceBtn')?.addEventListener('click',()=>{
+  pendingVoice=null;voiceSeconds=0;
+  $('voiceTimer').textContent='0s / 10s';
+  $('voiceClearBtn')?.classList.add('hidden');
+  showVoicePreview(null);
+  if($('voicePreviewAudio'))$('voicePreviewAudio').src='';
+  updateMediaPickState();haptic();
+});
 $('pickVideoBtn').addEventListener('click',()=>{
   const input=$('videoInput');
   if(input?.showPicker)input.showPicker();else input?.click();
@@ -5850,17 +5967,7 @@ $('pickVideoBtn').addEventListener('click',()=>{
 $('photoInput').addEventListener('change',async e=>{
   const file=e.target.files?.[0];
   if(!file)return;
-  try{
-    const geo=await extractGeoFromFile(file);
-    const dataUrl=await compressImage(file);
-    pendingMedia={type:'photo',dataUrl,geo};
-    $('mediaPreviewInner').innerHTML=`<img src="${dataUrl}" alt="preview">`;
-    $('mediaPreview').classList.add('show');
-    $('locNotice')?.classList.toggle('hidden',!geo);
-    if($('stripLoc'))$('stripLoc').checked=false;
-    updateMediaPickState();
-    toast(geo?'写真を選択（位置情報あり）':'写真を選択しました');
-  }catch(err){toast('写真の読み込みに失敗しました')}
+  try{await applyPhotoFile(file)}catch(err){toast('写真の読み込みに失敗しました')}
   e.target.value='';
 });
 
@@ -5873,6 +5980,7 @@ $('videoInput').addEventListener('change',async e=>{
     pendingMedia={type:'video',dataUrl};
     $('mediaPreviewInner').innerHTML=`<video src="${dataUrl}" controls muted playsinline></video>`;
     $('mediaPreview').classList.add('show');
+    openCreateExpand('photo');
     updateMediaPickState();
     toast('動画を選択しました');
   }catch(err){toast('動画の読み込みに失敗しました')}
@@ -5909,6 +6017,8 @@ $('voiceClearBtn')?.addEventListener('click',()=>{
   pendingVoice=null;voiceSeconds=0;
   $('voiceTimer').textContent='0s / 10s';
   $('voiceClearBtn')?.classList.add('hidden');
+  showVoicePreview(null);
+  if($('voicePreviewAudio'))$('voicePreviewAudio').src='';
   updateMediaPickState();haptic();
 });
 $('addTagBtn')?.addEventListener('click',()=>{
@@ -5989,7 +6099,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
   const hasVoice=!!pendingVoice;
   const hasMedia=!!pendingMedia;
   const hasPrompt=!!(S.createPromptChoice||S.createPromptText);
-  if(!hasMedia&&!hasVoice&&!caption&&!hasPrompt){toast('ひとことか、写真を残そう');return}
+  if(!hasMedia&&!hasVoice&&!caption&&!hasPrompt){toast('ひとことか、写真か、音声を残そう');return}
   if(fromCreate&&!isLoggedIn()){toast('投稿するにはログインが必要です');switchTab('messages');overlay.classList.remove('open');renderAuth();return}
   const type=hasVoice?'voice':(hasMedia?pendingMedia.type:'text');
   const built=fromCreate?buildSealTargets():{targets:[{type:'self',to:'self',vis:'future'}]};
@@ -6124,7 +6234,8 @@ async function sealCapsule({caption,media,fromCreate,fromDaily}){
 
 $('sealBtn').addEventListener('click',async()=>{
   const caption=$('createInput').value.trim();
-  if(!pendingMedia&&!pendingVoice&&!caption){toast('ひとことか、写真を残そう');return}
+  const hasPrompt=!!(S.createPromptChoice||S.createPromptText);
+  if(!pendingMedia&&!pendingVoice&&!caption&&!hasPrompt){toast('ひとことか、写真か、音声を残そう');return}
   await sealCapsule({caption,media:pendingMedia,fromCreate:true});
 });
 
