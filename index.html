@@ -2151,6 +2151,69 @@ body::after{display:none}
 .home-capsule-widget .hw-label{font-size:11px;color:var(--ink-3)}
 .home-secondary{display:none}
 
+/* ホーム · タイムライン流し */
+.home-flow{padding-bottom:8px}
+.home-flow-head{padding:8px 20px 4px}
+.morning-nudge{
+  margin:12px 20px 0;padding:14px 16px;border-radius:var(--r-sm);
+  background:linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.1);
+}
+.morning-nudge .mn-greet{font-size:15px;font-weight:600}
+.morning-nudge .mn-sub{font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.45}
+.morning-nudge .mn-actions{display:flex;gap:8px;margin-top:12px}
+.morning-nudge .mn-actions button{
+  flex:1;padding:10px;border-radius:999px;font-size:12px;font-weight:600;
+}
+.morning-nudge .mn-actions .primary{background:var(--accent);color:var(--accent-inv)}
+.morning-nudge .mn-actions .ghost{background:var(--bg-3);color:var(--ink-2)}
+.home-demo-guide{
+  margin:12px 20px 0;padding:16px;border-radius:var(--r);
+  background:var(--bg-2);border:1px dashed rgba(255,255,255,.12);
+}
+.home-demo-guide h3{font-size:15px;font-weight:600}
+.home-demo-guide p{font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.5}
+.demo-mini-feed{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.demo-mini-item{
+  display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-sm);
+  background:var(--bg-3);font-size:12px;color:var(--ink-2);
+}
+.demo-mini-item .dm-av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:11px;color:#fff;flex-shrink:0}
+.daily-strip-card{
+  margin:16px 20px 0;padding:14px;border-radius:var(--r);
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.06);
+}
+.daily-strip-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.daily-strip-label{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase}
+.daily-strip-progress{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.daily-strip-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.daily-chip{
+  flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;
+  min-width:64px;padding:10px 8px;border-radius:14px;background:var(--bg-3);
+  border:1px solid rgba(255,255,255,.06);position:relative;
+}
+.daily-chip.done{opacity:.55;border-color:rgba(255,255,255,.1)}
+.daily-chip .dc-icon{font-size:22px;line-height:1}
+.daily-chip .dc-label{font-size:10px;font-weight:600;color:var(--ink-2);white-space:nowrap}
+.daily-chip .dc-check{position:absolute;top:4px;right:6px;font-size:9px;color:var(--ink-3)}
+.daily-share-picker{margin:12px 0 4px;text-align:left}
+.daily-share-lbl{font-size:10px;font-weight:600;color:var(--ink-3);letter-spacing:.06em;margin:8px 0 6px}
+.daily-share-self{
+  width:100%;padding:10px;border-radius:999px;font-size:12px;font-weight:600;
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.08);color:var(--ink-3);margin-bottom:4px;
+}
+.daily-share-self.on{background:var(--ink);color:var(--accent-inv);border-color:var(--ink)}
+.daily-share-chips{display:flex;flex-wrap:wrap;gap:6px}
+.daily-share-chip{
+  padding:8px 12px;border-radius:999px;font-size:12px;font-weight:500;
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.08);color:var(--ink-3);
+}
+.daily-share-chip.on{background:rgba(255,255,255,.12);color:var(--ink);border-color:rgba(255,255,255,.2)}
+.tl-daily-badge{font-size:10px;padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--ink-3);margin-left:auto}
+.tl-daily-mood{font-size:36px;text-align:center;padding:16px 0}
+.onboard-demo-feed{margin:20px 0;text-align:left}
+.onboard-demo-feed .demo-mini-item{background:var(--bg-2)}
+
 /* 身内フィード */
 .inner-feed{padding:0 20px 100px}
 .inner-post{
@@ -2233,24 +2296,33 @@ body::after{display:none}
 
   <!-- ① ホーム -->
   <section class="panel active" id="panel-waiting">
-    <div class="home-hero">
-      <div class="home-date" id="homeDate">—</div>
-      <h1 class="home-tagline">今日を、残そう。</h1>
-      <div class="home-stats" id="homeStats"></div>
-      <div class="today-grid" id="todayGrid"></div>
+    <div class="home-flow">
+      <div class="home-flow-head">
+        <div class="home-date" id="homeDate">—</div>
+        <h1 class="home-tagline">今日を、残そう。</h1>
+        <div class="home-stats" id="homeStats"></div>
+      </div>
+      <div class="morning-nudge hidden" id="morningNudge"></div>
+      <div class="home-demo-guide hidden" id="homeDemoGuide"></div>
+      <div id="dailyStripMount"></div>
+      <div class="home-capsule-widget hidden" id="homeCapsuleWidget">
+        <div class="hw-label">過去から届いた記憶</div>
+        <div class="hw-countdown" id="widgetCountdown" style="font-size:20px;font-weight:600;margin-top:4px">—</div>
+        <div class="hw-sub" id="widgetSub" style="font-size:12px;color:var(--ink-3);margin-top:4px"></div>
+        <button type="button" class="hw-open-btn dq-cta hidden" id="widgetOpenBtn" style="margin-top:12px;width:100%">開ける</button>
+      </div>
+      <div class="lyt-section hidden" id="lastYearTodaySection">
+        <div class="lyt-label">去年の今日</div>
+        <div class="lyt-title" id="lytTitle">—</div>
+        <div class="lyt-card" id="lytCard"></div>
+      </div>
+      <div class="tl-feed-head">
+        <span class="tl-feed-label">タイムライン</span>
+        <span class="tl-feed-sub" id="tlFeedSub"></span>
+      </div>
+      <div class="tl-feed" id="timelineFeed"></div>
     </div>
-    <div class="lyt-section hidden" id="lastYearTodaySection">
-      <div class="lyt-label">去年の今日</div>
-      <div class="lyt-title" id="lytTitle">—</div>
-      <div class="lyt-card" id="lytCard"></div>
-    </div>
-    <div class="home-capsule-widget hidden" id="homeCapsuleWidget">
-      <div class="hw-label">過去から届いた記憶</div>
-      <div class="hw-countdown" id="widgetCountdown" style="font-size:20px;font-weight:600;margin-top:4px">—</div>
-      <div class="hw-sub" id="widgetSub" style="font-size:12px;color:var(--ink-3);margin-top:4px"></div>
-      <button type="button" class="hw-open-btn dq-cta hidden" id="widgetOpenBtn" style="margin-top:12px;width:100%">開ける</button>
-    </div>
-    <div class="home-secondary" id="homeSecondary" aria-hidden="true">
+    <div class="home-secondary hidden" id="homeSecondary" aria-hidden="true">
     <div class="daily-question hidden" id="dailyQuestionBlock">
         <div class="dq-label">今日の問い</div>
         <div class="dq-streak-pill hidden" id="streakPill">🔥 連続 <span id="streakCount">0</span> 日</div>
@@ -2272,7 +2344,6 @@ body::after{display:none}
         <p style="font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.45">撮ると、友達の今日が見える</p>
         <div class="today-photo-grid" id="todayPhotoGrid"></div>
       </div>
-    <div class="tl-feed" id="timelineFeed"></div>
     <div class="lyt-section tm-section hidden" id="timeMachineSection">
       <div class="tm-scroll" id="timeMachineScroll"></div>
     </div>
@@ -2689,6 +2760,12 @@ body::after{display:none}
     <button type="button" id="onboardNext1">はじめる</button>
     <button type="button" id="onboardDemo" style="margin-top:12px;background:var(--bg-2);color:var(--ink-2)">デモで試す</button>
   </div>
+  <div class="onboard-panel hidden" id="onboardStepDemo">
+    <h2>こんな感じで残す</h2>
+    <p>毎日の気分や写真が、静かにタイムラインに流れていきます。未来の自分への記録にもなります。</p>
+    <div class="onboard-demo-feed" id="onboardDemoFeed"></div>
+    <button type="button" id="onboardNextDemo">自分もやってみる</button>
+  </div>
   <div class="onboard-panel hidden" id="onboardStepMood">
     <h2 style="font-size:22px">まずは、今日の気分は？</h2>
     <p style="font-size:14px">1タップで残せます。書く必要はありません。</p>
@@ -2707,10 +2784,7 @@ body::after{display:none}
     <h3 style="font-size:18px;font-weight:600;margin-bottom:8px">今日の気分</h3>
     <p style="font-size:13px;color:var(--ink-3);margin-bottom:16px">ひとつ選ぶだけ</p>
     <div class="onboard-mood-row" id="dailyMoodPicker"></div>
-    <div class="daily-vis-toggle" data-vis-scope="mood">
-      <button type="button" class="on" data-vis="private">自分だけ</button>
-      <button type="button" data-vis="inner">身内に見せる</button>
-    </div>
+    <div id="moodSharePicker"></div>
     <button type="button" class="create-pick" id="moodPickClose" style="width:100%;margin-top:8px">閉じる</button>
   </div>
 </div>
@@ -2718,10 +2792,7 @@ body::after{display:none}
   <div class="mood-pick-sheet">
     <h3 style="font-size:18px;font-weight:600;margin-bottom:4px" id="dailyConfirmTitle">今日の一枚</h3>
     <div class="daily-confirm-preview" id="dailyConfirmPreview"></div>
-    <div class="daily-vis-toggle" data-vis-scope="confirm">
-      <button type="button" class="on" data-vis="private">自分だけ</button>
-      <button type="button" data-vis="inner">身内に見せる</button>
-    </div>
+    <div id="confirmSharePicker"></div>
     <button type="button" class="dq-cta" id="dailyConfirmSave" style="width:100%;margin-top:8px">残す</button>
     <button type="button" class="create-pick" id="dailyConfirmCancel" style="width:100%;margin-top:8px">やめる</button>
   </div>
@@ -2733,10 +2804,7 @@ body::after{display:none}
     <div class="song-pick-current" id="songPickCurrent"></div>
     <button type="button" class="dq-cta" id="songPickUseTop" style="width:100%;margin-bottom:8px">この曲を残す</button>
     <button type="button" class="create-pick" id="songPickManual" style="width:100%;margin-bottom:8px">曲名を入力</button>
-    <div class="daily-vis-toggle" data-vis-scope="song">
-      <button type="button" class="on" data-vis="private">自分だけ</button>
-      <button type="button" data-vis="inner">身内に見せる</button>
-    </div>
+    <div id="songSharePicker"></div>
     <button type="button" class="create-pick" id="songPickClose" style="width:100%;margin-top:8px">閉じる</button>
   </div>
 </div>
@@ -2891,22 +2959,74 @@ const DAILY_RECORD_TYPES={
 };
 let pendingDailyType=null;
 let pendingDailyMedia=null;
-function getDailyVis(scope){
-  const toggle=document.querySelector(`.daily-vis-toggle[data-vis-scope="${scope||'mood'}"]`)
-    ||document.querySelector('.daily-vis-toggle');
-  return toggle?.querySelector('button.on')?.dataset.vis||'private';
+function ensureDailyShareDest(){if(!S.dailyShareDest)S.dailyShareDest={}}
+function defaultShareDest(){return{private:true,friends:[],groups:[]}}
+function getDailyShareDest(scope){
+  ensureDailyShareDest();
+  if(!S.dailyShareDest[scope])S.dailyShareDest[scope]=defaultShareDest();
+  return S.dailyShareDest[scope];
 }
-function initDailyVisToggles(){
-  document.querySelectorAll('.daily-vis-toggle').forEach(toggle=>{
-    if(toggle.dataset.visReady)return;
-    toggle.dataset.visReady='1';
-    toggle.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-      toggle.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
-      b.classList.add('on');
-      haptic();
-    }));
+function dailySharePickerHtml(scope){
+  ensureGroups();
+  const dest=getDailyShareDest(scope);
+  const friends=MEMBERS.map(m=>`<button type="button" class="daily-share-chip${dest.friends.includes(m.id)?' on':''}" data-friend="${m.id}">${esc(m.n)}</button>`).join('');
+  const groups=(S.groups||[]).map(g=>`<button type="button" class="daily-share-chip${dest.groups.includes(g.id)?' on':''}" data-group="${g.id}">${esc(g.emoji||'✨')} ${esc(g.name)}</button>`).join('');
+  return`<div class="daily-share-picker" data-share-scope="${scope}">
+    <button type="button" class="daily-share-self${dest.private&&!dest.friends.length&&!dest.groups.length?' on':''}" data-share-self>自分だけの記録</button>
+    ${friends?`<div class="daily-share-section"><div class="daily-share-lbl">友達に見せる</div><div class="daily-share-chips">${friends}</div></div>`:''}
+    ${groups?`<div class="daily-share-section"><div class="daily-share-lbl">グループに送る</div><div class="daily-share-chips">${groups}</div></div>`:''}
+  </div>`;
+}
+function bindDailySharePicker(root,scope){
+  if(!root)return;
+  const picker=root.querySelector?.(`[data-share-scope="${scope}"]`)||root;
+  if(picker.dataset.shareReady)return;
+  picker.dataset.shareReady='1';
+  const dest=getDailyShareDest(scope);
+  const syncSelf=()=>{
+    const selfBtn=picker.querySelector('[data-share-self]');
+    if(selfBtn)selfBtn.classList.toggle('on',dest.private&&!dest.friends.length&&!dest.groups.length);
+  };
+  picker.querySelector('[data-share-self]')?.addEventListener('click',()=>{
+    dest.private=true;dest.friends=[];dest.groups=[];
+    picker.querySelectorAll('.daily-share-chip').forEach(c=>c.classList.remove('on'));
+    syncSelf();save();haptic();
   });
+  picker.querySelectorAll('[data-friend]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.friend;
+    dest.private=false;
+    dest.friends=dest.friends.includes(id)?dest.friends.filter(x=>x!==id):[...dest.friends,id];
+    b.classList.toggle('on',dest.friends.includes(id));
+    syncSelf();save();haptic();
+  }));
+  picker.querySelectorAll('[data-group]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.group;
+    dest.private=false;
+    dest.groups=dest.groups.includes(id)?dest.groups.filter(x=>x!==id):[...dest.groups,id];
+    b.classList.toggle('on',dest.groups.includes(id));
+    syncSelf();save();haptic();
+  }));
 }
+function renderDailySharePicker(scope,el){
+  if(!el)return;
+  el.innerHTML=dailySharePickerHtml(scope);
+  bindDailySharePicker(el,scope);
+}
+function resolveDailyVisibility(dest){
+  if(dest.private&&!dest.friends?.length&&!dest.groups?.length)return 'private';
+  return 'shared';
+}
+function dailyDestLabel(rec){
+  if(rec.visibility==='private'&&!(rec.shareTo?.friends?.length||rec.shareTo?.groups?.length))return '自分だけ';
+  const names=(rec.shareTo?.friends||[]).map(id=>MEMBERS.find(m=>m.id===id)?.n).filter(Boolean);
+  const groups=(rec.shareTo?.groups||[]).map(id=>S.groups?.find(g=>g.id===id)?.name).filter(Boolean);
+  if(rec.visibility==='inner'&&!names.length&&!groups.length)return '身内';
+  return[...names,...groups].join(' · ')||'友達';
+}
+function getDailyVis(scope){
+  return resolveDailyVisibility(getDailyShareDest(scope));
+}
+function initDailyVisToggles(){/* legacy noop */}
 function isFromInnerFriend(cap){
   if(!cap?.from)return false;
   const me=meName();
@@ -2974,10 +3094,12 @@ async function createDailyRecord(type,data={}){
   ensureDailyRecords();
   const id='dr'+Date.now();
   const ctx=await captureSealContext();
+  const shareTo=data.shareTo||{friends:[],groups:[]};
   const rec={
     id,userId:meName(),type,
     mood:data.mood,songTitle:data.songTitle,songId:data.songId,
     visibility:data.visibility||'private',
+    shareTo,
     createdAt:Date.now(),resurfaceAt:addDays(365),
     sealContext:ctx,
   };
@@ -2994,17 +3116,26 @@ async function createDailyRecord(type,data={}){
   }
   S.firstSealDone=true;
   S.onboardingDone=true;
+  S.homeGuideSeen=true;
   save();
   return rec;
 }
+function dailyRecordPayload(scope,data={}){
+  const dest=getDailyShareDest(scope);
+  return{
+    ...data,
+    visibility:resolveDailyVisibility(dest),
+    shareTo:{friends:[...dest.friends],groups:[...dest.groups]},
+  };
+}
 function finishDailyRecordToast(){
-  toast('残りました。1年後の今日、戻ってきます。');
+  toast('残りました。タイムラインに流れていきます。');
   haptic();
   renderAll();
 }
-async function saveDailyMood(emoji,visibility){
-  const vis=visibility||getDailyVis('mood');
-  await createDailyRecord('mood',{mood:emoji,visibility:vis});
+async function saveDailyMood(emoji,scope){
+  const payload=dailyRecordPayload(scope||'mood',{mood:emoji});
+  await createDailyRecord('mood',payload);
   finishDailyRecordToast();
 }
 function openSongPickOverlay(){
@@ -3026,42 +3157,118 @@ function showDailyConfirm(dataUrl){
   pendingDailyMedia={type,dataUrl};
   const prev=$('dailyConfirmPreview');
   if(prev)prev.innerHTML=`<img src="${dataUrl}" alt="">`;
+  renderDailySharePicker('confirm',$('confirmSharePicker'));
   $('dailyConfirmOverlay')?.classList.add('open');
 }
 function openDailyRecord(type){
   if(hasTodayDaily(type)){toast('今日はもう残しています');return}
   if(type==='mood'){
+    renderDailySharePicker('mood',$('moodSharePicker'));
     $('moodPickOverlay')?.classList.add('open');
     return;
   }
   if(type==='song'){
+    renderDailySharePicker('song',$('songSharePicker'));
     openSongPickOverlay();
     return;
   }
+  renderDailySharePicker('confirm',$('confirmSharePicker'));
   pendingDailyType=type;
   if(type==='sky')$('dailySkyInput')?.click();
   else $('dailyPhotoInput')?.click();
 }
-function renderHomeTodayGrid(){
-  const grid=$('todayGrid');
-  if(!grid)return;
+function renderDailyStrip(){
+  const mount=$('dailyStripMount');
+  if(!mount)return;
   const today=todayDailyRecords();
-  grid.innerHTML=Object.entries(DAILY_RECORD_TYPES).map(([type,meta])=>{
-    const done=today.find(r=>r.type===type);
-  const preview=done?dailyRecordPreview(done):'';
-    return`<button type="button" class="today-card${done?' done':''}" data-daily="${type}">
-      <div class="tc-icon">${meta.icon}</div>
-      <div class="tc-label">${esc(meta.label)}</div>
-      ${done?`<div class="tc-preview">${preview}</div><div class="tc-done">残した ✓</div>`:'<div class="tc-done">タップして残す</div>'}
-    </button>`;
-  }).join('');
-  grid.querySelectorAll('[data-daily]').forEach(b=>b.addEventListener('click',()=>{openDailyRecord(b.dataset.daily);haptic()}));
+  const done=t=>today.some(r=>r.type===t);
+  mount.innerHTML=`<div class="daily-strip-card">
+    <div class="daily-strip-head">
+      <span class="daily-strip-label">今日の記録</span>
+      <span class="daily-strip-progress">${today.length}/5</span>
+    </div>
+    <div class="daily-strip-scroll">
+      ${Object.entries(DAILY_RECORD_TYPES).map(([type,meta])=>`
+        <button type="button" class="daily-chip${done(type)?' done':''}" data-daily="${type}">
+          <span class="dc-icon">${meta.icon}</span>
+          <span class="dc-label">${esc(meta.label.replace('今日の',''))}</span>
+          ${done(type)?'<span class="dc-check">✓</span>':''}
+        </button>`).join('')}
+    </div>
+  </div>`;
+  mount.querySelectorAll('[data-daily]').forEach(b=>b.addEventListener('click',()=>{openDailyRecord(b.dataset.daily);haptic()}));
 }
+function renderMorningNudge(){
+  const el=$('morningNudge');
+  if(!el)return;
+  const h=new Date().getHours();
+  const hasMood=hasTodayDaily('mood');
+  const dismissed=S.morningDismissDate===todayStr();
+  const show=h>=6&&h<13&&!hasMood&&!dismissed;
+  if(!show){el.classList.add('hidden');return}
+  el.classList.remove('hidden');
+  const greet=h<12?'おはよう。':'こんにちは。';
+  el.innerHTML=`<div class="mn-greet">${greet}今日を、残そう。</div>
+    <div class="mn-sub">気分ひとつからでOK。30秒で今日がタイムラインに流れます。</div>
+    <div class="mn-actions">
+      <button type="button" class="primary" id="morningNudgeGo">記録する</button>
+      <button type="button" class="ghost" id="morningNudgeLater">あとで</button>
+    </div>`;
+  $('morningNudgeGo')?.addEventListener('click',()=>{openDailyRecord('mood');haptic()});
+  $('morningNudgeLater')?.addEventListener('click',()=>{
+    S.morningDismissDate=todayStr();save();el.classList.add('hidden');haptic();
+  });
+}
+function demoMiniFeedHtml(){
+  const samples=[
+    {n:'みお',c:'#E8A0BF',i:'み',body:'☀️ 気分',sub:'自分だけ'},
+    {n:'けんと',c:'#7EB8DA',i:'け',body:'📷 カフェのラテ',sub:'大学の仲間'},
+    {n:'あなた',c:'#5A5A5A',i:'ゆ',body:'🎵 夜に駆ける',sub:'みお · けんと'},
+  ];
+  return samples.map(s=>`<div class="demo-mini-item">
+    <div class="dm-av" style="background:${s.c}">${s.i}</div>
+    <div><div style="font-weight:500;color:var(--ink)">${esc(s.n)}</div><div>${esc(s.body)} · ${esc(s.sub)}</div></div>
+  </div>`).join('');
+}
+function renderHomeDemoGuide(){
+  const el=$('homeDemoGuide');
+  if(!el)return;
+  if(S.homeGuideSeen||S.firstSealDone){el.classList.add('hidden');return}
+  el.classList.remove('hidden');
+  el.innerHTML=`<h3>こういう風に、静かに残す</h3>
+    <p>毎日の気分・写真・曲を選んで、自分だけ or 友達・グループに送れます。</p>
+    <div class="demo-mini-feed">${demoMiniFeedHtml()}</div>
+    <button type="button" class="dq-cta" id="dismissDemoGuide" style="width:100%;margin-top:12px">はじめる</button>`;
+  $('dismissDemoGuide')?.addEventListener('click',()=>{
+    S.homeGuideSeen=true;save();el.classList.add('hidden');
+    if(!hasTodayDaily('mood'))openDailyRecord('mood');
+    haptic();
+  });
+}
+function renderOnboardDemoFeed(){
+  const el=$('onboardDemoFeed');
+  if(!el)return;
+  el.innerHTML=demoMiniFeedHtml();
+}
+function dailyRecordsAsTimelinePosts(){
+  const me=meName();
+  return(S.dailyRecords||[]).map(r=>({
+    id:r.id,from:me,to:r.visibility==='private'?'self':'shared',
+    type:r.type,dailyType:r.type,isDaily:true,
+    text:r.mood||r.songTitle||DAILY_RECORD_TYPES[r.type]?.label||'',
+    mood:r.mood,songTitle:r.songTitle,
+    at:r.createdAt,mediaId:r.mediaId,
+    sealed:false,opened:true,visibility:r.visibility,shareTo:r.shareTo,
+    sealContext:r.sealContext,
+    linkedSong:r.type==='song'&&r.songTitle?{title:r.songTitle.split(' · ')[0],artist:r.songTitle.split(' · ')[1]||''}:null,
+  }));
+}
+function renderHomeTodayGrid(){/* replaced by renderDailyStrip */}
 function renderHome(){
   const d=new Date();
   $('homeDate').textContent=`今日 ${d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'})}`;
   $('homeStats').textContent=`記録 ${recordCountDisplay()} · 連続 ${recordStreakDisplay()}日`;
-  renderHomeTodayGrid();
+  renderDailyStrip();
 }
 function demoInnerTodayPosts(){
   const moods=['☀️','🌧️','🔥','🫧'];
@@ -3091,8 +3298,10 @@ function innerCapsulePostsToday(){
 }
 function innerCircleTodayPosts(){
   const d=todayStr();
-  const mine=(S.dailyRecords||[]).filter(r=>r.visibility==='inner'&&new Date(r.createdAt).toISOString().slice(0,10)===d)
-    .map(r=>({id:r.id,name:meName(),char:meName().charAt(0),color:'#5A5A5A',...r,at:r.createdAt}));
+  const mine=(S.dailyRecords||[]).filter(r=>{
+    const shared=r.visibility==='shared'||r.visibility==='inner'||r.shareTo?.friends?.length||r.shareTo?.groups?.length;
+    return shared&&new Date(r.createdAt).toISOString().slice(0,10)===d;
+  }).map(r=>({id:r.id,name:meName(),char:meName().charAt(0),color:'#5A5A5A',...r,at:r.createdAt}));
   const caps=innerCapsulePostsToday();
   const posts=[...mine,...caps];
   if(!posts.length&&S.demoMode)return demoInnerTodayPosts();
@@ -3152,14 +3361,16 @@ function initMoodPickers(){
     $('onboardStats').textContent=`記録 ${recordCountDisplay()} · 連続 ${recordStreakDisplay()}日`;
   });
   mkRow($('dailyMoodPicker'),async m=>{
-    await saveDailyMood(m,getDailyVis('mood'));
+    await saveDailyMood(m,'mood');
     $('moodPickOverlay')?.classList.remove('open');
   });
 }
 function showOnboardingStep(step){
   $('onboardStepWelcome')?.classList.toggle('hidden',step!=='welcome');
+  $('onboardStepDemo')?.classList.toggle('hidden',step!=='demo');
   $('onboardStepMood')?.classList.toggle('hidden',step!=='mood');
   $('onboardStepDone')?.classList.toggle('hidden',step!=='done');
+  if(step==='demo')renderOnboardDemoFeed();
   $('onboardOverlay')?.classList.add('open');
 }
 const HOME_NOTIFS=[
@@ -4471,6 +4682,7 @@ function isPromptOffDay(d=new Date()){
   return off.includes(d.getDay());
 }
 function checkMorningPromptNotif(){
+  checkMorningDailyNotif();
   const p=getTodayPrompt();
   if(!p)return;
   const key='prompt_am_'+todayStr();
@@ -4478,6 +4690,16 @@ function checkMorningPromptNotif(){
   S.shownNotifs=S.shownNotifs||[];
   S.shownNotifs.push(key);
   pushHomeNotif('今日の問いが届きました',p.text,'timeline',{priority:5});
+}
+function checkMorningDailyNotif(){
+  const h=new Date().getHours();
+  if(h<7||h>10)return;
+  const key='daily_am_'+todayStr();
+  if(S.shownNotifs?.includes(key))return;
+  if(hasTodayDaily('mood'))return;
+  S.shownNotifs=S.shownNotifs||[];
+  S.shownNotifs.push(key);
+  pushHomeNotif('おはよう。今日を残そう','気分や写真を30秒で','home',{priority:4});
 }
 function isRainToday(){
   if(S.weatherRain!==undefined)return S.weatherRain;
@@ -5688,6 +5910,8 @@ if(!S.longestStreak)S.longestStreak=S.currentStreak||0;
 if(!S.dailyRecords)S.dailyRecords=[];
 if(!S.echoReplies)S.echoReplies=[];
 if(!S.monthlyLetters)S.monthlyLetters=[];
+if(!S.dailyShareDest)S.dailyShareDest={};
+if(S.homeGuideSeen===undefined)S.homeGuideSeen=false;
 if(!S.innerReactions)S.innerReactions=[];
 if(!S.dailyAnswers)S.dailyAnswers=[];
 ensureDailyRecords();
@@ -5803,11 +6027,13 @@ function getNextCapsule(){
 function timelineFeedPosts(){
   const me=meName();
   const next=getNextCapsule();
-  return timelinePosts().filter(p=>{
+  const daily=dailyRecordsAsTimelinePosts();
+  const caps=timelinePosts().filter(p=>{
     if(next&&p.id===next.id)return false;
     if(p.sealed&&!p.opened&&(p.from===me||p.from==='ゆうま'))return false;
     return true;
   });
+  return[...daily,...caps].sort((a,b)=>b.at-a.at);
 }
 function renderNextCapsule(){
   const w=$('homeCapsuleWidget');
@@ -5841,11 +6067,22 @@ function renderTimelineFeed(){
   if(!el)return;
   const me=meName();
   const posts=timelineFeedPosts();
+  const sub=$('tlFeedSub');
+  if(sub)sub.textContent=posts.length?`${posts.length}件`:'';
+  if(!posts.length&&!S.firstSealDone){
+    el.innerHTML=`<div class="home-demo-guide" style="margin:0">
+      <h3>こういう風に、静かに残す</h3>
+      <p>上の「今日の記録」から気分や写真を残すと、ここに流れていきます。</p>
+      <div class="demo-mini-feed">${demoMiniFeedHtml()}</div>
+    </div>`;
+    return;
+  }
   if(!posts.length){
-    el.innerHTML='<div class="empty-state" style="padding:40px 0">まだ投稿がありません。<br><span style="color:var(--ink-3)">＋から記憶を封じましょう。</span></div>';
+    el.innerHTML='<div class="empty-state" style="padding:40px 0">今日の記録を残すと、ここに並びます。</div>';
     return;
   }
   el.innerHTML=posts.map(p=>{
+    if(p.isDaily)return renderTimelineDailyItem(p,me);
     const m=MEMBERS.find(x=>x.n===p.from);
     const avStyle=m?`style="background:${m.c}"`:'';
     const avChar=m?m.i:(p.from===me||p.from==='ゆうま'?'ゆ':'?');
@@ -5913,6 +6150,25 @@ function renderLastYearToday(){
     card.innerHTML=`${ctxStamp}<p style="font-size:14px;line-height:1.55;margin:0">${esc(item.text||'')}</p>`;
   }
 }
+function renderTimelineDailyItem(p,me){
+  const isMe=true;
+  const label=DAILY_RECORD_TYPES[p.dailyType||p.type]?.label||'記録';
+  const dest=dailyDestLabel(p);
+  let body='';
+  if(p.type==='mood'||p.mood)body=`<div class="tl-daily-mood">${p.mood||''}</div>`;
+  else if(p.mediaId)body=`<div class="tl-open-body tl-media-wrap"><img data-lazy="${esc(p.mediaId)}" alt="">${contextStampHtml(p,'overlay')}</div>`;
+  else if(p.type==='song')body=`<div class="tl-open-caption">🎵 ${esc(p.songTitle||'')}</div>`;
+  const ctx=!p.mediaId?contextStampHtml(p):'';
+  return`<article class="tl-item" data-id="${esc(p.id)}">
+    <div class="tl-item-head">
+      <div class="tl-av" style="background:#5A5A5A">${me.charAt(0)}</div>
+      <div><div class="tl-name">あなた</div>
+      <div class="tl-meta">${timeAgo(p.at)} · ${esc(label)}${dest?' · '+esc(dest):''}</div></div>
+      <span class="tl-daily-badge">今日</span>
+    </div>
+    ${body}${ctx}
+  </article>`;
+}
 function renderTimeline(){
   checkMorningPromptNotif();
   checkLastYearTodayNotif();
@@ -5924,6 +6180,9 @@ function renderTimeline(){
   checkBirthday();
   checkOpenPreview();
   renderHome();
+  renderMorningNudge();
+  renderHomeDemoGuide();
+  renderTimelineFeed();
   renderLastYearToday();
   renderNextCapsule();
 }
@@ -6923,6 +7182,7 @@ function renderNotifDropdown(){
       if(item.dataset.action==='open'&&ready().length)startOpening(ready(),false);
       else if(item.dataset.action==='dm'){switchTab('me');const dm=S.dms?.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}
       else if(item.dataset.action==='timeline'){switchTab('waiting');$('timeMachineSection')?.scrollIntoView({behavior:'smooth',block:'start'})}
+      else if(item.dataset.action==='home'){switchTab('waiting');renderTimeline();haptic()}
       else if(item.dataset.action==='insight'){S.archiveTab='insight';save();switchTab('archive');renderArchive();openInsightSheet(monthInsightKey())}
       else if(item.dataset.action==='yearInsight')openInsightSheet(String(new Date().getFullYear()));
       haptic();
@@ -7797,6 +8057,10 @@ $('onboardNext1')?.addEventListener('click',()=>{
   if(!isLoggedIn()){toast('まず登録またはログインしてください');$('onboardOverlay')?.classList.remove('open');switchTab('messages');renderAuth();return}
   const inv=$('onboardInviteInput')?.value.trim();
   if(inv)showInviteWelcome(inv);
+  showOnboardingStep('demo');
+  haptic();
+});
+$('onboardNextDemo')?.addEventListener('click',()=>{
   showOnboardingStep('mood');
   initMoodPickers();
   haptic();
@@ -7818,7 +8082,7 @@ $('dailyConfirmOverlay')?.addEventListener('click',e=>{if(e.target===$('dailyCon
 $('dailyConfirmSave')?.addEventListener('click',async()=>{
   if(!pendingDailyMedia)return;
   try{
-    await createDailyRecord(pendingDailyMedia.type,{mediaDataUrl:pendingDailyMedia.dataUrl,visibility:getDailyVis('confirm')});
+    await createDailyRecord(pendingDailyMedia.type,dailyRecordPayload('confirm',{mediaDataUrl:pendingDailyMedia.dataUrl}));
     pendingDailyMedia=null;
     pendingDailyType=null;
     $('dailyConfirmOverlay')?.classList.remove('open');
@@ -7830,7 +8094,7 @@ $('songPickOverlay')?.addEventListener('click',e=>{if(e.target===$('songPickOver
 $('songPickUseTop')?.addEventListener('click',async()=>{
   const top=currentTodaySong();
   if(!top)return;
-  await createDailyRecord('song',{songTitle:top.title,songId:top.title,visibility:getDailyVis('song')});
+  await createDailyRecord('song',dailyRecordPayload('song',{songTitle:top.title,songId:top.title}));
   $('songPickOverlay')?.classList.remove('open');
   finishDailyRecordToast();
 });
@@ -7838,7 +8102,7 @@ $('songPickManual')?.addEventListener('click',async()=>{
   const title=prompt('曲名を入力','')?.trim();
   if(!title)return;
   const artist=prompt('アーティスト（任意）','')?.trim()||'';
-  await createDailyRecord('song',{songTitle:artist?`${title} · ${artist}`:title,songId:title,visibility:getDailyVis('song')});
+  await createDailyRecord('song',dailyRecordPayload('song',{songTitle:artist?`${title} · ${artist}`:title,songId:title}));
   $('songPickOverlay')?.classList.remove('open');
   finishDailyRecordToast();
 });
@@ -7865,7 +8129,6 @@ async function handleDailyPhotoInput(e){
 }
 $('dailyPhotoInput')?.addEventListener('change',handleDailyPhotoInput);
 $('dailySkyInput')?.addEventListener('change',handleDailyPhotoInput);
-initDailyVisToggles();
 $('onboardDemo')?.addEventListener('click',async()=>{
   const name=prompt('あなたの名前','ゆうま')||'ゆうま';
   const email=name+'@demo.local';
