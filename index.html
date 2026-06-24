@@ -558,7 +558,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .tl-open-body.tl-media-wrap{position:relative;border-radius:var(--r-sm);overflow:hidden}
 .map-pin-wrap{display:flex;flex-direction:column;align-items:center}
 .map-ctx-label{
-  margin-top:5px;padding:3px 9px;border-radius:999px;max-width:128px;
+  margin-top:5px;padding:3px 9px;border-radius:999px;max-width:132px;
   font-family:var(--font);font-size:9px;font-weight:500;letter-spacing:.02em;line-height:1.35;white-space:nowrap;
   overflow:hidden;text-overflow:ellipsis;
   background:rgba(10,10,10,.88);color:rgba(255,255,255,.78);
@@ -566,6 +566,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   box-shadow:0 4px 12px rgba(0,0,0,.35);pointer-events:none;
   animation:ctxFadeIn .35s ease both;
 }
+.map-ctx-label--detail{max-width:168px;white-space:normal;text-align:center;line-height:1.4}
 .map-point-ctx{margin:12px 0 4px}
 .map-point-ctx .ctx-stamp--inline{margin:0;justify-content:flex-start}
 @keyframes contextReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -1341,7 +1342,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 }
 .tab-nav-create:active{transform:scale(.94)}
 .tab-nav-create .plus{display:none}
-.tab-nav-create .seal-char{display:block;line-height:1}
+.tab-nav-create .seal-char{display:block;line-height:1;font-size:11px;font-weight:700;letter-spacing:.1em}
 
 /* 思い出マップ */
 #panel-map.active{display:flex;flex-direction:column;min-height:calc(100dvh - var(--nav-h))}
@@ -1373,13 +1374,14 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .map-heat-dot{border-radius:50%;background:rgba(255,255,255,.88);border:2px solid var(--bg);
   box-shadow:0 0 12px rgba(255,255,255,.2);
 }
-.leaflet-container{background:var(--bg-2)!important;font-family:var(--font)}
-.leaflet-tile-pane{filter:grayscale(1) brightness(.55) contrast(1.08)}
-.map-zoom-btns{position:absolute;right:12px;bottom:12px;z-index:500;display:flex;flex-direction:column;gap:6px}
+.leaflet-container{background:#1a1a1e!important;font-family:var(--font);touch-action:none}
+.leaflet-tile-pane{filter:brightness(.92) contrast(1.05) saturate(.88)}
+.leaflet-pane,.leaflet-top,.leaflet-bottom{z-index:400}
+.map-zoom-btns{position:absolute;right:12px;bottom:12px;z-index:1000;display:flex;flex-direction:column;gap:8px;pointer-events:auto}
 .map-zoom-btns button{
-  width:40px;height:40px;border-radius:50%;background:rgba(10,10,12,.82);
-  border:1px solid var(--line);color:var(--ink);font-size:20px;font-weight:400;line-height:1;
-  backdrop-filter:blur(10px);box-shadow:var(--shadow);
+  width:44px;height:44px;border-radius:50%;background:rgba(10,10,12,.9);
+  border:1px solid rgba(255,255,255,.18);color:var(--ink);font-size:22px;font-weight:400;line-height:1;
+  backdrop-filter:blur(10px);box-shadow:var(--shadow);touch-action:manipulation;-webkit-tap-highlight-color:transparent;
 }
 .map-zoom-btns button:active{transform:scale(.94)}
 .map-route-head{width:14px;height:14px;border-radius:50%;background:var(--ink);box-shadow:0 0 10px rgba(255,255,255,.35)}
@@ -2300,7 +2302,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .onboard-demo-feed{margin:20px 0;text-align:left}
 .onboard-demo-feed .demo-mini-item{background:var(--bg-2)}
 
-/* 身内フィード */
+/* Family feed */
 .inner-feed{padding:0 20px 100px}
 .inner-post{
   padding:16px 0;border-bottom:1px solid rgba(255,255,255,.06);
@@ -2478,7 +2480,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     <div class="home-flow">
       <div class="home-flow-head">
         <div class="home-date" id="homeDate">—</div>
-        <h1 class="home-tagline">今日を、残そう。</h1>
+        <h1 class="home-tagline">今日を、未来に残そう。</h1>
         <div class="home-stats" id="homeStats"></div>
       </div>
       <div class="morning-nudge hidden" id="morningNudge"></div>
@@ -2567,11 +2569,11 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     <div class="archive-view" id="archiveView"></div>
   </section>
 
-  <!-- ⑤ 身内 -->
+  <!-- ⑤ Family -->
   <section class="panel" id="panel-messages">
     <div id="meListView">
       <div class="panel-head" style="padding-top:0">
-        <h1 style="font-size:28px;font-weight:600">身内</h1>
+        <h1 style="font-size:28px;font-weight:600">Family</h1>
         <p class="sub">みんなの今日。いいねもコメントもない。</p>
       </div>
       <div class="me-panel" id="mePanel">
@@ -2626,10 +2628,10 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C8 2 4 7 4 12c0 4 4 9 8 10 4-1 8-6 8-10 0-5-4-10-8-10z"/><circle cx="12" cy="12" r="3"/></svg>
       マップ
     </button>
-    <button type="button" class="tab-nav-create" id="openCreate" aria-label="封じる"><span class="seal-char">封</span></button>
+    <button type="button" class="tab-nav-create" id="openCreate" aria-label="投稿"><span class="seal-char">POST</span></button>
     <button type="button" class="tab-nav-btn" data-tab="messages">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/><path d="M5 20c0-2 2-4 4-4h6c2 0 4 2 4 4"/></svg>
-      身内
+      Family
     </button>
     <button type="button" class="tab-nav-btn" data-tab="archive">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -2688,7 +2690,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       <div class="duration-label">送り先</div>
       <div class="dest-chips" id="destChips">
         <button type="button" class="dest-chip" data-dest="self">自分だけ</button>
-        <button type="button" class="dest-chip on" data-dest="friend">身内</button>
+        <button type="button" class="dest-chip on" data-dest="friend">Family</button>
         <button type="button" class="dest-chip" data-dest="group">グループ</button>
         <button type="button" class="dest-chip hidden" data-dest="pair">ふたり</button>
         <button type="button" class="dest-chip hidden" data-dest="invite">招待</button>
@@ -2805,7 +2807,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       <input type="number" id="customDaysInput" min="1" max="3650" value="14" inputmode="numeric">
       <span>日後に開封</span>
     </div>
-    <button type="button" class="create-pick" id="postInstantBtn" style="width:100%;margin-bottom:8px">いま身内に流す</button>
+    <button type="button" class="create-pick" id="postInstantBtn" style="width:100%;margin-bottom:8px">Post to Family</button>
     <button type="button" class="seal-cta" id="sealBtn">未来に封じる</button>
   </div>
 </div>
@@ -2817,7 +2819,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     <textarea class="text-compose-input" id="textComposeInput" maxlength="140" rows="3" placeholder="いま心にあること…"></textarea>
     <div class="text-compose-count"><span id="textComposeCount">0</span>/140</div>
     <div class="text-dest-toggle" id="textDestToggle">
-      <button type="button" class="on" data-tdest="inner">今、身内に</button>
+      <button type="button" class="on" data-tdest="inner">Family</button>
       <button type="button" data-tdest="private">自分だけ</button>
       <button type="button" data-tdest="capsule">未来に封じる</button>
     </div>
@@ -3063,6 +3065,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 
 <script>
 const KEY='timecap_v9';
+const INNER_LABEL='Family';
 const APP_URL='https://sealed-psi.vercel.app';
 const SPOTIFY_CLIENT_ID=''; // 設定するとSpotify連携が有効
 const IDB_NAME='timecap_media_v1';
@@ -3399,7 +3402,7 @@ function renderTextDiaryList(){
   const posts=myTextDiaryPosts();
   if(!posts.length){
     return`<div class="empty-state" style="padding:40px 20px;font-size:14px;color:var(--ink-3);line-height:1.6">
-      写真にするほどではない、心のひとことをここに積んでいけます。<br>
+      写真にするほどではない、心のひとことをここに日記のように積んでいけます。<br>
       <button type="button" class="dq-cta" id="textDiaryEmptyBtn" style="width:100%;margin-top:16px">ひとこと書く</button>
     </div>`;
   }
@@ -3408,7 +3411,7 @@ function renderTextDiaryList(){
     const cap=S.capsules?.find(c=>c.id===p.id);
     const sealed=p.kind==='capsule'&&cap?.sealed&&!canViewCapContent(cap);
     const missed=cap&&isMissedOwnCapsule(cap);
-    const destLbl=p.visibility==='inner'?'身内に流した':'自分だけ';
+    const destLbl=p.visibility==='inner'?INNER_LABEL+'に流した':'自分だけ';
     const kindLbl=p.kind==='capsule'?(sealed?`封印 · ${formatWhen({openAt:p.unlockAt,capsule:cap})}`:'未来の自分へ'):'今日のひとこと';
     return`<article class="text-diary-item${sealed?' text-diary-sealed':''}">
       <div class="text-diary-meta"><span>${date}</span><span>${esc(destLbl)}</span><span>${esc(kindLbl)}</span></div>
@@ -3576,7 +3579,7 @@ function dailyDestLabel(rec){
   if(rec.visibility==='private'&&!(rec.shareTo?.friends?.length||rec.shareTo?.groups?.length))return '自分だけ';
   const names=(rec.shareTo?.friends||[]).map(id=>MEMBERS.find(m=>m.id===id)?.n).filter(Boolean);
   const groups=(rec.shareTo?.groups||[]).map(id=>S.groups?.find(g=>g.id===id)?.name).filter(Boolean);
-  if(rec.visibility==='inner'&&!names.length&&!groups.length)return '身内';
+  if(rec.visibility==='inner'&&!names.length&&!groups.length)return INNER_LABEL;
   return[...names,...groups].join(' · ')||'友達';
 }
 function getDailyVis(scope){
@@ -3779,7 +3782,7 @@ function renderMorningNudge(){
   if(!show){el.classList.add('hidden');return}
   el.classList.remove('hidden');
   const greet=h<12?'おはよう。':'こんにちは。';
-  el.innerHTML=`<div class="mn-greet">${greet}今日を、残そう。</div>
+  el.innerHTML=`<div class="mn-greet">${greet}今日を、未来に残そう。</div>
     <div class="mn-sub">気分ひとつからでOK。30秒で今日がタイムラインに流れます。</div>
     <div class="mn-actions">
       <button type="button" class="primary" id="morningNudgeGo">記録する</button>
@@ -3897,7 +3900,7 @@ function renderInnerCircle(){
   if(!feed)return;
   const posts=consolidatePostsByPersonDay(filterInnerPosts(innerCircleTodayPosts()));
   if(!posts.length){
-    feed.innerHTML='<div class="empty-state" style="padding:40px 0;font-size:14px;color:var(--ink-3);line-height:1.6">身内のみんなの今日が、ここに静かに並びます。<br>身内に見せる記録を残してみよう。</div>';
+    feed.innerHTML=`<div class="empty-state" style="padding:40px 0;font-size:14px;color:var(--ink-3);line-height:1.6">${INNER_LABEL}のみんなの今日が、ここに静かに並びます。<br>${INNER_LABEL}に見せる記録を残してみよう。</div>`;
     return;
   }
   feed.innerHTML=posts.map(p=>{
@@ -4314,7 +4317,7 @@ function buildSealTargets(){
       const m=MEMBERS.find(x=>x.id===fid);
       if(m)targets.push({type:'friend',to:m.n,vis:'shared'});
     });
-    if(d.friend&&!ids.length)return {error:'身内を選んでください'};
+    if(d.friend&&!ids.length)return {error:INNER_LABEL+'を選んでください'};
   }
   if(d.group){
     ensureGroups();
@@ -4348,9 +4351,9 @@ function getDestSummaryParts(){
     const ids=(S.sealFriendIds||[]).filter(Boolean);
     ids.forEach(fid=>{
       const m=MEMBERS.find(x=>x.id===fid);
-      if(m)parts.push('身内: '+m.n);
+      if(m)parts.push(INNER_LABEL+': '+m.n);
     });
-    if(d.friend&&!ids.length)parts.push('身内');
+    if(d.friend&&!ids.length)parts.push(INNER_LABEL);
   }
   if(d.group){
     ensureGroups();
@@ -4661,7 +4664,7 @@ function updateCreateUI(){
   $('destSummary').innerHTML=destParts.length
     ?`送り先: <strong>${destParts.map(esc).join(' · ')}</strong>${destCount>1?`（${destCount}か所）`:''}`
     :'';
-  const sealLabel=isNow?'いま身内に流す':'未来に封じる';
+  const sealLabel=isNow?'Post to Family':'未来に封じる';
   $('sealBtn').textContent=destCount>1?`${sealLabel}（${destCount}か所）`:sealLabel;
   $('createTitle').textContent=isNow?'いまを残す':'未来に届ける';
   document.querySelectorAll('.layer-toggle button').forEach(b=>b.classList.toggle('on',b.dataset.layer===layer));
@@ -4975,6 +4978,46 @@ function formatSealContext(ctx){
   return parts.join('、');
 }
 function weatherEmoji(w){return weatherIcon(w)}
+function mapWithLabel(item){
+  if(!item)return '';
+  const me=meName();
+  if(item.pairWith)return item.pairWith;
+  if(item.visibility==='inner')return INNER_LABEL;
+  if(item.to&&item.to!=='self'&&item.to!=='group'){
+    if(item.from===me||item.from==='ゆうま')return item.to;
+    if(item.from&&item.from!==me)return item.from;
+  }
+  if(item.to==='group')return item.groupId?groupNameById(item.groupId):(S.groupName||GROUP);
+  if(item.shareTo){
+    const names=(item.shareTo.friends||[]).map(id=>MEMBERS.find(m=>m.id===id)?.n).filter(Boolean);
+    const groups=(item.shareTo.groups||[]).map(id=>S.groups?.find(g=>g.id===id)?.name).filter(Boolean);
+    const all=[...names,...groups];
+    if(all.length)return all.join(' · ');
+  }
+  if(item.from&&item.from!==me&&item.from!=='ゆうま')return item.from;
+  return '';
+}
+function mapContextWide(ctx){
+  if(!ctx)return '';
+  return[ctx.dateLabel,ctx.place].filter(Boolean).join(' · ');
+}
+function mapContextDetail(item,ctx){
+  const parts=[];
+  const wide=mapContextWide(ctx);
+  if(wide)parts.push(wide);
+  if(item?.linkedSong?.title)parts.push(item.linkedSong.title);
+  const withLbl=mapWithLabel(item);
+  if(withLbl)parts.push(withLbl);
+  if(ctx?.weather)parts.push(`${ctx.weather}${ctx.temp!=null?ctx.temp+'°':''}`);
+  return parts.join(' · ');
+}
+function mapCtxLabelHtml(item,detail=false){
+  const ctx=resolveSealContext(item);
+  if(!ctx&&!item?.linkedSong)return '';
+  const text=detail?mapContextDetail(item,ctx):mapContextWide(ctx);
+  if(!text)return '';
+  return`<div class="map-ctx-label${detail?' map-ctx-label--detail':''}">${esc(text)}</div>`;
+}
 function mapContextShort(ctx){
   if(!ctx)return '';
   return[ctx.place,ctx.weather?`${ctx.weather}${ctx.temp!=null?ctx.temp+'°':''}`:null,ctx.timePhrase?.replace(/^.+曜の/,'')||null].filter(Boolean).join(' · ');
@@ -4986,10 +5029,7 @@ function contextStampHtml(item,variant='inline'){
   if(variant==='overlay'&&line){
     return`<div class="ctx-stamp ctx-stamp--overlay" aria-hidden="true"><span class="ctx-stamp-line">${esc(line)}</span></div>`;
   }
-  if(variant==='map'){
-    const short=mapContextShort(ctx);
-    return short?`<div class="map-ctx-label">${esc(short)}</div>`:'';
-  }
+  if(variant==='map')return mapCtxLabelHtml(item,false);
   const chips=[];
   if(ctx.place)chips.push(`<span class="ctx-chip">${esc(ctx.place)}</span>`);
   if(ctx.weather)chips.push(`<span class="ctx-chip">${weatherEmoji(ctx.weather)} ${esc(ctx.weather)}${ctx.temp!=null?' '+ctx.temp+'°':''}</span>`);
@@ -6450,7 +6490,8 @@ function mapPointsAll(){
   const sealed=(S.capsules||[])
     .filter(c=>c.loc&&isCapLocked(c)&&(c.from===me||c.from==='ゆうま'||c.to==='group'))
     .map(c=>({
-      id:c.id,loc:c.loc,text:c.text,openAt:c.openAt,mediaId:c.mediaId,
+      id:c.id,from:c.from,to:c.to,groupId:c.groupId,pairWith:c.pairWith,visibility:c.visibility,
+      loc:c.loc,text:c.text,openAt:c.openAt,mediaId:c.mediaId,
       locked:true,openedAt:c.createdAt||0,source:'sealed',
       sealContext:c.sealContext,linkedSong:c.linkedSong,
     }));
@@ -6675,6 +6716,7 @@ let waitTimer=null;
 
 let mapInst=null,mapCluster=null,mapRouteLine=null,mapHeatLayer=null,mapPlayTimer=null,mapPlayheadMarker=null;
 let mapZoomBound=false;
+let mapInitialFitDone=false;
 const MAP_CONTEXT_ZOOM=12;
 let mapSubTab='route';
 
@@ -6691,7 +6733,7 @@ function switchTab(tab){
   $('fdmCompose')?.classList.add('hidden');
   if(tab==='waiting')startWaitTimer();
   else stopWaitTimer();
-  if(tab==='map'){setTimeout(()=>{destroyMemoryMap();initMemoryMap();renderMemoryMap()},120)}
+  if(tab==='map'){setTimeout(()=>{initMemoryMap();renderMemoryMap({fitOnce:!mapInitialFitDone})},150)}
   if(tab==='archive')renderArchive();
   if(tab==='messages')renderMessages();
   haptic();
@@ -7271,9 +7313,10 @@ function initMemoryMap(){
   }
   mapInst=L.map(el,{
     zoomControl:false,attributionControl:false,
-    scrollWheelZoom:true,touchZoom:true,doubleClickZoom:true,pinchZoom:true,
+    scrollWheelZoom:true,touchZoom:true,doubleClickZoom:true,
+    boxZoom:true,trackResize:true,
   }).setView([36.2,138.5],5);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
     subdomains:'abcd',maxZoom:19,
   }).addTo(mapInst);
   mapCluster=L.markerClusterGroup({
@@ -7287,12 +7330,14 @@ function initMemoryMap(){
   if(!mapZoomBound){
     mapZoomBound=true;
     mapInst.on('zoomend',()=>{
-      if($('panel-map')?.classList.contains('active'))renderMemoryMap();
+      if($('panel-map')?.classList.contains('active'))renderMemoryMap({keepView:true});
     });
   }
 }
 
-function renderMemoryMap(){
+function renderMemoryMap(opts={}){
+  const keepView=!!opts.keepView;
+  const fitOnce=!!opts.fitOnce;
   if(typeof L==='undefined')return;
   initMemoryMap();
   if(!mapInst)return;
@@ -7311,7 +7356,7 @@ function renderMemoryMap(){
   const allLatlngs=[];
   mapHeatLayer=L.layerGroup();
   const zoom=mapInst.getZoom();
-  const showCtx=zoom>=MAP_CONTEXT_ZOOM;
+  const detail=zoom>=MAP_CONTEXT_ZOOM;
   groups.forEach(g=>{
     allLatlngs.push([g.loc.lat,g.loc.lng]);
     if(!g.locked)latlngs.push([g.loc.lat,g.loc.lng]);
@@ -7319,7 +7364,7 @@ function renderMemoryMap(){
     const size=Math.min(36,12+n*5);
     const glow=Math.min(1,.4+n*0.15);
     const rep=g.items[g.items.length-1];
-    const ctxLabel=showCtx?contextStampHtml(rep,'map'):'';
+    const ctxLabel=mapCtxLabelHtml(rep,detail);
     const pinW=Math.max(size,ctxLabel?110:size);
     const pinH=size+(ctxLabel?26:0);
     const heatIcon=L.divIcon({
@@ -7345,8 +7390,11 @@ function renderMemoryMap(){
     mapPlayheadMarker.addTo(mapInst);
   }
   if(allLatlngs.length){
-    const bounds=L.latLngBounds(allLatlngs);
-    mapInst.fitBounds(bounds.pad(.15));
+    if(fitOnce||(!keepView&&!mapInitialFitDone)){
+      const bounds=L.latLngBounds(allLatlngs);
+      mapInst.fitBounds(bounds.pad(.15));
+      mapInitialFitDone=true;
+    }
   }
   const pct=S.mapTimePct??100;
   const sorted=[...mapPointsAll()].sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
@@ -7383,7 +7431,7 @@ async function openMapPoint(p){
 
 function renderMapPanel(){
   if(!$('panel-map')?.classList.contains('active'))return;
-  renderMemoryMap();
+  renderMemoryMap({keepView:true});
 }
 
 function renderMemories(){
@@ -7591,7 +7639,7 @@ function renderArchive(){
     panel=`${memFilters}<div class="arb-masonry">${memoryList||'<div class="empty-state" style="padding:40px 0;grid-column:span 2">まだ何も残していない。最初の記憶を封じよう。</div>'}</div>`;
   }else if(tab==='words'){
     panel=`<div class="archive-panel" style="padding-top:8px">
-      <p style="padding:0 20px 12px;font-size:13px;color:var(--ink-2);line-height:1.5">身内に見せた言葉も、自分だけの言葉も、ここに時系列で積もっていきます。</p>
+      <p style="padding:0 20px 12px;font-size:13px;color:var(--ink-2);line-height:1.5">${INNER_LABEL}に見せたことも、自分だけのことも、ここに時系列で積もっていきます。</p>
       ${renderTextDiaryList()}
       <div style="padding:0 20px 24px"><button type="button" class="dq-cta" id="textDiaryComposeBtn" style="width:100%">ひとこと書く</button></div>
     </div>`;
@@ -7647,7 +7695,7 @@ function renderArchive(){
       ${themeCard}
       <div class="archive-tabs" style="padding:0 20px">
         <button type="button" class="archive-tab${tab==='all'?' on':''}" data-atab="all">思い出</button>
-        <button type="button" class="archive-tab${tab==='words'?' on':''}" data-atab="words">言葉</button>
+        <button type="button" class="archive-tab${tab==='words'?' on':''}" data-atab="words">日記</button>
         <button type="button" class="archive-tab${tab==='insight'?' on':''}" data-atab="insight">まとめ</button>
         <button type="button" class="archive-tab${tab==='settings'?' on':''}" data-atab="settings">設定</button>
       </div>
@@ -7836,7 +7884,7 @@ function renderAccountPanel(el){
       <div class="group-add-row"><input type="text" id="newGroupNameArchive" placeholder="新しいグループ名"><button type="button" id="addGroupBtnArchive">追加</button></div>
     </div>
     <div class="invite-notice" style="margin-top:16px">
-      招待リンクをコピー（LINEで送るだけで身内に）
+      招待リンクをコピー（LINEで送るだけで${INNER_LABEL}に）
       <button type="button" id="copyInviteBtnArchive" style="margin-top:8px;padding:8px 14px;border-radius:999px;font-size:12px;background:var(--bg-3);width:100%">招待リンクをコピー</button>
     </div>
     <div class="settings-row" id="darkToggleArchive" style="margin-top:16px"><span>ダークモード</span><div class="toggle ${S.dark?'on':''}" id="darkSwitchArchive"></div></div>`;
@@ -8295,7 +8343,7 @@ $('textComposeSubmit')?.addEventListener('click',()=>{
   if(post.kind==='instant'){
     closeTextCompose();
     renderAll();
-    const msg=post.visibility==='inner'?'身内に、静かに流れました':'自分のページに、積みました';
+    const msg=post.visibility==='inner'?INNER_LABEL+'に、静かに流れました':'自分のページに、積みました';
     toast(msg);
     haptic();
     switchTab('waiting');
@@ -8904,14 +8952,15 @@ $('postDetailOverlay')?.addEventListener('click',e=>{if(e.target===$('postDetail
 $('postDetailShare')?.addEventListener('click',()=>{
   haptic();toast('シェアシートを開きます（デモ）');
 });
-$('mapZoomIn')?.addEventListener('click',()=>{
+function mapZoomStep(delta){
   initMemoryMap();
-  if(mapInst){mapInst.zoomIn();haptic()}
-});
-$('mapZoomOut')?.addEventListener('click',()=>{
-  initMemoryMap();
-  if(mapInst){mapInst.zoomOut();haptic()}
-});
+  if(!mapInst)return;
+  const z=mapInst.getZoom();
+  mapInst.setZoom(Math.max(mapInst.getMinZoom(),Math.min(mapInst.getMaxZoom(),z+delta)));
+  haptic();
+}
+$('mapZoomIn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();mapZoomStep(1)});
+$('mapZoomOut')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();mapZoomStep(-1)});
 $('createMoreToggle')?.addEventListener('click',()=>{
   const el=$('createAdvanced');
   if(!el)return;
@@ -9056,7 +9105,7 @@ document.querySelectorAll('.reaction-btn').forEach(b=>b.addEventListener('click'
 $('mapTimeSlider')?.addEventListener('input',e=>{
   S.mapTimePct=+e.target.value;
   save();
-  renderMemoryMap();
+  renderMemoryMap({keepView:true});
 });
 $('mapPlayBtn')?.addEventListener('click',()=>{
   if(mapPlayTimer){
@@ -9070,7 +9119,7 @@ $('mapPlayBtn')?.addEventListener('click',()=>{
   mapPlayTimer=setInterval(()=>{
     S.mapTimePct=Math.min(100,(S.mapTimePct||0)+2);
     $('mapTimeSlider').value=S.mapTimePct;
-    renderMemoryMap();
+    renderMemoryMap({keepView:true});
     if(S.mapTimePct>=100){
       clearInterval(mapPlayTimer);mapPlayTimer=null;
       $('mapPlayBtn').innerHTML=tcIcon('play')+' 再生';
