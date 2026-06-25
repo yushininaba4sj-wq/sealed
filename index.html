@@ -1412,12 +1412,16 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   display:grid;place-items:center;
 }
 .map-route-view{padding-bottom:0}
+.map-music-view{flex:1;overflow-y:auto;padding-bottom:calc(var(--safe-b) + 8px)}
+.map-song-loc{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.map-song-loc .msl-body{flex:1;min-width:0}
+.map-song-loc .msl-title{font-size:14px;font-weight:500}
+.map-song-loc .msl-meta{font-size:11px;color:var(--ink-3);margin-top:4px;line-height:1.4}
 .map-privacy{font-size:11px;color:var(--ink-3);padding:10px 20px;line-height:1.45}
 .map-share-btn{
   margin:0 20px 16px;width:calc(100% - 40px);padding:14px;border-radius:var(--r-pill);
   background:var(--bg-2);border:1px solid rgba(255,255,255,.08);font-size:13px;font-weight:600;
 }
-.map-music-view{padding-bottom:100px}
 .map-point-sheet{
   position:fixed;inset:0;z-index:350;background:rgba(0,0,0,.85);
   opacity:0;pointer-events:none;transition:opacity .35s;display:flex;align-items:flex-end;
@@ -2800,8 +2804,9 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       <h1 style="font-size:28px;font-weight:600">思い出マップ</h1>
       <p class="sub">足跡の記録 · 線が主役</p>
     </div>
-    <div class="map-sub-tabs hidden" aria-hidden="true">
+    <div class="map-sub-tabs">
       <button type="button" class="map-sub-tab on" data-mtab="route">軌跡</button>
+      <button type="button" class="map-sub-tab" data-mtab="music">音楽</button>
     </div>
     <div id="mapRouteView" class="map-route-view">
       <div class="map-canvas-wrap">
@@ -2820,6 +2825,10 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       </div>
       <p class="map-privacy">写真に含まれる位置情報（Exif）だけを読みます。常時トラッキングはしません。位置のない写真は線に乗りません。</p>
       <button type="button" class="map-share-btn" id="mapShareBtn">軌跡をシェア</button>
+    </div>
+    <div id="mapMusicView" class="map-music-view hidden">
+      <div id="mapMusicBody" style="padding:0 20px 20px"></div>
+      <button type="button" class="map-share-btn" id="mapMusicShareBtn" style="margin:0 20px 20px">音楽まとめをシェア</button>
     </div>
   </section>
 
@@ -7120,35 +7129,184 @@ function genreWrappedCardHtml(summary){
     </div>
     <div class="wrapped-footer">${APP_URL}</div>`;
 }
-function openGenreWrappedCard(genre,key){
+function collectMusicSummary(key){
   const k=key||monthInsightKey();
-  let summary;
+  const ins=collectMonthData(k);
+  const m=(S.musicMonths||[]).find(x=>x.key===k);
+  const ranking=(m?.ranking||[]).map(t=>({rank:t.rank,title:t.title,subtitle:t.artist,plays:t.plays}));
+  if(!ranking.length&&ins.topSong){
+    ranking.push({rank:1,title:ins.topSong.title,subtitle:'',plays:ins.topSong.count});
+  }
+  const top=ranking[0];
+  return{
+    key:k,label:ins.label||monthInsightRange(k).label,genre:PERIOD_GENRE_MUSIC,
+    highlight:top?{title:top.title,subtitle:top.subtitle||(top.plays?top.plays+'回':'')}:null,
+    ranking,
+  };
+}
+function buildPeriodSummary(genre,key){
+  if(genre===PERIOD_GENRE_MUSIC)return collectMusicSummary(key);
   if(genre===PERIOD_GENRE_PEOPLE){
-    const ins=collectMonthData(k);
+    const ins=collectMonthData(key);
     const top=ins.peopleRanking?.[0];
-    if(!top){toast('一緒にいた人の記録がありません');return}
-    summary={
-      key:k,label:ins.label,genre,
-      highlight:{title:top.name,subtitle:`${top.count}回`},
+    return{
+      key,label:ins.label,genre,
+      highlight:top?{title:top.name,subtitle:`${top.count}回`}:null,
       ranking:(ins.peopleRanking||[]).map(p=>({rank:p.rank,title:p.name,plays:p.count})),
     };
-  }else if(genre===PERIOD_GENRE_ROUTE){
-    summary=collectRouteSummary(k);
-    if(!summary.pointCount){toast('今月の軌跡がありません');return}
-  }else if(genre===PERIOD_GENRE_VOICE){
-    summary=collectVoiceMonthSummary(k);
-    if(!summary.voiceCount){toast('今月の声の記録がありません');return}
-  }else if(genre===PERIOD_GENRE_FANDOM){
-    summary=collectFandomRanking(k);
-    if(!summary.ranking?.length){toast('ハマりの記録がありません');return}
-  }else return;
+  }
+  if(genre===PERIOD_GENRE_ROUTE)return collectRouteSummary(key);
+  if(genre===PERIOD_GENRE_VOICE)return collectVoiceMonthSummary(key);
+  if(genre===PERIOD_GENRE_FANDOM)return collectFandomRanking(key);
+  return null;
+}
+function collectYearRouteSummary(year){
+  const points=[];
+  for(let m=1;m<=12;m++)points.push(...monthMapPoints(year+'-'+String(m).padStart(2,'0')));
+  const places={};
+  points.forEach(p=>{
+    const name=p.loc?.placeName||resolveSealContext(p)?.place;
+    if(name)places[name]=(places[name]||0)+1;
+  });
+  const ranking=Object.entries(places).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([title,count],i)=>({rank:i+1,title,plays:count}));
+  const top=ranking[0];
+  return{
+    key:String(year),label:year+'年',genre:PERIOD_GENRE_ROUTE,
+    pointCount:points.length,placeCount:ranking.length,
+    highlight:top?{title:top.title,subtitle:`${top.plays}回 · ${points.length}地点`}:null,
+    ranking,
+  };
+}
+function collectYearPeopleSummary(year){
+  const counts={};
+  for(let m=1;m<=12;m++){
+    (collectPeopleRanking(year+'-'+String(m).padStart(2,'0'))||[]).forEach(p=>{
+      counts[p.name]=(counts[p.name]||0)+p.count;
+    });
+  }
+  const ranking=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,count],i)=>({rank:i+1,title:name,plays:count}));
+  const top=ranking[0];
+  return{key:String(year),label:year+'年',genre:PERIOD_GENRE_PEOPLE,highlight:top?{title:top.title,subtitle:`${top.plays}回`}:null,ranking};
+}
+function collectYearFandomSummary(year){
+  const counts={};
+  for(let m=1;m<=12;m++){
+    (collectFandomRanking(year+'-'+String(m).padStart(2,'0')).ranking||[]).forEach(x=>{
+      counts[x.title]=(counts[x.title]||0)+x.plays;
+    });
+  }
+  const ranking=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([title,count],i)=>({rank:i+1,title,subtitle:'年間',plays:count}));
+  const top=ranking[0];
+  return{key:String(year),label:year+'年',genre:PERIOD_GENRE_FANDOM,highlight:top?{title:top.title,subtitle:`${top.plays}回`}:null,ranking};
+}
+function collectAllTimeRouteSummary(){
+  const points=mapPointsAll().filter(p=>!p.locked);
+  const places={};
+  points.forEach(p=>{
+    const name=p.loc?.placeName||resolveSealContext(p)?.place;
+    if(name)places[name]=(places[name]||0)+1;
+  });
+  const ranking=Object.entries(places).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([title,count],i)=>({rank:i+1,title,plays:count}));
+  const top=ranking[0];
+  return{
+    key:'all',label:'思い出マップ',genre:PERIOD_GENRE_ROUTE,
+    pointCount:points.length,placeCount:ranking.length,
+    highlight:top?{title:top.title,subtitle:`${top.plays}回 · ${points.length}地点`}:null,
+    ranking,
+  };
+}
+function openGenreWrappedCard(genre,key){
+  const k=key||monthInsightKey();
+  let summary=buildPeriodSummary(genre,k);
+  if(genre===PERIOD_GENRE_PEOPLE&&!summary?.highlight){toast('一緒にいた人の記録がありません');return}
+  if(genre===PERIOD_GENRE_ROUTE&&(!summary||!summary.pointCount)){toast('今月の軌跡がありません');return}
+  if(genre===PERIOD_GENRE_VOICE&&(!summary||!summary.voiceCount)){toast('今月の声の記録がありません');return}
+  if(genre===PERIOD_GENRE_FANDOM&&(!summary?.ranking?.length)){toast('ハマりの記録がありません');return}
+  if(genre===PERIOD_GENRE_MUSIC&&!summary?.ranking?.length){toast('今月の音楽記録がありません');return}
+  if(!summary)return;
   setVlogMode(false);vlogPhotos=null;
   $('wrappedCard').className='wrapped-card';
   $('wrappedCard').innerHTML=genreWrappedCardHtml(summary);
-  const cap={music:'まとめ',people:'いっしょにいた人',route:'歩いた軌跡',voice:'声のまとめ',fandom:'推し・ハマり'};
+  const cap={music:'音楽まとめ',people:'いっしょにいた人',route:'歩いた軌跡',voice:'声のまとめ',fandom:'推し・ハマり'};
   lastShareCaption=shareSheetCaption(`${summary.label} · ${cap[genre]||''}`);
   $('wrappedOverlay')?.classList.add('open');
   haptic();
+}
+function openYearGenreWrappedCard(genre,year){
+  const y=year||new Date().getFullYear();
+  let summary;
+  if(genre===PERIOD_GENRE_ROUTE)summary=collectYearRouteSummary(y);
+  else if(genre===PERIOD_GENRE_PEOPLE)summary=collectYearPeopleSummary(y);
+  else if(genre===PERIOD_GENRE_FANDOM)summary=collectYearFandomSummary(y);
+  else if(genre===PERIOD_GENRE_MUSIC){
+    const yi=buildYearInsight(y);
+    summary={
+      key:String(y),label:y+'年',genre,
+      highlight:yi.yearTopSong?{title:yi.yearTopSong.title,subtitle:`${yi.yearTopSong.count}回`}:null,
+      ranking:yi.yearTopSong?[{rank:1,title:yi.yearTopSong.title,plays:yi.yearTopSong.count}]:[],
+    };
+  }else return;
+  if(!summary?.highlight&&!summary?.ranking?.length){toast('記録がありません');return}
+  setVlogMode(false);vlogPhotos=null;
+  $('wrappedCard').className='wrapped-card';
+  $('wrappedCard').innerHTML=genreWrappedCardHtml(summary);
+  const cap={music:'年間音楽',people:'年間の人',route:'年間軌跡',fandom:'年間ハマり'};
+  lastShareCaption=shareSheetCaption(`${y}年 · ${cap[genre]||''}`);
+  $('wrappedOverlay')?.classList.add('open');
+  haptic();
+}
+function yearGenreRankHtml(summary){
+  if(!summary?.ranking?.length)return'<div class="empty-state" style="padding:16px 0;font-size:13px">記録が増えると、ここに並びます</div>';
+  return`<div>${summary.ranking.map(r=>`<div class="route-rank-row"><span>${r.rank}. ${esc(r.title)}</span><span style="color:var(--ink-3)">${r.plays}回</span></div>`).join('')}</div>`;
+}
+function collectMapSongLocations(limit=30){
+  return mapPointsAll()
+    .filter(p=>!p.locked&&(p.linkedSong?.title||p.songTitle))
+    .slice()
+    .reverse()
+    .slice(0,limit)
+    .map(p=>{
+      const song=p.linkedSong||(p.songTitle?{title:p.songTitle,artist:''}:null);
+      const place=p.loc?.placeName||resolveSealContext(p)?.place||'';
+      return{song,place,at:p.openedAt,mediaId:p.mediaId};
+    });
+}
+function renderMapMusicView(){
+  const body=$('mapMusicBody');
+  if(!body)return;
+  ensureMusicPeriods();
+  const mk=musicMonthKey();
+  const summary=collectMusicSummary(mk);
+  const rankHtml=(summary.ranking||[]).slice(0,5).map(t=>{
+    const rkColor=t.rank===1?'var(--sc-gold,#C9A84C)':t.rank===2?'var(--silver)':'var(--ink-3)';
+    return`<div class="music-rank-item" style="display:flex;gap:10px;align-items:center;padding:8px 0">
+      <div class="rk" style="color:${rkColor}">${t.rank}</div>
+      <div class="info" style="flex:1"><div class="title">${esc(t.title)}</div>${t.subtitle?`<div class="artist">${esc(t.subtitle)}</div>`:''}</div>
+      ${t.plays?`<div class="plays" style="font-size:11px;color:var(--ink-3)">${t.plays}回</div>`:''}
+    </div>`;
+  }).join('');
+  const songLocs=collectMapSongLocations();
+  const locHtml=songLocs.length?songLocs.map(x=>{
+    const dt=x.at?new Date(x.at).toLocaleDateString('ja-JP',{month:'short',day:'numeric'}):'';
+    return`<div class="map-song-loc">
+      ${musicArtHtml(x.song?.artworkUrl)}
+      <div class="msl-body">
+        <div class="msl-title">${tcIcon('music')} ${esc(x.song?.title||'')}</div>
+        <div class="msl-meta">${x.place?tcIcon('pin')+' '+esc(x.place)+' · ':''}${dt}</div>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty-state" style="padding:16px 0;font-size:13px">曲と場所がセットの記憶が増えると、ここに並びます</div>';
+  body.innerHTML=`
+    <div style="padding-top:12px">${musicTodayCardHtml(false)}</div>
+    ${musicWeekBlockHtml()}
+    <div style="margin-top:16px">
+      <div class="music-month-label">${esc(summary.label)} · ランキング</div>
+      <div class="music-rank">${rankHtml||'<div class="empty-state" style="padding:12px 0;font-size:13px">今月の音楽記録がありません</div>'}</div>
+    </div>
+    <div style="margin-top:20px">
+      <div class="music-month-label">場所と一緒に</div>
+      ${locHtml}
+    </div>`;
 }
 function routeInsightHtml(ins){
   const r=collectRouteSummary(ins.key);
@@ -7378,6 +7536,7 @@ function renderInsightPanel(key,opts={}){
     <div class="insight-share-row">
       <button type="button" class="dq-cta" id="openMonthInsightShare" style="width:100%;margin-bottom:8px">この月のまとめをシェア</button>
       <div class="insight-genre-share">
+        <button type="button" data-genre-share="music">音楽</button>
         <button type="button" data-genre-share="people">人</button>
         <button type="button" data-genre-share="route">軌跡</button>
         <button type="button" data-genre-share="voice">声</button>
@@ -7535,9 +7694,27 @@ function renderYearInsightPanel(year){
         <div class="monthly-letter-meta">${esc(monthInsightRange(l.monthKey).label)}</div>
         <div class="monthly-letter-sealed" style="margin-top:6px">${esc(l.text.slice(0,80))}${l.text.length>80?'…':''}</div>
       </div>`).join('')}</div>`:''}
+    <div class="insight-section">
+      <h3>一緒にいた人</h3>
+      ${yearGenreRankHtml(collectYearPeopleSummary(yi.year))}
+    </div>
+    <div class="insight-section">
+      <h3>歩いた軌跡</h3>
+      ${yearGenreRankHtml(collectYearRouteSummary(yi.year))}
+    </div>
+    <div class="insight-section">
+      <h3>推し・ハマり</h3>
+      ${yearGenreRankHtml(collectYearFandomSummary(yi.year))}
+    </div>
     ${voiceInsightHtml()}
     <div class="insight-share-row">
-      <button type="button" class="dq-cta" id="openYearInsightShare" style="width:100%">${yi.year}年のまとめをシェア</button>
+      <button type="button" class="dq-cta" id="openYearInsightShare" style="width:100%;margin-bottom:8px">${yi.year}年のまとめをシェア</button>
+      <div class="insight-genre-share">
+        <button type="button" data-year-genre-share="music">音楽</button>
+        <button type="button" data-year-genre-share="people">人</button>
+        <button type="button" data-year-genre-share="route">軌跡</button>
+        <button type="button" data-year-genre-share="fandom">ハマり</button>
+      </div>
     </div>`;
 }
 function bindYearInsightEvents(root,year){
@@ -7549,6 +7726,7 @@ function bindYearInsightEvents(root,year){
     toast('再生が終わりました');haptic();
   });
   root.querySelector('#openYearInsightShare')?.addEventListener('click',()=>openYearInsightShare(year));
+  root.querySelectorAll('[data-year-genre-share]').forEach(b=>b.addEventListener('click',()=>openYearGenreWrappedCard(b.dataset.yearGenreShare,year)));
   loadLazyThumbs(root);
 }
 function openYearInsightShare(year){
@@ -8081,7 +8259,7 @@ function switchTab(tab){
   $('fdmCompose')?.classList.add('hidden');
   if(tab==='waiting')startWaitTimer();
   else stopWaitTimer();
-  if(tab==='map'){setTimeout(()=>{initMemoryMap();renderMemoryMap({fitOnce:!mapInitialFitDone})},150)}
+  if(tab==='map'){setTimeout(()=>{initMemoryMap();renderMapPanel()},150)}
   if(tab==='archive')renderArchive();
   if(tab==='capsule')renderCapsuleTab();
   haptic();
@@ -8945,7 +9123,12 @@ async function openMapPoint(p){
 
 function renderMapPanel(){
   if(!$('panel-map')?.classList.contains('active'))return;
-  renderMemoryMap({keepView:true});
+  mapSubTab=S.mapTab||mapSubTab||'route';
+  document.querySelectorAll('.map-sub-tab').forEach(t=>t.classList.toggle('on',t.dataset.mtab===mapSubTab));
+  $('mapRouteView')?.classList.toggle('hidden',mapSubTab!=='route');
+  $('mapMusicView')?.classList.toggle('hidden',mapSubTab!=='music');
+  if(mapSubTab==='route')renderMemoryMap({keepView:mapInitialFitDone,fitOnce:!mapInitialFitDone});
+  else renderMapMusicView();
 }
 
 function renderMemories(){
@@ -8984,19 +9167,11 @@ function renderMemories(){
 }
 
 function openMapShareCard(){
-  const points=mapPointsAll().filter(p=>!p.locked);
-  const n=points.length;
+  const summary=collectAllTimeRouteSummary();
+  if(!summary.pointCount){toast('まだ軌跡がありません');return}
+  setVlogMode(false);vlogPhotos=null;
   $('wrappedCard').className='wrapped-card';
-  $('wrappedCard').innerHTML=`
-    <div class="wc-brand">TIME CAP</div>
-    <div class="wc-period">思い出<br>マップ</div>
-    <div class="wc-stat">${n}地点を巡った<br>足跡の記録</div>
-    <div class="wc-theme">
-      <div class="wc-theme-lbl">軌跡</div>
-      <div class="wc-theme-title" style="font-size:16px;line-height:1.5">${n?esc(points.map((p,i)=>(i+1)+'. '+new Date(p.openedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'})).join(' → ')):'まだ線がありません'}</div>
-      <div class="wc-theme-artist">音楽が耳 · マップが足跡</div>
-    </div>
-    <div class="wrapped-footer">${APP_URL}</div>`;
+  $('wrappedCard').innerHTML=genreWrappedCardHtml(summary);
   lastShareCaption=shareSheetCaption('思い出マップ');
   $('wrappedOverlay')?.classList.add('open');
   haptic();
@@ -9560,29 +9735,7 @@ function renderArchive(){
 }
 
 function openWrappedCard(monthKey){
-  setVlogMode(false);
-  vlogPhotos=null;
-  /* ジャンル非依存のシェアカード。highlight / ranking はテンプレ共通フィールド */
-  const m=(S.musicMonths||[]).find(x=>x.key===monthKey)||S.musicMonths?.[0];
-  if(!m)return;
-  $('wrappedCard').className='wrapped-card';
-  const opened=(S.opened||[]).length;
-  const theme=m.highlight||m.themeSong||m.ranking?.[0];
-  const top3=(m.ranking||[]).slice(0,3).map(t=>`${t.rank}. ${t.title}`).join('<br>');
-  $('wrappedCard').innerHTML=`
-    <div class="wc-brand">TIME CAP</div>
-    <div class="wc-period">${esc(m.label)}<br>まとめ</div>
-    <div class="wc-stat">開封した記憶 <strong>${opened}</strong> 件<br>いちばん聴いた曲は…</div>
-    <div class="wc-theme">
-      <div class="wc-theme-lbl">テーマソング</div>
-      <div class="wc-theme-title">${esc(theme?.title||'—')}</div>
-      <div class="wc-theme-artist">${esc(theme?.artist||'')}</div>
-      <div class="wc-stat" style="margin-top:16px;font-size:13px">${top3}</div>
-    </div>
-    <div class="wrapped-footer">${APP_URL}</div>`;
-  lastShareCaption=shareSheetCaption(`${m.label}まとめ`);
-  $('wrappedOverlay')?.classList.add('open');
-  haptic();
+  openGenreWrappedCard(PERIOD_GENRE_MUSIC,monthKey);
 }
 function showOnboarding(){showOnboardingStep('welcome');initMoodPickers()}
 
@@ -10460,6 +10613,7 @@ $('dayReflectClose')?.addEventListener('click',()=>closeDayReflect());
 $('dayReflectSheet')?.addEventListener('click',e=>{if(e.target===$('dayReflectSheet'))closeDayReflect()});
 $('mapPointSheet')?.addEventListener('click',e=>{if(e.target===$('mapPointSheet'))$('mapPointSheet').classList.remove('open')});
 $('mapShareBtn')?.addEventListener('click',openMapShareCard);
+$('mapMusicShareBtn')?.addEventListener('click',()=>openGenreWrappedCard(PERIOD_GENRE_MUSIC,musicMonthKey()));
 document.querySelectorAll('.shared-top-tab').forEach(t=>t.addEventListener('click',()=>{
   S.sharedTab=t.dataset.stab;
   sharedTab=S.sharedTab;
