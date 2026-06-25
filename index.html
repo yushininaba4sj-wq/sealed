@@ -7,7 +7,8 @@
 <meta name="description" content="今の感情を封じて、未来に届ける。SNSではない、時間遅延型の感情保存インターフェース。">
 <meta name="theme-color" content="#0A0A0C">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
@@ -65,6 +66,12 @@
   --r:20px;--r-sm:14px;--r-pill:999px;
   --font:'Zen Kaku Gothic New',-apple-system,'Hiragino Sans',sans-serif;
   --font-display:'Inter',var(--font);
+  --font-condensed:'Oswald',var(--font);
+  --sc-ink:#100D0A;--sc-ink2:#16120D;--sc-cream:#ECE6DA;
+  --sc-muted:#8A8073;--sc-faint:#6E6457;
+  --sc-gold:#C9A84C;--sc-gold-hi:#E6CE86;--sc-gold-lo:#8C7330;
+  --sc-silver:#B8BCC2;--sc-hairline:rgba(236,230,218,0.10);
+  --sc-gold-grad:radial-gradient(circle at 35% 28%,var(--sc-gold-hi),var(--sc-gold) 46%,var(--sc-gold-lo));
   --font-sans:var(--font);
   --font-weight:400;
   --spring:cubic-bezier(.34,1.56,.64,1);
@@ -2205,6 +2212,65 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   background:var(--accent);color:var(--accent-inv);
 }
 .wrapped-actions button.ghost{background:var(--bg-2);color:var(--ink)}
+.wrapped-card.sc-card-host{
+  padding:0;border:none;background:transparent;box-shadow:none;justify-content:flex-start;
+}
+.sc-card{
+  width:100%;aspect-ratio:9/16;border-radius:24px;background:var(--sc-ink);
+  padding:22px 20px;display:flex;flex-direction:column;position:relative;overflow:hidden;
+  color:var(--sc-cream);border:1px solid var(--sc-hairline);
+  box-shadow:0 24px 80px rgba(0,0,0,.8);
+}
+.sc-open-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
+.sc-label{font-size:12px;font-weight:500;letter-spacing:.18em;color:var(--sc-gold-lo);flex-shrink:0}
+.sc-ctx{font-size:11px;letter-spacing:.06em;color:var(--sc-muted);text-align:right;display:flex;align-items:center;gap:4px;justify-content:flex-end;flex-wrap:wrap}
+.sc-ctx .tc-icon svg{width:12px;height:12px}
+.sc-photo-wrap{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;margin:4px 0 12px}
+.sc-photo{width:60%;max-height:52%;object-fit:cover;border-radius:14px;display:block}
+.sc-photo-ph{
+  width:60%;aspect-ratio:3/4;border-radius:14px;background:var(--sc-ink2);
+  display:flex;align-items:center;justify-content:center;color:var(--sc-faint);
+}
+.sc-song-bar{display:flex;align-items:center;gap:10px;margin:0 0 16px;padding:0 8%}
+.sc-song-icon{font-size:12px;color:var(--sc-muted)}
+.sc-song-line{flex:1;height:2px;border-radius:1px;background:rgba(236,230,218,.28)}
+.sc-open-foot{text-align:center;margin-top:auto;padding-bottom:4px}
+.sc-date{font-family:var(--font-condensed);font-size:13px;letter-spacing:.26em;color:var(--sc-gold);font-weight:500}
+.sc-date-sub{font-size:11px;letter-spacing:.18em;color:var(--sc-faint);margin-top:6px}
+.sc-brand{font-size:11px;letter-spacing:.4em;color:#9A8A6A;margin-top:18px}
+.sc-change-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sc-change-grid{display:grid;gap:11px;flex:1;align-content:center}
+.sc-change-grid.sc-4{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.sc-change-grid.sc-2{grid-template-columns:1fr 1fr;gap:12px}
+.sc-change-frame{
+  border-radius:12px;background:var(--sc-ink2);border:.5px solid var(--sc-hairline);
+  overflow:hidden;position:relative;min-height:0;aspect-ratio:1;
+}
+.sc-change-frame--now{
+  border:1.5px solid var(--sc-gold);box-shadow:0 0 0 4px rgba(201,168,76,.12);
+}
+.sc-change-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.sc-change-swatch{width:100%;height:100%}
+.sc-change-lbl{
+  position:absolute;left:8px;bottom:8px;font-size:10px;letter-spacing:.12em;color:var(--sc-faint);
+}
+.sc-change-frame--now .sc-change-lbl{color:var(--sc-gold)}
+.sc-change-foot{
+  display:flex;align-items:center;justify-content:space-between;margin-top:14px;
+  font-size:10px;color:var(--sc-faint);letter-spacing:.12em;
+}
+.sc-change-foot .sc-brand{flex:1;text-align:center;margin:0;color:#9A8A6A;letter-spacing:.4em}
+.sc-change-arrow{color:var(--sc-muted);font-size:12px;text-align:center;margin:4px 0}
+.ctx-pref-seg,.change-frame-seg{
+  display:flex;gap:6px;margin-top:8px;
+}
+.ctx-pref-seg button,.change-frame-seg button{
+  flex:1;padding:10px 8px;border-radius:var(--r-pill);font-size:12px;font-weight:500;
+  background:var(--bg-3);color:var(--ink-2);border:1px solid rgba(255,255,255,.06);
+}
+.ctx-pref-seg button.on,.change-frame-seg button.on{
+  background:rgba(201,168,76,.14);color:var(--sc-gold);border-color:rgba(201,168,76,.28);
+}
 
 /* 月次まとめ（フェーズ3） */
 .insight-hero{
@@ -3318,6 +3384,7 @@ const TC_SVG={
   tag:'<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
   folder:'<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
   pin:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+  zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
   message:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
   user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
 };
@@ -5085,7 +5152,51 @@ async function captureSealContext(geo){
       if(place)ctx.place=place;
     }catch(e){}
   }
+  const batt=await captureBatteryLevel();
+  if(batt!=null)ctx.battery=batt;
   return ctx;
+}
+async function captureBatteryLevel(){
+  try{
+    if(!navigator.getBattery)return null;
+    const b=await navigator.getBattery();
+    return Math.round(b.level*100);
+  }catch(e){return null}
+}
+function getCtxDisplayPref(){return S.ctxDisplayPref||'weather'}
+function itemBackgroundContext(item){
+  const ctx=resolveSealContext(item);
+  const weather=item?.contextWeather||(ctx?.weather?{condition:ctx.weather,tempC:ctx.temp}:null);
+  const battery=item?.contextBattery??item?.sealContext?.battery??ctx?.battery??null;
+  return{weather,battery};
+}
+function formatBackgroundContextPlain(item,pref){
+  pref=pref||getCtxDisplayPref();
+  const{weather,battery}=itemBackgroundContext(item);
+  const parts=[];
+  if((pref==='weather'||pref==='both')&&weather?.condition){
+    const temp=weather.tempC!=null?` ${weather.tempC}°`:'';
+    parts.push(`${weather.condition}${temp}`);
+  }
+  if((pref==='battery'||pref==='both')&&battery!=null)parts.push(`${battery}%`);
+  return parts.join(' · ');
+}
+function formatBackgroundContext(item,pref){
+  pref=pref||getCtxDisplayPref();
+  const{weather,battery}=itemBackgroundContext(item);
+  const parts=[];
+  if((pref==='weather'||pref==='both')&&weather?.condition){
+    const temp=weather.tempC!=null?` ${weather.tempC}°`:'';
+    parts.push(`${weatherIcon(weather.condition)}${temp}`);
+  }
+  if((pref==='battery'||pref==='both')&&battery!=null){
+    parts.push(`${tcIcon('zap')} ${battery}%`);
+  }
+  return parts.join(' · ');
+}
+function backgroundContextHtml(item,cls='sc-ctx'){
+  const text=formatBackgroundContext(item);
+  return text?`<span class="${cls}">${text}</span>`:'';
 }
 function enrichLocFromContext(baseLoc,ctx,strip){
   if(strip||!ctx)return baseLoc;
@@ -5234,20 +5345,102 @@ function seasonTopLinkedSong(seasonKey){
   const [title,artist]=top[0].split('|');
   return{title,artist:artist||'',count:top[1]};
 }
-function openMemoryShareCard(cap){
+function shareSheetCaption(extra=''){
+  ensureInviteCode();
+  const url=inviteShareUrl();
+  return[extra,'Time Cap',url].filter(Boolean).join('\n');
+}
+function shareCardFooter(){return ''}
+let lastShareCaption='';
+function sealDateParts(ts){
+  const d=new Date(ts||Date.now());
+  return{fmt:`${d.getFullYear()} . ${d.getMonth()+1} . ${d.getDate()}`,y:d.getFullYear(),m:d.getMonth()+1,day:d.getDate()};
+}
+async function openMemoryShareCard(cap){
   if(!cap)return;
   const ctx=resolveSealContext(cap);
-  const line=formatSealContext(ctx);
-  $('wrappedCard').innerHTML=`
-    <div class="wc-brand">TIME CAP</div>
-    <div class="wc-period">開封の瞬間</div>
-    ${line?`<div class="wc-stat">${esc(line)}</div>`:''}
-    ${cap.linkedSong?`<div class="wc-theme"><div class="wc-theme-lbl">封じたときの一曲</div>
-      <div class="wc-theme-title">${esc(cap.linkedSong.title)}</div>
-      <div class="wc-theme-artist">${esc(cap.linkedSong.artist||'')}</div></div>`:''}
-    <div class="wc-stat" style="margin-top:12px">${esc((cap.text||'').slice(0,80))}</div>
-    <div class="wrapped-footer">${APP_URL}</div>
-    ${shareCardFooter()}`;
+  const ts=ctx?.sealedAt||cap.createdAt||cap.openedAt||Date.now();
+  const{fmt}=sealDateParts(ts);
+  let photoHtml='';
+  if(cap.mediaId){
+    try{
+      const data=await idbGet(cap.mediaId);
+      if(data)photoHtml=`<img class="sc-photo" src="${data}" alt="">`;
+    }catch(e){}
+  }
+  const hasSong=!!cap.linkedSong?.title;
+  const card=$('wrappedCard');
+  card.className='wrapped-card sc-card-host';
+  card.innerHTML=`
+    <div class="sc-card sc-open-card">
+      <div class="sc-open-head">
+        <span class="sc-label">去年の今日</span>
+        ${backgroundContextHtml(cap)}
+      </div>
+      <div class="sc-photo-wrap">${photoHtml||`<div class="sc-photo-ph">${tcIcon('camera','lg')}</div>`}</div>
+      ${hasSong?`<div class="sc-song-bar"><span class="sc-song-icon">♪</span><div class="sc-song-line"></div></div>`:''}
+      <div class="sc-open-foot">
+        <div class="sc-date">${fmt}</div>
+        <div class="sc-date-sub">封をした日</div>
+        <div class="sc-brand">TIME CAP</div>
+      </div>
+    </div>`;
+  lastShareCaption=shareSheetCaption('去年の今日');
+  $('wrappedOverlay')?.classList.add('open');
+}
+function buildChangeSeries(){
+  const items=[...(S.dailyRecords||[]),...(S.opened||[])]
+    .filter(r=>r.mediaId||r.moodColor)
+    .sort((a,b)=>(a.createdAt||a.openedAt||0)-(b.createdAt||b.openedAt||0));
+  if(items.length>=2)return items;
+  return moodChangeSeries();
+}
+function pickChangeFrames(series,count){
+  if(!series.length)return [];
+  if(series.length<=count){
+    return series.map((item,i)=>({item,label:changeFrameLabel(item,i,count),isNow:i===series.length-1}));
+  }
+  const idx=count===2?[0,series.length-1]:[0,Math.floor(series.length/3),Math.floor(series.length*2/3),series.length-1];
+  return idx.map((i,fi)=>({item:series[i],label:changeFrameLabel(series[i],fi,count),isNow:fi===count-1}));
+}
+function changeFrameLabel(item,frameIdx,frameCount){
+  if(frameCount===2)return frameIdx===0?'去年':'今';
+  if(frameIdx===frameCount-1)return '今';
+  const d=new Date(item.createdAt||item.openedAt||Date.now());
+  return `${d.getMonth()+1}月`;
+}
+async function openChangeShareCard(frameCount){
+  const count=frameCount||S.changeCardFrames||4;
+  const series=buildChangeSeries();
+  if(series.length<2){toast('変化をシェアするには、2日分以上の記録が必要です');return}
+  const frames=pickChangeFrames(series,count);
+  const label=count===2?'この一年':'365日';
+  const frameHtml=await Promise.all(frames.map(async f=>{
+    let inner='';
+    if(f.item.mediaId){
+      try{
+        const data=await idbGet(f.item.mediaId);
+        if(data)inner=`<img src="${data}" alt="">`;
+      }catch(e){}
+    }
+    if(!inner&&f.item.moodColor)inner=`<div class="sc-change-swatch" style="background:${esc(f.item.moodColor)}"></div>`;
+    if(!inner)inner=`<div class="sc-change-swatch" style="background:var(--sc-ink2)"></div>`;
+    return`<div class="sc-change-frame${f.isNow?' sc-change-frame--now':''}">${inner}<span class="sc-change-lbl">${esc(f.label)}</span></div>`;
+  }));
+  const card=$('wrappedCard');
+  card.className='wrapped-card sc-card-host';
+  card.innerHTML=`
+    <div class="sc-card sc-change-card">
+      <div class="sc-change-head"><span class="sc-label">${label}</span></div>
+      <div class="sc-change-grid sc-${count}">${frameHtml.join('')}</div>
+      ${count===2?`<div class="sc-change-arrow">→</div>`:''}
+      <div class="sc-change-foot">
+        <span>${esc(frames[0]?.label||'')}</span>
+        <span class="sc-brand">TIME CAP</span>
+        <span>${esc(frames[frames.length-1]?.label||'')}</span>
+      </div>
+    </div>`;
+  lastShareCaption=shareSheetCaption(label);
   $('wrappedOverlay')?.classList.add('open');
 }
 function playOpeningSong(song,ctx){
@@ -5743,12 +5936,6 @@ function demoFriendAnswers(){
     choice:prompt?.options?prompt.options[i%prompt.options.length]:'—',
     text:'',
   }));
-}
-function shareCardFooter(){
-  ensureInviteCode();
-  const code=S.inviteCode;
-  const qr=`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(APP_URL+'?invite='+code)}`;
-  return`<div class="wrapped-qr"><img src="${qr}" alt="QR"><div><div style="font-size:10px;color:var(--ink-3)">招待リンク</div><div class="wrapped-code" style="font-size:10px;word-break:break-all">${esc(inviteShareUrl())}</div></div></div>`;
 }
 function getMemoriesOnDay(yearsAgo){
   const y=new Date();y.setFullYear(y.getFullYear()-yearsAgo);
@@ -6401,6 +6588,7 @@ function bindYearInsightEvents(root,year){
 function openYearInsightShare(year){
   const yi=buildYearInsight(year);
   const moodLine=yi.moodByMonth.filter(m=>m.mood).map(m=>m.mood).slice(0,5).join('');
+  $('wrappedCard').className='wrapped-card';
   $('wrappedCard').innerHTML=`
     <div class="wc-brand">TIME CAP</div>
     <div class="wc-period">${yi.year}年<br>まとめ</div>
@@ -6413,8 +6601,8 @@ function openYearInsightShare(year){
         記録 ${yi.totalRecords} · 開封 ${yi.base.openedCount}${yi.yearTopPlace?`<br>${tcIcon('pin')} ${esc(yi.yearTopPlace.name)}`:''}
       </div>
     </div>
-    <div class="wrapped-footer">${APP_URL}</div>
-    ${shareCardFooter()}`;
+    <div class="wrapped-footer">${APP_URL}</div>`;
+  lastShareCaption=shareSheetCaption(`${yi.year}年まとめ`);
   $('wrappedOverlay')?.classList.add('open');
   haptic();
 }
@@ -6469,6 +6657,7 @@ function bindProfileInsightEvents(el){
 function openMonthInsightShare(key){
   const ins=collectMonthData(key||monthInsightKey());
   const moodColor=ins.moodDominant&&(String(ins.moodDominant).startsWith('hsl')||String(ins.moodDominant).startsWith('#'))?ins.moodDominant:null;
+  $('wrappedCard').className='wrapped-card';
   $('wrappedCard').innerHTML=`
     <div class="wc-brand">TIME CAP</div>
     <div class="wc-period">${esc(ins.label)}<br>まとめ</div>
@@ -6481,8 +6670,8 @@ function openMonthInsightShare(key){
         記録 ${ins.dailyCount} · 写真 ${ins.photoCount}${ins.topPlace?`<br>${tcIcon('pin')} ${esc(ins.topPlace.name)}`:''}
       </div>
     </div>
-    <div class="wrapped-footer">${APP_URL}</div>
-    ${shareCardFooter()}`;
+    <div class="wrapped-footer">${APP_URL}</div>`;
+  lastShareCaption=shareSheetCaption(`${ins.label}まとめ`);
   $('wrappedOverlay')?.classList.add('open');
   haptic();
 }
@@ -6821,6 +7010,8 @@ if(!S.activityFeed)S.activityFeed=[];
 if(!S.albums)S.albums={};
 if(!S.shownNotifs)S.shownNotifs=[];
 if(S.mapTimePct===undefined)S.mapTimePct=100;
+if(!S.ctxDisplayPref)S.ctxDisplayPref='weather';
+if(!S.changeCardFrames)S.changeCardFrames=4;
 if(S.dismissedVoiceHint===undefined)S.dismissedVoiceHint=false;
 if(!S.sealLayer)S.sealLayer='seal';
 if(S.onboardingDone===undefined)S.onboardingDone=false;
@@ -7444,16 +7635,23 @@ function placeLabelsFromRecords(){
 function renderCapsuleChangeSection(){
   const moods=moodChangeSeries();
   const places=placeLabelsFromRecords();
+  const frames=S.changeCardFrames||4;
+  const canShare=buildChangeSeries().length>=2;
   const moodHtml=moods.length?`<div class="capsule-change-scroll">${moods.map(r=>{
     const d=new Date(r.createdAt);
     return`<div class="capsule-change-chip"><div class="cc-swatch" style="background:${esc(r.moodColor)}"></div><div class="cc-lbl">${d.toLocaleDateString('ja-JP',{month:'short',day:'numeric'})}</div></div>`;
   }).join('')}</div>`:'<p style="font-size:13px;color:var(--ink-3);line-height:1.5">気分の色を残すと、ここに移ろいが静かに並びます。</p>';
   const placeHtml=places.length?`<p style="font-size:13px;color:var(--ink-2);margin-top:12px;line-height:1.5">${tcIcon('pin')} ${places.map(esc).join(' · ')}</p>`:'';
   return`<div class="capsule-section">
-    <div class="capsule-section-label">あなたの変化</div>
+    <div class="capsule-section-label">変化</div>
     ${moodHtml}
     ${placeHtml}
-    <p style="font-size:11px;color:var(--ink-3);margin-top:10px;line-height:1.45">一年前のあなた、今のあなた。評価はせず、ただ並べます。</p>
+    <div class="change-frame-seg" id="changeFrameSeg">
+      <button type="button" data-frames="4" class="${frames===4?'on':''}">4コマ</button>
+      <button type="button" data-frames="2" class="${frames===2?'on':''}">2コマ</button>
+    </div>
+    ${canShare?`<button type="button" class="dq-cta" id="shareChangeCardBtn" style="width:100%;margin-top:12px">変化をシェア</button>`:''}
+    <p style="font-size:11px;color:var(--ink-3);margin-top:10px;line-height:1.45">365日 · この一年。評価の言葉は入れません。</p>
   </div>`;
 }
 function renderCapsuleUpcomingSection(){
@@ -7507,13 +7705,17 @@ function renderCapsuleTab(){
   if(!el)return;
   el.innerHTML=`
     <div class="capsule-hero">
-      <h1>過去が、会いに来た。</h1>
-      <p>変化と、これから開く約束と、戻ってきた思い出。</p>
+      <h1>365日</h1>
+      <p>変化 · もうすぐ開く · 過去から</p>
     </div>
     ${renderCapsuleChangeSection()}
     ${renderCapsuleUpcomingSection()}
     ${renderCapsulePastSection()}`;
   loadLazyThumbs(el);
+  el.querySelector('#changeFrameSeg')?.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    S.changeCardFrames=+b.dataset.frames;save();renderCapsuleTab();haptic();
+  }));
+  el.querySelector('#shareChangeCardBtn')?.addEventListener('click',()=>openChangeShareCard(S.changeCardFrames));
   el.querySelectorAll('[data-cap-open]').forEach(b=>b.addEventListener('click',()=>{
     const cap=S.capsules?.find(c=>c.id===b.dataset.capOpen);
     if(cap&&canOpenOwnCapsuleToday(cap))startOpening([cap],false);
@@ -7729,6 +7931,7 @@ function renderMemories(){
 function openMapShareCard(){
   const points=mapPointsAll().filter(p=>!p.locked);
   const n=points.length;
+  $('wrappedCard').className='wrapped-card';
   $('wrappedCard').innerHTML=`
     <div class="wc-brand">TIME CAP</div>
     <div class="wc-period">思い出<br>マップ</div>
@@ -7738,8 +7941,8 @@ function openMapShareCard(){
       <div class="wc-theme-title" style="font-size:16px;line-height:1.5">${n?esc(points.map((p,i)=>(i+1)+'. '+new Date(p.openedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'})).join(' → ')):'まだ線がありません'}</div>
       <div class="wc-theme-artist">音楽が耳 · マップが足跡</div>
     </div>
-    <div class="wrapped-footer">${APP_URL}</div>
-    ${shareCardFooter()}`;
+    <div class="wrapped-footer">${APP_URL}</div>`;
+  lastShareCaption=shareSheetCaption('思い出マップ');
   $('wrappedOverlay')?.classList.add('open');
   haptic();
 }
@@ -7834,6 +8037,7 @@ function enrichRecordContext(rec,ctx){
   rec.contextTime=rec.contextTime||contextTimeBand(hour);
   rec.contextCity=rec.contextCity||ctx?.place||null;
   if(!rec.contextWeather&&ctx?.weather)rec.contextWeather={condition:ctx.weather,tempC:ctx.temp};
+  if(rec.contextBattery==null&&ctx?.battery!=null)rec.contextBattery=ctx.battery;
   if(!rec.contextCalendar)rec.contextCalendar=calendarLabelForDate(d);
   if(!rec.contextSong){
     if(rec.songTitle)rec.contextSong={title:rec.songTitle};
@@ -7856,6 +8060,7 @@ function reflectDayItem(rec,source){
     contextTime:rec.contextTime,
     contextCity:rec.contextCity,
     contextWeather:rec.contextWeather,
+    contextBattery:rec.contextBattery,
     contextCalendar:rec.contextCalendar,
     contextSong:rec.contextSong,
   };
@@ -7921,6 +8126,7 @@ function buildDayContext(day){
     contextTimeRaw:d.toLocaleTimeString('ja-JP',{hour:'numeric',minute:'2-digit'}),
     contextCity:latest?.contextCity||ctx.place||null,
     contextWeather:latest?.contextWeather||(ctx.weather?{condition:ctx.weather,tempC:ctx.temp}:null),
+    contextBattery:latest?.contextBattery??ctx.battery??null,
     contextSong:song,
     contextCalendar:latest?.contextCalendar||calendarLabelForDate(d),
     contextPhotoCount:photoCount||items.length,
@@ -7928,11 +8134,16 @@ function buildDayContext(day){
 }
 function dayContextLine(ctx){
   if(!ctx)return '';
+  const bg=formatBackgroundContextPlain({
+    contextWeather:ctx.contextWeather,
+    contextBattery:ctx.contextBattery,
+    sealContext:{weather:ctx.contextWeather?.condition,temp:ctx.contextWeather?.tempC,battery:ctx.contextBattery},
+  });
   return[
     ctx.contextTimeLabel,
     ctx.contextTimeRaw,
     ctx.contextCity,
-    ctx.contextWeather?`${ctx.contextWeather.condition}${ctx.contextWeather.tempC!=null?ctx.contextWeather.tempC+'℃':''}`:null,
+    bg||null,
   ].filter(Boolean).join(' · ');
 }
 function renderMemCalCell(dayKey,dayNum,dayData,isToday){
@@ -8282,6 +8493,7 @@ function openWrappedCard(monthKey){
   /* ジャンル非依存のシェアカード。highlight / ranking はテンプレ共通フィールド */
   const m=(S.musicMonths||[]).find(x=>x.key===monthKey)||S.musicMonths?.[0];
   if(!m)return;
+  $('wrappedCard').className='wrapped-card';
   const opened=(S.opened||[]).length;
   const theme=m.highlight||m.themeSong||m.ranking?.[0];
   const top3=(m.ranking||[]).slice(0,3).map(t=>`${t.rank}. ${t.title}`).join('<br>');
@@ -8295,8 +8507,8 @@ function openWrappedCard(monthKey){
       <div class="wc-theme-artist">${esc(theme?.artist||'')}</div>
       <div class="wc-stat" style="margin-top:16px;font-size:13px">${top3}</div>
     </div>
-    <div class="wrapped-footer">${APP_URL}</div>
-    ${shareCardFooter()}`;
+    <div class="wrapped-footer">${APP_URL}</div>`;
+  lastShareCaption=shareSheetCaption(`${m.label}まとめ`);
   $('wrappedOverlay')?.classList.add('open');
   haptic();
 }
@@ -8446,6 +8658,15 @@ function renderAccountPanel(el){
       招待リンクをコピー（LINEで送るだけで${INNER_LABEL}に）
       <button type="button" id="copyInviteBtnArchive" style="margin-top:8px;padding:8px 14px;border-radius:999px;font-size:12px;background:var(--bg-3);width:100%">招待リンクをコピー</button>
     </div>
+    <div style="margin-top:16px">
+      <div class="sec-label">記録に添える背景</div>
+      <p style="font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.45">見返す・シェアするときに、天気か充電％をそっと添えます。</p>
+      <div class="ctx-pref-seg" id="ctxDisplayPrefSeg">
+        <button type="button" data-ctx="weather" class="${S.ctxDisplayPref==='weather'?'on':''}">天気</button>
+        <button type="button" data-ctx="battery" class="${S.ctxDisplayPref==='battery'?'on':''}">充電％</button>
+        <button type="button" data-ctx="both" class="${S.ctxDisplayPref==='both'?'on':''}">両方</button>
+      </div>
+    </div>
     <div class="settings-row" id="darkToggleArchive" style="margin-top:16px"><span>ダークモード</span><div class="toggle ${S.dark?'on':''}" id="darkSwitchArchive"></div></div>`;
   loadLazyThumbs(el);
   $('groupListArchive').innerHTML=(S.groups||[]).map(g=>`
@@ -8474,6 +8695,9 @@ function renderAccountPanel(el){
   $('darkToggleArchive')?.addEventListener('click',()=>{
     S.dark=!S.dark;document.documentElement.dataset.theme=S.dark?'':'light';save();renderArchive();haptic();
   });
+  el.querySelector('#ctxDisplayPrefSeg')?.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    S.ctxDisplayPref=b.dataset.ctx;save();renderAccountPanel(el);haptic();
+  }));
   bindProfileInsightEvents(el);
 }
 
@@ -9259,8 +9483,8 @@ function startOpening(items,flash){
   const c=items[0];
   const selfItem=items.find(x=>x.to==='self'&&(x.from==='ゆうま'||x.from===meName()));
   $('openingPoetic').innerHTML=selfItem
-    ?tcIcon('mail')+' 過去から、何かが届きました。<br><span style="font-size:14px;opacity:.65;font-weight:400">'+esc(capFromLabel(c))+'から、あなたに何かが残されていました。</span>'
-    :tcIcon('sparkle')+' カプセルの開封時です。<br><span style="font-size:14px;opacity:.65;font-weight:400">'+esc(capFromLabel(c))+'の記憶が、ようやくよみがえります。</span>';
+    ?tcIcon('mail')+' 去年の今日<br><span style="font-size:14px;opacity:.65;font-weight:400">'+esc(capFromLabel(c))+' · 封を開く</span>'
+    :tcIcon('sparkle')+' 開封<br><span style="font-size:14px;opacity:.65;font-weight:400">'+esc(capFromLabel(c))+'</span>';
   $('openingEnvelope').classList.remove('opened');
   $('openingEnvelope').style.opacity='1';
   $('dragSeal').classList.remove('hidden');
@@ -9365,6 +9589,8 @@ function finishOpen(){
           goal:c.goal,loc:c.loc,tags:c.tags,linkedSong:c.linkedSong,mood:c.mood,selfieMediaId:c.selfieMediaId,
           promptId:c.promptId,promptText:c.promptText,choice:c.choice,visibility:c.visibility,pairWith:c.pairWith,
           sealContext:c.sealContext,voiceSeriesId:c.voiceSeriesId,voiceMonthKey:c.voiceMonthKey,
+          contextWeather:c.sealContext?.weather?{condition:c.sealContext.weather,tempC:c.sealContext.temp}:undefined,
+          contextBattery:c.sealContext?.battery??null,
           themeSong:c.linkedSong||currentThemeSong(),todaySong:currentTodaySong(),weekTop3:currentWeekTop3(),
         }));
         S.capsules=S.capsules.filter(c=>!openingItems.find(r=>r.id===c.id));
@@ -9954,16 +10180,27 @@ if(urlInvite&&!S.invitedBy){
 })();
 $('wrappedClose')?.addEventListener('click',()=>$('wrappedOverlay')?.classList.remove('open'));
 $('wrappedShare')?.addEventListener('click',async()=>{
-  const top=currentTodaySong()||S.spotify?.nowPlaying||S.spotify?.tracks?.[0];
-  const line=top?.title?`今日の一曲: ${top.title}${top.artist?' · '+top.artist:''}`:'Time Cap のまとめを見てね';
-  const shareUrl=top?.url||APP_URL;
-  const payload={title:'Time Cap',text:line,url:shareUrl};
+  const caption=lastShareCaption||shareSheetCaption();
+  const cardEl=$('wrappedCard');
   try{
+    if(typeof html2canvas!=='undefined'&&cardEl){
+      const canvas=await html2canvas(cardEl,{backgroundColor:'#100D0A',scale:1080/(cardEl.offsetWidth||320),useCORS:true,allowTaint:true});
+      const blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
+      if(blob&&navigator.share){
+        const file=new File([blob],'timecap.png',{type:'image/png'});
+        if(navigator.canShare?.({files:[file]})){
+          await navigator.share({files:[file],text:caption});
+          toast('シェアしました');
+          haptic();
+          return;
+        }
+      }
+    }
     if(navigator.share){
-      await navigator.share(payload);
+      await navigator.share({title:'Time Cap',text:caption});
       toast('シェアしました');
     }else{
-      await navigator.clipboard.writeText(`${line}\n${shareUrl}`);
+      await navigator.clipboard.writeText(caption);
       toast('シェア文をコピーしました');
     }
   }catch(e){
