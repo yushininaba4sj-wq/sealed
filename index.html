@@ -1895,6 +1895,90 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .arb-meta{font-size:12px;color:var(--ink-3);margin-top:8px;line-height:1.45}
 .arb-sealed{padding:32px 14px;text-align:center;color:var(--ink-3);font-size:13px}
 .arb-song{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 10px;border-radius:999px;background:var(--bg-3);font-size:12px;color:var(--ink-2)}
+
+/* 振り返り — カレンダー / グリッド */
+.mem-view-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 8px;gap:12px}
+.mem-view-toggle{display:flex;padding:3px;border-radius:999px;background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
+.mem-view-toggle button{
+  padding:7px 16px;border-radius:999px;font-size:12px;font-weight:500;color:var(--ink-3);
+}
+.mem-view-toggle button.on{background:var(--ink);color:var(--bg)}
+.mem-cal-month{padding:8px 20px 12px}
+.mem-cal-month-title{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-bottom:10px;font-family:var(--font-display)}
+.mem-cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;padding:0 16px}
+.mem-cal-weekdays span{text-align:center;font-size:10px;color:var(--ink-3);font-weight:500}
+.mem-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:0 16px 20px}
+.mem-cal-cell{
+  aspect-ratio:1;border-radius:10px;position:relative;overflow:hidden;
+  background:transparent;border:none;padding:0;
+}
+.mem-cal-cell.empty{display:grid;place-items:center}
+.mem-cal-cell.empty .cal-day-num{font-size:12px;color:rgba(255,255,255,.22);font-weight:500}
+.mem-cal-cell.has-data{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mem-cal-cell.has-data img{width:100%;height:100%;object-fit:cover;display:block}
+.mem-cal-cell.has-data.today{box-shadow:0 0 0 2px var(--ink)}
+.mem-cal-fallback{width:100%;height:100%;display:grid;place-items:center;background:var(--bg-2)}
+.mem-cal-cell .cal-day-num{
+  position:absolute;bottom:4px;left:0;right:0;text-align:center;
+  font-size:11px;font-weight:600;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.85);
+}
+.mem-cal-cell .cal-day-num.on-photo{font-size:12px}
+.mem-cal-cell .cal-badge{
+  position:absolute;top:4px;right:4px;min-width:16px;height:16px;padding:0 4px;
+  border-radius:999px;background:rgba(0,0,0,.65);color:#fff;font-size:9px;font-weight:600;
+  display:grid;place-items:center;border:1px solid rgba(255,255,255,.15);
+}
+.mem-cal-cell .cal-streak{
+  position:absolute;top:4px;left:4px;font-size:10px;opacity:.9;
+}
+.mem-photo-month{padding:4px 16px 8px}
+.mem-photo-month-title{font-size:15px;font-weight:600;color:var(--ink-2);margin-bottom:8px}
+.mem-photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:0 16px 24px}
+.mem-photo-cell{
+  aspect-ratio:1;border-radius:4px;overflow:hidden;position:relative;background:var(--bg-2);border:none;padding:0;
+}
+.mem-photo-cell img{width:100%;height:100%;object-fit:cover}
+.mem-photo-cell .cal-day-num{
+  position:absolute;bottom:5px;left:0;right:0;text-align:center;
+  font-size:11px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);
+}
+.mem-photo-cell.today{box-shadow:0 0 0 2px var(--ink)}
+.mem-photo-fallback{width:100%;height:100%;display:grid;place-items:center}
+
+.day-reflect-sheet{
+  position:fixed;inset:0;z-index:360;background:rgba(0,0,0,.88);
+  opacity:0;pointer-events:none;transition:opacity .35s;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.day-reflect-sheet.open{opacity:1;pointer-events:auto}
+.day-reflect-panel{
+  width:100%;max-width:430px;max-height:92dvh;overflow-y:auto;
+  background:var(--bg);border-radius:var(--r) var(--r) 0 0;
+  padding:20px 20px calc(28px + var(--safe-b));
+  transform:translateY(100%);transition:transform .45s var(--spring);
+}
+.day-reflect-sheet.open .day-reflect-panel{transform:translateY(0)}
+.day-reflect-panel.day-reflect--morning{background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,var(--bg) 28%)}
+.day-reflect-panel.day-reflect--day{background:var(--bg)}
+.day-reflect-panel.day-reflect--night{background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,var(--bg) 32%)}
+.day-reflect-panel.day-reflect--lateNight{background:linear-gradient(180deg,#060608 0%,var(--bg) 36%)}
+.day-reflect-panel.day-reflect--aged .day-reflect-hero img{filter:sepia(.18) contrast(.96)}
+.day-reflect-close{
+  width:36px;height:36px;border-radius:50%;background:var(--bg-2);color:var(--ink-2);
+  font-size:20px;margin-bottom:12px;
+}
+.day-reflect-date{font-family:var(--font-display);font-size:26px;font-weight:600;letter-spacing:-.02em}
+.day-reflect-meta{font-size:13px;color:var(--ink-3);margin-top:6px;line-height:1.5}
+.day-reflect-hero{margin:18px 0;border-radius:var(--r-sm);overflow:hidden}
+.day-reflect-hero img{width:100%;max-height:52vh;object-fit:cover;display:block}
+.day-reflect-quote{font-size:17px;line-height:1.65;color:var(--ink);margin:16px 0;white-space:pre-wrap}
+.day-reflect-context{display:flex;flex-direction:column;gap:8px;margin-top:8px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06)}
+.day-reflect-ctx{font-size:13px;color:var(--ink-2);line-height:1.5}
+.day-reflect-ctx.muted{font-size:12px;color:var(--ink-3)}
+.day-reflect-items{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.day-reflect-item{padding:12px 14px;border-radius:var(--r-sm);background:var(--bg-2);border:1px solid rgba(255,255,255,.05)}
+.day-reflect-item .dri-type{font-size:10px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.day-reflect-item .dri-text{font-size:14px;line-height:1.5;margin-top:4px;color:var(--ink)}
 .archive-settings{padding:0 20px 32px}
 .archive-settings .sec-label{margin:20px 0 10px}
 .mem-filter{display:flex;gap:8px;padding:0 20px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -2640,6 +2724,13 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     <button type="button" class="fs-back" id="mapPointClose" style="margin-bottom:12px">×</button>
     <div id="mapPointPhoto"></div>
     <div class="map-point-meta" id="mapPointMeta"></div>
+  </div>
+</div>
+
+<div class="day-reflect-sheet" id="dayReflectSheet">
+  <div class="day-reflect-panel" id="dayReflectPanel">
+    <button type="button" class="day-reflect-close" id="dayReflectClose">×</button>
+    <div id="dayReflectBody"></div>
   </div>
 </div>
 
@@ -3656,6 +3747,7 @@ async function createDailyRecord(type,data={}){
     createdAt:existing?.createdAt||Date.now(),updatedAt:Date.now(),resurfaceAt:addDays(365),
     sealContext:ctx,
   };
+  enrichRecordContext(rec,ctx);
   if(data.mediaDataUrl){
     rec.mediaId=id;
     await idbPut(id,data.mediaDataUrl);
@@ -6543,8 +6635,10 @@ function defaults(){
     opened:[
       {id:'o1',from:'そう',type:'photo',text:'試験終わった！',openedAt:now-5*864e5,loc:{lat:35.0116,lng:135.7681}},
       {id:'o2',from:'ゆい',type:'video',text:'あの頃ずっと聴いてた曲',openedAt:now-12*864e5,loc:{lat:34.6937,lng:135.5023}},
-      {id:'o-demo',from:'みお',type:'photo',text:'開封済みの写真サンプル',openedAt:now-864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671}},
-      {id:'o-map3',from:'ゆうま',type:'photo',text:'旅の途中',openedAt:now-3*864e5,loc:{lat:35.4437,lng:139.6380}},
+      {id:'o-demo',from:'みお',type:'photo',text:'開封済みの写真サンプル',openedAt:now-864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671,placeName:'東京'},
+        sealContext:{place:'東京',weather:'晴れ',temp:24,dateLabel:'昨日の記憶'},linkedSong:{title:'夜に駆ける',artist:'YOASOBI'}},
+      {id:'o-map3',from:'ゆうま',type:'photo',text:'旅の途中',openedAt:now-3*864e5,mediaId:'demo_photo',loc:{lat:35.4437,lng:139.6380,placeName:'横浜'},
+        sealContext:{place:'横浜',weather:'くもり',temp:19,dateLabel:'旅の記憶'},linkedSong:{title:'Lemon',artist:'米津玄師'}},
       {id:'o-lyt',from:'ゆうま',type:'photo',text:'去年の今日、窓辺に座ってた',openedAt:now-365.25*864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671}},
       {id:'o-lyt2',from:'ゆうま',type:'photo',text:'2年前、初めて一人で遠出した',openedAt:now-2*365.25*864e5,mediaId:'demo_photo',loc:{lat:35.4437,lng:139.6380}},
       {id:'o-lyt3',from:'ゆうま',type:'text',text:'3年前の文化祭、最高だった',openedAt:now-3*365.25*864e5,tags:['文化祭']},
@@ -6587,7 +6681,14 @@ function defaults(){
     archiveTab:'grid',
     archiveMusicKey:null,
     onboardingDone:false,
-    dailyRecords:[],
+    dailyRecords:[
+      {id:'dr-demo1',userId:'ゆうま',type:'photo',createdAt:now-2*864e5,mediaId:'demo_photo',visibility:'private',
+        sealContext:{place:'渋谷',weather:'晴れ',temp:21},contextCity:'渋谷',contextTime:'day',
+        contextWeather:{condition:'晴れ',tempC:21},contextSong:{title:'怪獣の花唄',artist:'Vaundy'}},
+      {id:'dr-demo2',userId:'ゆうま',type:'mood',createdAt:now-4*864e5,moodColor:'hsl(200,42%,42%)',moodWord:'ふつう',
+        visibility:'private',sealContext:{place:'川崎',weather:'雨',temp:16},contextCity:'川崎',contextTime:'night',
+        contextWeather:{condition:'雨',tempC:16}},
+    ],
     monthlyLetters:[],
     echoReplies:[],
     innerReactions:[],
@@ -6636,6 +6737,7 @@ if(!S.sealFriendIds)S.sealFriendIds=S.sealFriendId?[S.sealFriendId]:[];
 if(!S.sealGroupIds)S.sealGroupIds=S.groups?.[0]?[S.groups[0].id]:[];
 ensureSealDestSet();
 if(!S.archiveMemFilter)S.archiveMemFilter='all';
+if(!S.archiveMemView)S.archiveMemView='calendar';
 if(!S.sealOpenDays)S.sealOpenDays=[365];
 if(!S.pendingInvites)S.pendingInvites=[];
 if(!S.seasonEvent)S.seasonEvent={joined:false,key:'grad2026',theme:'3年後のじぶんへ'};
@@ -7526,6 +7628,275 @@ function renderFriendSpace(){
   if(fsTab==='trail')renderFriendTrail(m);
 }
 
+function dateKeyFromTs(ts){
+  if(!ts)return null;
+  return new Date(ts).toISOString().slice(0,10);
+}
+function contextTimeBand(h){
+  if(h>=0&&h<6)return'lateNight';
+  if(h<12)return'morning';
+  if(h<18)return'day';
+  return'night';
+}
+function contextTimeBandLabel(band){
+  return{morning:'朝',day:'昼',night:'夜',lateNight:'深夜'}[band]||'';
+}
+const CALENDAR_LABEL_RULES=[
+  {month:1,day:1,label:'元日'},
+  {month:1,day:2,label:'正月'},
+  {month:3,day:20,label:'春分の日'},
+  {month:4,start:1,end:14,label:'桜の季節'},
+  {month:5,start:1,end:7,label:'ゴールデンウィーク'},
+  {month:6,start:15,end:30,label:'期末テスト前'},
+  {month:7,start:20,end:31,label:'夏休み'},
+  {month:8,start:1,end:31,label:'真夏'},
+  {month:9,start:1,end:15,label:'二学期'},
+  {month:11,start:15,end:30,label:'紅葉の季節'},
+  {month:12,day:24,label:'クリスマスイブ'},
+  {month:12,day:31,label:'大晦日'},
+];
+function calendarLabelForDate(d){
+  const m=d.getMonth()+1,day=d.getDate();
+  for(const r of CALENDAR_LABEL_RULES){
+    if(r.day&&r.month===m&&r.day===day)return r.label;
+    if(r.start&&r.month===m&&day>=r.start&&day<=r.end)return r.label;
+  }
+  const mo=d.getMonth();
+  if(mo>=2&&mo<=4)return null;
+  if(mo===5)return'梅雨';
+  if(mo===11||mo===0)return'冬';
+  return null;
+}
+function enrichRecordContext(rec,ctx){
+  const d=new Date(rec.createdAt||rec.updatedAt||Date.now());
+  const hour=d.getHours();
+  rec.contextTime=rec.contextTime||contextTimeBand(hour);
+  rec.contextCity=rec.contextCity||ctx?.place||null;
+  if(!rec.contextWeather&&ctx?.weather)rec.contextWeather={condition:ctx.weather,tempC:ctx.temp};
+  if(!rec.contextCalendar)rec.contextCalendar=calendarLabelForDate(d);
+  if(!rec.contextSong){
+    if(rec.songTitle)rec.contextSong={title:rec.songTitle};
+    else if(rec.linkedSong?.title)rec.contextSong={title:rec.linkedSong.title,artist:rec.linkedSong.artist};
+  }
+  return rec;
+}
+function reflectDayItem(rec,source){
+  const sealed=!!(rec.sealed&&source!=='daily'&&isCapLocked(rec));
+  return{
+    id:rec.id,source,type:rec.type,
+    text:rec.text||rec.choice||rec.moodWord,
+    mediaId:rec.mediaId,
+    at:rec.createdAt||rec.openedAt||rec.at||rec.updatedAt,
+    sealContext:rec.sealContext,
+    linkedSong:rec.linkedSong,
+    songTitle:rec.songTitle,
+    moodColor:rec.moodColor,
+    sealed,
+    contextTime:rec.contextTime,
+    contextCity:rec.contextCity,
+    contextWeather:rec.contextWeather,
+    contextCalendar:rec.contextCalendar,
+    contextSong:rec.contextSong,
+  };
+}
+function itemPassesMemFilter(item,filter){
+  if(filter==='all')return true;
+  if(filter==='opened')return !item.sealed;
+  if(filter==='sealed')return item.sealed;
+  if(filter==='prompt')return item.type==='prompt';
+  if(filter==='text')return item.type==='text'&&!item.mediaId;
+  return true;
+}
+function collectReflectDays(filter='all'){
+  const map=new Map();
+  const add=(key,item)=>{
+    if(!key||!itemPassesMemFilter(item,filter))return;
+    if(!map.has(key))map.set(key,{key,items:[],thumb:null,count:0,latestAt:0});
+    const day=map.get(key);
+    day.items.push(item);
+    day.count++;
+    if(item.at&&item.at>day.latestAt)day.latestAt=item.at;
+    if(!day.thumb&&item.mediaId)day.thumb=item.mediaId;
+  };
+  (S.dailyRecords||[]).forEach(r=>add(dateKeyFromTs(r.createdAt),reflectDayItem(r,'daily')));
+  (S.opened||[]).forEach(o=>add(dateKeyFromTs(o.openedAt||o.createdAt),reflectDayItem(o,'opened')));
+  (S.posts||[]).forEach(p=>{
+    if(p.type!=='text')return;
+    add(dateKeyFromTs(p.createdAt),reflectDayItem({...p,text:p.text,type:'text'},'post'));
+  });
+  (S.capsules||[]).forEach(c=>{
+    if(c.sealed&&!canViewCapContent(c)&&!isInstantPost(c))add(dateKeyFromTs(c.createdAt),reflectDayItem(c,'capsule'));
+    else if(!c.sealed||canViewCapContent(c)||isInstantPost(c))
+      add(dateKeyFromTs(c.createdAt),reflectDayItem(c,'capsule'));
+  });
+  map.forEach(day=>{
+    day.items.sort((a,b)=>(b.at||0)-(a.at||0));
+    if(!day.thumb){
+      const ph=day.items.find(i=>i.mediaId);
+      if(ph)day.thumb=ph.mediaId;
+    }
+    day.context=buildDayContext(day);
+  });
+  return map;
+}
+function buildDayContext(day){
+  const items=day.items||[];
+  const latest=items[0];
+  const ts=latest?.at||new Date(day.key+'T12:00:00').getTime();
+  const d=new Date(ts);
+  const ctx=resolveSealContext(latest)||{};
+  const hour=d.getHours();
+  const band=latest?.contextTime||contextTimeBand(hour);
+  let song=latest?.contextSong||null;
+  if(!song){
+    const si=items.find(i=>i.linkedSong?.title)||items.find(i=>i.songTitle);
+    if(si?.linkedSong)song={title:si.linkedSong.title,artist:si.linkedSong.artist};
+    else if(si?.songTitle)song={title:si.songTitle};
+  }
+  const photoCount=items.filter(i=>i.mediaId).length;
+  return{
+    contextTime:band,
+    contextTimeLabel:contextTimeBandLabel(band),
+    contextTimeRaw:d.toLocaleTimeString('ja-JP',{hour:'numeric',minute:'2-digit'}),
+    contextCity:latest?.contextCity||ctx.place||null,
+    contextWeather:latest?.contextWeather||(ctx.weather?{condition:ctx.weather,tempC:ctx.temp}:null),
+    contextSong:song,
+    contextCalendar:latest?.contextCalendar||calendarLabelForDate(d),
+    contextPhotoCount:photoCount||items.length,
+  };
+}
+function dayContextLine(ctx){
+  if(!ctx)return '';
+  return[
+    ctx.contextTimeLabel,
+    ctx.contextTimeRaw,
+    ctx.contextCity,
+    ctx.contextWeather?`${ctx.contextWeather.condition}${ctx.contextWeather.tempC!=null?ctx.contextWeather.tempC+'℃':''}`:null,
+  ].filter(Boolean).join(' · ');
+}
+function renderMemCalCell(dayKey,dayNum,dayData,isToday){
+  const label=isToday?'今日':dayNum;
+  if(!dayData){
+    return`<div class="mem-cal-cell empty" aria-hidden="true"><span class="cal-day-num">${dayNum}</span></div>`;
+  }
+  const streak=isToday&&dayData.count>0?`<span class="cal-streak">${tcIcon('sparkle')}</span>`:'';
+  const badge=dayData.count>1?`<span class="cal-badge">${dayData.count}</span>`:'';
+  const allSealed=dayData.items.every(i=>i.sealed);
+  if(dayData.thumb){
+    return`<button type="button" class="mem-cal-cell has-data${isToday?' today':''}" data-day="${esc(dayKey)}">${streak}<img data-lazy="${esc(dayData.thumb)}" alt="">${badge}<span class="cal-day-num on-photo">${label}</span></button>`;
+  }
+  const mood=dayData.items.find(i=>i.moodColor)?.moodColor||'var(--bg-2)';
+  const preview=allSealed?tcIcon('lock'):(dayData.items.find(i=>i.text)?.text||'').slice(0,12);
+  return`<button type="button" class="mem-cal-cell has-data${isToday?' today':''}" data-day="${esc(dayKey)}">${streak}<div class="mem-cal-fallback" style="background:${esc(mood)}"><span style="font-size:8px;color:var(--ink-3);padding:6px;line-height:1.3">${esc(preview)}</span></div>${badge}<span class="cal-day-num">${label}</span></button>`;
+}
+function renderMemCalendarView(filter='all'){
+  const days=collectReflectDays(filter);
+  const today=todayStr();
+  const now=new Date();
+  const weekdays=['日','月','火','水','木','金','土'];
+  const monthBlocks=[];
+  for(let i=2;i>=0;i--){
+    const base=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const y=base.getFullYear(),m=base.getMonth();
+    const last=new Date(y,m+1,0).getDate();
+    const startPad=new Date(y,m,1).getDay();
+    const title=`${m+1}月${y!==now.getFullYear()?' '+y:''}`;
+    const cells=[];
+    for(let p=0;p<startPad;p++)cells.push('<div class="mem-cal-cell empty" aria-hidden="true"></div>');
+    for(let d=1;d<=last;d++){
+      const key=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isToday=key===today;
+      cells.push(renderMemCalCell(key,d,days.get(key),isToday));
+    }
+    const hasAny=[...days.keys()].some(k=>k.startsWith(`${y}-${String(m+1).padStart(2,'0')}`));
+    if(!hasAny&&i>0)continue;
+    monthBlocks.push(`<div class="mem-cal-month">
+      <div class="mem-cal-month-title">${title}</div>
+      <div class="mem-cal-weekdays">${weekdays.map(w=>`<span>${w}</span>`).join('')}</div>
+      <div class="mem-cal-grid">${cells.join('')}</div>
+    </div>`);
+  }
+  if(!monthBlocks.length){
+    return'<div class="empty-state" style="padding:40px 20px;font-size:14px;color:var(--ink-3);line-height:1.6">まだ振り返れる日がありません。<br>今日の一枚やひとことを残すと、ここに静かに並びます。</div>';
+  }
+  return monthBlocks.join('');
+}
+function renderMemPhotoGrid(filter='all'){
+  const days=collectReflectDays(filter);
+  const today=todayStr();
+  const sorted=[...days.values()].sort((a,b)=>b.key.localeCompare(a.key));
+  if(!sorted.length){
+    return'<div class="empty-state" style="padding:40px 20px;font-size:14px;color:var(--ink-3);line-height:1.6">写真のグリッドは、残した日から並びます。</div>';
+  }
+  const groups=new Map();
+  sorted.forEach(day=>{
+    const [y,m]=day.key.split('-');
+    const gk=`${y}-${m}`;
+    if(!groups.has(gk))groups.set(gk,{y:+y,m:+m,days:[]});
+    groups.get(gk).days.push(day);
+  });
+  return[...groups.values()].map(g=>{
+    const title=`${g.m}月${g.y!==new Date().getFullYear()?(', '+g.y):''}`;
+    const cells=g.days.map(day=>{
+      const d=+day.key.split('-')[2];
+      const isToday=day.key===today;
+      const label=isToday?'今日':d;
+      if(day.thumb){
+        return`<button type="button" class="mem-photo-cell${isToday?' today':''}" data-day="${esc(day.key)}"><img data-lazy="${esc(day.thumb)}" alt=""><span class="cal-day-num">${label}</span></button>`;
+      }
+      const mood=day.items.find(i=>i.moodColor)?.moodColor||'var(--bg-2)';
+      return`<button type="button" class="mem-photo-cell${isToday?' today':''}" data-day="${esc(day.key)}"><div class="mem-photo-fallback" style="background:${esc(mood)}"></div><span class="cal-day-num">${label}</span></button>`;
+    }).join('');
+    return`<div class="mem-photo-month"><div class="mem-photo-month-title">${title}</div><div class="mem-photo-grid">${cells}</div></div>`;
+  }).join('');
+}
+function openDayReflect(dayKey){
+  const day=collectReflectDays().get(dayKey);
+  if(!day){toast('この日の記録はありません');return;}
+  const ctx=day.context;
+  const d=new Date(dayKey+'T12:00:00');
+  const ageDays=Math.floor((Date.now()-d.getTime())/864e5);
+  const panel=$('dayReflectPanel');
+  const body=$('dayReflectBody');
+  if(!panel||!body)return;
+  panel.className='day-reflect-panel day-reflect--'+(ctx.contextTime||'day')+(ageDays>180?' day-reflect--aged':'');
+  const dateStr=d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+  const meta=dayContextLine(ctx);
+  const hero=day.thumb?`<div class="day-reflect-hero"><img data-lazy="${esc(day.thumb)}" alt=""></div>`:'';
+  const quote=(day.items.find(i=>i.text&&!i.sealed)?.text||'').trim();
+  const ctxLines=[
+    ctx.contextSong?`<div class="day-reflect-ctx">${tcIcon('music')} ${esc(ctx.contextSong.title)}${ctx.contextSong.artist?' · '+esc(ctx.contextSong.artist):''}</div>`:'',
+    ctx.contextCalendar?`<div class="day-reflect-ctx muted">── ${esc(ctx.contextCalendar)} ──</div>`:'',
+    ctx.contextPhotoCount?`<div class="day-reflect-ctx muted">この日は${ctx.contextPhotoCount}枚の記憶</div>`:'',
+  ].filter(Boolean).join('');
+  const items=day.items.map(it=>{
+    const lbl=it.sealed?tcIcon('lock')+' 封印':(TYPE_JA[it.type]||it.type||'記録');
+  const txt=it.sealed?'開封まで中身は見えません':(it.text||'');
+    return`<div class="day-reflect-item"><div class="dri-type">${lbl}</div>${txt?`<div class="dri-text">${esc(txt)}</div>`:''}</div>`;
+  }).join('');
+  body.innerHTML=`
+    <div class="day-reflect-date">${esc(dateStr)}</div>
+    ${meta?`<div class="day-reflect-meta">${esc(meta)}</div>`:''}
+    ${hero}
+    ${quote?`<div class="day-reflect-quote">${esc(quote)}</div>`:''}
+    ${ctxLines?`<div class="day-reflect-context">${ctxLines}</div>`:''}
+    ${day.items.length>1?`<div class="day-reflect-items">${items}</div>`:''}`;
+  $('dayReflectSheet')?.classList.add('open');
+  loadLazyThumbs(body);
+  haptic();
+}
+function closeDayReflect(){
+  $('dayReflectSheet')?.classList.remove('open');
+}
+function bindReflectViewEvents(root){
+  root?.querySelectorAll('[data-day]').forEach(btn=>btn.addEventListener('click',()=>{
+    openDayReflect(btn.dataset.day);
+  }));
+  root?.querySelectorAll('[data-memview]').forEach(btn=>btn.addEventListener('click',()=>{
+    S.archiveMemView=btn.dataset.memview;save();renderArchive();haptic();
+  }));
+}
+
 function renderArchiveMemoryList(){
   const filter=S.archiveMemFilter||'all';
   let items=allMemories(filter==='prompt'||filter==='text'||filter==='tag'?'all':filter);
@@ -7615,6 +7986,7 @@ function renderArchive(){
     </div>`:'';
 
   const memFilter=S.archiveMemFilter||'all';
+  const memView=S.archiveMemView||'calendar';
   const memFilters=`<div class="arb-filters">
     <button type="button" class="${memFilter==='all'?'on':''}" data-amf="all">すべて</button>
     <button type="button" class="${memFilter==='opened'?'on':''}" data-amf="opened">開封済み</button>
@@ -7622,6 +7994,15 @@ function renderArchive(){
     <button type="button" class="${memFilter==='tag'?'on':''}" data-amf="tag">タグ別</button>
   </div>`;
   const memoryList=renderArchiveMemoryList();
+  const memViewBar=`<div class="mem-view-bar">
+    <div class="mem-view-toggle">
+      <button type="button" class="${memView==='calendar'?'on':''}" data-memview="calendar">カレンダー</button>
+      <button type="button" class="${memView==='grid'?'on':''}" data-memview="grid">グリッド</button>
+    </div>
+  </div>`;
+  const memReflectBody=memView==='grid'
+    ?renderMemPhotoGrid(memFilter)
+    :renderMemCalendarView(memFilter);
 
   const musicRank=(monthData?.ranking||[]).slice(0,5).map(t=>`
     <div class="music-rank-item${t.rank===1?' theme':''}">
@@ -7630,7 +8011,7 @@ function renderArchive(){
 
   let panel='';
   if(tab==='all'){
-    panel=`${memFilters}<div class="arb-masonry">${memoryList||'<div class="empty-state" style="padding:40px 0;grid-column:span 2">まだ何も残していない。最初の記憶を封じよう。</div>'}</div>`;
+    panel=`${memFilters}${memViewBar}<div class="archive-panel" id="memReflectRoot">${memReflectBody}</div>`;
   }else if(tab==='words'){
     panel=`<div class="archive-panel" style="padding-top:8px">
       <p style="padding:0 20px 12px;font-size:13px;color:var(--ink-2);line-height:1.5">${INNER_LABEL}に見せたことも、自分だけのことも、ここに時系列で積もっていきます。</p>
@@ -7696,6 +8077,7 @@ function renderArchive(){
       ${panel}
     </div>`;
   loadLazyThumbs(el);
+  if(tab==='all')bindReflectViewEvents($('memReflectRoot'));
   if(tab==='settings')renderAccountPanel($('accountPanelRoot'));
   el.querySelectorAll('.archive-tab').forEach(t=>t.addEventListener('click',()=>{
     S.archiveTab=t.dataset.atab;save();renderArchive();haptic();
@@ -8583,6 +8965,8 @@ document.querySelectorAll('.map-sub-tab').forEach(t=>t.addEventListener('click',
   S.mapTab=t.dataset.mtab;mapSubTab=S.mapTab;save();renderMapPanel();haptic();
 }));
 $('mapPointClose')?.addEventListener('click',()=>$('mapPointSheet')?.classList.remove('open'));
+$('dayReflectClose')?.addEventListener('click',()=>closeDayReflect());
+$('dayReflectSheet')?.addEventListener('click',e=>{if(e.target===$('dayReflectSheet'))closeDayReflect()});
 $('mapPointSheet')?.addEventListener('click',e=>{if(e.target===$('mapPointSheet'))$('mapPointSheet').classList.remove('open')});
 $('mapShareBtn')?.addEventListener('click',openMapShareCard);
 document.querySelectorAll('.shared-top-tab').forEach(t=>t.addEventListener('click',()=>{
