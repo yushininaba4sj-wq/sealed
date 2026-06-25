@@ -2612,6 +2612,23 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 
 /* v3 今日の色 */
 .mood-color-sheet{padding-bottom:8px}
+.sky-mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.sky-mood-btn{
+  aspect-ratio:1;border-radius:var(--r-sm);background:var(--bg-3);border:1px solid rgba(255,255,255,.08);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;color:var(--ink-3);
+}
+.sky-mood-btn.on{border-color:var(--sc-gold,#C9A84C);background:rgba(201,168,76,.12);color:var(--ink)}
+.sky-mood-btn .tc-icon svg{width:22px;height:22px}
+.daily-chip.disabled{opacity:.4;pointer-events:none}
+.daily-chip .dc-slots{display:block;font-size:9px;color:var(--ink-3);margin-top:2px}
+.tl-consolidated{display:flex;gap:4px;padding:0 16px 8px;overflow-x:auto}
+.tl-consolidated img{width:56px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0}
+.tl-inner-react{display:flex;gap:8px;padding:8px 16px 12px}
+.tl-inner-react button{
+  padding:8px 14px;border-radius:var(--r-pill);font-size:12px;background:var(--bg-3);color:var(--ink-2);border:1px solid rgba(255,255,255,.06);
+}
+.tl-inner-react button.on{background:rgba(201,168,76,.14);color:var(--sc-gold,#C9A84C);border-color:rgba(201,168,76,.28)}
+.capsule-days-badge{font-size:11px;color:var(--sc-gold,#C9A84C);letter-spacing:.04em}
 .mood-color-preview{
   height:120px;border-radius:var(--r-sm);margin:12px 0;
   background:hsl(42,45%,42%);transition:background .4s var(--smooth);
@@ -3000,6 +3017,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     <input type="file" id="voiceFileInput" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.webm,.caf" class="hidden">
     <div class="duration-label">いつ開封しますか？</div>
     <div class="duration-pills multi" id="durationPills">
+      <button type="button" class="duration-pill instant-pill" data-days="0">今すぐ</button>
       <button type="button" class="duration-pill" data-days="3">3日後</button>
       <button type="button" class="duration-pill" data-days="7">7日後</button>
       <button type="button" class="duration-pill" data-days="30">1ヶ月後</button>
@@ -3063,7 +3081,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 <div class="seal-anim" id="sealAnim">
   <div class="origami" id="sealOrigami">封じる記憶…</div>
   <div class="envelope"><div class="env-flap"></div><div class="env-body"></div><div class="wax"></div></div>
-  <p class="msg">記憶を封印しました。</p>
+  <p class="msg">タイムカプセルに入れました。</p>
 </div>
 
 <div class="everyone-overlay" id="everyoneOverlay">
@@ -3192,11 +3210,10 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 
 <div class="mood-pick-overlay" id="moodPickOverlay">
   <div class="mood-pick-sheet mood-color-sheet">
-    <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;font-family:var(--font-display)">今日の色</h3>
-    <p style="font-size:13px;color:var(--ink-3);margin-bottom:8px">スワイプして、いまの気分の色に</p>
-    <div class="mood-color-preview" id="moodColorPreview"></div>
-    <input type="range" class="mood-hue-slider" id="moodHueSlider" min="0" max="360" value="42">
-    <input type="text" class="mood-word-input" id="moodWordInput" placeholder="任意の一言（なくてもOK）" maxlength="40">
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;font-family:var(--font-display)">今日の空</h3>
+    <p style="font-size:13px;color:var(--ink-3);margin-bottom:12px">天気アイコンを選ぶ</p>
+    <div class="sky-mood-grid" id="skyMoodGrid"></div>
+    <input type="text" class="mood-word-input" id="moodWordInput" placeholder="ひとこと（任意）" maxlength="40">
     <div id="moodSharePicker"></div>
     <button type="button" class="dq-cta btn-gold" id="moodColorSave" style="width:100%;margin-top:12px">残す</button>
     <button type="button" class="create-pick" id="moodPickClose" style="width:100%;margin-top:8px">閉じる</button>
@@ -3213,6 +3230,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   <div class="mood-pick-sheet">
     <h3 style="font-size:18px;font-weight:600;margin-bottom:4px" id="dailyConfirmTitle">今日の一枚</h3>
     <div class="daily-confirm-preview" id="dailyConfirmPreview"></div>
+    <input type="text" class="mood-word-input" id="dailyCaptionInput" placeholder="ひとこと（任意）" maxlength="80" style="width:100%;margin:8px 0">
     <div id="confirmSharePicker"></div>
     <button type="button" class="dq-cta" id="dailyConfirmSave" style="width:100%;margin-top:8px">残す</button>
     <button type="button" class="create-pick" id="dailyConfirmCancel" style="width:100%;margin-top:8px">やめる</button>
@@ -3223,6 +3241,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     <h3 style="font-size:18px;font-weight:600;margin-bottom:4px">今日の一曲</h3>
     <p style="font-size:13px;color:var(--ink-3);margin-bottom:12px">いまの一曲を残す</p>
     <div class="song-pick-current" id="songPickCurrent"></div>
+    <input type="text" class="mood-word-input" id="songCaptionInput" placeholder="ひとこと（任意）" maxlength="80" style="width:100%;margin:8px 0">
     <button type="button" class="dq-cta" id="songPickUseTop" style="width:100%;margin-bottom:8px">この曲を残す</button>
     <button type="button" class="create-pick" id="songPickManual" style="width:100%;margin-bottom:8px">曲名を入力</button>
     <div id="songSharePicker"></div>
@@ -3450,8 +3469,16 @@ function initStaticIcons(){
   const av=$('changeAvatarBtn');if(av&&!av.dataset.icons){av.dataset.icons='1';av.innerHTML=tcIcon('camera')}
 }
 const MOOD_EMOJIS=[];
+const DAILY_MAX_PER_TYPE=3;
+const SKY_MOODS=[
+  {id:'sunny',icon:'sun',label:'晴れ'},
+  {id:'cloudy',icon:'cloud',label:'くもり'},
+  {id:'rain',icon:'rain',label:'雨'},
+  {id:'storm',icon:'storm',label:'雷'},
+  {id:'snow',icon:'snow',label:'雪'},
+];
 const DAILY_RECORD_TYPES={
-  mood:{iconKey:'droplet',label:'今日の色'},
+  mood:{iconKey:'cloud',label:'今日の空'},
   photo:{iconKey:'camera',label:'今日の一枚'},
   song:{iconKey:'music',label:'今日の一曲'},
   food:{iconKey:'food',label:'今日のごはん'},
@@ -3617,7 +3644,7 @@ function renderTextDiaryList(){
     const sealed=p.kind==='capsule'&&cap?.sealed&&!canViewCapContent(cap);
     const missed=cap&&isMissedOwnCapsule(cap);
     const destLbl=p.visibility==='inner'?INNER_LABEL+'に流した':'自分だけ';
-    const kindLbl=p.kind==='capsule'?(sealed?`封印 · ${formatWhen({openAt:p.unlockAt,capsule:cap})}`:'未来の自分へ'):'今日のひとこと';
+    const kindLbl=p.kind==='capsule'?(sealed?`タイムカプセル · ${capsuleDaysShort(p.unlockAt||cap?.openAt)}`:'未来の自分へ'):'今日のひとこと';
     return`<article class="text-diary-item${sealed?' text-diary-sealed':''}">
       <div class="text-diary-meta"><span>${date}</span><span>${esc(destLbl)}</span><span>${esc(kindLbl)}</span></div>
       ${p.promptText?`<div class="text-diary-prompt">${esc(p.promptText)}</div>`:''}
@@ -3628,6 +3655,25 @@ function renderTextDiaryList(){
   }).join('')}</div>`;
 }
 function hslFromHue(h,s=42,l=42){return `hsl(${h},${s}%,${l}%)`}
+let selectedSkyMood='sunny';
+function initSkyMoodPicker(){
+  const grid=$('skyMoodGrid');
+  if(!grid)return;
+  if(!grid.dataset.ready){
+    grid.dataset.ready='1';
+    grid.innerHTML=SKY_MOODS.map(s=>`
+      <button type="button" class="sky-mood-btn${s.id===selectedSkyMood?' on':''}" data-sky="${s.id}">
+        ${tcIcon(s.icon)}<span>${esc(s.label)}</span>
+      </button>`).join('');
+    grid.querySelectorAll('[data-sky]').forEach(btn=>btn.addEventListener('click',()=>{
+      selectedSkyMood=btn.dataset.sky;
+      grid.querySelectorAll('.sky-mood-btn').forEach(b=>b.classList.toggle('on',b.dataset.sky===selectedSkyMood));
+      haptic();
+    }));
+  }else{
+    grid.querySelectorAll('.sky-mood-btn').forEach(b=>b.classList.toggle('on',b.dataset.sky===selectedSkyMood));
+  }
+}
 function updateMoodColorPreview(){
   const h=+$('moodHueSlider')?.value||42;
   const prev=$('moodColorPreview');
@@ -3672,11 +3718,13 @@ async function openPostDetail(p){
       const data=await idbGet(p.mediaId);
       if(data)photoHtml=`<img class="sc-photo" src="${data}" alt="" style="width:72%;max-height:48vh">`;
     }catch(e){}
+  }else if(p.skyMood||(p.type==='mood'&&!p.moodColor)){
+    photoHtml=`<div class="sc-photo-ph" style="width:72%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:var(--bg-3)">${tcIcon(skyMoodIcon(p.skyMood),'lg')}</div>`;
   }else if(p.moodColor){
     photoHtml=`<div class="sc-photo-ph" style="width:72%;aspect-ratio:1;background:${esc(p.moodColor)}"></div>`;
   }
   const song=p.linkedSong||(p.songTitle?{title:p.songTitle,artist:p.songArtist||''}:null);
-  const caption=p.text&&!p.moodColor?p.text:'';
+  const caption=p.caption||(p.text&&!p.moodColor&&!p.skyMood?p.text:'');
   const place=ctx?.place||p.contextCity||'';
   body.innerHTML=`<div class="post-detail-sc">
     <div class="sc-card sc-open-card" style="aspect-ratio:auto;min-height:420px">
@@ -3765,8 +3813,8 @@ function innerPostsForHome(){
   return innerCircleTodayPosts().filter(p=>p.name!==me).map(p=>({
     id:p.id||'ih_'+p.name+p.at,
     from:p.name,isDaily:true,isInner:true,
-    type:p.type,dailyType:p.type,mood:p.mood,moodColor:p.moodColor,moodWord:p.moodWord,
-    text:p.text||p.songTitle||'',songTitle:p.songTitle,mediaId:p.mediaId,
+    type:p.type,dailyType:p.type,mood:p.mood,moodColor:p.moodColor,moodWord:p.moodWord,skyMood:p.skyMood,
+    text:p.text||p.songTitle||'',songTitle:p.songTitle,mediaId:p.mediaId,caption:p.caption,
     at:p.at,sealContext:p.sealContext,shareTo:p.shareTo,promptText:p.promptText,
     isTextPost:p.type==='text'||p.isTextPost,
     linkedSong:p.type==='song'&&p.songTitle?{title:p.songTitle.split(' · ')[0]}:null,
@@ -3888,14 +3936,14 @@ function todayDailyRecords(){
   const d=todayStr();
   return S.dailyRecords.filter(r=>new Date(r.createdAt).toISOString().slice(0,10)===d);
 }
-function hasTodayDaily(type){return todayDailyRecords().some(r=>r.type===type)}
+function hasTodayDaily(type){return dailyTypeCount(type)>0}
 function recordCountDisplay(){return totalRecordDays()||0}
 function recordStreakDisplay(){
   return S.currentStreak||0;
 }
 function dailyRecordPreview(rec){
   if(!rec)return '';
-  if(rec.type==='mood')return rec.moodColor?'':tcIcon('droplet');
+  if(rec.type==='mood')return rec.skyMood?tcIcon(skyMoodIcon(rec.skyMood)):rec.moodColor?'':tcIcon('cloud');
   if(rec.type==='song')return rec.songTitle?tcIcon('music')+' '+esc(rec.songTitle.slice(0,8)):tcIcon('music');
   if(rec.mediaId)return tcIcon(rec.type==='sky'?'cloud':rec.type==='food'?'food':'camera');
   return tcIcon('check');
@@ -3903,14 +3951,19 @@ function dailyRecordPreview(rec){
 async function createDailyRecord(type,data={}){
   ensureDailyRecords();
   const today=todayStr();
-  const existing=S.dailyRecords.find(r=>r.type===type&&new Date(r.createdAt).toISOString().slice(0,10)===today);
+  const ofType=S.dailyRecords.filter(r=>r.type===type&&new Date(r.createdAt).toISOString().slice(0,10)===today);
+  if(!data.replaceId&&ofType.length>=DAILY_MAX_PER_TYPE){
+    toast(`今日は${DAILY_RECORD_TYPES[type]?.label||'記録'}を3件まで残せます`);
+    return null;
+  }
+  const existing=data.replaceId?S.dailyRecords.find(r=>r.id===data.replaceId):null;
   const isReplace=!!existing;
   const id=existing?.id||('dr'+Date.now());
   const ctx=await captureSealContext();
   const shareTo=data.shareTo||{friends:[],groups:[]};
   const rec={
     id,userId:meName(),type,
-    mood:data.mood,moodColor:data.moodColor,moodWord:data.moodWord,
+    mood:data.mood,moodColor:data.moodColor,moodWord:data.moodWord,skyMood:data.skyMood,
     songTitle:data.songTitle,songArtist:data.songArtist,songId:data.songId,
     songArtworkUrl:data.songArtworkUrl,songSource:data.songSource,songCapturedAt:data.songCapturedAt,
     caption:data.caption,
@@ -3927,7 +3980,7 @@ async function createDailyRecord(type,data={}){
     rec.mediaId=existing.mediaId;
   }
   if(isReplace){
-    const idx=S.dailyRecords.indexOf(existing);
+    const idx=S.dailyRecords.findIndex(r=>r.id===existing.id);
     S.dailyRecords[idx]=rec;
   }else{
     S.dailyRecords.unshift(rec);
@@ -3961,7 +4014,9 @@ function finishDailyRecordToast(replaced){
 async function saveDailyMood(data,scope){
   const payload=dailyRecordPayload(scope||'mood',data);
   const rec=await createDailyRecord('mood',payload);
+  if(!rec)return null;
   finishDailyRecordToast(rec._replaced);
+  return rec;
 }
 function openSongPickOverlay(){
   ensureMusicPeriods();
@@ -3995,12 +4050,18 @@ function showDailyConfirm(dataUrl){
   pendingDailyMedia={type,dataUrl};
   const prev=$('dailyConfirmPreview');
   if(prev)prev.innerHTML=`<img src="${dataUrl}" alt="">`;
+  const cap=$('dailyCaptionInput');
+  if(cap)cap.value='';
   renderDailySharePicker('confirm',$('confirmSharePicker'));
   $('dailyConfirmOverlay')?.classList.add('open');
 }
 function openDailyRecord(type){
+  if(type!=='text'&&!canAddDailyType(type)){
+    toast(`今日はあと0枠です（3件まで）`);
+    return;
+  }
   if(type==='mood'){
-    initMoodColorPicker();
+    initSkyMoodPicker();
     renderDailySharePicker('mood',$('moodSharePicker'));
     $('moodPickOverlay')?.classList.add('open');
     return;
@@ -4019,19 +4080,27 @@ function renderDailyStrip(){
   const mount=$('dailyStripMount');
   if(!mount)return;
   const today=todayDailyRecords();
-  const done=t=>today.some(r=>r.type===t);
+  const countOf=t=>dailyTypeCount(t);
+  const slotsOf=t=>{
+    const left=dailySlotsRemaining(t);
+    if(!countOf(t))return '';
+    return left>0?`あと${left}枠`:'';
+  };
   mount.innerHTML=`<div class="daily-strip-card">
     <div class="daily-strip-head">
       <span class="daily-strip-label">今日の記録</span>
-      <span class="daily-strip-progress">${today.length}/5</span>
+      <span class="daily-strip-progress">${today.length}件</span>
     </div>
     <div class="daily-strip-scroll">
-      ${Object.entries(DAILY_RECORD_TYPES).map(([type,meta])=>`
-        <button type="button" class="daily-chip${done(type)?' done':''}" data-daily="${type}">
+      ${Object.entries(DAILY_RECORD_TYPES).map(([type,meta])=>{
+        const cnt=countOf(type);
+        const full=!canAddDailyType(type);
+        return`<button type="button" class="daily-chip${cnt?' done':''}${full?' disabled':''}" data-daily="${type}"${full?' disabled':''}>
           <span class="dc-icon">${tcIcon(meta.iconKey)}</span>
           <span class="dc-label">${esc(meta.label.replace('今日の',''))}</span>
-          ${done(type)?'<span class="dc-check">'+tcIcon('check','gold')+'</span>':''}
-        </button>`).join('')}
+          ${cnt?`<span class="dc-check">${tcIcon('check','gold')}</span><span class="dc-slots">${cnt}/3${slotsOf(type)?' · '+slotsOf(type):''}</span>`:''}
+        </button>`;
+      }).join('')}
       <button type="button" class="daily-chip text-entry" data-daily="text">
         <span class="dc-icon">${tcIcon('edit')}</span>
         <span class="dc-label">ひとこと</span>
@@ -4101,8 +4170,9 @@ function dailyRecordsAsTimelinePosts(){
   return(S.dailyRecords||[]).map(r=>({
     id:r.id,from:me,to:r.visibility==='private'?'self':'shared',
     type:r.type,dailyType:r.type,isDaily:true,
-    text:r.moodWord||r.songTitle||DAILY_RECORD_TYPES[r.type]?.label||'',
-    mood:r.mood,moodColor:r.moodColor,moodWord:r.moodWord,songTitle:r.songTitle,
+    text:r.caption||r.moodWord||r.songTitle||DAILY_RECORD_TYPES[r.type]?.label||'',
+    caption:r.caption,mood:r.mood,moodColor:r.moodColor,moodWord:r.moodWord,skyMood:r.skyMood,
+    songTitle:r.songTitle,
     at:r.createdAt,mediaId:r.mediaId,
     sealed:false,opened:true,visibility:r.visibility,shareTo:r.shareTo,
     sealContext:r.sealContext,
@@ -4179,20 +4249,19 @@ function renderInnerCircle(){
   feed.innerHTML=posts.map(p=>{
     const postKey=p.id||p.name+':'+p.at;
     const reacted=(S.innerReactions||[]).filter(r=>r.postId===p.id&&r.from===meName());
-    const body=p.moodColor?`<div class="tl-photo-hero tl-color-fill" style="background:${esc(p.moodColor)};min-height:160px;border-radius:var(--r-sm)">${p.moodWord?`<span class="tl-color-word">${esc(p.moodWord)}</span>`:''}</div>`
-      :p.type==='mood'||p.mood?`<div class="inner-post-body" style="font-size:28px">${p.mood||''}</div>`
-      :p.type==='song'?`<div class="inner-post-body">${tcIcon('music')} ${esc(p.songTitle||p.text||'一曲')}</div>`
-      :p.type==='text'||p.isTextPost?`<div class="inner-post-body">${p.promptText?`<div class="tl-text-prompt">${esc(p.promptText)}</div>`:''}${esc(p.text||'')}</div>`
-      :p.mediaId?`<div class="inner-post-media"><img data-lazy="${esc(p.mediaId)}" alt=""></div>`
-      :`<div class="inner-post-body">${esc(p.text||'')}</div>`;
+    const items=p.items?.length>1?p.items:[p];
+    const body=items.length>1
+      ?`<div class="tl-consolidated" style="padding:0;margin:8px 0">${consolidatedThumbsHtml(items)}</div>`
+      :postBodyHtml(p);
     const ctx=contextStampHtml(p);
+    const typeLbl=items.length>1?`${items.length}件`:esc(p.type==='text'?'ひとこと':(DAILY_RECORD_TYPES[p.type]?.label||'記録'));
     return`<article class="inner-post" data-post="${esc(postKey)}">
       <div class="inner-post-head">
         <div class="inner-post-av" style="background:${p.color||'#5A5A5A'}">${esc(p.char||'?')}</div>
         <div><div class="inner-post-name">${esc(p.name)}</div>
-        <div class="inner-post-meta">${timeAgo(p.at)} · ${esc(p.type==='text'?'ひとこと':(DAILY_RECORD_TYPES[p.type]?.label||'記録'))}</div></div>
+        <div class="inner-post-meta">${timeAgo(p.at)} · ${typeLbl}</div></div>
       </div>
-      ${body}${ctx}
+      ${body}${p.caption?`<div class="inner-post-body" style="font-size:13px;padding-top:4px">${esc(p.caption)}</div>`:''}${ctx}
       <div class="inner-react">
         <button type="button" class="${reacted.some(r=>r.react==='shimi')?'on':''}" data-react="shimi" data-post="${esc(postKey)}">しみた</button>
         <button type="button" class="${reacted.some(r=>r.react==='nats')?'on':''}" data-react="nats" data-post="${esc(postKey)}">懐かしい</button>
@@ -4212,7 +4281,7 @@ function renderInnerCircle(){
 function initMoodPickers(){
   $('onboardPickColor')?.addEventListener('click',()=>{
     $('onboardOverlay')?.classList.remove('open');
-    initMoodColorPicker();
+    initSkyMoodPicker();
     renderDailySharePicker('mood',$('moodSharePicker'));
     $('moodPickOverlay')?.classList.add('open');
     $('moodPickOverlay')._onboard=true;
@@ -4557,7 +4626,7 @@ function renderPairwisePost(p,me){
   const isMe=p.from===me||p.from==='ゆうま';
   let body='';
   if(locked){
-    body=`<div class="tl-body-sealed" style="min-height:72px"><div class="lock-core" style="padding:12px">${tcIcon('lock')}<div class="lbl">封印中</div><div class="when">${p.openAt?formatWhen({openAt:p.openAt}):''}</div></div></div>`;
+    body=`<div class="tl-body-sealed" style="min-height:72px"><div class="lock-core" style="padding:12px">${tcIcon('lock')}<div class="lbl">タイムカプセル</div><div class="when capsule-days-badge">${esc(capsuleDaysShort(p.openAt||p.unlockAt))}</div></div></div>`;
   }else if(p.mediaId){
     body=`<div class="tl-open-body"><img data-lazy="${esc(p.mediaId)}" alt=""></div>`;
   }
@@ -4808,14 +4877,57 @@ function ensureInviteCode(){
 }
 function groupNameById(id){return S.groups?.find(g=>g.id===id)?.name||GROUP}
 function getSelectedOpenDays(){
-  const pills=[...document.querySelectorAll('.duration-pill.on')];
+  const pills=[...document.querySelectorAll('#durationPills .duration-pill.on')];
   if(!pills.length)return[365];
   const days=[];
   pills.forEach(p=>{
     if(p.dataset.days==='custom')days.push(+($('customDaysInput')?.value||14));
     else days.push(+p.dataset.days);
   });
-  return[...new Set(days.filter(d=>d>0))];
+  return[...new Set(days.filter(d=>d>=0))];
+}
+function capsuleDaysShort(openAt){
+  const cd=countdownText(openAt);
+  if(cd.ready)return '今日、開けられる';
+  const ms=new Date(openAt)-Date.now();
+  const d=Math.ceil(ms/864e5);
+  if(d>0)return `あと${d}日`;
+  return cd.text;
+}
+function dailyTypeCount(type){
+  return todayDailyRecords().filter(r=>r.type===type).length;
+}
+function dailySlotsRemaining(type){
+  return Math.max(0,DAILY_MAX_PER_TYPE-dailyTypeCount(type));
+}
+function canAddDailyType(type){
+  return dailyTypeCount(type)<DAILY_MAX_PER_TYPE;
+}
+function skyMoodIcon(id){
+  return SKY_MOODS.find(s=>s.id===id)?.icon||'cloud';
+}
+function postBodyHtml(p){
+  if(p.skyMood||(p.type==='mood'&&!p.moodColor)){
+    const icon=skyMoodIcon(p.skyMood);
+    const lbl=p.moodWord||SKY_MOODS.find(s=>s.id===p.skyMood)?.label||'';
+    return `<div class="tl-photo-hero" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;background:var(--bg-3)">${tcIcon(icon,'lg')}${lbl?`<span class="tl-color-word">${esc(lbl)}</span>`:''}</div>`;
+  }
+  if(p.moodColor)return `<div class="tl-photo-hero tl-color-fill" style="background:${esc(p.moodColor)}">${p.moodWord?`<span class="tl-color-word">${esc(p.moodWord)}</span>`:''}</div>`;
+  if(p.mediaId)return `<div class="tl-photo-hero"><img data-lazy="${esc(p.mediaId)}" alt="" style="${photoMemoryFilter(p.at)}"></div>`;
+  if(p.type==='song'||p.songTitle)return `<div class="tl-foot" style="padding-top:4px"><div class="tl-foot-song">${tcIcon('music')} ${esc(p.songTitle||p.text||'')}</div></div>`;
+  if(p.type==='text'||p.isTextPost)return `${p.promptText?`<div class="tl-text-prompt">${esc(p.promptText)}</div>`:''}<div class="tl-text-body">${esc(p.text||'')}</div>`;
+  return `<div class="tl-text-body">${esc(p.text||p.caption||'')}</div>`;
+}
+function consolidatedThumbsHtml(items){
+  return items.map(it=>{
+    if(it.mediaId)return `<img data-lazy="${esc(it.mediaId)}" alt="">`;
+    if(it.skyMood||(it.type==='mood'&&!it.moodColor)){
+      return `<div style="width:56px;height:56px;border-radius:8px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;flex-shrink:0">${tcIcon(skyMoodIcon(it.skyMood))}</div>`;
+    }
+    if(it.moodColor)return `<div style="width:56px;height:56px;border-radius:8px;background:${esc(it.moodColor)};flex-shrink:0"></div>`;
+    if(it.type==='song')return `<div style="width:56px;height:56px;border-radius:8px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;flex-shrink:0">${tcIcon('music')}</div>`;
+    return `<div style="width:56px;height:56px;border-radius:8px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:var(--ink-3)">${esc((DAILY_RECORD_TYPES[it.type]?.label||'').replace('今日の','').slice(0,2))}</div>`;
+  }).join('');
 }
 function parseTagsFromInput(){
   const raw=($('tagInput')?.value||'').trim();
@@ -5093,11 +5205,11 @@ function showVoiceHintNudge(){
 }
 function countdownText(openAt){
   const ms=new Date(openAt)-Date.now();
-  if(ms<=0)return {text:'開封の時が来た',ready:true};
-  const d=Math.floor(ms/864e5);
+  if(ms<=0)return {text:'今日、開けられる',ready:true};
+  const d=Math.ceil(ms/864e5);
+  if(d>0)return {text:`あと${d}日`,ready:false};
   const h=Math.floor((ms%864e5)/360e5);
   const m=Math.floor((ms%360e5)/6e4);
-  if(d>0)return {text:`あと ${d}日 ${h}時間`,ready:false};
   if(h>0)return {text:`あと ${h}時間 ${m}分`,ready:false};
   return {text:`あと ${m}分`,ready:false};
 }
@@ -6852,7 +6964,14 @@ function consolidatePostsByPersonDay(posts){
     const day=new Date(p.at).toISOString().slice(0,10);
     const who=p.from||p.name||'';
     const key=who+'_'+day;
-    if(!map.has(key)||p.at>map.get(key).at)map.set(key,p);
+    if(!map.has(key)){
+      map.set(key,{...p,items:[p],at:p.at});
+    }else{
+      const g=map.get(key);
+      g.items.push(p);
+      g.items.sort((a,b)=>b.at-a.at);
+      if(p.at>g.at)Object.assign(g,p,{items:g.items});
+    }
   });
   return[...map.values()].sort((a,b)=>b.at-a.at);
 }
@@ -7134,7 +7253,7 @@ function capState(c){
   if(c.sealed&&new Date(c.openAt)<=Date.now())return 'WAITING';
   return 'LOCKED';
 }
-function stateLabel(s){return s==='LOCKED'?'封印中':s==='WAITING'?'開封待ち':'開封済み'}
+function stateLabel(s){return s==='LOCKED'?'タイムカプセル':s==='WAITING'?'開封待ち':'開封済み'}
 function isPrivateCap(c){
   const me=S.auth?.name||USER;
   if(isPairCap(c))return !canSeePairCap(c);
@@ -7231,7 +7350,7 @@ function getNextCapsule(){
 function timelineFeedPosts(){
   const me=meName();
   const next=getNextCapsule();
-  const daily=dailyRecordsAsTimelinePosts();
+  const daily=consolidatePostsByPersonDay(dailyRecordsAsTimelinePosts());
   const caps=timelinePosts().filter(p=>{
     if(next&&p.id===next.id)return false;
     if(p.sealed&&!p.opened&&(p.from===me||p.from==='ゆうま'))return false;
@@ -7259,7 +7378,7 @@ function renderNextCapsule(){
   const ready=canOpenOwnCapsuleToday(next);
   w.classList.toggle('ready',ready);
   const cd=countdownText(unlockAtOf(next));
-  cdEl.textContent=ready?'今日だけ開けられます':cd.text;
+  cdEl.textContent=ready?'今日、開けられる':cd.text;
   subEl.textContent=`${capDestLabel(next)} · ${TYPE_JA[next.type]||next.type}${next.text?' · '+next.text.slice(0,28):''}`;
   $('widgetFill')?.style&&( $('widgetFill').style.width=ready?'100%':sealProgress(next)+'%');
   if(openBtn){
@@ -7289,7 +7408,7 @@ function renderTimelineFeed(){
     return;
   }
   el.innerHTML=posts.map(p=>{
-    if(p.isDaily)return renderTimelineDailyItem(p,me);
+    if(p.isDaily||p.isInner)return renderTimelineFamilyCard(p,me);
     const m=MEMBERS.find(x=>x.n===p.from);
     const avStyle=m?`style="background:${m.c}"`:'';
     const avChar=m?m.i:(p.from===me||p.from==='ゆうま'?'ゆ':'?');
@@ -7300,8 +7419,8 @@ function renderTimelineFeed(){
     const goldWax=(p.openable||canOpenOthersCapsule(p.capsule))?'<span class="tl-wax-badge">封</span>':'';
     let body='';
     if(locked){
-      const when=p.openAt?formatWhen({openAt:p.openAt}):'';
-      body=`<div class="tl-sealed-compact"><div class="lock-core"><div class="lbl">${esc(p.from)} · 封印中</div><div class="when">${esc(when)}</div></div></div>`;
+      const daysLbl=capsuleDaysShort(p.unlockAt||p.openAt);
+      body=`<div class="tl-sealed-compact"><div class="lock-core"><div class="lbl">${esc(p.from)} · タイムカプセル</div><div class="when capsule-days-badge">${esc(daysLbl)}</div></div></div>`;
     }else if(p.moodColor){
       body=`<div class="tl-photo-hero tl-color-fill" style="background:${esc(p.moodColor)}">${p.moodWord?`<span class="tl-color-word">${esc(p.moodWord)}</span>`:''}</div>`;
     }else if(p.mediaId){
@@ -7312,8 +7431,6 @@ function renderTimelineFeed(){
       body=`${p.promptText?`<div class="tl-text-prompt">${esc(p.promptText)}</div>`:''}<div class="tl-text-body">${esc(p.text||'')}</div>`;
     }
     const foot=locked?'':(p.isTextPost||p.type==='text'?'':tlCardFoot(p));
-    const canReply=!locked&&!isMe&&!p.isTextPost&&p.type!=='text'&&MEMBERS.some(x=>x.n===p.from);
-    const replyBtn=canReply?`<button type="button" class="tl-reply-btn" data-reply-to="${esc(MEMBERS.find(x=>x.n===p.from)?.id||'')}">返信</button>`:'';
     const canPromote=!locked&&p.layer==='now'&&isMe&&!p.promoted&&p.capsule;
     const promoteBtn=canPromote?`<button type="button" class="tl-reply-btn" data-promote-id="${esc(p.id)}">未来にも残す</button>`:'';
     const openBtn=p.openable?`<button type="button" class="tl-reply-btn" data-open-cap="${esc(p.id)}">開ける</button>`:'';
@@ -7326,7 +7443,7 @@ function renderTimelineFeed(){
         ${goldWax}
       </div>
       ${body}${foot}
-      ${(replyBtn||promoteBtn||openBtn)?`<div class="tl-actions">${openBtn}${promoteBtn}${replyBtn}</div>`:''}
+      ${(promoteBtn||openBtn)?`<div class="tl-actions">${openBtn}${promoteBtn}</div>`:''}
     </article>`;
   }).join('');
   loadLazyThumbs(el);
@@ -7353,6 +7470,14 @@ function renderTimelineFeed(){
     if(cap&&canOpenCapsule(cap))startOpening([cap],false);
     haptic();
   }));
+  el.querySelectorAll('[data-inner-react]').forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(b.classList.contains('on'))return;
+    sendInnerReact(b.dataset.postId,b.dataset.innerReact);
+    b.classList.add('on');
+    toast('静かに届きました');
+    haptic();
+  }));
 }
 
 function renderLastYearToday(){
@@ -7376,25 +7501,32 @@ function renderLastYearToday(){
     card.innerHTML=`${ctxStamp}<p style="font-size:14px;line-height:1.55;margin:0">${esc(item.text||'')}</p>`;
   }
 }
-function renderTimelineDailyItem(p,me){
-  const isMe=!p.isInner;
-  const name=isMe?'あなた':p.from;
-  const avChar=isMe?me.charAt(0):(MEMBERS.find(x=>x.n===p.from)?.i||p.from?.charAt(0)||'?');
-  const avColor=isMe?'#5A5A5A':(MEMBERS.find(x=>x.n===p.from)?.c||'#5A5A5A');
-  const label=DAILY_RECORD_TYPES[p.dailyType||p.type]?.label||'記録';
-  const dest=isMe?dailyDestLabel(p):'';
-  let body='';
-  if(p.moodColor)body=`<div class="tl-photo-hero tl-color-fill" style="background:${esc(p.moodColor)}">${p.moodWord?`<span class="tl-color-word">${esc(p.moodWord)}</span>`:''}</div>`;
-  else if(p.mediaId)body=`<div class="tl-photo-hero"><img data-lazy="${esc(p.mediaId)}" alt="" style="${photoMemoryFilter(p.at)}"></div>`;
-  const foot=tlCardFoot(p);
+function renderTimelineFamilyCard(p,me){
+  const isMe=p.isInner?false:(p.from===me||p.from==='ゆうま');
+  const name=isMe?'あなた':(p.from||p.name);
+  const m=MEMBERS.find(x=>x.n===(p.from||p.name));
+  const avChar=isMe?me.charAt(0):(m?.i||name?.charAt(0)||'?');
+  const avColor=isMe?'#5A5A5A':(m?.c||p.color||'#5A5A5A');
+  const items=p.items?.length>1?p.items:[p];
+  const label=items.length>1?`${items.length}件の記録`:(DAILY_RECORD_TYPES[p.dailyType||p.type]?.label||'記録');
+  const dest=isMe&&!p.isInner?dailyDestLabel(p):'';
+  const body=items.length>1?`<div class="tl-consolidated">${consolidatedThumbsHtml(items)}</div>`:postBodyHtml(p);
+  const foot=!items.length||items.length>1?'':tlCardFoot(p);
+  const capTxt=p.caption||(items.length===1?items[0].caption:'');
+  const captionHtml=capTxt?`<div class="tl-text-body" style="padding:0 16px 8px;font-size:13px">${esc(capTxt)}</div>`:'';
+  const reacted=(S.innerReactions||[]).filter(r=>r.postId===p.id&&r.from===meName());
+  const reactHtml=p.isInner&&!isMe?`<div class="tl-inner-react">
+    <button type="button" class="${reacted.some(r=>r.react==='shimi')?'on':''}" data-inner-react="shimi" data-post-id="${esc(p.id)}">しみた</button>
+    <button type="button" class="${reacted.some(r=>r.react==='nats')?'on':''}" data-inner-react="nats" data-post-id="${esc(p.id)}">懐かしい</button>
+  </div>`:'';
   return`<article class="tl-item tl-tappable tl-card-v4" data-post-id="${esc(p.id)}">
     <div class="tl-item-head">
       <div class="tl-av" style="background:${avColor}">${avChar}</div>
       <div><div class="tl-name">${esc(name)}</div>
       <div class="tl-meta">${timeAgo(p.at)} · ${esc(label)}${dest?' · '+esc(dest):''}</div></div>
-      <span class="tl-daily-badge">今日</span>
+      ${isMe&&!p.isInner?'<span class="tl-daily-badge">今日</span>':''}
     </div>
-    ${body}${foot}
+    ${body}${captionHtml}${foot}${reactHtml}
   </article>`;
 }
 function renderTimeline(){
@@ -7642,8 +7774,8 @@ function renderSharedTimeline(){
     if(locked){
       body=`<div class="stl-sealed-box">
         ${tcIcon('lock')}
-        <div class="lbl">封印されたタイムカプセル</div>
-        <div class="when">${p.openAt?formatWhen({openAt:p.openAt}):'開封日まで中身は見えません'}</div>
+        <div class="lbl">タイムカプセル</div>
+        <div class="when capsule-days-badge">${esc(capsuleDaysShort(p.openAt||p.unlockAt))}</div>
       </div>`;
     }else if(p.mediaId){
       body=`<div class="stl-open-body"><img data-lazy="${esc(p.mediaId)}" alt=""></div>${p.text?`<div class="stl-open-caption">${esc(p.text)}</div>`:''}`;
@@ -7657,7 +7789,7 @@ function renderSharedTimeline(){
           <div class="stl-post-name">${esc(p.from==='ゆうま'?'あなた':p.from)}</div>
           <div class="stl-post-meta">${timeAgo(p.at)}${dest?' · → '+esc(dest):''}</div>
         </div>
-        <span class="stl-post-badge">${locked?tcIcon('lock')+' 封印':p.opened?'開封済み':'投稿'}</span>
+        <span class="stl-post-badge">${locked?tcIcon('lock')+' タイムカプセル':p.opened?'開封済み':'投稿'}</span>
       </div>
       ${body}
     </article>`;
@@ -7843,11 +7975,11 @@ function renderVaultMosaic(){
   $('vaultCount').textContent=items.length;
   const el=$('vaultMosaic');
   if(!el)return;
-  if(!items.length){el.innerHTML='<div class="vault-cell" style="grid-column:1/-1;aspect-ratio:3/1"><div class="vm-count">封印中の記憶はありません</div></div>';return}
+  if(!items.length){el.innerHTML='<div class="vault-cell" style="grid-column:1/-1;aspect-ratio:3/1"><div class="vm-count">タイムカプセルはありません</div></div>';return}
   const show=items.slice(0,8);
-  el.innerHTML=show.map((c,i)=>`<div class="vault-cell${i===7&&items.length>8?' more':''}">
+  el.innerHTML=show.map((c,i)=>`<div class="vault-cell${i===7&&items.length>8?' more':''}" style="position:relative">
     <div class="vm-blur"></div>
-    ${i===7&&items.length>8?`<div class="vm-count">+${items.length-7}</div>`:`<div class="vm-count">${typeIcon(c.type)}</div>`}
+    ${i===7&&items.length>8?`<div class="vm-count">+${items.length-7}</div>`:`<div class="vm-count">${typeIcon(c.type)}</div><div class="capsule-days-badge" style="position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:10px">${esc(capsuleDaysShort(unlockAtOf(c)))}</div>`}
   </div>`).join('');
 }
 
@@ -8062,7 +8194,7 @@ function renderMemories(){
   el.innerHTML=`
     <div class="panel-head" style="padding:20px 20px 8px">
       <h1 style="font-size:24px;font-weight:600">思い出棚</h1>
-      <p class="sub">開封済み ${(S.opened||[]).length} · 封印中 ${sealedN}</p>
+      <p class="sub">開封済み ${(S.opened||[]).length} · タイムカプセル ${sealedN}</p>
     </div>
     ${filters}
     <div class="mem-bento">${bento||'<div class="empty-state" style="grid-column:1/-1;padding:40px">まだ思い出がありません</div>'}</div>`;
@@ -8388,8 +8520,8 @@ function openDayReflect(dayKey){
     ctx.contextPhotoCount?`<div class="day-reflect-ctx muted">この日は${ctx.contextPhotoCount}枚の記憶</div>`:'',
   ].filter(Boolean).join('');
   const items=day.items.map(it=>{
-    const lbl=it.sealed?tcIcon('lock')+' 封印':(TYPE_JA[it.type]||it.type||'記録');
-  const txt=it.sealed?'開封まで中身は見えません':(it.text||'');
+    const lbl=it.sealed?tcIcon('lock')+' タイムカプセル':(TYPE_JA[it.type]||it.type||'記録');
+    const txt=it.sealed?capsuleDaysShort(it.openAt||it.unlockAt):(it.text||'');
     return`<div class="day-reflect-item"><div class="dri-type">${lbl}</div>${txt?`<div class="dri-text">${esc(txt)}</div>`:''}</div>`;
   }).join('');
   body.innerHTML=`
@@ -8431,7 +8563,8 @@ function renderArchiveMemoryList(){
     const typeLabel=m.type==='prompt'||m.promptId?'問い':(TYPE_JA[m.type]||m.type);
     const sizeCls=i%5===0?' wide':i%3===0?' tall':'';
     if(sealed&&!missed){
-      return`<article class="arb-card${sizeCls}"><div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">${tcIcon('lock')} ${esc(typeLabel)}</span></div><div class="arb-sealed">開封まで中身は見えません</div></article>`;
+      const daysLbl=capsuleDaysShort(m.openAt||m.unlockAt||unlockAtOf(m));
+      return`<article class="arb-card${sizeCls}"><div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">${tcIcon('lock')} タイムカプセル</span></div><div class="arb-sealed capsule-days-badge">${esc(daysLbl)}</div></article>`;
     }
     const thumb=m.mediaId?`<img class="arb-thumb" data-lazy="${esc(m.mediaId)}" alt="">`:'';
     const text=m.text||m.choice||m.promptText||'';
@@ -8486,8 +8619,8 @@ function renderArchive(){
     return`<span class="bonus-badge">${tcIcon(b.icon)} ${esc(b.label)}</span>`;
   }).join('');
 
-  const sealedStrip=sealedVaultItems().slice(0,6).map(()=>`
-    <div class="vault-cell"><div class="vm-blur"></div><div class="vm-count">${tcIcon('lock')}</div></div>`).join('');
+  const sealedStrip=sealedVaultItems().slice(0,6).map(c=>`
+    <div class="vault-cell"><div class="vm-blur"></div><div class="vm-count">${tcIcon('lock')}</div><div class="capsule-days-badge" style="position:absolute;bottom:6px;left:0;right:0;text-align:center">${esc(capsuleDaysShort(unlockAtOf(c)))}</div></div>`).join('');
 
   const seasonKey=getSeasonAlbumKey();
   const seasonAlbum=S.albums?.[seasonKey];
@@ -8518,7 +8651,7 @@ function renderArchive(){
   const memFilters=`<div class="arb-filters">
     <button type="button" class="${memFilter==='all'?'on':''}" data-amf="all">すべて</button>
     <button type="button" class="${memFilter==='opened'?'on':''}" data-amf="opened">開封済み</button>
-    <button type="button" class="${memFilter==='sealed'?'on':''}" data-amf="sealed">封印中</button>
+    <button type="button" class="${memFilter==='sealed'?'on':''}" data-amf="sealed">タイムカプセル</button>
     <button type="button" class="${memFilter==='tag'?'on':''}" data-amf="tag">タグ別</button>
   </div>`;
   const memoryList=renderArchiveMemoryList();
@@ -8571,9 +8704,9 @@ function renderArchive(){
   const todayMood=todayDailyRecords().find(r=>r.type==='mood');
   const recentPhoto=(S.dailyRecords||[]).find(r=>r.mediaId);
   const profileFace=`<div style="display:flex;gap:8px;align-items:center;margin-top:10px">
-    ${todayMood?.moodColor?`<div class="profile-mood-swatch" style="background:${esc(todayMood.moodColor)}" title="今日の色"></div>`:''}
+    ${todayMood?.skyMood?`<div class="profile-mood-swatch" style="display:flex;align-items:center;justify-content:center;background:var(--bg-3)" title="今日の空">${tcIcon(skyMoodIcon(todayMood.skyMood))}</div>`:todayMood?.moodColor?`<div class="profile-mood-swatch" style="background:${esc(todayMood.moodColor)}" title="今日の空"></div>`:''}
     ${recentPhoto?`<img class="profile-recent-thumb" data-lazy="${esc(recentPhoto.mediaId)}" alt="">`:''}
-    ${!todayMood?.moodColor&&!recentPhoto?`<span style="font-size:12px;color:var(--ink-3)">今日の色や一枚が、あなたの顔になる</span>`:''}
+    ${!todayMood&&!recentPhoto?`<span style="font-size:12px;color:var(--ink-3)">今日の空や一枚が、あなたの顔になる</span>`:''}
   </div>`;
 
   el.innerHTML=`
@@ -8590,13 +8723,13 @@ function renderArchive(){
       <div style="display:flex;gap:24px;padding:16px 20px 8px">
         <div><div style="font-size:28px;font-weight:600;font-family:var(--font-display)">${totalDays}</div><div style="font-size:11px;color:var(--ink-3)">残した日</div></div>
         <div><div style="font-size:16px;font-weight:500;color:var(--ink-2)">${streak}</div><div style="font-size:11px;color:var(--ink-3)">連続</div></div>
-        <div><div style="font-size:16px;font-weight:500;color:var(--ink-2)">${sealedN}</div><div style="font-size:11px;color:var(--ink-3)">封印中</div></div>
+        <div><div style="font-size:16px;font-weight:500;color:var(--ink-2)">${sealedN}</div><div style="font-size:11px;color:var(--ink-3)">タイムカプセル</div></div>
       </div>
       ${totalDays>0?`<p style="padding:0 20px 12px;font-size:13px;color:var(--ink-2)">${esc(name)}は、これまで${totalDays}日分の記憶を残しています</p>`:''}
       <button type="button" class="dq-cta year-wrap-btn" id="openYearWrapBtn">${yr}年まとめを見る</button>
       ${myGifts.length?`<div style="padding:0 20px 8px"><div class="sec-label">もらったギフト</div><div class="gift-collection">${giftCollection}</div></div>`:''}
       ${bonuses?`<div class="bonus-row" style="padding:0 20px 16px;justify-content:flex-start">${bonuses}</div>`:''}
-      ${sealedN?`<div class="vault-section"><div class="vault-label">まだ見られない · ${sealedN}件</div><div class="vault-mosaic">${sealedStrip}</div></div>`:''}
+      ${sealedN?`<div class="vault-section"><div class="vault-label">タイムカプセル · ${sealedN}件</div><div class="vault-mosaic">${sealedStrip}</div></div>`:''}
       ${anthemHtml}
       ${seasonStrip}
       ${themeCard}
@@ -8755,7 +8888,7 @@ function renderAccountPanel(el){
           <button type="button" class="profile-ig-av-btn" id="changeAvatarBtn" aria-label="写真を変更"></button>
         </div>
         <div class="profile-ig-stats">
-          <div><div class="n">${sealedN}</div><div class="l">封印</div></div>
+          <div><div class="n">${sealedN}</div><div class="l">タイムカプセル</div></div>
           <div><div class="n">${opened}</div><div class="l">開封</div></div>
           <div><div class="n">${S.currentStreak||0}</div><div class="l">連続</div></div>
         </div>
@@ -9293,16 +9426,29 @@ textComposeOverlay?.addEventListener('click',e=>{if(e.target===textComposeOverla
 
 $('inviteContact')?.addEventListener('input',()=>{save();updateCreateUI()});
 
-document.querySelectorAll('.duration-pill').forEach(b=>{
+document.querySelectorAll('#durationPills .duration-pill').forEach(b=>{
   b.addEventListener('click',()=>{
-    if(b.dataset.days==='custom'){
-      $('customDays').classList.toggle('show');
+    if(b.dataset.days==='0'){
+      document.querySelectorAll('#durationPills .duration-pill').forEach(x=>{
+        if(x.dataset.days!=='0')x.classList.remove('on');
+      });
+      b.classList.add('on');
+      $('customDays')?.classList.remove('show');
+    }else if(b.dataset.days==='custom'){
+      $('customDays')?.classList.toggle('show');
       b.classList.toggle('on');
+      document.querySelector('#durationPills [data-days="0"]')?.classList.remove('on');
     }else{
       b.classList.toggle('on');
-      if(b.dataset.days!=='custom')$('customDays').classList.remove('show');
+      if(b.classList.contains('on')){
+        document.querySelector('#durationPills [data-days="0"]')?.classList.remove('on');
+        $('customDays')?.classList.remove('show');
+      }
     }
     S.sealOpenDays=getSelectedOpenDays();
+    const instantOn=document.querySelector('#durationPills [data-days="0"]')?.classList.contains('on');
+    const sealBtn=$('sealBtn');
+    if(sealBtn)sealBtn.textContent=instantOn?'今すぐ投稿する':'未来に封じる';
     save();haptic();
   });
 });
@@ -9362,6 +9508,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
     choice:S.createPromptChoice||undefined,text:S.createPromptText||undefined,options:createPrompt.options,
   }:null;
   let openDaysList=instant?[0]:getSelectedOpenDays();
+  if(!instant&&openDaysList.includes(0))instant=true;
   if(!instant&&!openDaysList.length)openDaysList=[365];
   const stripLoc=$('stripLoc')?.checked;
   const baseLoc=(!stripLoc&&media?.geo)?{...media.geo}:undefined;
@@ -9469,7 +9616,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
     }else if(instant){
       toast(count>1?`${count}件、残しました`:'残しました。タイムラインに流れていきます。');
     }else{
-      toast(count>1?`${count}件、記憶を封印しました`:'記憶を封印しました');
+      toast(count>1?`${count}件、タイムカプセルに入れました`:'タイムカプセルに入れました');
     }
     switchTab('waiting');
     if(isFriend&&targets[0]){
@@ -9493,7 +9640,8 @@ $('sealBtn').addEventListener('click',async()=>{
   const caption=$('createInput').value.trim();
   const hasPrompt=!!(S.createPromptChoice||S.createPromptText);
   if(!pendingMedia&&!pendingVoice&&!caption&&!hasPrompt){toast('ひとことか、写真か、音声を残そう');return}
-  await sealCapsule({caption,media:pendingMedia,fromCreate:true});
+  const instantSel=document.querySelector('#durationPills [data-days="0"]')?.classList.contains('on');
+  await sealCapsule({caption,media:pendingMedia,fromCreate:true,instant:instantSel});
 });
 
 /* Notifications */
@@ -9876,12 +10024,11 @@ $('onboardFinish')?.addEventListener('click',()=>{
 $('moodPickClose')?.addEventListener('click',()=>$('moodPickOverlay')?.classList.remove('open'));
 $('moodPickOverlay')?.addEventListener('click',e=>{if(e.target===$('moodPickOverlay'))$('moodPickOverlay').classList.remove('open')});
 $('moodColorSave')?.addEventListener('click',async()=>{
-  const h=+$('moodHueSlider')?.value||42;
-  const moodColor=hslFromHue(h);
   const moodWord=$('moodWordInput')?.value?.trim()||'';
   const overlay=$('moodPickOverlay');
   try{
-    await saveDailyMood({moodColor,moodWord});
+    const rec=await saveDailyMood({skyMood:selectedSkyMood,moodWord});
+    if(!rec)return;
     overlay?.classList.remove('open');
     if(overlay?._onboard){
       overlay._onboard=false;
@@ -9923,7 +10070,9 @@ $('dailyConfirmOverlay')?.addEventListener('click',e=>{if(e.target===$('dailyCon
 $('dailyConfirmSave')?.addEventListener('click',async()=>{
   if(!pendingDailyMedia)return;
   try{
-    const rec=await createDailyRecord(pendingDailyMedia.type,dailyRecordPayload('confirm',{mediaDataUrl:pendingDailyMedia.dataUrl}));
+    const caption=$('dailyCaptionInput')?.value?.trim()||'';
+    const rec=await createDailyRecord(pendingDailyMedia.type,dailyRecordPayload('confirm',{mediaDataUrl:pendingDailyMedia.dataUrl,caption}));
+    if(!rec)return;
     pendingDailyMedia=null;
     pendingDailyType=null;
     $('dailyConfirmOverlay')?.classList.remove('open');
@@ -9938,30 +10087,36 @@ $('songPickUseTop')?.addEventListener('click',async()=>{
     $('songPickManual')?.click();
     return;
   }
-  await createDailyRecord('song',dailyRecordPayload('song',{
+  const caption=$('songCaptionInput')?.value?.trim()||'';
+  const rec=await createDailyRecord('song',dailyRecordPayload('song',{
     songTitle:top.title,
     songArtist:top.artist||'',
     songId:top.id||top.title,
     songArtworkUrl:top.artworkUrl||'',
     songSource:top.source||'manual',
     songCapturedAt:top.capturedAt||Date.now(),
+    caption,
   }));
+  if(!rec)return;
   $('songPickOverlay')?.classList.remove('open');
-  finishDailyRecordToast();
+  finishDailyRecordToast(rec._replaced);
 });
 $('songPickManual')?.addEventListener('click',async()=>{
   const title=prompt('曲名を入力','')?.trim();
   if(!title)return;
   const artist=prompt('アーティスト（任意）','')?.trim()||'';
-  await createDailyRecord('song',dailyRecordPayload('song',{
+  const caption=$('songCaptionInput')?.value?.trim()||'';
+  const rec=await createDailyRecord('song',dailyRecordPayload('song',{
     songTitle:title,
     songArtist:artist,
     songId:title,
     songSource:'manual',
     songCapturedAt:Date.now(),
+    caption,
   }));
+  if(!rec)return;
   $('songPickOverlay')?.classList.remove('open');
-  finishDailyRecordToast();
+  finishDailyRecordToast(rec._replaced);
 });
 $('echoReplySend')?.addEventListener('click',()=>{
   const cap=$('echoReply')?._cap;
