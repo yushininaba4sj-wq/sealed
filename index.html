@@ -2629,6 +2629,37 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 }
 .tl-inner-react button.on{background:rgba(201,168,76,.14);color:var(--sc-gold,#C9A84C);border-color:rgba(201,168,76,.28)}
 .capsule-days-badge{font-size:11px;color:var(--sc-gold,#C9A84C);letter-spacing:.04em}
+.mood-battery-toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);margin:8px 0 4px;cursor:pointer}
+.mood-battery-panel{margin-bottom:12px}
+.battery-gauge-wrap{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.battery-gauge{flex:1;height:14px;border-radius:7px;border:1px solid rgba(255,255,255,.12);padding:2px;background:var(--bg-3)}
+.battery-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#5A5A5A,var(--sc-gold,#C9A84C));transition:width .3s}
+.mood-battery-pct{font-size:13px;font-weight:600;min-width:38px;text-align:right}
+.mood-battery-inline{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--ink-2)}
+.daily-share-binary{display:flex;gap:8px}
+.daily-share-binary button{flex:1;padding:12px;border-radius:var(--r-sm);font-size:13px;background:var(--bg-3);color:var(--ink-2);border:1px solid rgba(255,255,255,.06)}
+.daily-share-binary button.on{background:var(--ink);color:var(--accent-inv);border-color:var(--ink)}
+.inner-member-bar{display:flex;gap:10px;padding:0 20px 12px;overflow-x:auto}
+.inner-member-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;padding:0}
+.inner-member-btn .im-av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:600;color:#fff}
+.inner-member-btn span{font-size:10px;color:var(--ink-3)}
+.appearance-swipe{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scroll-snap-type:x mandatory}
+.appearance-shot{flex-shrink:0;width:120px;scroll-snap-align:start}
+.appearance-shot img{width:120px;height:120px;border-radius:var(--r-sm);object-fit:cover}
+.appearance-shot .as-label{font-size:10px;color:var(--ink-3);margin-top:4px;text-align:center}
+.insight-drill-overlay{position:fixed;inset:0;z-index:360;background:rgba(0,0,0,.72);display:none;align-items:flex-end;justify-content:center}
+.insight-drill-overlay.open{display:flex}
+.insight-drill-sheet{width:100%;max-width:480px;max-height:85vh;overflow-y:auto;background:var(--bg);border-radius:var(--r-md) var(--r-md) 0 0;padding:20px}
+.trend-bars{display:flex;align-items:flex-end;gap:6px;height:120px;margin-top:12px}
+.trend-bar{flex:1;background:var(--bg-3);border-radius:4px 4px 0 0;min-height:4px;position:relative}
+.trend-bar span{position:absolute;bottom:-18px;left:0;right:0;font-size:9px;color:var(--ink-3);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.friend-profile-overlay{position:fixed;inset:0;z-index:350;background:var(--bg);display:none;flex-direction:column}
+.friend-profile-overlay.open{display:flex}
+.profile-vis-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.profile-vis-row span{font-size:13px;color:var(--ink-2)}
+.profile-vis-row select{padding:6px 10px;border-radius:8px;background:var(--bg-3);border:1px solid var(--line);font-size:12px;color:var(--ink)}
+.montage-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:12px}
+.montage-preview img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px}
 .mood-color-preview{
   height:120px;border-radius:var(--r-sm);margin:12px 0;
   background:hsl(42,45%,42%);transition:background .4s var(--smooth);
@@ -2788,6 +2819,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
         </div>
         <div class="me-panel" id="mePanel">
           <div class="inner-filter" id="innerFilter"></div>
+          <div class="inner-member-bar" id="innerMemberBar"></div>
           <div class="inner-feed" id="innerCircleFeed"></div>
           <div class="shared-list hidden" id="sharedList"></div>
         </div>
@@ -2912,7 +2944,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       <div class="dest-chips" id="destChips">
         <button type="button" class="dest-chip" data-dest="self">自分だけ</button>
         <button type="button" class="dest-chip on" data-dest="friend">Family</button>
-        <button type="button" class="dest-chip" data-dest="group">グループ</button>
+        <button type="button" class="dest-chip hidden" data-dest="group">グループ</button>
         <button type="button" class="dest-chip hidden" data-dest="pair">ふたり</button>
         <button type="button" class="dest-chip hidden" data-dest="invite">招待</button>
       </div>
@@ -3210,9 +3242,17 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 
 <div class="mood-pick-overlay" id="moodPickOverlay">
   <div class="mood-pick-sheet mood-color-sheet">
-    <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;font-family:var(--font-display)">今日の空</h3>
-    <p style="font-size:13px;color:var(--ink-3);margin-bottom:12px">天気アイコンを選ぶ</p>
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;font-family:var(--font-display)">いまの気分</h3>
+    <p style="font-size:13px;color:var(--ink-3);margin-bottom:12px">空の様子を選ぶ（任意で充電％も）</p>
     <div class="sky-mood-grid" id="skyMoodGrid"></div>
+    <label class="mood-battery-toggle"><input type="checkbox" id="moodUseBattery"> 充電％でも気分を表す</label>
+    <div class="mood-battery-panel hidden" id="moodBatteryPanel">
+      <div class="battery-gauge-wrap">
+        <div class="battery-gauge"><div class="battery-fill" id="moodBatteryFill" style="width:50%"></div></div>
+        <span class="mood-battery-pct" id="moodBatteryPct">50%</span>
+      </div>
+      <input type="range" class="mood-hue-slider" id="moodBatterySlider" min="0" max="100" value="50">
+    </div>
     <input type="text" class="mood-word-input" id="moodWordInput" placeholder="ひとこと（任意）" maxlength="40">
     <div id="moodSharePicker"></div>
     <button type="button" class="dq-cta btn-gold" id="moodColorSave" style="width:100%;margin-top:12px">残す</button>
@@ -3269,6 +3309,24 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   </div>
   <div class="insight-month-nav" id="insightMonthNav"></div>
   <div class="insight-view-body" id="insightViewBody"></div>
+</div>
+
+<div class="insight-drill-overlay" id="insightDrillOverlay">
+  <div class="insight-drill-sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <h3 id="insightDrillTitle" style="font-size:17px;font-weight:600">推移</h3>
+      <button type="button" class="fs-back" id="insightDrillClose">×</button>
+    </div>
+    <div id="insightDrillBody"></div>
+  </div>
+</div>
+
+<div class="friend-profile-overlay" id="friendProfileOverlay">
+  <div class="insight-view-head">
+    <button type="button" class="fs-back" id="friendProfileClose">×</button>
+    <h2 id="friendProfileTitle">プロフィール</h2>
+  </div>
+  <div class="insight-view-body" id="friendProfileBody" style="padding:20px"></div>
 </div>
 
 <div class="promote-overlay" id="promoteOverlay">
@@ -3478,12 +3536,21 @@ const SKY_MOODS=[
   {id:'snow',icon:'snow',label:'雪'},
 ];
 const DAILY_RECORD_TYPES={
-  mood:{iconKey:'cloud',label:'今日の空'},
+  mood:{iconKey:'cloud',label:'気分'},
   photo:{iconKey:'camera',label:'今日の一枚'},
   song:{iconKey:'music',label:'今日の一曲'},
   food:{iconKey:'food',label:'今日のごはん'},
   sky:{iconKey:'cloud',label:'今日の空'},
 };
+const DEFAULT_PROFILE_VISIBILITY={mood:'inner',recentPhoto:'inner',music:'inner',changes:'inner',pastPhotos:'self',textDiary:'self'};
+const PROFILE_VIS_FIELDS=[
+  {key:'mood',label:'いまの気分'},
+  {key:'recentPhoto',label:'最近の一枚'},
+  {key:'music',label:'曲・ランキング'},
+  {key:'changes',label:'変化（顔・音楽・場所）'},
+  {key:'pastPhotos',label:'過去の写真'},
+  {key:'textDiary',label:'文字の記録'},
+];
 const TEXT_POST_MAX=140;
 let textComposeDest='inner';
 let textComposeDays=365;
@@ -3673,6 +3740,7 @@ function initSkyMoodPicker(){
   }else{
     grid.querySelectorAll('.sky-mood-btn').forEach(b=>b.classList.toggle('on',b.dataset.sky===selectedSkyMood));
   }
+  initMoodBatteryPanel();
 }
 function updateMoodColorPreview(){
   const h=+$('moodHueSlider')?.value||42;
@@ -3719,7 +3787,8 @@ async function openPostDetail(p){
       if(data)photoHtml=`<img class="sc-photo" src="${data}" alt="" style="width:72%;max-height:48vh">`;
     }catch(e){}
   }else if(p.skyMood||(p.type==='mood'&&!p.moodColor)){
-    photoHtml=`<div class="sc-photo-ph" style="width:72%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:var(--bg-3)">${tcIcon(skyMoodIcon(p.skyMood),'lg')}</div>`;
+    const batt=p.moodBattery!=null?moodBatteryGaugeHtml(p.moodBattery):'';
+    photoHtml=`<div class="sc-photo-ph" style="width:72%;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--bg-3)">${tcIcon(skyMoodIcon(p.skyMood),'lg')}${batt}</div>`;
   }else if(p.moodColor){
     photoHtml=`<div class="sc-photo-ph" style="width:72%;aspect-ratio:1;background:${esc(p.moodColor)}"></div>`;
   }
@@ -3813,7 +3882,7 @@ function innerPostsForHome(){
   return innerCircleTodayPosts().filter(p=>p.name!==me).map(p=>({
     id:p.id||'ih_'+p.name+p.at,
     from:p.name,isDaily:true,isInner:true,
-    type:p.type,dailyType:p.type,mood:p.mood,moodColor:p.moodColor,moodWord:p.moodWord,skyMood:p.skyMood,
+    type:p.type,dailyType:p.type,mood:p.mood,moodColor:p.moodColor,moodWord:p.moodWord,skyMood:p.skyMood,moodBattery:p.moodBattery,
     text:p.text||p.songTitle||'',songTitle:p.songTitle,mediaId:p.mediaId,caption:p.caption,
     at:p.at,sealContext:p.sealContext,shareTo:p.shareTo,promptText:p.promptText,
     isTextPost:p.type==='text'||p.isTextPost,
@@ -3830,14 +3899,13 @@ function getDailyShareDest(scope){
   return S.dailyShareDest[scope];
 }
 function dailySharePickerHtml(scope){
-  ensureGroups();
   const dest=getDailyShareDest(scope);
-  const friends=MEMBERS.map(m=>`<button type="button" class="daily-share-chip${dest.friends.includes(m.id)?' on':''}" data-friend="${m.id}">${esc(m.n)}</button>`).join('');
-  const groups=(S.groups||[]).map(g=>`<button type="button" class="daily-share-chip${dest.groups.includes(g.id)?' on':''}" data-group="${g.id}">${tcIcon('users')} ${esc(g.name)}</button>`).join('');
+  const isSelf=dest.private&&!dest.friends?.length&&!dest.groups?.length;
   return`<div class="daily-share-picker" data-share-scope="${scope}">
-    <button type="button" class="daily-share-self${dest.private&&!dest.friends.length&&!dest.groups.length?' on':''}" data-share-self>自分だけの記録</button>
-    ${friends?`<div class="daily-share-section"><div class="daily-share-lbl">友達に見せる</div><div class="daily-share-chips">${friends}</div></div>`:''}
-    ${groups?`<div class="daily-share-section"><div class="daily-share-lbl">グループに送る</div><div class="daily-share-chips">${groups}</div></div>`:''}
+    <div class="daily-share-binary">
+      <button type="button" class="daily-share-self${isSelf?' on':''}" data-share-self>自分だけ</button>
+      <button type="button" class="daily-share-inner${!isSelf?' on':''}" data-share-inner>${INNER_LABEL}</button>
+    </div>
   </div>`;
 }
 function bindDailySharePicker(root,scope){
@@ -3846,29 +3914,19 @@ function bindDailySharePicker(root,scope){
   if(picker.dataset.shareReady)return;
   picker.dataset.shareReady='1';
   const dest=getDailyShareDest(scope);
-  const syncSelf=()=>{
-    const selfBtn=picker.querySelector('[data-share-self]');
-    if(selfBtn)selfBtn.classList.toggle('on',dest.private&&!dest.friends.length&&!dest.groups.length);
+  const sync=()=>{
+    const isSelf=dest.private&&!dest.friends?.length&&!dest.groups?.length;
+    picker.querySelector('[data-share-self]')?.classList.toggle('on',isSelf);
+    picker.querySelector('[data-share-inner]')?.classList.toggle('on',!isSelf);
   };
   picker.querySelector('[data-share-self]')?.addEventListener('click',()=>{
     dest.private=true;dest.friends=[];dest.groups=[];
-    picker.querySelectorAll('.daily-share-chip').forEach(c=>c.classList.remove('on'));
-    syncSelf();save();haptic();
+    sync();save();haptic();
   });
-  picker.querySelectorAll('[data-friend]').forEach(b=>b.addEventListener('click',()=>{
-    const id=b.dataset.friend;
-    dest.private=false;
-    dest.friends=dest.friends.includes(id)?dest.friends.filter(x=>x!==id):[...dest.friends,id];
-    b.classList.toggle('on',dest.friends.includes(id));
-    syncSelf();save();haptic();
-  }));
-  picker.querySelectorAll('[data-group]').forEach(b=>b.addEventListener('click',()=>{
-    const id=b.dataset.group;
-    dest.private=false;
-    dest.groups=dest.groups.includes(id)?dest.groups.filter(x=>x!==id):[...dest.groups,id];
-    b.classList.toggle('on',dest.groups.includes(id));
-    syncSelf();save();haptic();
-  }));
+  picker.querySelector('[data-share-inner]')?.addEventListener('click',()=>{
+    dest.private=false;dest.friends=[];dest.groups=[];
+    sync();save();haptic();
+  });
 }
 function renderDailySharePicker(scope,el){
   if(!el)return;
@@ -3877,14 +3935,12 @@ function renderDailySharePicker(scope,el){
 }
 function resolveDailyVisibility(dest){
   if(dest.private&&!dest.friends?.length&&!dest.groups?.length)return 'private';
-  return 'shared';
+  return 'inner';
 }
 function dailyDestLabel(rec){
   if(rec.visibility==='private'&&!(rec.shareTo?.friends?.length||rec.shareTo?.groups?.length))return '自分だけ';
-  const names=(rec.shareTo?.friends||[]).map(id=>MEMBERS.find(m=>m.id===id)?.n).filter(Boolean);
-  const groups=(rec.shareTo?.groups||[]).map(id=>S.groups?.find(g=>g.id===id)?.name).filter(Boolean);
-  if(rec.visibility==='inner'&&!names.length&&!groups.length)return INNER_LABEL;
-  return[...names,...groups].join(' · ')||'友達';
+  if(rec.visibility==='inner'||rec.visibility==='shared')return INNER_LABEL;
+  return INNER_LABEL;
 }
 function getDailyVis(scope){
   return resolveDailyVisibility(getDailyShareDest(scope));
@@ -3963,7 +4019,7 @@ async function createDailyRecord(type,data={}){
   const shareTo=data.shareTo||{friends:[],groups:[]};
   const rec={
     id,userId:meName(),type,
-    mood:data.mood,moodColor:data.moodColor,moodWord:data.moodWord,skyMood:data.skyMood,
+    mood:data.mood,moodColor:data.moodColor,moodWord:data.moodWord,skyMood:data.skyMood,moodBattery:data.moodBattery,
     songTitle:data.songTitle,songArtist:data.songArtist,songId:data.songId,
     songArtworkUrl:data.songArtworkUrl,songSource:data.songSource,songCapturedAt:data.songCapturedAt,
     caption:data.caption,
@@ -3976,6 +4032,7 @@ async function createDailyRecord(type,data={}){
   if(data.mediaDataUrl){
     rec.mediaId=id;
     await idbPut(id,data.mediaDataUrl);
+    if(['photo','food','sky'].includes(type))registerAppearanceShot(id,type);
   }else if(existing?.mediaId){
     rec.mediaId=existing.mediaId;
   }
@@ -4171,7 +4228,7 @@ function dailyRecordsAsTimelinePosts(){
     id:r.id,from:me,to:r.visibility==='private'?'self':'shared',
     type:r.type,dailyType:r.type,isDaily:true,
     text:r.caption||r.moodWord||r.songTitle||DAILY_RECORD_TYPES[r.type]?.label||'',
-    caption:r.caption,mood:r.mood,moodColor:r.moodColor,moodWord:r.moodWord,skyMood:r.skyMood,
+    caption:r.caption,mood:r.mood,moodColor:r.moodColor,moodWord:r.moodWord,skyMood:r.skyMood,moodBattery:r.moodBattery,
     songTitle:r.songTitle,
     at:r.createdAt,mediaId:r.mediaId,
     sealed:false,opened:true,visibility:r.visibility,shareTo:r.shareTo,
@@ -4237,8 +4294,16 @@ function innerCircleTodayPosts(){
   if(!deduped.length&&S.demoMode)return demoInnerTodayPosts();
   return deduped.sort((a,b)=>b.at-a.at);
 }
+function renderInnerMemberBar(){
+  const el=$('innerMemberBar');
+  if(!el)return;
+  el.innerHTML=MEMBERS.map(m=>`<button type="button" class="inner-member-btn" data-member-profile="${m.id}">
+    <div class="im-av" style="background:${m.c}">${esc(m.i)}</div><span>${esc(m.n)}</span></button>`).join('');
+  el.querySelectorAll('[data-member-profile]').forEach(b=>b.addEventListener('click',()=>openFriendProfile(b.dataset.memberProfile)));
+}
 function renderInnerCircle(){
   renderInnerFilter();
+  renderInnerMemberBar();
   const feed=$('innerCircleFeed');
   if(!feed)return;
   const posts=consolidatePostsByPersonDay(filterInnerPosts(innerCircleTodayPosts()));
@@ -4538,6 +4603,7 @@ async function setUserAvatar(file){
     const avatarId='av_'+u.id;
     await idbPut(avatarId,dataUrl);
     u.avatarId=avatarId;
+    registerAppearanceShot(avatarId,'avatar');
     save();renderAll();
     toast('プロフィール写真を更新しました');haptic();
     return true;
@@ -4646,34 +4712,9 @@ function buildSealTargets(){
   ensureSealDestSet();
   const d=S.sealDestSet;
   const targets=[];
-  if(d.invite){
-    const contact=$('inviteContact')?.value.trim();
-    if(!contact)return {error:'連絡先を入力してください'};
-    return {targets:[{type:'invite',to:contact,vis:'invite',contact}]};
-  }
   if(d.self)targets.push({type:'self',to:'self',vis:'future'});
-  if(d.friend){
-    let ids=(S.sealFriendIds||[]).filter(Boolean);
-    if(!ids.length)ids=MEMBERS.map(m=>m.id);
-    ids.forEach(fid=>{
-      const m=MEMBERS.find(x=>x.id===fid);
-      if(m)targets.push({type:'friend',to:m.n,vis:'shared'});
-    });
-    if(d.friend&&!ids.length)return {error:INNER_LABEL+'を選んでください'};
-  }
-  if(d.group){
-    ensureGroups();
-    const gids=(S.sealGroupIds||[]).length?S.sealGroupIds:[];
-    gids.filter(Boolean).forEach(gid=>targets.push({type:'group',to:'group',groupId:gid,vis:'group'}));
-    if(d.group&&!gids.length)return {error:'グループを選んでください'};
-  }
-  if(d.pair){
-    const fid=(S.sealFriendIds||[])[0];
-    const m=MEMBERS.find(x=>x.id===fid);
-    if(!m)return {error:'ふたりの相手を選んでください'};
-    targets.push({type:'pair',to:m.n,vis:'pair',pairWith:m.n});
-  }
-  if(!targets.length)targets.push({type:'self',to:'self',vis:'future'});
+  else if(d.friend)targets.push({type:'friend',to:'group',vis:'inner',groupId:S.groups?.[0]?.id});
+  else targets.push({type:'self',to:'self',vis:'future'});
   return {targets};
 }
 function isImageFile(f){
@@ -4683,35 +4724,9 @@ function isImageFile(f){
 function getDestSummaryParts(){
   ensureSealDestSet();
   const d=S.sealDestSet;
-  const parts=[];
-  if(d.invite){
-    const c=$('inviteContact')?.value.trim();
-    return c?['招待: '+c]:['招待'];
-  }
-  if(d.self)parts.push('自分だけ');
-  if(d.friend){
-    const ids=(S.sealFriendIds||[]).filter(Boolean);
-    ids.forEach(fid=>{
-      const m=MEMBERS.find(x=>x.id===fid);
-      if(m)parts.push(INNER_LABEL+': '+m.n);
-    });
-    if(d.friend&&!ids.length)parts.push(INNER_LABEL);
-  }
-  if(d.group){
-    ensureGroups();
-    const gids=(S.sealGroupIds||[]).filter(Boolean);
-    gids.forEach(gid=>{
-      const g=S.groups.find(x=>x.id===gid);
-      if(g)parts.push('グループ: '+g.name);
-    });
-    if(d.group&&!gids.length)parts.push('グループ');
-  }
-  if(d.pair){
-    const fid=(S.sealFriendIds||[])[0];
-    const m=MEMBERS.find(x=>x.id===fid);
-    parts.push('ふたり'+(m?': '+m.n:''));
-  }
-  return parts.length?parts:['自分'];
+  if(d.self)return ['自分だけ'];
+  if(d.friend)return [INNER_LABEL];
+  return ['自分だけ'];
 }
 function countSealTargets(){
   const built=buildSealTargets();
@@ -4906,11 +4921,238 @@ function canAddDailyType(type){
 function skyMoodIcon(id){
   return SKY_MOODS.find(s=>s.id===id)?.icon||'cloud';
 }
+function moodBatteryGaugeHtml(pct,compact){
+  const n=Math.max(0,Math.min(100,Math.round(pct||0)));
+  if(compact)return `<span class="mood-battery-inline">${tcIcon('zap')} ${n}%</span>`;
+  return `<div class="mood-battery-inline" style="flex-direction:column;align-items:stretch;width:100%;max-width:200px;margin:8px auto 0">
+    <div class="battery-gauge-wrap" style="margin:0"><div class="battery-gauge"><div class="battery-fill" style="width:${n}%"></div></div><span class="mood-battery-pct">${n}%</span></div>
+  </div>`;
+}
+function ensureProfileVisibility(){
+  if(!S.profileVisibility)S.profileVisibility={...DEFAULT_PROFILE_VISIBILITY};
+  PROFILE_VIS_FIELDS.forEach(f=>{if(!S.profileVisibility[f.key])S.profileVisibility[f.key]=DEFAULT_PROFILE_VISIBILITY[f.key]});
+}
+function getMemberProfileVisibility(memberId){
+  ensureProfileVisibility();
+  const custom=S.friendProfileVisibility?.[memberId];
+  return custom?{...DEFAULT_PROFILE_VISIBILITY,...custom}:{...DEFAULT_PROFILE_VISIBILITY};
+}
+function canViewProfileField(field,ownerMemberId){
+  const vis=ownerMemberId?getMemberProfileVisibility(ownerMemberId):S.profileVisibility||DEFAULT_PROFILE_VISIBILITY;
+  return vis[field]==='inner';
+}
+function updateMoodBatteryUI(pct){
+  const n=Math.max(0,Math.min(100,Math.round(pct||0)));
+  const fill=$('moodBatteryFill');
+  const lbl=$('moodBatteryPct');
+  const sl=$('moodBatterySlider');
+  if(fill)fill.style.width=n+'%';
+  if(lbl)lbl.textContent=n+'%';
+  if(sl&&sl.value!=n)sl.value=n;
+}
+async function initMoodBatteryPanel(){
+  const panel=$('moodBatteryPanel');
+  const toggle=$('moodUseBattery');
+  const sl=$('moodBatterySlider');
+  if(!panel||!toggle)return;
+  if(!toggle.dataset.ready){
+    toggle.dataset.ready='1';
+    toggle.addEventListener('change',()=>{
+      panel.classList.toggle('hidden',!toggle.checked);
+      haptic();
+    });
+    sl?.addEventListener('input',()=>updateMoodBatteryUI(+sl.value));
+  }
+  let pct=await captureBatteryLevel();
+  if(pct==null)pct=72;
+  updateMoodBatteryUI(pct);
+  panel.classList.toggle('hidden',!toggle.checked);
+}
+function computeImageVector(dataUrl){
+  return new Promise((res,rej)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      c.width=16;c.height=16;
+      const ctx=c.getContext('2d');
+      ctx.drawImage(img,0,0,16,16);
+      res(Array.from(ctx.getImageData(0,0,16,16).data));
+    };
+    img.onerror=rej;
+    img.src=dataUrl;
+  });
+}
+function vectorDistance(a,b){
+  if(!a?.length||!b?.length||a.length!==b.length)return 1;
+  let sum=0;
+  for(let i=0;i<a.length;i++){const d=a[i]-b[i];sum+=d*d;}
+  return Math.sqrt(sum)/(255*Math.sqrt(a.length));
+}
+async function registerAppearanceShot(mediaId,source='photo'){
+  if(S.appearanceTrackingEnabled===false||!mediaId)return;
+  try{
+    const data=await idbGet(mediaId);
+    if(!data)return;
+    const vector=await computeImageVector(data);
+    S.appearanceShots=S.appearanceShots||[];
+    const prev=S.appearanceShots[0];
+    const dist=prev?vectorDistance(vector,prev.faceVector):1;
+    const changed=!prev||dist>0.1;
+    if(prev&&!changed)return;
+    S.appearanceShots.unshift({id:'as'+Date.now(),userId:meName(),photoRef:mediaId,faceVector:vector,changed:!!prev&&changed,capturedAt:Date.now(),source});
+    if(S.appearanceShots.length>30)S.appearanceShots.length=30;
+    save();
+  }catch(e){}
+}
+function getAppearanceTimeline(){
+  const shots=[...(S.appearanceShots||[])].reverse();
+  if(!shots.length)return [];
+  const out=[shots[0]];
+  shots.slice(1).forEach(s=>{if(s.changed)out.push(s)});
+  out.push({...shots[shots.length-1],isNow:true});
+  return out.filter((s,i,arr)=>i===0||s.changed||s.isNow);
+}
+function appearanceTimelineHtml(){
+  const shots=getAppearanceTimeline();
+  if(!shots.length)return'<div class="empty-state" style="padding:16px 0;font-size:13px">セルフィーやプロフィール写真が増えると、変化の軌跡が並びます</div>';
+  return`<div class="appearance-swipe">${shots.map(s=>{
+    const lbl=s.isNow?'今':new Date(s.capturedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'});
+    return`<div class="appearance-shot"><img data-lazy="${esc(s.photoRef)}" alt=""><div class="as-label">${esc(lbl)}</div></div>`;
+  }).join('')}</div>
+  <p style="font-size:11px;color:var(--ink-3);margin-top:8px;line-height:1.5">大きく変わった時点だけを静かに並べます。評価や言葉は付けません。</p>`;
+}
+function openInsightDrill(type,insKey){
+  const ins=collectMonthData(insKey||monthInsightKey());
+  const body=$('insightDrillBody');
+  const title=$('insightDrillTitle');
+  if(!body)return;
+  if(type==='music'){
+    title.textContent='音楽の推移';
+    const songs={};
+    (ins.songTimeline||[]).forEach(s=>{songs[s.title]=(songs[s.title]||0)+1});
+    const entries=Object.entries(songs).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const max=Math.max(1,...entries.map(e=>e[1]));
+    body.innerHTML=`<div class="trend-bars">${entries.map(([t,c])=>`<div class="trend-bar" style="height:${Math.round(c/max*100)}%"><span>${esc(t.slice(0,8))}</span></div>`).join('')}</div>
+      <p style="font-size:12px;color:var(--ink-3);margin-top:28px">今月よく流れた曲の回数です。</p>`;
+  }else if(type==='place'){
+    title.textContent='場所の推移';
+    const places={};
+    [...(S.dailyRecords||[]),...(S.opened||[])].forEach(p=>{
+      const ctx=resolveSealContext(p);
+      const name=ctx?.place||p.loc?.placeName;
+      if(name)places[name]=(places[name]||0)+1;
+    });
+    body.innerHTML=Object.entries(places).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,c])=>
+      `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><span>${tcIcon('pin')} ${esc(n)}</span><span style="color:var(--ink-3)">${c}回</span></div>`
+    ).join('')||'<div class="empty-state" style="padding:16px 0">場所の記録がありません</div>';
+  }else{
+    title.textContent='言葉の変遷';
+    body.innerHTML=(ins.catchphrases||[]).map(c=>`<div style="padding:10px 0;border-bottom:1px solid var(--line)">「${esc(c.word)}」<span style="color:var(--ink-3);font-size:12px;margin-left:8px">${c.count}回</span></div>`).join('')
+      ||'<div class="empty-state" style="padding:16px 0">テキスト記録がありません</div>';
+  }
+  $('insightDrillOverlay')?.classList.add('open');
+  loadLazyThumbs(body);
+  haptic();
+}
+async function openFriendProfile(memberId){
+  const m=MEMBERS.find(x=>x.id===memberId);
+  if(!m)return;
+  const body=$('friendProfileBody');
+  const vis=getMemberProfileVisibility(memberId);
+  let moodHtml='';
+  if(canViewProfileField('mood',memberId)){
+    const demoMood={skyMood:'sunny',moodWord:'ふつう'};
+    moodHtml=`<div style="margin:16px 0;padding:16px;background:var(--bg-3);border-radius:var(--r-sm);text-align:center">${tcIcon(skyMoodIcon(demoMood.skyMood),'lg')}<div style="font-size:12px;color:var(--ink-3);margin-top:8px">いまの気分</div></div>`;
+  }
+  const photoHtml=canViewProfileField('recentPhoto',memberId)?`<div style="margin:12px 0"><div class="sec-label">最近の一枚</div><div style="height:120px;background:var(--bg-3);border-radius:var(--r-sm)"></div></div>`:'';
+  const musicHtml=canViewProfileField('music',memberId)?`<div style="margin:12px 0"><div class="sec-label">曲</div><div style="font-size:13px;color:var(--ink-2)">${tcIcon('music')} 記録から表示</div></div>`:'';
+  const changesHtml=canViewProfileField('changes',memberId)?`<div style="margin:12px 0"><div class="sec-label">変化</div><p style="font-size:12px;color:var(--ink-3)">まとめタブで見られる変化の一部</p></div>`:'';
+  const hidden=!canViewProfileField('pastPhotos',memberId)&&!canViewProfileField('textDiary',memberId);
+  body.innerHTML=`
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="width:72px;height:72px;border-radius:50%;background:${m.c};display:grid;place-items:center;font-size:24px;font-weight:600;color:#fff;margin:0 auto">${esc(m.i)}</div>
+      <div style="font-size:20px;font-weight:600;margin-top:10px">${esc(m.n)}</div>
+    </div>
+    ${moodHtml}${photoHtml}${musicHtml}${changesHtml}
+    ${hidden?`<p style="font-size:12px;color:var(--ink-3);text-align:center;margin-top:20px">非公開の記録があります</p>`:''}
+    <button type="button" class="dq-cta" id="friendProfileDmBtn" style="width:100%;margin-top:20px">メッセージ</button>`;
+  $('friendProfileTitle').textContent=m.n;
+  $('friendProfileDmBtn')?.addEventListener('click',()=>{
+    $('friendProfileOverlay')?.classList.remove('open');
+    openFriendSpace(memberId);
+  });
+  $('friendProfileOverlay')?.classList.add('open');
+  haptic();
+}
+function profileVisibilitySettingsHtml(){
+  ensureProfileVisibility();
+  return`<div style="margin-top:20px">
+    <div class="sec-label">プロフィールの公開</div>
+    <p style="font-size:12px;color:var(--ink-3);margin:4px 0 12px;line-height:1.45">項目ごとに${INNER_LABEL}か自分だけかを選べます。初期設定のままで大丈夫です。</p>
+    ${PROFILE_VIS_FIELDS.map(f=>`<div class="profile-vis-row">
+      <span>${esc(f.label)}</span>
+      <select data-pvis="${f.key}">
+        <option value="inner"${S.profileVisibility[f.key]==='inner'?' selected':''}>${INNER_LABEL}</option>
+        <option value="self"${S.profileVisibility[f.key]==='self'?' selected':''}>自分だけ</option>
+      </select>
+    </div>`).join('')}
+    <label style="display:flex;align-items:center;gap:8px;margin-top:16px;font-size:13px;color:var(--ink-2)">
+      <input type="checkbox" id="appearanceTrackingToggle"${S.appearanceTrackingEnabled!==false?' checked':''}> 顔の変化を記録する
+    </label>
+  </div>`;
+}
+function openPeriodMontage(key,mode='month'){
+  const ins=mode==='year'?null:collectMonthData(key||monthInsightKey());
+  const photos=mode==='year'
+    ?(S.dailyRecords||[]).filter(r=>r.mediaId).map(r=>({mediaId:r.mediaId,at:r.createdAt}))
+    :(ins?.photos||[]);
+  if(!photos.length){toast('まとめる写真がありません');return}
+  const label=mode==='year'?new Date().getFullYear()+'年':(ins?.label||'');
+  $('wrappedCard').innerHTML=`<div class="wc-period">${esc(label)}</div>
+    <div class="montage-preview">${photos.slice(0,9).map(p=>`<img data-lazy="${esc(p.mediaId)}" alt="">`).join('')}</div>
+    <div style="font-size:13px;color:var(--ink-2);margin-top:12px;text-align:center;line-height:1.5">${photos.length}枚の記憶</div>
+    <div class="wrapped-footer">TIME CAP</div>`;
+  lastShareCaption=shareSheetCaption(label+'のまとめ');
+  $('wrappedOverlay')?.classList.add('open');
+  loadLazyThumbs($('wrappedCard'));
+  haptic();
+}
+let vlogTimer=null;
+async function openMonthVlog(key){
+  const ins=collectMonthData(key||monthInsightKey());
+  const photos=ins?.photos||[];
+  if(photos.length<2){toast('動画まとめには写真が2枚以上必要です');return}
+  if(vlogTimer){clearInterval(vlogTimer);vlogTimer=null}
+  const label=ins?.label||'';
+  let idx=0;
+  const first=photos[0];
+  $('wrappedCard').innerHTML=`<div class="wc-period">${esc(label)} · Vlog</div>
+    <div class="vlog-frame" id="vlogFrame" style="aspect-ratio:4/5;overflow:hidden;border-radius:12px;background:var(--bg-3)">
+      <img data-lazy="${esc(first.mediaId)}" alt="" style="width:100%;height:100%;object-fit:cover">
+    </div>
+    <div style="font-size:13px;color:var(--ink-2);margin-top:12px;text-align:center;line-height:1.5">${photos.length}枚から自動生成</div>
+    <div class="wrapped-footer">TIME CAP</div>`;
+  lastShareCaption=shareSheetCaption(label+'の動画まとめ');
+  $('wrappedOverlay')?.classList.add('open');
+  await loadLazyThumbs($('wrappedCard'));
+  const frame=$('vlogFrame');
+  vlogTimer=setInterval(async()=>{
+    idx=(idx+1)%photos.length;
+    const img=frame?.querySelector('img');
+    if(!img)return;
+    try{
+      const data=await idbGet(photos[idx].mediaId);
+      if(data)img.src=data;
+    }catch(e){}
+  },1200);
+  haptic();
+}
 function postBodyHtml(p){
   if(p.skyMood||(p.type==='mood'&&!p.moodColor)){
     const icon=skyMoodIcon(p.skyMood);
     const lbl=p.moodWord||SKY_MOODS.find(s=>s.id===p.skyMood)?.label||'';
-    return `<div class="tl-photo-hero" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;background:var(--bg-3)">${tcIcon(icon,'lg')}${lbl?`<span class="tl-color-word">${esc(lbl)}</span>`:''}</div>`;
+    const batt=p.moodBattery!=null?moodBatteryGaugeHtml(p.moodBattery):'';
+    return `<div class="tl-photo-hero" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;background:var(--bg-3)">${tcIcon(icon,'lg')}${lbl?`<span class="tl-color-word">${esc(lbl)}</span>`:''}${batt}</div>`;
   }
   if(p.moodColor)return `<div class="tl-photo-hero tl-color-fill" style="background:${esc(p.moodColor)}">${p.moodWord?`<span class="tl-color-word">${esc(p.moodWord)}</span>`:''}</div>`;
   if(p.mediaId)return `<div class="tl-photo-hero"><img data-lazy="${esc(p.mediaId)}" alt="" style="${photoMemoryFilter(p.at)}"></div>`;
@@ -5031,13 +5273,10 @@ function updateCreateUI(){
   const d=S.sealDestSet;
   const layer=S.sealLayer||'seal';
   const isNow=layer==='now';
-  const showFriend=!!d.friend||!!d.pair;
-  $('createFriendPick')?.classList.toggle('hidden',!showFriend);
-  $('createGroupPick')?.classList.toggle('hidden',!d.group);
-  $('createInvitePick')?.classList.toggle('hidden',!d.invite);
-  $('pairHint')?.classList.toggle('hidden',!d.pair);
-  const friendLbl=$('createFriendPick')?.querySelector('.duration-label');
-  if(friendLbl)friendLbl.textContent=d.pair&&!d.friend?'誰とふたりだけ？':'親友（複数選択可）';
+  $('createFriendPick')?.classList.add('hidden');
+  $('createGroupPick')?.classList.add('hidden');
+  $('createInvitePick')?.classList.add('hidden');
+  $('pairHint')?.classList.add('hidden');
   $('durationPills')?.closest('.duration-label')?.classList.toggle('hidden',isNow);
   $('durationPills')?.parentElement?.querySelector('.duration-label')?.classList.toggle('hidden',isNow);
   document.querySelectorAll('#durationPills')?.forEach?.(()=>{});
@@ -6390,10 +6629,12 @@ function collectMonthData(key){
   const daily=(S.dailyRecords||[]).filter(r=>inR(r.createdAt));
   const opened=(S.opened||[]).filter(o=>inR(o.openedAt||o.createdAt));
   const sealed=(S.capsules||[]).filter(c=>inR(c.createdAt));
-  const moods=daily.filter(r=>r.type==='mood'&&(r.moodColor||r.mood));
+  const moods=daily.filter(r=>r.type==='mood'&&(r.skyMood||r.moodColor||r.mood));
   const moodCounts={};
-  moods.forEach(r=>{const k=r.moodColor||r.mood;moodCounts[k]=(moodCounts[k]||0)+1});
+  moods.forEach(r=>{const k=r.skyMood||r.moodColor||r.mood;moodCounts[k]=(moodCounts[k]||0)+1});
   const moodDominant=Object.entries(moodCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+  const songTimeline=[];
+  daily.filter(r=>r.type==='song'&&r.songTitle).forEach(r=>songTimeline.push({title:r.songTitle,at:r.createdAt}));
   const photos=[
     ...daily.filter(r=>r.mediaId&&['photo','food','sky'].includes(r.type)).map(r=>({mediaId:r.mediaId,at:r.createdAt,label:DAILY_RECORD_TYPES[r.type]?.label})),
     ...opened.filter(o=>o.mediaId&&(o.type==='photo'||o.selfieMediaId)).map(o=>({mediaId:o.selfieMediaId||o.mediaId,at:o.openedAt||o.createdAt,label:'記憶'})),
@@ -6436,7 +6677,7 @@ function collectMonthData(key){
   ].sort((a,b)=>a.at-b.at);
   return{
     key,label:monthInsightRange(key).label,
-    dailyCount:daily.length,photoCount:photos.length,moodCounts,moodDominant,moods,
+    dailyCount:daily.length,photoCount:photos.length,moodCounts,moodDominant,moods,songTimeline,
     photos:photos.slice(-8),roomPhotos:roomPhotos.slice(-6),topSong,topEarly,topLate,
     topPlace:topPlace?{name:topPlace[0],count:topPlace[1]}:null,
     placeFirst,placeLast,placeCount:Object.keys(placeCounts).length,catchphrases,
@@ -6477,7 +6718,7 @@ function myVoiceSeriesItems(){
   return voiceSeriesItems(seriesId).filter(v=>v.from===me||v.from==='ゆうま');
 }
 function roomTimelineHtml(photos){
-  if(!photos?.length)return'<div class="empty-state" style="padding:16px 0;font-size:13px">「今日の空」や部屋の写真が増えると、ここに並びます</div>';
+  if(!photos?.length)return'<div class="empty-state" style="padding:16px 0;font-size:13px">気分や部屋の写真が増えると、ここに並びます</div>';
   return`<div class="room-timeline">${photos.map(p=>`
     <div class="room-tile">
       <img data-lazy="${esc(p.mediaId)}" alt="">
@@ -6528,7 +6769,7 @@ function generateMonthlyNarrative(ins){
   if(!ins)return'';
   const lines=[];
   if(ins.recordDays)lines.push(`今月は${ins.recordDays}日、静かに残しました。`);
-  if(ins.moodDominant)lines.push(`色の記録が、今月の気配を映しています。`);
+  if(ins.moodDominant)lines.push(`空模様の記録が、今月の気配を映しています。`);
   if(ins.topPlace)lines.push(`${ins.topPlace.name}に、何度も足を運んでいます。`);
   if(ins.topSong)lines.push(`「${ins.topSong.title}」が、あなたのBGMでした。`);
   if(ins.photoCount>=2)lines.push(`写真に残った${ins.photoCount}の瞬間が、変化の軌跡になっています。`);
@@ -6539,18 +6780,23 @@ function moodWeatherCalendarHtml(ins){
   const {year,month}=monthInsightRange(ins.key);
   const daysInMonth=new Date(year,month,0).getDate();
   const now=new Date();
-  const colorByDay={};
+  const moodByDay={};
   (ins.moods||[]).forEach(r=>{
-    colorByDay[new Date(r.createdAt).getDate()]=r.moodColor||r.mood;
+    moodByDay[new Date(r.createdAt).getDate()]=r.skyMood||'cloudy';
+    if(r.moodBattery!=null)moodByDay['b'+new Date(r.createdAt).getDate()]=r.moodBattery;
   });
   let cells='';
   for(let d=1;d<=daysInMonth;d++){
-    const col=colorByDay[d];
+    const sky=moodByDay[d];
+    const batt=moodByDay['b'+d];
     const future=year===now.getFullYear()&&month===now.getMonth()+1&&d>now.getDate();
-    cells+=`<div class="mwc-day${col?' has-mood':''}${future?' future':''}" style="--mc:${col&&col.startsWith('hsl')?col:(col||'transparent')}" title="${d}日">
-      <span class="mwc-num">${d}</span><span class="mwc-icon" style="${col?`background:${col};width:12px;height:12px;border-radius:50%;display:block`:''}"></span></div>`;
+    cells+=`<div class="mwc-day${sky?' has-mood':''}${future?' future':''}" title="${d}日">
+      <span class="mwc-num">${d}</span>
+      ${sky?`<span class="mwc-icon">${tcIcon(skyMoodIcon(sky))}</span>`:''}
+      ${batt!=null?`<span style="font-size:8px;color:var(--ink-3)">${batt}%</span>`:''}
+    </div>`;
   }
-  return`<div class="mood-weather-grid">${cells}</div><p style="font-size:11px;color:var(--ink-3);margin-top:8px">色のモザイク · あなたの感情の天気図</p>`;
+  return`<div class="mood-weather-grid">${cells}</div><p style="font-size:11px;color:var(--ink-3);margin-top:8px">気分の天気図 · 空と充電％</p>`;
 }
 function hairTimelineHtml(photos){
   if(!photos.length)return'<div class="empty-state" style="padding:16px 0;font-size:13px">写真が増えると、ここに変化が並びます</div>';
@@ -6567,23 +6813,23 @@ function insightCardsHtml(ins){
     let musicSub='';
     if(ins.topEarly&&ins.topLate&&ins.topEarly!==ins.topLate)
       musicSub=`<div class="insight-change"><span>${esc(ins.topEarly)}</span><span class="arr">→</span><span>${esc(ins.topLate)}</span></div>`;
-    cards.push(`<div class="insight-card"><div class="insight-card-lbl">${tcIcon('music')} 音楽の変化</div>
+    cards.push(`<button type="button" class="insight-card" data-insight-drill="music" style="text-align:left;width:100%"><div class="insight-card-lbl">${tcIcon('music')} 音楽の変化</div>
       <div class="insight-card-val">${esc(ins.topSong.title)}</div>
-      <div class="insight-card-sub">${ins.topSong.count}回の記憶に登場${musicSub}</div></div>`);
+      <div class="insight-card-sub">${ins.topSong.count}回の記憶に登場${musicSub} · タップで推移</div></button>`);
   }
   if(ins.topPlace||ins.placeCount){
     const placeVal=ins.topPlace?`${esc(ins.topPlace.name)}（${ins.topPlace.count}回）`:'—';
     let placeSub='';
     if(ins.placeFirst&&ins.placeLast&&ins.placeFirst!==ins.placeLast)
       placeSub=`<div class="insight-change"><span>${esc(ins.placeFirst)}</span><span class="arr">→</span><span>${esc(ins.placeLast)}</span></div>`;
-    cards.push(`<div class="insight-card"><div class="insight-card-lbl">${tcIcon('pin')} 場所の変化</div>
+    cards.push(`<button type="button" class="insight-card" data-insight-drill="place" style="text-align:left;width:100%"><div class="insight-card-lbl">${tcIcon('pin')} 場所の変化</div>
       <div class="insight-card-val">${placeVal}</div>
-      <div class="insight-card-sub">${ins.placeCount}か所を歩きました${placeSub}</div></div>`);
+      <div class="insight-card-sub">${ins.placeCount}か所を歩きました${placeSub} · タップで推移</div></button>`);
   }
   if(ins.catchphrases?.length){
-    cards.push(`<div class="insight-card"><div class="insight-card-lbl">${tcIcon('message')} 口癖・よく使う言葉</div>
+    cards.push(`<button type="button" class="insight-card" data-insight-drill="words" style="text-align:left;width:100%"><div class="insight-card-lbl">${tcIcon('message')} 口癖・よく使う言葉</div>
       <div class="insight-card-val">${ins.catchphrases.map(c=>`「${esc(c.word)}」`).join(' ')}</div>
-      <div class="insight-card-sub">テキストから拾った、あなたの言葉</div></div>`);
+      <div class="insight-card-sub">テキストから拾った、あなたの言葉 · タップで推移</div></button>`);
   }
   if(!cards.length){
     return`<div class="empty-state" style="padding:16px 0;font-size:13px">記録を重ねると、音楽・場所・言葉の変化が見えてきます</div>`;
@@ -6606,11 +6852,12 @@ function renderInsightPanel(key,opts={}){
     </div>
     ${monthlyLetterHtml(ins.key,isCurrent)}
     <div class="insight-section">
-      <h3>感情の天気図</h3>
+      <h3>気分の天気図</h3>
       ${moodWeatherCalendarHtml(ins)}
     </div>
     <div class="insight-section">
       <h3>あなたの変化</h3>
+      ${appearanceTimelineHtml()}
       ${hairTimelineHtml(ins.photos)}
     </div>
     <div class="insight-section">
@@ -6623,7 +6870,9 @@ function renderInsightPanel(key,opts={}){
     </div>
     ${voiceInsightHtml()}
     <div class="insight-share-row">
-      <button type="button" class="dq-cta" id="openMonthInsightShare" style="width:100%">この月のまとめをシェア</button>
+      <button type="button" class="dq-cta" id="openMonthInsightShare" style="width:100%;margin-bottom:8px">この月のまとめをシェア</button>
+      <button type="button" class="create-pick" id="openMonthMontage" style="width:100%;margin-bottom:8px">写真まとめを見る</button>
+      <button type="button" class="create-pick" id="openMonthVlog" style="width:100%">動画まとめを見る</button>
     </div>`;
 }
 function bindInsightPanelEvents(root,key){
@@ -6634,6 +6883,9 @@ function bindInsightPanelEvents(root,key){
     else{renderArchive();haptic()}
   }));
   root.querySelector('#openMonthInsightShare')?.addEventListener('click',()=>openMonthInsightShare(key));
+  root.querySelector('#openMonthMontage')?.addEventListener('click',()=>openPeriodMontage(key,'month'));
+  root.querySelector('#openMonthVlog')?.addEventListener('click',()=>openMonthVlog(key));
+  root.querySelectorAll('[data-insight-drill]').forEach(b=>b.addEventListener('click',()=>openInsightDrill(b.dataset.insightDrill,key)));
   root.querySelector('#saveMonthlyLetterBtn')?.addEventListener('click',()=>{
     saveMonthlyLetter(root.querySelector('#monthlyLetterInput')?.value);
   });
@@ -7233,6 +7485,9 @@ if(!S.innerReactions)S.innerReactions=[];
 if(!S.dailyAnswers)S.dailyAnswers=[];
 ensureDailyRecords();
 if(!S.activityFeed)S.activityFeed=[];
+if(!S.appearanceShots)S.appearanceShots=[];
+if(S.appearanceTrackingEnabled===undefined)S.appearanceTrackingEnabled=true;
+ensureProfileVisibility();
 if(!S.albums)S.albums={};
 if(!S.shownNotifs)S.shownNotifs=[];
 if(S.mapTimePct===undefined)S.mapTimePct=100;
@@ -8333,7 +8588,7 @@ function reflectDayItem(rec,source){
     sealContext:rec.sealContext,
     linkedSong:rec.linkedSong,
     songTitle:rec.songTitle,
-    moodColor:rec.moodColor,
+    moodColor:rec.moodColor,skyMood:rec.skyMood,moodBattery:rec.moodBattery,
     sealed,
     contextTime:rec.contextTime,
     contextCity:rec.contextCity,
@@ -8431,13 +8686,15 @@ function renderMemCalCell(dayKey,dayNum,dayData,isToday){
   }
   const streak=isToday&&dayData.count>0?`<span class="cal-streak">${tcIcon('sparkle')}</span>`:'';
   const badge=dayData.count>1?`<span class="cal-badge">${dayData.count}</span>`:'';
+  const moodRec=dayData.items?.find(i=>i.skyMood||i.type==='mood');
+  const skyIcon=moodRec?.skyMood?tcIcon(skyMoodIcon(moodRec.skyMood)):'';
   const allSealed=dayData.items.every(i=>i.sealed);
   if(dayData.thumb){
-    return`<button type="button" class="mem-cal-cell has-data${isToday?' today':''}" data-day="${esc(dayKey)}">${streak}<img data-lazy="${esc(dayData.thumb)}" alt="">${badge}<span class="cal-day-num on-photo">${label}</span></button>`;
+    return`<button type="button" class="mem-cal-cell has-data${isToday?' today':''}" data-day="${esc(dayKey)}">${streak}<img data-lazy="${esc(dayData.thumb)}" alt="">${badge}${skyIcon?`<span class="cal-mood-icon" style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.5);border-radius:50%;padding:2px">${skyIcon}</span>`:''}<span class="cal-day-num on-photo">${label}</span></button>`;
   }
-  const mood=dayData.items.find(i=>i.moodColor)?.moodColor||'var(--bg-2)';
-  const preview=allSealed?tcIcon('lock'):(dayData.items.find(i=>i.text)?.text||'').slice(0,12);
-  return`<button type="button" class="mem-cal-cell has-data${isToday?' today':''}" data-day="${esc(dayKey)}">${streak}<div class="mem-cal-fallback" style="background:${esc(mood)}"><span style="font-size:8px;color:var(--ink-3);padding:6px;line-height:1.3">${esc(preview)}</span></div>${badge}<span class="cal-day-num">${label}</span></button>`;
+  const mood=moodRec?.moodColor||'var(--bg-2)';
+  const preview=allSealed?tcIcon('lock'):skyIcon||(dayData.items.find(i=>i.text)?.text||'').slice(0,12);
+  return`<button type="button" class="mem-cal-cell has-data${isToday?' today':''}" data-day="${esc(dayKey)}">${streak}<div class="mem-cal-fallback" style="background:${esc(mood)};display:flex;align-items:center;justify-content:center">${typeof preview==='string'&&preview.startsWith('<')?preview:`<span style="font-size:8px;color:var(--ink-3);padding:6px;line-height:1.3">${esc(preview)}</span>`}</div>${badge}<span class="cal-day-num">${label}</span></button>`;
 }
 function renderMemCalendarView(filter='all'){
   const days=collectReflectDays(filter);
@@ -8520,9 +8777,12 @@ function openDayReflect(dayKey){
     ctx.contextPhotoCount?`<div class="day-reflect-ctx muted">この日は${ctx.contextPhotoCount}枚の記憶</div>`:'',
   ].filter(Boolean).join('');
   const items=day.items.map(it=>{
-    const lbl=it.sealed?tcIcon('lock')+' タイムカプセル':(TYPE_JA[it.type]||it.type||'記録');
+    const moodIcon=it.skyMood?tcIcon(skyMoodIcon(it.skyMood)):'';
+    const batt=it.moodBattery!=null?moodBatteryGaugeHtml(it.moodBattery,true):'';
+    const lbl=it.sealed?tcIcon('lock')+' タイムカプセル':it.type==='mood'?'気分':(TYPE_JA[it.type]||it.type||'記録');
     const txt=it.sealed?capsuleDaysShort(it.openAt||it.unlockAt):(it.text||'');
-    return`<div class="day-reflect-item"><div class="dri-type">${lbl}</div>${txt?`<div class="dri-text">${esc(txt)}</div>`:''}</div>`;
+    const moodExtra=moodIcon||batt?`<div class="dri-mood" style="display:flex;align-items:center;gap:6px;margin-top:4px">${moodIcon}${batt}</div>`:'';
+    return`<div class="day-reflect-item"><div class="dri-type">${lbl}</div>${moodExtra}${txt?`<div class="dri-text">${esc(txt)}</div>`:''}</div>`;
   }).join('');
   body.innerHTML=`
     <div class="day-reflect-date">${esc(dateStr)}</div>
@@ -8704,9 +8964,9 @@ function renderArchive(){
   const todayMood=todayDailyRecords().find(r=>r.type==='mood');
   const recentPhoto=(S.dailyRecords||[]).find(r=>r.mediaId);
   const profileFace=`<div style="display:flex;gap:8px;align-items:center;margin-top:10px">
-    ${todayMood?.skyMood?`<div class="profile-mood-swatch" style="display:flex;align-items:center;justify-content:center;background:var(--bg-3)" title="今日の空">${tcIcon(skyMoodIcon(todayMood.skyMood))}</div>`:todayMood?.moodColor?`<div class="profile-mood-swatch" style="background:${esc(todayMood.moodColor)}" title="今日の空"></div>`:''}
+    ${todayMood?.skyMood?`<div class="profile-mood-swatch" style="display:flex;align-items:center;justify-content:center;background:var(--bg-3)" title="気分">${tcIcon(skyMoodIcon(todayMood.skyMood))}</div>`:todayMood?.moodColor?`<div class="profile-mood-swatch" style="background:${esc(todayMood.moodColor)}" title="気分"></div>`:''}
     ${recentPhoto?`<img class="profile-recent-thumb" data-lazy="${esc(recentPhoto.mediaId)}" alt="">`:''}
-    ${!todayMood&&!recentPhoto?`<span style="font-size:12px;color:var(--ink-3)">今日の空や一枚が、あなたの顔になる</span>`:''}
+    ${!todayMood&&!recentPhoto?`<span style="font-size:12px;color:var(--ink-3)">気分や一枚が、あなたの顔になる</span>`:''}
   </div>`;
 
   el.innerHTML=`
@@ -8955,6 +9215,7 @@ function renderAccountPanel(el){
         <button type="button" data-ctx="both" class="${S.ctxDisplayPref==='both'?'on':''}">両方</button>
       </div>
     </div>
+    ${profileVisibilitySettingsHtml()}
     <div class="settings-row" id="darkToggleArchive" style="margin-top:16px"><span>ダークモード</span><div class="toggle ${S.dark?'on':''}" id="darkSwitchArchive"></div></div>`;
   loadLazyThumbs(el);
   $('groupListArchive').innerHTML=(S.groups||[]).map(g=>`
@@ -8986,6 +9247,15 @@ function renderAccountPanel(el){
   el.querySelector('#ctxDisplayPrefSeg')?.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     S.ctxDisplayPref=b.dataset.ctx;save();renderAccountPanel(el);haptic();
   }));
+  el.querySelectorAll('[data-pvis]').forEach(sel=>sel.addEventListener('change',()=>{
+    ensureProfileVisibility();
+    S.profileVisibility[sel.dataset.pvis]=sel.value;
+    save();haptic();
+  }));
+  el.querySelector('#appearanceTrackingToggle')?.addEventListener('change',e=>{
+    S.appearanceTrackingEnabled=e.target.checked;
+    save();haptic();
+  });
   bindProfileInsightEvents(el);
 }
 
@@ -9246,24 +9516,8 @@ document.querySelectorAll('.dest-chip').forEach(b=>{
   b.addEventListener('click',()=>{
     ensureSealDestSet();
     const dest=b.dataset.dest;
-    if(dest==='invite'){
-      const next=!S.sealDestSet.invite;
-      S.sealDestSet={self:false,friend:false,group:false,pair:false,invite:next};
-    }else if(dest==='self'){
-      const next=!S.sealDestSet.self;
-      if(next)S.sealDestSet={self:true,friend:false,group:false,pair:false,invite:false};
-      else{
-        S.sealDestSet.self=false;
-        if(!S.sealDestSet.friend&&!S.sealDestSet.group&&!S.sealDestSet.pair)
-          S.sealDestSet.self=true;
-      }
-    }else{
-      S.sealDestSet.invite=false;
-      const next=!S.sealDestSet[dest];
-      S.sealDestSet[dest]=next;
-      if(next)S.sealDestSet.self=false;
-      if(!S.sealDestSet.self&&!S.sealDestSet.friend&&!S.sealDestSet.group&&!S.sealDestSet.pair&&!S.sealDestSet.invite)
-        S.sealDestSet.self=true;
+    if(dest==='self'||dest==='friend'){
+      S.sealDestSet={self:dest==='self',friend:dest==='friend',group:false,pair:false,invite:false};
     }
     save();haptic();updateCreateUI();
   });
@@ -10025,9 +10279,15 @@ $('moodPickClose')?.addEventListener('click',()=>$('moodPickOverlay')?.classList
 $('moodPickOverlay')?.addEventListener('click',e=>{if(e.target===$('moodPickOverlay'))$('moodPickOverlay').classList.remove('open')});
 $('moodColorSave')?.addEventListener('click',async()=>{
   const moodWord=$('moodWordInput')?.value?.trim()||'';
+  const useBattery=$('moodUseBattery')?.checked;
+  const batteryPct=useBattery?+($('moodBatterySlider')?.value||0):null;
   const overlay=$('moodPickOverlay');
   try{
-    const rec=await saveDailyMood({skyMood:selectedSkyMood,moodWord});
+    const rec=await saveDailyMood({
+      skyMood:selectedSkyMood,
+      moodWord,
+      moodBattery:batteryPct,
+    });
     if(!rec)return;
     overlay?.classList.remove('open');
     if(overlay?._onboard){
@@ -10610,7 +10870,14 @@ if(urlInvite&&!S.invitedBy){
   const q=params.toString();
   history.replaceState(null,'',location.pathname+(q?'?'+q:'')+location.hash);
 })();
-$('wrappedClose')?.addEventListener('click',()=>$('wrappedOverlay')?.classList.remove('open'));
+$('wrappedClose')?.addEventListener('click',()=>{
+  if(vlogTimer){clearInterval(vlogTimer);vlogTimer=null}
+  $('wrappedOverlay')?.classList.remove('open');
+});
+$('insightDrillClose')?.addEventListener('click',()=>$('insightDrillOverlay')?.classList.remove('open'));
+$('insightDrillOverlay')?.addEventListener('click',e=>{if(e.target===$('insightDrillOverlay'))$('insightDrillOverlay').classList.remove('open')});
+$('friendProfileClose')?.addEventListener('click',()=>$('friendProfileOverlay')?.classList.remove('open'));
+$('friendProfileOverlay')?.addEventListener('click',e=>{if(e.target===$('friendProfileOverlay'))$('friendProfileOverlay').classList.remove('open')});
 $('wrappedShare')?.addEventListener('click',async()=>{
   const caption=lastShareCaption||shareSheetCaption();
   const cardEl=$('wrappedCard');
@@ -10650,7 +10917,12 @@ $('wrappedShare')?.addEventListener('click',async()=>{
   }
   haptic();
 });
-$('wrappedOverlay')?.addEventListener('click',e=>{if(e.target===$('wrappedOverlay'))$('wrappedOverlay').classList.remove('open')});
+$('wrappedOverlay')?.addEventListener('click',e=>{
+  if(e.target===$('wrappedOverlay')){
+    if(vlogTimer){clearInterval(vlogTimer);vlogTimer=null}
+    $('wrappedOverlay').classList.remove('open');
+  }
+});
 $('insightViewClose')?.addEventListener('click',()=>$('insightViewOverlay')?.classList.remove('open'));
 $('insightViewShare')?.addEventListener('click',()=>{
   if(insightViewMode==='year')openYearInsightShare(insightViewKey);
