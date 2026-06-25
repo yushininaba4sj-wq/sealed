@@ -2673,6 +2673,11 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .people-rank-av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:600;color:#fff;flex-shrink:0}
 .people-rank-n{flex:1;font-size:14px;font-weight:500}
 .people-rank-c{font-size:12px;color:var(--ink-3)}
+.route-rank-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink-2)}
+.fandom-rank-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink-2)}
+.fandom-rank-tag{font-size:10px;color:var(--ink-3);padding:2px 6px;border-radius:4px;background:var(--bg-3)}
+.insight-genre-share{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.insight-genre-share button{padding:10px 8px;border-radius:999px;font-size:12px;background:var(--bg-3);border:1px solid var(--line);color:var(--ink-2)}
 #wrappedVlogSave.hidden{display:none}
 .montage-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:12px}
 .montage-preview img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px}
@@ -3033,7 +3038,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       <div style="font-size:14px;font-weight:500">ひとことだけ、声を残す</div>
       <div style="font-size:12px;color:var(--ink-3);margin-top:4px">最大10秒 · 毎月の声で1年後に連続再生</div>
       <div class="voice-wave" id="voiceWave"><span style="height:8px"></span><span style="height:16px"></span><span style="height:24px"></span><span style="height:14px"></span><span style="height:20px"></span></div>
-      <div class="voice-timer" id="voiceTimer">0s / 10s</div>
+      <div class="voice-timer" id="voiceTimer">0s / 30s</div>
       <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap">
         <button type="button" class="create-pick" id="voiceRecordBtn">録音する</button>
         <button type="button" class="create-pick" id="voiceUploadBtn">ファイルから</button>
@@ -5678,7 +5683,7 @@ function resetCreateExtras(){
   pendingVoice=null;pendingSelfie=null;pendingMusicShare=null;S.sealMood=null;S.sealMoodColor=null;
   S.createPromptChoice=null;S.createPromptText=null;
   voiceSeconds=0;
-  $('voiceTimer').textContent='0s / 10s';
+  $('voiceTimer').textContent='0s / '+VOICE_MAX_SECONDS+'s';
   $('voiceRecordBtn')?.classList.remove('hidden');
   $('voiceStopBtn')?.classList.add('hidden');
   $('voiceClearBtn')?.classList.add('hidden');
@@ -5725,8 +5730,8 @@ async function startVoiceRecord(){
     $('voiceStopBtn')?.classList.remove('hidden');
     voiceTimer=setInterval(()=>{
       voiceSeconds++;
-      $('voiceTimer').textContent=`${voiceSeconds}s / 10s`;
-      if(voiceSeconds>=10)stopVoiceRecord();
+      $('voiceTimer').textContent=`${voiceSeconds}s / ${VOICE_MAX_SECONDS}s`;
+      if(voiceSeconds>=VOICE_MAX_SECONDS)stopVoiceRecord();
     },1000);
     haptic();
   }catch(e){
@@ -6774,6 +6779,10 @@ function musicMonthKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMont
  * 同じテンプレに genre を足す。ARCHITECTURE.md 参照。 */
 const PERIOD_GENRE_MUSIC='music';
 const PERIOD_GENRE_PEOPLE='people';
+const PERIOD_GENRE_ROUTE='route';
+const PERIOD_GENRE_VOICE='voice';
+const PERIOD_GENRE_FANDOM='fandom';
+const VOICE_MAX_SECONDS=30;
 function musicWeekKey(d=new Date()){
   const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
   const day=x.getUTCDay()||7;
@@ -7029,6 +7038,139 @@ function peopleInsightHtml(ins){
     return`<div class="people-rank-row">${av}<div class="people-rank-n"><span style="color:var(--ink-3);margin-right:6px">${p.rank}</span>${esc(p.name)}</div><div class="people-rank-c">${p.count}回</div></div>`;
   }).join('')}</div>`;
 }
+function collectRouteSummary(key){
+  const points=monthMapPoints(key);
+  const places={};
+  points.forEach(p=>{
+    const name=p.loc?.placeName||resolveSealContext(p)?.place;
+    if(name)places[name]=(places[name]||0)+1;
+  });
+  const ranking=Object.entries(places).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([title,count],i)=>({rank:i+1,title,plays:count}));
+  const top=ranking[0];
+  return{
+    key,label:monthInsightRange(key).label,genre:PERIOD_GENRE_ROUTE,
+    pointCount:points.length,placeCount:ranking.length,points,
+    highlight:top?{title:top.title,subtitle:`${top.plays}回 · ${points.length}地点`}:null,
+    ranking,
+  };
+}
+function collectVoiceMonthSummary(key){
+  const {start,end}=monthInsightRange(key);
+  const inR=ts=>ts!=null&&ts>=start&&ts<end;
+  const me=meName();
+  const seriesId='voice_series_'+me.replace(/\s/g,'_');
+  const items=[...(S.capsules||[]),...(S.opened||[])].filter(c=>
+    c.type==='voice'&&c.mediaId&&inR(c.createdAt||c.openedAt)&&
+    (c.from===me||c.from==='ゆうま'||c.voiceSeriesId===seriesId)
+  ).sort((a,b)=>(a.createdAt||a.openedAt||0)-(b.createdAt||b.openedAt||0));
+  const totalSec=items.reduce((s,i)=>s+(i.voiceDuration||10),0);
+  const ranking=items.map((v,i)=>({
+    rank:i+1,
+    title:new Date(v.createdAt||v.openedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'}),
+    subtitle:`${v.voiceDuration||'?'}秒`,plays:v.voiceDuration||1,
+  }));
+  return{
+    key,label:monthInsightRange(key).label,genre:PERIOD_GENRE_VOICE,
+    voiceCount:items.length,totalSeconds:totalSec,items,
+    highlight:items.length?{title:`${items.length}つの声`,subtitle:`合計約${totalSec}秒`}:null,
+    ranking,
+  };
+}
+function collectFandomRanking(key){
+  const {start,end}=monthInsightRange(key);
+  const inR=ts=>ts!=null&&ts>=start&&ts<end;
+  const counts={};
+  const bump=(title,w=1,type='tag')=>{
+    if(!title)return;
+    const k=type+'::'+title;
+    if(!counts[k])counts[k]={title,type,count:0};
+    counts[k].count+=w;
+  };
+  [...(S.capsules||[]),...(S.opened||[]),...(S.dailyRecords||[])].filter(x=>inR(x.createdAt||x.openedAt)).forEach(x=>{
+    (x.tags||[]).forEach(t=>bump('#'+t,1,'tag'));
+  });
+  const ins=collectMonthData(key);
+  if(ins.topSong)bump(ins.topSong.title,ins.topSong.count,'song');
+  (ins.catchphrases||[]).forEach(c=>bump('「'+c.word+'」',c.count,'word'));
+  const ranking=Object.values(counts).sort((a,b)=>b.count-a.count).slice(0,5).map((x,i)=>({
+    rank:i+1,title:x.title,subtitle:x.type==='song'?'曲':x.type==='word'?'言葉':'タグ',plays:x.count,
+  }));
+  return{
+    key,label:monthInsightRange(key).label,genre:PERIOD_GENRE_FANDOM,
+    highlight:ranking[0]?{title:ranking[0].title,subtitle:`${ranking[0].plays}回`}:null,
+    ranking,
+  };
+}
+function genreWrappedCardHtml(summary){
+  const hi=summary.highlight;
+  const top3=(summary.ranking||[]).slice(0,3);
+  const genreLbl={music:'まとめ',people:'いっしょにいた人',route:'歩いた軌跡',voice:'声の記憶',fandom:'推し・ハマり'}[summary.genre]||'まとめ';
+  const statLine=summary.genre===PERIOD_GENRE_ROUTE?`${summary.pointCount||0}地点 · ${summary.placeCount||0}か所`
+    :summary.genre===PERIOD_GENRE_VOICE?`${summary.voiceCount||0}つの声 · 約${summary.totalSeconds||0}秒`
+    :summary.genre===PERIOD_GENRE_FANDOM?'今月のハマり':'今月の記憶';
+  return`
+    <div class="wc-brand">TIME CAP</div>
+    <div class="wc-period">${esc(summary.label)}<br>${genreLbl}</div>
+    <div class="wc-stat">${esc(statLine)}</div>
+    <div class="wc-theme">
+      <div class="wc-theme-lbl">${hi?'いちばんの痕跡':'—'}</div>
+      <div class="wc-theme-title">${hi?esc(hi.title):'—'}</div>
+      ${hi?.subtitle?`<div class="wc-theme-artist">${esc(hi.subtitle)}</div>`:''}
+      <div class="wc-stat" style="margin-top:16px;font-size:13px">${top3.map(r=>`${r.rank}. ${esc(r.title)}${r.subtitle?' · '+esc(r.subtitle):r.plays?' · '+r.plays+'回':''}`).join('<br>')}</div>
+    </div>
+    <div class="wrapped-footer">${APP_URL}</div>`;
+}
+function openGenreWrappedCard(genre,key){
+  const k=key||monthInsightKey();
+  let summary;
+  if(genre===PERIOD_GENRE_PEOPLE){
+    const ins=collectMonthData(k);
+    const top=ins.peopleRanking?.[0];
+    if(!top){toast('一緒にいた人の記録がありません');return}
+    summary={
+      key:k,label:ins.label,genre,
+      highlight:{title:top.name,subtitle:`${top.count}回`},
+      ranking:(ins.peopleRanking||[]).map(p=>({rank:p.rank,title:p.name,plays:p.count})),
+    };
+  }else if(genre===PERIOD_GENRE_ROUTE){
+    summary=collectRouteSummary(k);
+    if(!summary.pointCount){toast('今月の軌跡がありません');return}
+  }else if(genre===PERIOD_GENRE_VOICE){
+    summary=collectVoiceMonthSummary(k);
+    if(!summary.voiceCount){toast('今月の声の記録がありません');return}
+  }else if(genre===PERIOD_GENRE_FANDOM){
+    summary=collectFandomRanking(k);
+    if(!summary.ranking?.length){toast('ハマりの記録がありません');return}
+  }else return;
+  setVlogMode(false);vlogPhotos=null;
+  $('wrappedCard').className='wrapped-card';
+  $('wrappedCard').innerHTML=genreWrappedCardHtml(summary);
+  const cap={music:'まとめ',people:'いっしょにいた人',route:'歩いた軌跡',voice:'声のまとめ',fandom:'推し・ハマり'};
+  lastShareCaption=shareSheetCaption(`${summary.label} · ${cap[genre]||''}`);
+  $('wrappedOverlay')?.classList.add('open');
+  haptic();
+}
+function routeInsightHtml(ins){
+  const r=collectRouteSummary(ins.key);
+  if(!r.pointCount){
+    return`<div class="empty-state" style="padding:16px 0;font-size:13px">位置情報付きの記憶が増えると、歩いた軌跡が見えます</div>`;
+  }
+  return`<div>${(r.ranking||[]).map(p=>`<div class="route-rank-row"><span>${tcIcon('pin')} ${esc(p.title)}</span><span style="color:var(--ink-3)">${p.plays}回</span></div>`).join('')}
+    <p style="font-size:11px;color:var(--ink-3);margin-top:8px;line-height:1.5">${r.pointCount}地点を、この月に記録しました</p>
+    <button type="button" class="create-pick" id="openRouteMapBtn" style="width:100%;margin-top:10px">マップで見る</button></div>`;
+}
+function fandomInsightHtml(ins){
+  const f=collectFandomRanking(ins.key);
+  if(!f.ranking?.length){
+    return`<div class="empty-state" style="padding:16px 0;font-size:13px">タグや曲、よく使う言葉が増えると、ハマりが見えてきます</div>`;
+  }
+  return`<div>${f.ranking.map(x=>`<div class="fandom-rank-row">
+    <span style="color:var(--ink-3);min-width:16px">${x.rank}</span>
+    <span style="flex:1">${esc(x.title)}</span>
+    <span class="fandom-rank-tag">${esc(x.subtitle)}</span>
+    <span style="color:var(--ink-3);font-size:11px">${x.plays}回</span>
+  </div>`).join('')}</div>`;
+}
 function listInsightMonthKeys(){
   const keys=new Set();
   const add=ts=>{
@@ -7088,16 +7230,18 @@ function monthlyLetterHtml(key,editable){
       <button type="button" class="dq-cta" id="saveMonthlyLetterBtn" style="width:100%;margin-top:10px">${letter?'手紙を更新':'手紙を封じる'}</button>
     </div></div>`;
 }
-function voiceInsightHtml(){
-  const items=myVoiceSeriesItems();
-  if(!items.length){
+function voiceInsightHtml(key){
+  const vm=collectVoiceMonthSummary(key||monthInsightKey());
+  const all=myVoiceSeriesItems();
+  if(!vm.voiceCount&&!all.length){
     return`<div class="insight-section"><h3>${tcIcon('mic')} 声の変化</h3>
-      <div class="empty-state" style="padding:16px 0;font-size:13px">封じる画面から、毎月の声を残すと<br>1年後に連続再生できます</div></div>`;
+      <div class="empty-state" style="padding:16px 0;font-size:13px">封じる画面から、毎月の声を残すと<br>1年後に連続再生できます（最大${VOICE_MAX_SECONDS}秒）</div></div>`;
   }
-  const months=items.map(v=>v.voiceMonthKey?.slice(5)||'?').join(' · ');
+  const monthLbl=vm.voiceCount?`今月 ${vm.voiceCount}つ · 約${vm.totalSeconds}秒`:'今月はまだありません';
+  const months=all.map(v=>v.voiceMonthKey?.slice(5)||'?').join(' · ');
   return`<div class="insight-section"><h3>${tcIcon('mic')} 声の変化</h3>
     <div class="voice-series-row">
-      <div style="flex:1;font-size:13px;line-height:1.45">${items.length}ヶ月分の声<br><span style="color:var(--ink-3);font-size:11px">${esc(months)}月</span></div>
+      <div style="flex:1;font-size:13px;line-height:1.45">${monthLbl}<br><span style="color:var(--ink-3);font-size:11px">累計 ${all.length}ヶ月 · ${esc(months)}月</span></div>
       <button type="button" id="playVoiceSeriesBtn">連続再生</button>
     </div></div>`;
 }
@@ -7118,6 +7262,10 @@ function generateMonthlyNarrative(ins){
   if(ins.topPlace)lines.push(`${ins.topPlace.name}に、何度も足を運んでいます。`);
   if(ins.topSong)lines.push(`「${ins.topSong.title}」が、あなたのBGMでした。`);
   if(ins.peopleRanking?.[0])lines.push(`${ins.peopleRanking[0].name}との記憶が、今月いちばん多く残りました。`);
+  const route=collectRouteSummary(ins.key);
+  if(route.pointCount>=2)lines.push(`${route.pointCount}地点の足跡が、この月を彩りました。`);
+  const fandom=collectFandomRanking(ins.key);
+  if(fandom.ranking?.[0])lines.push(`${fandom.ranking[0].title.replace(/^#|「|」/g,'')}に、心が何度も向きました。`);
   if(ins.photoCount>=2)lines.push(`写真に残った${ins.photoCount}の瞬間が、変化の軌跡になっています。`);
   if(!lines.length)lines.push('記録が増えるほど、ここにあなただけの物語が育ちます。');
   return lines.join(' ');
@@ -7215,13 +7363,26 @@ function renderInsightPanel(key,opts={}){
       ${peopleInsightHtml(ins)}
     </div>
     <div class="insight-section">
+      <h3>歩いた軌跡</h3>
+      ${routeInsightHtml(ins)}
+    </div>
+    <div class="insight-section">
+      <h3>推し・ハマり</h3>
+      ${fandomInsightHtml(ins)}
+    </div>
+    <div class="insight-section">
       <h3>音楽 · 場所 · 口癖</h3>
       ${insightCardsHtml(ins)}
     </div>
-    ${voiceInsightHtml()}
+    ${voiceInsightHtml(ins.key)}
     <div class="insight-share-row">
       <button type="button" class="dq-cta" id="openMonthInsightShare" style="width:100%;margin-bottom:8px">この月のまとめをシェア</button>
-      <button type="button" class="create-pick" id="openPeopleInsightShare" style="width:100%;margin-bottom:8px">いっしょにいた人をシェア</button>
+      <div class="insight-genre-share">
+        <button type="button" data-genre-share="people">人</button>
+        <button type="button" data-genre-share="route">軌跡</button>
+        <button type="button" data-genre-share="voice">声</button>
+        <button type="button" data-genre-share="fandom">ハマり</button>
+      </div>
       <button type="button" class="create-pick" id="openMonthMontage" style="width:100%;margin-bottom:8px">写真まとめを見る</button>
       <button type="button" class="create-pick" id="openMonthVlog" style="width:100%">動画まとめを見る</button>
     </div>`;
@@ -7234,7 +7395,11 @@ function bindInsightPanelEvents(root,key){
     else{renderArchive();haptic()}
   }));
   root.querySelector('#openMonthInsightShare')?.addEventListener('click',()=>openMonthInsightShare(key));
-  root.querySelector('#openPeopleInsightShare')?.addEventListener('click',()=>openPeopleInsightShare(key));
+  root.querySelectorAll('[data-genre-share]').forEach(b=>b.addEventListener('click',()=>openGenreWrappedCard(b.dataset.genreShare,key)));
+  root.querySelector('#openRouteMapBtn')?.addEventListener('click',()=>{
+    $('insightViewOverlay')?.classList.remove('open');
+    switchTab('map');renderMapPanel();haptic();
+  });
   root.querySelector('#openMonthMontage')?.addEventListener('click',()=>openPeriodMontage(key,'month'));
   root.querySelector('#openMonthVlog')?.addEventListener('click',()=>openMonthVlog(key));
   root.querySelectorAll('[data-insight-drill]').forEach(b=>b.addEventListener('click',()=>openInsightDrill(b.dataset.insightDrill,key)));
@@ -7479,26 +7644,7 @@ function openMonthInsightShare(key){
   haptic();
 }
 function openPeopleInsightShare(key){
-  const ins=collectMonthData(key||monthInsightKey());
-  const top=ins.peopleRanking?.[0];
-  if(!top){toast('一緒にいた人の記録がありません');return}
-  setVlogMode(false);
-  vlogPhotos=null;
-  $('wrappedCard').className='wrapped-card';
-  $('wrappedCard').innerHTML=`
-    <div class="wc-brand">TIME CAP</div>
-    <div class="wc-period">${esc(ins.label)}<br>いっしょにいた人</div>
-    <div class="wc-stat">今月、記憶に残った<br>ふたりの時間</div>
-    <div class="wc-theme">
-      <div class="wc-theme-lbl">いちばん多かった人</div>
-      <div class="wc-theme-title">${top.member?`<span style="display:inline-block;width:28px;height:28px;border-radius:50%;background:${top.member.c};vertical-align:middle;margin-right:8px;text-align:center;line-height:28px;font-size:14px;color:#fff">${esc(top.member.i)}</span>`:''}${esc(top.name)}</div>
-      <div class="wc-theme-artist">${top.count}回、記憶に登場</div>
-      <div class="wc-stat" style="margin-top:16px;font-size:13px">${(ins.peopleRanking||[]).slice(1,4).map(p=>`${p.rank}. ${esc(p.name)}`).join('<br>')}</div>
-    </div>
-    <div class="wrapped-footer">${APP_URL}</div>`;
-  lastShareCaption=shareSheetCaption(`${ins.label} · いっしょにいた人`);
-  $('wrappedOverlay')?.classList.add('open');
-  haptic();
+  openGenreWrappedCard(PERIOD_GENRE_PEOPLE,key);
 }
 function openYearWrapCard(year){
   openInsightSheet(String(year||new Date().getFullYear()));
@@ -9934,7 +10080,7 @@ $('voiceFileInput')?.addEventListener('change',async e=>{
 });
 $('removeVoiceBtn')?.addEventListener('click',()=>{
   pendingVoice=null;voiceSeconds=0;
-  $('voiceTimer').textContent='0s / 10s';
+  $('voiceTimer').textContent='0s / '+VOICE_MAX_SECONDS+'s';
   $('voiceClearBtn')?.classList.add('hidden');
   showVoicePreview(null);
   if($('voicePreviewAudio'))$('voicePreviewAudio').src='';
@@ -9996,7 +10142,7 @@ $('voiceRecordBtn')?.addEventListener('click',startVoiceRecord);
 $('voiceStopBtn')?.addEventListener('click',stopVoiceRecord);
 $('voiceClearBtn')?.addEventListener('click',()=>{
   pendingVoice=null;voiceSeconds=0;
-  $('voiceTimer').textContent='0s / 10s';
+  $('voiceTimer').textContent='0s / '+VOICE_MAX_SECONDS+'s';
   $('voiceClearBtn')?.classList.add('hidden');
   showVoicePreview(null);
   if($('voicePreviewAudio'))$('voicePreviewAudio').src='';
