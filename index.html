@@ -1854,11 +1854,14 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   display:flex;align-items:center;justify-content:space-between;padding:14px 0;
   border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:16px;
 }
+.spotify-row-actions{display:flex;gap:8px;flex-shrink:0}
 .spotify-row button{
   padding:8px 14px;border-radius:var(--r-pill);font-size:12px;font-weight:600;
   background:#1DB954;color:#fff;
 }
-.spotify-row.connected button{background:var(--bg-3);color:var(--ink-2)}
+.spotify-row button.spotify-sync{background:var(--bg-3);color:var(--ink-2)}
+.spotify-row button.spotify-disconnect{background:transparent;color:var(--ink-3);border:1px solid rgba(255,255,255,.1)}
+.spotify-row.connected .spotify-sync{background:var(--bg-3);color:var(--ink-2)}
 .duration-pill.multi-on{box-shadow:0 0 0 2px var(--ink)}
 .notif-poetic{
   padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.04);position:relative;overflow:hidden;
@@ -1979,6 +1982,33 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .day-reflect-item{padding:12px 14px;border-radius:var(--r-sm);background:var(--bg-2);border:1px solid rgba(255,255,255,.05)}
 .day-reflect-item .dri-type{font-size:10px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
 .day-reflect-item .dri-text{font-size:14px;line-height:1.5;margin-top:4px;color:var(--ink)}
+
+/* カプセルタブ */
+.capsule-view{padding:0 0 100px}
+.capsule-hero{padding:20px 20px 8px}
+.capsule-hero h1{font-size:26px;font-weight:600;letter-spacing:-.02em;font-family:var(--font-display);line-height:1.35}
+.capsule-hero p{font-size:13px;color:var(--ink-3);margin-top:6px;line-height:1.5}
+.capsule-section{padding:16px 20px 8px}
+.capsule-section-label{font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--ink-3);text-transform:uppercase;margin-bottom:12px}
+.capsule-change-scroll{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.capsule-change-chip{flex-shrink:0;width:88px;text-align:center}
+.capsule-change-chip .cc-swatch{width:72px;height:72px;border-radius:50%;margin:0 auto;border:2px solid rgba(255,255,255,.08)}
+.capsule-change-chip .cc-lbl{font-size:10px;color:var(--ink-3);margin-top:6px}
+.capsule-upcoming{display:flex;flex-direction:column;gap:10px}
+.capsule-up-card{padding:14px 16px;border-radius:var(--r-sm);background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
+.capsule-up-card .cu-when{font-size:15px;font-weight:600}
+.capsule-up-card .cu-sub{font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.45}
+.capsule-past{display:flex;flex-direction:column;gap:12px}
+.capsule-past-card{padding:14px 16px;border-radius:var(--r-sm);background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
+.capsule-past-card img{width:100%;border-radius:var(--r-sm);margin-top:10px;max-height:200px;object-fit:cover}
+.profile-family-entry{
+  display:flex;align-items:center;justify-content:space-between;margin:0 20px 12px;padding:14px 16px;
+  border-radius:var(--r-sm);background:var(--bg-2);border:1px solid rgba(255,255,255,.06);
+  font-size:14px;font-weight:500;color:var(--ink);width:calc(100% - 40px);
+}
+.profile-family-entry span{font-size:12px;color:var(--ink-3);font-weight:400}
+.profile-family-view.hidden{display:none!important}
+.profile-family-view{padding-bottom:100px}
 .archive-settings{padding:0 20px 32px}
 .archive-settings .sec-label{margin:20px 0 10px}
 .mem-filter{display:flex;gap:8px;padding:0 20px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -2643,51 +2673,58 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     </div>
   </section>
 
+  <!-- ③ カプセル -->
+  <section class="panel" id="panel-capsule">
+    <div class="capsule-view" id="capsuleView"></div>
+  </section>
+
   <!-- ④ プロフィール -->
   <section class="panel" id="panel-archive">
     <div class="archive-view" id="archiveView"></div>
-  </section>
-
-  <!-- ⑤ Family -->
-  <section class="panel" id="panel-messages">
-    <div id="meListView">
-      <div class="panel-head" style="padding-top:0">
-        <h1 style="font-size:28px;font-weight:600">Family</h1>
-        <p class="sub">みんなの今日。いいねもコメントもない。</p>
-      </div>
-      <div class="me-panel" id="mePanel">
-        <div class="inner-filter" id="innerFilter"></div>
-        <div class="inner-feed" id="innerCircleFeed"></div>
-        <div class="shared-list hidden" id="sharedList"></div>
-      </div>
-    </div>
-    <div class="friend-space" id="friendSpace">
-      <div class="fs-top">
-        <button type="button" class="fs-back" id="fsBack">←</button>
-        <div class="fs-head">
-          <div class="fs-name" id="fsName">みお</div>
-          <div class="fs-sub" id="fsSub">ふたりのタイムライン · チャット</div>
+    <div class="profile-family-view hidden" id="profileFamilyView">
+      <div id="meListView">
+        <div class="panel-head" style="padding-top:0">
+          <button type="button" class="fs-back" id="familyBackFromProfile" style="margin-bottom:8px">← プロフィール</button>
+          <h1 style="font-size:28px;font-weight:600">Family</h1>
+          <p class="sub">みんなの今日。いいねもコメントもない。</p>
+        </div>
+        <div class="me-panel" id="mePanel">
+          <div class="inner-filter" id="innerFilter"></div>
+          <div class="inner-feed" id="innerCircleFeed"></div>
+          <div class="shared-list hidden" id="sharedList"></div>
         </div>
       </div>
-      <div class="fs-tabs">
-        <button type="button" class="fs-tab on" data-fstab="posts">ふたりの記憶</button>
-        <button type="button" class="fs-tab" data-fstab="chat">チャット</button>
-        <button type="button" class="fs-tab" data-fstab="trail">軌跡</button>
+      <div class="friend-space" id="friendSpace">
+        <div class="fs-top">
+          <button type="button" class="fs-back" id="fsBack">←</button>
+          <div class="fs-head">
+            <div class="fs-name" id="fsName">みお</div>
+            <div class="fs-sub" id="fsSub">ふたりのタイムライン · チャット</div>
+          </div>
+        </div>
+        <div class="fs-tabs">
+          <button type="button" class="fs-tab on" data-fstab="posts">ふたりの記憶</button>
+          <button type="button" class="fs-tab" data-fstab="chat">チャット</button>
+          <button type="button" class="fs-tab" data-fstab="trail">軌跡</button>
+        </div>
+        <div class="gift-row" id="fsGiftRow"></div>
+        <div class="fs-content">
+          <div id="fsPosts" class="fs-posts"></div>
+          <div id="fsChat" class="future-dm-list hidden"></div>
+          <div id="fsTrail" class="fs-trail hidden"></div>
+        </div>
       </div>
-      <div class="gift-row" id="fsGiftRow"></div>
-      <div class="fs-content">
-        <div id="fsPosts" class="fs-posts"></div>
-        <div id="fsChat" class="future-dm-list hidden"></div>
-        <div id="fsTrail" class="fs-trail hidden"></div>
-      </div>
-    </div>
-    <div class="fdm-compose hidden" id="fdmCompose">
-      <div class="fdm-input-row">
-        <input type="text" class="fdm-input" id="fdmInput" placeholder="メッセージを送る…" maxlength="500">
-        <button type="button" class="fdm-send" id="fdmSend">↑</button>
+      <div class="fdm-compose hidden" id="fdmCompose">
+        <div class="fdm-input-row">
+          <input type="text" class="fdm-input" id="fdmInput" placeholder="メッセージを送る…" maxlength="500">
+          <button type="button" class="fdm-send" id="fdmSend">↑</button>
+        </div>
       </div>
     </div>
   </section>
+
+  <!-- legacy: Family was standalone tab -->
+  <section class="panel hidden" id="panel-messages" aria-hidden="true"></section>
 
   <!-- legacy: 封じるは中央＋のみ -->
   <section class="panel hidden" id="panel-seal" aria-hidden="true"></section>
@@ -2708,9 +2745,9 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       マップ
     </button>
     <button type="button" class="tab-nav-create" id="openCreate" aria-label="投稿"><span class="seal-char">POST</span></button>
-    <button type="button" class="tab-nav-btn" data-tab="messages">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/><path d="M5 20c0-2 2-4 4-4h6c2 0 4 2 4 4"/></svg>
-      Family
+    <button type="button" class="tab-nav-btn" data-tab="capsule">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+      カプセル
     </button>
     <button type="button" class="tab-nav-btn" data-tab="archive">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -3457,7 +3494,7 @@ function textPostsForTimeline(){
   }).map(p=>textPostToFeed(p,{from:meName(),to:p.visibility==='inner'?'group':'self',opened:true,sealed:false}));
 }
 function openTextCompose(opts={}){
-  if(!isLoggedIn()){toast('投稿するにはログインしてください');switchTab('messages');renderAuth();return}
+  if(!isLoggedIn()){toast('投稿するにはログインしてください');switchTab('archive');S.archiveTab='settings';save();renderArchive();return}
   textComposeDest=opts.dest||'inner';
   textComposeDays=opts.days||365;
   const ov=$('textComposeOverlay');
@@ -4976,16 +5013,35 @@ function sealTimePhrase(d){
   const h=d.getHours();
   return`${wd}曜の${sealDayPart(h)}${h}時`;
 }
+function shortenPlacePart(s){
+  if(!s)return '';
+  return String(s).replace(/^(日本|Japan)\s*/,'').replace(/^(東京都|大阪府|京都府|北海道)/,'').trim();
+}
 function pickPlaceName(a,displayName){
-  if(!a)return displayName?.split(/[,、]/)[0]?.trim()||'';
-  const state=a.state||a.province||'';
-  if(/東京/.test(state)||/東京/.test(a.city||''))return'東京';
-  if(/大阪/.test(state)||/大阪/.test(a.city||''))return'大阪';
-  if(/京都/.test(state)||/京都/.test(a.city||''))return'京都';
-  const city=a.city||a.town||a.village||a.municipality||a.suburb||a.quarter||a.neighbourhood;
-  if(city)return String(city).replace(/^(東京都|大阪府|京都府|北海道)/,'').replace(/市$/,'')||city;
-  if(state)return String(state).replace(/(都|府|県)$/,'');
-  return displayName?.split(/[,、]/)[0]?.trim()||'';
+  if(!a){
+    const parts=(displayName||'').split(/[,、]/).map(s=>shortenPlacePart(s.trim())).filter(Boolean);
+    return parts.slice(0,2).join(' · ')||'';
+  }
+  const admin=
+    a.city_district||
+    a.borough||
+    (a.city&&(/区$|市$|町$|村$/.test(a.city))?a.city:null)||
+    a.town||
+    a.municipality||
+    a.county;
+  const street=a.road||a.pedestrian||a.footway||a.residential;
+  const area=a.neighbourhood||a.quarter||a.hamlet||
+    (a.suburb&&!admin?.includes(a.suburb)?a.suburb:null);
+  const parts=[];
+  const adminLbl=shortenPlacePart(admin||a.state);
+  if(adminLbl)parts.push(adminLbl);
+  const streetLbl=shortenPlacePart(street)||shortenPlacePart(area);
+  if(streetLbl&&(!parts.length||(!adminLbl?.includes(streetLbl)&&!streetLbl.includes(adminLbl?.slice(0,2)||'__')))){
+    parts.push(streetLbl);
+  }
+  if(parts.length)return parts.slice(0,2).join(' · ');
+  const fallback=(displayName||'').split(/[,、]/).map(s=>shortenPlacePart(s.trim())).filter(Boolean);
+  return fallback.slice(0,2).join(' · ')||'';
 }
 async function fetchWeatherAt(lat,lng){
   const wr=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&timezone=auto`);
@@ -6635,10 +6691,10 @@ function defaults(){
     opened:[
       {id:'o1',from:'そう',type:'photo',text:'試験終わった！',openedAt:now-5*864e5,loc:{lat:35.0116,lng:135.7681}},
       {id:'o2',from:'ゆい',type:'video',text:'あの頃ずっと聴いてた曲',openedAt:now-12*864e5,loc:{lat:34.6937,lng:135.5023}},
-      {id:'o-demo',from:'みお',type:'photo',text:'開封済みの写真サンプル',openedAt:now-864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671,placeName:'東京'},
-        sealContext:{place:'東京',weather:'晴れ',temp:24,dateLabel:'昨日の記憶'},linkedSong:{title:'夜に駆ける',artist:'YOASOBI'}},
-      {id:'o-map3',from:'ゆうま',type:'photo',text:'旅の途中',openedAt:now-3*864e5,mediaId:'demo_photo',loc:{lat:35.4437,lng:139.6380,placeName:'横浜'},
-        sealContext:{place:'横浜',weather:'くもり',temp:19,dateLabel:'旅の記憶'},linkedSong:{title:'Lemon',artist:'米津玄師'}},
+      {id:'o-demo',from:'みお',type:'photo',text:'開封済みの写真サンプル',openedAt:now-864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671,placeName:'渋谷区 · 道玄坂'},
+        sealContext:{place:'渋谷区 · 道玄坂',weather:'晴れ',temp:24,dateLabel:'昨日の記憶'},linkedSong:{title:'夜に駆ける',artist:'YOASOBI'}},
+      {id:'o-map3',from:'ゆうま',type:'photo',text:'旅の途中',openedAt:now-3*864e5,mediaId:'demo_photo',loc:{lat:35.4437,lng:139.6380,placeName:'横浜市 · みなとみらい'},
+        sealContext:{place:'横浜市 · みなとみらい',weather:'くもり',temp:19,dateLabel:'旅の記憶'},linkedSong:{title:'Lemon',artist:'米津玄師'}},
       {id:'o-lyt',from:'ゆうま',type:'photo',text:'去年の今日、窓辺に座ってた',openedAt:now-365.25*864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671}},
       {id:'o-lyt2',from:'ゆうま',type:'photo',text:'2年前、初めて一人で遠出した',openedAt:now-2*365.25*864e5,mediaId:'demo_photo',loc:{lat:35.4437,lng:139.6380}},
       {id:'o-lyt3',from:'ゆうま',type:'text',text:'3年前の文化祭、最高だった',openedAt:now-3*365.25*864e5,tags:['文化祭']},
@@ -6683,10 +6739,10 @@ function defaults(){
     onboardingDone:false,
     dailyRecords:[
       {id:'dr-demo1',userId:'ゆうま',type:'photo',createdAt:now-2*864e5,mediaId:'demo_photo',visibility:'private',
-        sealContext:{place:'渋谷',weather:'晴れ',temp:21},contextCity:'渋谷',contextTime:'day',
+        sealContext:{place:'渋谷',weather:'晴れ',temp:21},contextCity:'渋谷区 · 神南',contextTime:'day',
         contextWeather:{condition:'晴れ',tempC:21},contextSong:{title:'怪獣の花唄',artist:'Vaundy'}},
       {id:'dr-demo2',userId:'ゆうま',type:'mood',createdAt:now-4*864e5,moodColor:'hsl(200,42%,42%)',moodWord:'ふつう',
-        visibility:'private',sealContext:{place:'川崎',weather:'雨',temp:16},contextCity:'川崎',contextTime:'night',
+        visibility:'private',sealContext:{place:'川崎',weather:'雨',temp:16},contextCity:'川崎市 · 武蔵小杉',contextTime:'night',
         contextWeather:{condition:'雨',tempC:16}},
     ],
     monthlyLetters:[],
@@ -6819,20 +6875,21 @@ let mapSubTab='route';
 
 function switchTab(tab){
   if(tab==='private')tab='waiting';
-  if(tab==='shared'||tab==='seal'||tab==='me')tab='messages';
+  if(tab==='shared'||tab==='seal'||tab==='me'||tab==='messages')tab='capsule';
+  if(tab==='family'){tab='archive';S.archiveFamilyOpen=true}
   if(tab==='archive')tab='archive';
   document.querySelectorAll('.tab-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.querySelectorAll('.panel').forEach(p=>{
-    if(p.id==='panel-seal')return;
+    if(p.id==='panel-seal'||p.id==='panel-messages')return;
     p.classList.toggle('active',p.id==='panel-'+tab);
   });
-  if(tab!=='messages')closeFriendSpace();
+  if(tab!=='archive'){S.archiveFamilyOpen=false;closeFriendSpace()}
   $('fdmCompose')?.classList.add('hidden');
   if(tab==='waiting')startWaitTimer();
   else stopWaitTimer();
   if(tab==='map'){setTimeout(()=>{initMemoryMap();renderMemoryMap({fitOnce:!mapInitialFitDone})},150)}
   if(tab==='archive')renderArchive();
-  if(tab==='messages')renderMessages();
+  if(tab==='capsule')renderCapsuleTab();
   haptic();
 }
 document.querySelectorAll('.tab-nav-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
@@ -6849,14 +6906,16 @@ function openFriendSpace(memberId){
   const m=MEMBERS.find(x=>x.id===memberId);
   if(!m)return;
   $('fsName').textContent=m.n;
-  $('meListView').classList.add('hidden');
-  $('friendSpace').classList.add('active');
+  $('meListView')?.classList.add('hidden');
+  $('friendSpace')?.classList.add('active');
   fsTab='posts';
   document.querySelectorAll('.fs-tab').forEach(t=>t.classList.toggle('on',t.dataset.fstab==='posts'));
-  $('fsPosts').classList.remove('hidden');
-  $('fsChat').classList.add('hidden');
+  $('fsPosts')?.classList.remove('hidden');
+  $('fsChat')?.classList.add('hidden');
   $('fsTrail')?.classList.add('hidden');
-  switchTab('messages');
+  S.archiveFamilyOpen=true;
+  switchTab('archive');
+  renderArchive();
   renderFriendSpace();
   haptic();
 }
@@ -7359,6 +7418,108 @@ function renderSharedFriends(){
 function renderShared(){
   sharedTab='friends';
   renderSharedFriends();
+}
+
+function upcomingCapsulesList(){
+  const me=meName();
+  return(S.capsules||[])
+    .filter(c=>c.sealed&&capKind(c)==='capsule'&&(c.from===me||c.from==='ゆうま')&&isOwnCapsule(c)&&!canOpenOwnCapsuleToday(c))
+    .sort((a,b)=>new Date(unlockAtOf(a))-new Date(unlockAtOf(b)))
+    .slice(0,6);
+}
+function moodChangeSeries(){
+  return(S.dailyRecords||[])
+    .filter(r=>r.moodColor)
+    .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))
+    .slice(-8);
+}
+function placeLabelsFromRecords(){
+  const seen=new Set(),out=[];
+  [...(S.dailyRecords||[]),...(S.opened||[]),...(S.capsules||[])].sort((a,b)=>(b.createdAt||b.openedAt||0)-(a.createdAt||a.openedAt||0)).forEach(r=>{
+    const p=r.contextCity||r.sealContext?.place||r.loc?.placeName;
+    if(p&&!seen.has(p)){seen.add(p);out.push(p)}
+  });
+  return out.slice(0,5);
+}
+function renderCapsuleChangeSection(){
+  const moods=moodChangeSeries();
+  const places=placeLabelsFromRecords();
+  const moodHtml=moods.length?`<div class="capsule-change-scroll">${moods.map(r=>{
+    const d=new Date(r.createdAt);
+    return`<div class="capsule-change-chip"><div class="cc-swatch" style="background:${esc(r.moodColor)}"></div><div class="cc-lbl">${d.toLocaleDateString('ja-JP',{month:'short',day:'numeric'})}</div></div>`;
+  }).join('')}</div>`:'<p style="font-size:13px;color:var(--ink-3);line-height:1.5">気分の色を残すと、ここに移ろいが静かに並びます。</p>';
+  const placeHtml=places.length?`<p style="font-size:13px;color:var(--ink-2);margin-top:12px;line-height:1.5">${tcIcon('pin')} ${places.map(esc).join(' · ')}</p>`:'';
+  return`<div class="capsule-section">
+    <div class="capsule-section-label">あなたの変化</div>
+    ${moodHtml}
+    ${placeHtml}
+    <p style="font-size:11px;color:var(--ink-3);margin-top:10px;line-height:1.45">一年前のあなた、今のあなた。評価はせず、ただ並べます。</p>
+  </div>`;
+}
+function renderCapsuleUpcomingSection(){
+  const list=upcomingCapsulesList();
+  if(!list.length){
+    return`<div class="capsule-section"><div class="capsule-section-label">もうすぐ開く</div>
+      <p style="font-size:13px;color:var(--ink-3);line-height:1.5">未来に封じたものが、ここに並びます。</p></div>`;
+  }
+  return`<div class="capsule-section"><div class="capsule-section-label">もうすぐ開く</div>
+    <div class="capsule-upcoming">${list.map(c=>{
+      const cd=countdownText(unlockAtOf(c));
+      return`<button type="button" class="capsule-up-card" data-cap-open="${esc(c.id)}">
+        <div class="cu-when">${esc(cd.text)}</div>
+        <div class="cu-sub">${esc(capDestLabel(c))} · ${esc((c.text||TYPE_JA[c.type]||'').slice(0,36))}</div>
+      </button>`;
+    }).join('')}</div></div>`;
+}
+function renderCapsulePastSection(){
+  const cards=[];
+  [1,2,3].forEach(y=>{
+    const item=getMemoriesOnDay(y);
+    if(!item)return;
+    const d=new Date(item.at||item.openedAt||item.createdAt);
+    const ctx=resolveSealContext(item);
+    const meta=[ctx?.timePhrase,ctx?.place,ctx?.weather?`${ctx.weather}${ctx.temp!=null?ctx.temp+'℃':''}`:null].filter(Boolean).join(' · ');
+    const body=item.mediaId
+      ?`<img data-lazy="${esc(item.mediaId)}" alt="">`
+      :`<p style="font-size:14px;line-height:1.55;margin:8px 0 0;color:var(--ink-2)">「${esc((item.text||'').slice(0,80))}」</p>`;
+    cards.push(`<article class="capsule-past-card">
+      <div style="font-size:11px;color:var(--ink-3)">${y}年前の今日 · ${d.toLocaleDateString('ja-JP',{month:'long',day:'numeric'})}</div>
+      <div style="font-size:15px;font-weight:500;margin-top:4px">${esc(item.text||'この日の記憶')}</div>
+      ${meta?`<div style="font-size:12px;color:var(--ink-3);margin-top:4px">${esc(meta)}</div>`:''}
+      ${body}
+    </article>`);
+  });
+  const resurfaced=(S.posts||[]).filter(p=>p.resurfaceAt&&p.resurfaceAt<=Date.now()&&isMyPost(p)).slice(0,3);
+  resurfaced.forEach(p=>{
+    cards.push(`<article class="capsule-past-card">
+      <div style="font-size:11px;color:var(--ink-3)">戻ってきた言葉</div>
+      <p style="font-size:15px;line-height:1.55;margin-top:6px">「${esc(p.text||'')}」</p>
+    </article>`);
+  });
+  if(!cards.length){
+    return`<div class="capsule-section"><div class="capsule-section-label">過去から</div>
+      <p style="font-size:13px;color:var(--ink-3);line-height:1.5">去年の今日や、あの場所の記憶が、いつかここに戻ってきます。</p></div>`;
+  }
+  return`<div class="capsule-section"><div class="capsule-section-label">過去から</div><div class="capsule-past">${cards.join('')}</div></div>`;
+}
+function renderCapsuleTab(){
+  const el=$('capsuleView');
+  if(!el)return;
+  el.innerHTML=`
+    <div class="capsule-hero">
+      <h1>過去が、会いに来た。</h1>
+      <p>変化と、これから開く約束と、戻ってきた思い出。</p>
+    </div>
+    ${renderCapsuleChangeSection()}
+    ${renderCapsuleUpcomingSection()}
+    ${renderCapsulePastSection()}`;
+  loadLazyThumbs(el);
+  el.querySelectorAll('[data-cap-open]').forEach(b=>b.addEventListener('click',()=>{
+    const cap=S.capsules?.find(c=>c.id===b.dataset.capOpen);
+    if(cap&&canOpenOwnCapsuleToday(cap))startOpening([cap],false);
+    else if(cap)toast(countdownText(unlockAtOf(cap)).text);
+    haptic();
+  }));
 }
 
 function renderMessages(){
@@ -7935,6 +8096,16 @@ function renderArchiveMemoryList(){
 
 function renderArchive(){
   const el=$('archiveView');
+  const famEl=$('profileFamilyView');
+  if(S.archiveFamilyOpen){
+    el?.classList.add('hidden');
+    famEl?.classList.remove('hidden');
+    renderMessages();
+    return;
+  }
+  famEl?.classList.add('hidden');
+  el?.classList.remove('hidden');
+  closeFriendSpace();
   ensureGroups();
   ensureInviteCode();
   const opened=S.opened||[];
@@ -8068,6 +8239,7 @@ function renderArchive(){
       ${anthemHtml}
       ${seasonStrip}
       ${themeCard}
+      <button type="button" class="profile-family-entry" id="openFamilyFromProfile">Family<span>みんなの今日 →</span></button>
       <div class="archive-tabs" style="padding:0 20px">
         <button type="button" class="archive-tab${tab==='all'?' on':''}" data-atab="all">思い出</button>
         <button type="button" class="archive-tab${tab==='words'?' on':''}" data-atab="words">日記</button>
@@ -8077,6 +8249,9 @@ function renderArchive(){
       ${panel}
     </div>`;
   loadLazyThumbs(el);
+  $('openFamilyFromProfile')?.addEventListener('click',()=>{
+    S.archiveFamilyOpen=true;save();renderArchive();haptic();
+  });
   if(tab==='all')bindReflectViewEvents($('memReflectRoot'));
   if(tab==='settings')renderAccountPanel($('accountPanelRoot'));
   el.querySelectorAll('.archive-tab').forEach(t=>t.addEventListener('click',()=>{
@@ -8168,7 +8343,7 @@ function renderSettingsAccountActions(){
     S.archiveTab='settings';save();switchTab('archive');renderArchive();haptic();
   });
   el.querySelector('#settingsSwitchAccount')?.addEventListener('click',()=>openAccountSwitcher());
-  el.querySelector('#settingsAddAccount')?.addEventListener('click',()=>{startAccountFlow('signup');switchTab('messages')});
+  el.querySelector('#settingsAddAccount')?.addEventListener('click',()=>{startAccountFlow('signup');S.archiveTab='settings';save();switchTab('archive');renderArchive()});
   el.querySelector('#settingsLogout')?.addEventListener('click',logoutUser);
 }
 function openAccountSwitcher(){
@@ -8250,9 +8425,17 @@ function renderAccountPanel(el){
       <button type="button" id="loginOtherBtn">別のアカウントでログイン</button>
       <button type="button" class="account-danger" id="logoutAccountBtn">ログアウト</button>
     </div>
-    <div class="spotify-row" style="margin:0 0 16px">
-      <div><div style="font-size:14px;font-weight:500">Spotify</div><div style="font-size:12px;color:var(--ink-3)">${S.spotify?.connected?'連携済み':'未連携'}</div></div>
-      <button type="button" id="spotifyConnectArchive">${S.spotify?.connected?'同期':'連携'}</button>
+    <div class="spotify-row${S.spotify?.connected?' connected':''}" style="margin:0 0 16px">
+      <div>
+        <div style="font-size:14px;font-weight:500">Spotify</div>
+        <div style="font-size:12px;color:var(--ink-3)">${S.spotify?.connected
+          ?(S.spotify.nowPlaying?`再生中: ${esc(S.spotify.nowPlaying.title)}`:'連携済み · 同期できます')
+          :'未連携 · いま聴いてる曲を自動で紐づけ'}</div>
+      </div>
+      <div class="spotify-row-actions">
+        <button type="button" class="${S.spotify?.connected?'spotify-sync':''}" id="spotifyConnectArchive">${S.spotify?.connected?'同期':'連携'}</button>
+        ${S.spotify?.connected?'<button type="button" class="spotify-disconnect" id="spotifyDisconnectArchive">解除</button>':''}
+      </div>
     </div>
     <div class="group-manage">
       <div class="sec-label">グループ</div>
@@ -8281,6 +8464,7 @@ function renderAccountPanel(el){
     haptic();
   });
   $('spotifyConnectArchive')?.addEventListener('click',connectSpotify);
+  $('spotifyDisconnectArchive')?.addEventListener('click',disconnectSpotify);
   $('addGroupBtnArchive')?.addEventListener('click',()=>{
     const n=$('newGroupNameArchive')?.value.trim();
     if(!n)return;
@@ -8317,8 +8501,8 @@ function renderAll(){
   }
   renderWaitingRoom();
   renderMapPanel();
-  if(activeFriendId)renderFriendSpace();
-  else if($('panel-messages')?.classList.contains('active'))renderMessages();
+  if($('panel-capsule')?.classList.contains('active'))renderCapsuleTab();
+  if(S.archiveFamilyOpen||activeFriendId)renderArchive();
   else if($('panel-archive')?.classList.contains('active'))renderArchive();
   renderNotifBadge();
   renderNotifDropdown();
@@ -8370,7 +8554,7 @@ function renderNotifDropdown(){
       if(n&&!n.read){n.read=true;save();renderNotifBadge()}
       $('notifDropdown')?.classList.remove('open');
       if(item.dataset.action==='open'&&ready().length)startOpening(ready(),false);
-      else if(item.dataset.action==='dm'){switchTab('me');const dm=S.dms?.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}
+      else if(item.dataset.action==='dm'){const dm=S.dms?.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}
       else if(item.dataset.action==='timeline'){switchTab('waiting');$('timeMachineSection')?.scrollIntoView({behavior:'smooth',block:'start'})}
       else if(item.dataset.action==='home'){switchTab('waiting');renderTimeline();haptic()}
       else if(item.dataset.action==='insight'){S.archiveTab='insight';save();switchTab('archive');renderArchive();openInsightSheet(monthInsightKey())}
@@ -8519,7 +8703,7 @@ window.addEventListener('scroll',()=>{
 /* Create */
 const overlay=$('createOverlay');
 $('openCreate').addEventListener('click',()=>{
-  if(!isLoggedIn()){toast('投稿するにはログインしてください');switchTab('messages');renderAuth();return}
+  if(!isLoggedIn()){toast('投稿するにはログインしてください');switchTab('archive');S.archiveTab='settings';save();renderArchive();return}
   initCreateExpands();updateCreateUI();overlay.classList.add('open');
   haptic();
 });
@@ -8786,7 +8970,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
   const hasMedia=!!pendingMedia;
   const hasPrompt=!!(S.createPromptChoice||S.createPromptText);
   if(!hasMedia&&!hasVoice&&!caption&&!hasPrompt){toast('ひとことか、写真か、音声を残そう');return}
-  if(fromCreate&&!isLoggedIn()){toast('投稿するにはログインが必要です');switchTab('messages');overlay.classList.remove('open');renderAuth();return}
+  if(fromCreate&&!isLoggedIn()){toast('投稿するにはログインが必要です');overlay.classList.remove('open');S.archiveTab='settings';save();switchTab('archive');renderArchive();return}
   const type=hasVoice?'voice':(hasMedia?pendingMedia.type:'text');
   const built=fromCreate?buildSealTargets():{targets:[{type:'self',to:'self',vis:'future'}]};
   if(built.error){toast(built.error);return}
@@ -8910,7 +9094,6 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
     }
     switchTab('waiting');
     if(isFriend&&targets[0]){
-      switchTab('messages');
       const fm=MEMBERS.find(x=>x.n===targets[0].to);
       if(fm)openFriendSpace(fm.id);
     }
@@ -8960,7 +9143,10 @@ $('avatarInput')?.addEventListener('change',async e=>{
 });
 
 /* Friend space */
-$('fsBack')?.addEventListener('click',()=>{closeFriendSpace();renderMessages();haptic()});
+$('fsBack')?.addEventListener('click',()=>{closeFriendSpace();renderArchive();haptic()});
+$('familyBackFromProfile')?.addEventListener('click',()=>{
+  S.archiveFamilyOpen=false;save();renderArchive();haptic();
+});
 document.querySelectorAll('.map-sub-tab').forEach(t=>t.addEventListener('click',()=>{
   S.mapTab=t.dataset.mtab;mapSubTab=S.mapTab;save();renderMapPanel();haptic();
 }));
@@ -9289,7 +9475,7 @@ $('dailyQuestionBtn')?.addEventListener('click',()=>{
   haptic();
 });
 $('onboardNext1')?.addEventListener('click',()=>{
-  if(!isLoggedIn()){toast('まず登録またはログインしてください');$('onboardOverlay')?.classList.remove('open');switchTab('messages');renderAuth();return}
+  if(!isLoggedIn()){toast('まず登録またはログインしてください');$('onboardOverlay')?.classList.remove('open');switchTab('archive');S.archiveTab='settings';save();renderArchive();return}
   const inv=$('onboardInviteInput')?.value.trim();
   if(inv)showInviteWelcome(inv);
   showOnboardingStep('demo');
@@ -9547,9 +9733,48 @@ $('copyInviteBtn')?.addEventListener('click',()=>{
   navigator.clipboard?.writeText(link).then(()=>toast('招待リンクをコピーしました')).catch(()=>toast(link));
   haptic();
 });
-async function syncSpotifyTracks(){
-  const token=S.spotify?.token;
-  if(!token)return;
+const SPOTIFY_SCOPES='user-read-recently-played user-top-read user-read-currently-playing';
+function randomString(n=64){
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let out='';
+  crypto.getRandomValues(new Uint8Array(n)).forEach(v=>{out+=chars[v%chars.length]});
+  return out;
+}
+async function pkceChallenge(verifier){
+  const data=new TextEncoder().encode(verifier);
+  const digest=await crypto.subtle.digest('SHA-256',data);
+  const arr=Array.from(new Uint8Array(digest));
+  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+async function ensureSpotifyAccessToken(){
+  if(!S.spotify?.connected)return null;
+  const now=Date.now();
+  if(S.spotify.token&&S.spotify.expiresAt&&now<S.spotify.expiresAt-60000)return S.spotify.token;
+  if(!S.spotify.refreshToken||!SPOTIFY_CLIENT_ID)return S.spotify.token||null;
+  const body=new URLSearchParams({
+    grant_type:'refresh_token',
+    refresh_token:S.spotify.refreshToken,
+    client_id:SPOTIFY_CLIENT_ID,
+  });
+  const r=await fetch('https://accounts.spotify.com/api/token',{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body,
+  });
+  if(!r.ok)return null;
+  const j=await r.json();
+  S.spotify.token=j.access_token;
+  if(j.refresh_token)S.spotify.refreshToken=j.refresh_token;
+  S.spotify.expiresAt=Date.now()+(j.expires_in||3600)*1000;
+  save();
+  return S.spotify.token;
+}
+async function syncSpotifyTracks(showToast=true){
+  const token=await ensureSpotifyAccessToken();
+  if(!token){
+    if(showToast)toast('Spotify連携が必要です');
+    return;
+  }
   try{
     const headers={Authorization:'Bearer '+token};
     const [recentR,topR,playR]=await Promise.all([
@@ -9557,6 +9782,13 @@ async function syncSpotifyTracks(){
       fetch('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=10',{headers}),
       fetch('https://api.spotify.com/v1/me/player/currently-playing',{headers}),
     ]);
+    if(recentR.status===401||topR.status===401){
+      S.spotify.connected=false;
+      S.spotify.token='';
+      save();
+      if(showToast)toast('Spotify連携の期限が切れました');
+      return;
+    }
     const recentItems=recentR.ok?(await recentR.json()).items||[]:[];
     const topItems=topR.ok?(await topR.json()).items||[]:[];
     const mapTrack=(t,i,plays)=>({
@@ -9567,6 +9799,7 @@ async function syncSpotifyTracks(){
       ?topItems.map((t,i)=>mapTrack(t,i,Math.max(1,20-i*2)))
       :recentItems.map((it,i)=>mapTrack(it.track,i,1));
     S.spotify=S.spotify||{};
+    S.spotify.connected=true;
     S.spotify.tracks=tracks;
     if(playR.ok&&playR.status!==204){
       const pd=await playR.json();
@@ -9585,33 +9818,106 @@ async function syncSpotifyTracks(){
       month.ranking=tracks.slice(0,5).map(t=>({rank:t.rank,title:t.title,artist:t.artist,plays:t.plays||1}));
       if(month.ranking[0]){month.themeSong={...month.ranking[0]};month.highlight={...month.ranking[0]};}
     }
-    save();renderArchive();toast('Spotifyから同期しました');
-  }catch(e){toast('同期に失敗しました')}
-}
-function connectSpotify(){
-  if(S.spotify?.connected&&S.spotify?.token){syncSpotifyTracks();return}
-  if(SPOTIFY_CLIENT_ID){
-    const redirect=encodeURIComponent(location.origin+location.pathname);
-    location.href=`https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${redirect}&scope=${encodeURIComponent('user-read-recently-played user-top-read user-read-currently-playing')}`;
-    return;
+    save();renderArchive();
+    if(showToast)toast('Spotifyから同期しました');
+  }catch(e){
+    if(showToast)toast('同期に失敗しました');
   }
-  S.spotify={connected:true,tracks:[
-    {rank:1,title:'夜に駆ける',artist:'YOASOBI',plays:42},
-    {rank:2,title:'水平線',artist:'Back number',plays:28},
-  ]};
-  if(S.musicToday)S.musicToday.top={title:'夜に駆ける',artist:'YOASOBI',plays:42};
-  save();renderArchive();toast('Spotify連携（デモ）');
+}
+function disconnectSpotify(){
+  S.spotify={
+    connected:false,
+    token:'',
+    refreshToken:'',
+    expiresAt:0,
+    tracks:[],
+    nowPlaying:null,
+    oauthState:'',
+    pkceVerifier:'',
+  };
+  if(pendingMusicShare?.source==='spotify'||pendingMusicShare?.auto)pendingMusicShare=null;
+  save();
+  renderArchive();
+  toast('Spotify連携を解除しました');
   haptic();
 }
-$('spotifyConnect')?.addEventListener('click',connectSpotify);
-if(location.hash.includes('access_token=')){
-  const token=location.hash.match(/access_token=([^&]+)/)?.[1];
-  if(token){
-    S.spotify={connected:true,token,tracks:[]};
-    history.replaceState(null,'',location.pathname+location.search);
-    save();syncSpotifyTracks();
+async function connectSpotify(){
+  if(S.spotify?.connected){syncSpotifyTracks();return}
+  if(!SPOTIFY_CLIENT_ID){
+    toast('SPOTIFY_CLIENT_ID を設定してください');
+    return;
+  }
+  const verifier=randomString(72);
+  const state=randomString(24);
+  const challenge=await pkceChallenge(verifier);
+  S.spotify=S.spotify||{};
+  S.spotify.pkceVerifier=verifier;
+  S.spotify.oauthState=state;
+  save();
+  const redirect=encodeURIComponent(location.origin+location.pathname);
+  const authUrl='https://accounts.spotify.com/authorize'
+    +`?client_id=${encodeURIComponent(SPOTIFY_CLIENT_ID)}`
+    +'&response_type=code'
+    +`&redirect_uri=${redirect}`
+    +`&scope=${encodeURIComponent(SPOTIFY_SCOPES)}`
+    +`&state=${encodeURIComponent(state)}`
+    +`&code_challenge=${encodeURIComponent(challenge)}`
+    +'&code_challenge_method=S256';
+  location.href=authUrl;
+}
+async function handleSpotifyOAuthCallback(){
+  const params=new URLSearchParams(location.search);
+  const code=params.get('code');
+  const state=params.get('state');
+  if(!code)return;
+  if(!SPOTIFY_CLIENT_ID){
+    toast('SPOTIFY_CLIENT_ID を設定してください');
+    return;
+  }
+  if(!S.spotify?.pkceVerifier||!S.spotify?.oauthState||state!==S.spotify.oauthState){
+    toast('Spotify認証の検証に失敗しました');
+    return;
+  }
+  try{
+    const body=new URLSearchParams({
+      client_id:SPOTIFY_CLIENT_ID,
+      grant_type:'authorization_code',
+      code,
+      redirect_uri:location.origin+location.pathname,
+      code_verifier:S.spotify.pkceVerifier,
+    });
+    const r=await fetch('https://accounts.spotify.com/api/token',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body,
+    });
+    if(!r.ok){
+      toast('Spotify連携に失敗しました');
+      return;
+    }
+    const j=await r.json();
+    S.spotify={
+      ...(S.spotify||{}),
+      connected:true,
+      token:j.access_token||'',
+      refreshToken:j.refresh_token||S.spotify.refreshToken||'',
+      expiresAt:Date.now()+(j.expires_in||3600)*1000,
+      tracks:[],
+      oauthState:'',
+      pkceVerifier:'',
+    };
+    params.delete('code');
+    params.delete('state');
+    const q=params.toString();
+    history.replaceState(null,'',location.pathname+(q?'?'+q:''));
+    save();
+    await syncSpotifyTracks();
+  }catch(e){
+    toast('Spotify連携に失敗しました');
   }
 }
+$('spotifyConnect')?.addEventListener('click',connectSpotify);
+handleSpotifyOAuthCallback();
 function showInviteWelcome(code){
   const host=applyInviteCode(code);
   if(!host)return;
@@ -9647,8 +9953,23 @@ if(urlInvite&&!S.invitedBy){
   history.replaceState(null,'',location.pathname+(q?'?'+q:'')+location.hash);
 })();
 $('wrappedClose')?.addEventListener('click',()=>$('wrappedOverlay')?.classList.remove('open'));
-$('wrappedShare')?.addEventListener('click',()=>{
-  haptic();toast('シェアシートを開きます（デモ）');
+$('wrappedShare')?.addEventListener('click',async()=>{
+  const top=currentTodaySong()||S.spotify?.nowPlaying||S.spotify?.tracks?.[0];
+  const line=top?.title?`今日の一曲: ${top.title}${top.artist?' · '+top.artist:''}`:'Time Cap のまとめを見てね';
+  const shareUrl=top?.url||APP_URL;
+  const payload={title:'Time Cap',text:line,url:shareUrl};
+  try{
+    if(navigator.share){
+      await navigator.share(payload);
+      toast('シェアしました');
+    }else{
+      await navigator.clipboard.writeText(`${line}\n${shareUrl}`);
+      toast('シェア文をコピーしました');
+    }
+  }catch(e){
+    if(e?.name!=='AbortError')toast('シェアできませんでした');
+  }
+  haptic();
 });
 $('wrappedOverlay')?.addEventListener('click',e=>{if(e.target===$('wrappedOverlay'))$('wrappedOverlay').classList.remove('open')});
 $('insightViewClose')?.addEventListener('click',()=>$('insightViewOverlay')?.classList.remove('open'));
@@ -9672,6 +9993,7 @@ startWaitTimer();
     }
   }catch(e){}
   save();renderAll();
+  if(S.spotify?.connected)syncSpotifyTracks(false);
 })();
 </script>
 </body>
