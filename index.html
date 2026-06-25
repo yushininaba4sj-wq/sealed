@@ -2658,6 +2658,13 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .profile-vis-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
 .profile-vis-row span{font-size:13px;color:var(--ink-2)}
 .profile-vis-row select{padding:6px 10px;border-radius:8px;background:var(--bg-3);border:1px solid var(--line);font-size:12px;color:var(--ink)}
+.friend-profile-photo{border-radius:var(--r-sm);overflow:hidden;background:var(--bg-3);aspect-ratio:4/3}
+.friend-profile-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.friend-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.friend-photo-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:var(--bg-3)}
+.friend-music-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink-2)}
+.friend-music-rank{font-size:11px;font-weight:600;color:var(--ink-3);min-width:16px}
+.friend-diary-item{padding:10px 0;border-bottom:1px solid var(--line)}
 .montage-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:12px}
 .montage-preview img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px}
 .mood-color-preview{
@@ -4245,11 +4252,13 @@ function renderHome(){
   renderDailyStrip();
 }
 function demoInnerTodayPosts(){
-  const hues=[42,200,12,280];
+  const sky=['sunny','cloud','rain','snow'];
+  const batt=[78,42,55,61];
   return MEMBERS.slice(0,4).map((m,i)=>({
     name:m.n,char:m.i,color:m.c,
     type:['mood','photo','food','mood'][i],
-    moodColor:hslFromHue(hues[i]),moodWord:['ふつうだった','','学食のカレー','まったり'][i],
+    skyMood:sky[i],moodBattery:batt[i],
+    moodColor:hslFromHue([42,200,12,280][i]),moodWord:['ふつうだった','','学食のカレー','まったり'][i],
     text:['','カフェのラテ','学食のカレー',''][i],
     at:Date.now()-(i+1)*3600e3,mediaId:i===1?'demo_photo':null,
   }));
@@ -4941,6 +4950,110 @@ function canViewProfileField(field,ownerMemberId){
   const vis=ownerMemberId?getMemberProfileVisibility(ownerMemberId):S.profileVisibility||DEFAULT_PROFILE_VISIBILITY;
   return vis[field]==='inner';
 }
+function memberFromId(memberId){
+  return MEMBERS.find(x=>x.id===memberId);
+}
+function normalizeMemberItem(raw,member){
+  if(!raw||!member)return null;
+  const at=raw.at||raw.createdAt||raw.openedAt||0;
+  const song=raw.linkedSong||raw.sealContext?.contextSong||(raw.songTitle?{title:raw.songTitle,artist:raw.songArtist}:null);
+  return{
+    id:raw.id||member.id+'_'+at,
+    type:raw.type||raw.dailyType||(raw.skyMood||raw.moodColor?'mood':raw.mediaId?'photo':'text'),
+    text:raw.text||raw.caption||'',
+    at,mediaId:raw.mediaId,
+    skyMood:raw.skyMood,moodColor:raw.moodColor,moodWord:raw.moodWord,moodBattery:raw.moodBattery,
+    songTitle:song?.title,songArtist:song?.artist,songArtworkUrl:song?.artworkUrl||raw.songArtworkUrl,
+    sealContext:raw.sealContext,sealed:!!raw.sealed&&!raw.opened,
+    place:raw.sealContext?.place||raw.loc?.placeName||raw.contextCity,
+  };
+}
+function collectMemberPublicItems(memberId){
+  const m=memberFromId(memberId);
+  if(!m)return [];
+  const name=m.n;
+  const out=[];
+  const push=raw=>{
+    const item=normalizeMemberItem(raw,m);
+    if(item)out.push(item);
+  };
+  innerCircleTodayPosts().filter(p=>p.name===name).forEach(push);
+  (S.opened||[]).filter(o=>o.from===name).forEach(o=>push({...o,at:o.openedAt,opened:true}));
+  (S.feedPosts||[]).filter(p=>p.from===name).forEach(p=>push(p));
+  (S.capsules||[]).filter(c=>{
+    if(c.from!==name)return false;
+    if(c.to==='self'||c.visibility==='private')return false;
+    if(c.sealed&&c.to!=='group'&&c.visibility!=='inner'&&c.visibility!=='shared'&&c.layer!=='now')return false;
+    return true;
+  }).forEach(c=>push({...c,at:c.createdAt}));
+  (S.posts||[]).filter(p=>{
+    if(p.visibility!=='inner')return false;
+    const author=postAuthorName(p);
+    return author===name||p.authorId===memberId;
+  }).forEach(p=>push(textPostToFeed(p,{from:name})));
+  const seen=new Set();
+  return out.filter(i=>{
+    if(seen.has(i.id))return false;
+    seen.add(i.id);
+    return true;
+  }).sort((a,b)=>b.at-a.at);
+}
+function memberTodayMood(memberId){
+  const d=todayStr();
+  return collectMemberPublicItems(memberId).find(i=>
+    (i.type==='mood'||i.skyMood||i.moodColor)&&
+    new Date(i.at).toISOString().slice(0,10)===d
+  )||null;
+}
+function memberRecentPhotoItem(memberId){
+  return collectMemberPublicItems(memberId).find(i=>i.mediaId&&!i.sealed)||null;
+}
+function memberMusicTop(memberId,limit=3){
+  const songs={};
+  collectMemberPublicItems(memberId).forEach(i=>{
+    const title=i.songTitle||i.sealContext?.contextSong?.title;
+    if(!title)return;
+    if(!songs[title])songs[title]={title,artist:i.songArtist||i.sealContext?.contextSong?.artist||'',count:0};
+    songs[title].count++;
+  });
+  return Object.values(songs).sort((a,b)=>b.count-a.count).slice(0,limit);
+}
+function memberChangesSummary(memberId){
+  const items=collectMemberPublicItems(memberId);
+  const places={};
+  items.forEach(i=>{if(i.place)places[i.place]=(places[i.place]||0)+1});
+  const topPlace=Object.entries(places).sort((a,b)=>b[1]-a[1])[0];
+  const moods=items.filter(i=>i.skyMood||i.moodColor).slice(0,5);
+  const songs=memberMusicTop(memberId,1)[0];
+  return{topPlace:topPlace?{name:topPlace[0],count:topPlace[1]}:null,recentMoods:moods,topSong:songs};
+}
+function memberPastPhotos(memberId,limit=6){
+  return collectMemberPublicItems(memberId).filter(i=>i.mediaId&&!i.sealed).slice(0,limit);
+}
+function memberTextDiary(memberId,limit=5){
+  return collectMemberPublicItems(memberId).filter(i=>i.type==='text'||i.isTextPost).slice(0,limit);
+}
+function memberMoodCardHtml(mood){
+  if(!mood)return'';
+  const lbl=mood.moodWord||SKY_MOODS.find(s=>s.id===mood.skyMood)?.label||'';
+  const batt=mood.moodBattery!=null?moodBatteryGaugeHtml(mood.moodBattery):'';
+  if(mood.skyMood||(mood.type==='mood'&&!mood.moodColor)){
+    return`<div style="margin:16px 0;padding:16px;background:var(--bg-3);border-radius:var(--r-sm);text-align:center">
+      ${tcIcon(skyMoodIcon(mood.skyMood),'lg')}
+      ${lbl?`<div style="font-size:14px;margin-top:8px">${esc(lbl)}</div>`:''}
+      ${batt}
+      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">いまの気分 · ${timeAgo(mood.at)}</div>
+    </div>`;
+  }
+  if(mood.moodColor){
+    return`<div style="margin:16px 0;padding:16px;background:var(--bg-3);border-radius:var(--r-sm);text-align:center">
+      <div style="width:48px;height:48px;border-radius:50%;background:${esc(mood.moodColor)};margin:0 auto"></div>
+      ${lbl?`<div style="font-size:14px;margin-top:8px">${esc(lbl)}</div>`:''}
+      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">いまの気分 · ${timeAgo(mood.at)}</div>
+    </div>`;
+  }
+  return'';
+}
 function updateMoodBatteryUI(pct){
   const n=Math.max(0,Math.min(100,Math.round(pct||0)));
   const fill=$('moodBatteryFill');
@@ -5055,26 +5168,94 @@ function openInsightDrill(type,insKey){
   haptic();
 }
 async function openFriendProfile(memberId){
-  const m=MEMBERS.find(x=>x.id===memberId);
+  const m=memberFromId(memberId);
   if(!m)return;
   const body=$('friendProfileBody');
-  const vis=getMemberProfileVisibility(memberId);
+  const items=collectMemberPublicItems(memberId);
   let moodHtml='';
   if(canViewProfileField('mood',memberId)){
-    const demoMood={skyMood:'sunny',moodWord:'ふつう'};
-    moodHtml=`<div style="margin:16px 0;padding:16px;background:var(--bg-3);border-radius:var(--r-sm);text-align:center">${tcIcon(skyMoodIcon(demoMood.skyMood),'lg')}<div style="font-size:12px;color:var(--ink-3);margin-top:8px">いまの気分</div></div>`;
+    const mood=memberTodayMood(memberId);
+    if(mood)moodHtml=memberMoodCardHtml(mood);
+    else moodHtml=`<div style="margin:16px 0;padding:16px;background:var(--bg-3);border-radius:var(--r-sm);text-align:center;font-size:13px;color:var(--ink-3)">今日の気分はまだ残していません</div>`;
   }
-  const photoHtml=canViewProfileField('recentPhoto',memberId)?`<div style="margin:12px 0"><div class="sec-label">最近の一枚</div><div style="height:120px;background:var(--bg-3);border-radius:var(--r-sm)"></div></div>`:'';
-  const musicHtml=canViewProfileField('music',memberId)?`<div style="margin:12px 0"><div class="sec-label">曲</div><div style="font-size:13px;color:var(--ink-2)">${tcIcon('music')} 記録から表示</div></div>`:'';
-  const changesHtml=canViewProfileField('changes',memberId)?`<div style="margin:12px 0"><div class="sec-label">変化</div><p style="font-size:12px;color:var(--ink-3)">まとめタブで見られる変化の一部</p></div>`:'';
-  const hidden=!canViewProfileField('pastPhotos',memberId)&&!canViewProfileField('textDiary',memberId);
+  let photoHtml='';
+  if(canViewProfileField('recentPhoto',memberId)){
+    const photo=memberRecentPhotoItem(memberId);
+    if(photo){
+      photoHtml=`<div style="margin:12px 0"><div class="sec-label">最近の一枚</div>
+        <div class="friend-profile-photo"><img data-lazy="${esc(photo.mediaId)}" alt=""></div>
+        ${photo.text?`<div style="font-size:12px;color:var(--ink-3);margin-top:6px">${esc(photo.text)}</div>`:''}
+        <div style="font-size:11px;color:var(--ink-4);margin-top:4px">${timeAgo(photo.at)}</div></div>`;
+    }else{
+      photoHtml=`<div style="margin:12px 0"><div class="sec-label">最近の一枚</div>
+        <div style="font-size:13px;color:var(--ink-3);padding:12px;background:var(--bg-3);border-radius:var(--r-sm)">まだ写真がありません</div></div>`;
+    }
+  }
+  let musicHtml='';
+  if(canViewProfileField('music',memberId)){
+    const top=memberMusicTop(memberId);
+    musicHtml=`<div style="margin:12px 0"><div class="sec-label">曲 · ランキング</div>`;
+    if(top.length){
+      musicHtml+=top.map((s,i)=>`<div class="friend-music-row">
+        <span class="friend-music-rank">${i+1}</span>
+        <span>${tcIcon('music')} ${esc(s.title)}${s.artist?' · '+esc(s.artist):''}</span>
+        <span style="color:var(--ink-3);font-size:11px">${s.count}回</span>
+      </div>`).join('');
+    }else{
+      musicHtml+=`<div style="font-size:13px;color:var(--ink-3)">記録に曲がまだありません</div>`;
+    }
+    musicHtml+='</div>';
+  }
+  let changesHtml='';
+  if(canViewProfileField('changes',memberId)){
+    const ch=memberChangesSummary(memberId);
+    const bits=[];
+    if(ch.topPlace)bits.push(`${tcIcon('pin')} ${esc(ch.topPlace.name)}（${ch.topPlace.count}回）`);
+    if(ch.topSong)bits.push(`${tcIcon('music')} ${esc(ch.topSong.title)}`);
+    if(ch.recentMoods.length>1){
+      const first=ch.recentMoods[ch.recentMoods.length-1];
+      const last=ch.recentMoods[0];
+      const a=first.skyMood?SKY_MOODS.find(s=>s.id===first.skyMood)?.label:'';
+      const b=last.skyMood?SKY_MOODS.find(s=>s.id===last.skyMood)?.label:'';
+      if(a&&b&&a!==b)bits.push(`${esc(a)} → ${esc(b)}`);
+    }
+    changesHtml=`<div style="margin:12px 0"><div class="sec-label">変化</div>`;
+    if(bits.length){
+      changesHtml+=bits.map(b=>`<div style="font-size:13px;color:var(--ink-2);padding:6px 0;border-bottom:1px solid var(--line)">${b}</div>`).join('');
+    }else{
+      changesHtml+=`<div style="font-size:13px;color:var(--ink-3)">記録が増えると、場所や音楽の変化が見えます</div>`;
+    }
+    changesHtml+='</div>';
+  }
+  let pastHtml='';
+  if(canViewProfileField('pastPhotos',memberId)){
+    const photos=memberPastPhotos(memberId);
+    if(photos.length){
+      pastHtml=`<div style="margin:12px 0"><div class="sec-label">過去の写真</div>
+        <div class="friend-photo-grid">${photos.map(p=>`<img data-lazy="${esc(p.mediaId)}" alt="" title="${esc(p.text||'')}">`).join('')}</div></div>`;
+    }
+  }
+  let diaryHtml='';
+  if(canViewProfileField('textDiary',memberId)){
+    const texts=memberTextDiary(memberId);
+    if(texts.length){
+      diaryHtml=`<div style="margin:12px 0"><div class="sec-label">文字の記録</div>
+        ${texts.map(t=>`<div class="friend-diary-item"><div style="font-size:13px;line-height:1.5">${esc(t.text)}</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:4px">${timeAgo(t.at)}</div></div>`).join('')}</div>`;
+    }
+  }
+  const anyVisible=PROFILE_VIS_FIELDS.some(f=>canViewProfileField(f.key,memberId));
+  const hasContent=items.length>0;
+  const hiddenNote=!hasContent&&anyVisible?`<p style="font-size:12px;color:var(--ink-3);text-align:center;margin-top:20px">${INNER_LABEL}に見せる記録がまだありません</p>`:'';
+  const privateNote=!anyVisible?`<p style="font-size:12px;color:var(--ink-3);text-align:center;margin-top:20px">非公開の記録があります</p>`:'';
   body.innerHTML=`
     <div style="text-align:center;margin-bottom:16px">
       <div style="width:72px;height:72px;border-radius:50%;background:${m.c};display:grid;place-items:center;font-size:24px;font-weight:600;color:#fff;margin:0 auto">${esc(m.i)}</div>
       <div style="font-size:20px;font-weight:600;margin-top:10px">${esc(m.n)}</div>
+      ${hasContent?`<div style="font-size:12px;color:var(--ink-3);margin-top:4px">${items.length}件の記録</div>`:''}
     </div>
-    ${moodHtml}${photoHtml}${musicHtml}${changesHtml}
-    ${hidden?`<p style="font-size:12px;color:var(--ink-3);text-align:center;margin-top:20px">非公開の記録があります</p>`:''}
+    ${moodHtml}${photoHtml}${musicHtml}${changesHtml}${pastHtml}${diaryHtml}
+    ${hiddenNote}${privateNote}
     <button type="button" class="dq-cta" id="friendProfileDmBtn" style="width:100%;margin-top:20px">メッセージ</button>`;
   $('friendProfileTitle').textContent=m.n;
   $('friendProfileDmBtn')?.addEventListener('click',()=>{
@@ -5082,6 +5263,7 @@ async function openFriendProfile(memberId){
     openFriendSpace(memberId);
   });
   $('friendProfileOverlay')?.classList.add('open');
+  await loadLazyThumbs(body);
   haptic();
 }
 function profileVisibilitySettingsHtml(){
@@ -7322,7 +7504,7 @@ function defaults(){
       createdAt:now-30*864e5,promptId:'tap1',promptText:'今日のテンションは？',promptType:'tap',
       choice:'最高',options:['最高','ふつう','限界'],linkedSong:{title:'夜に駆ける',artist:'YOASOBI'}},
     {id:'c1',from:'みお',to:'group',type:'photo',text:'屋上からの夕焼け',sealed:true,openAt:addDays(2),days:3,createdAt:now-864e5},
-    {id:'c2',from:'けんと',to:'group',type:'video',text:'ライブの余韻',sealed:true,openAt:addDays(3),days:3,createdAt:now-2*864e5},
+    {id:'c2',from:'けんと',to:'group',type:'video',text:'ライブの余韻',sealed:true,openAt:addDays(3),days:3,createdAt:now-2*864e5,linkedSong:{title:'Pretender',artist:'Official髭男dism'}},
     {id:'c3',from:'ゆうま',to:'self',type:'photo',text:'未来の自分へ',sealed:true,openAt:addDays(3),days:3,createdAt:now-3*864e5,loc:{lat:35.6812,lng:139.7671},tags:['旅行']},
     {id:'c4',from:'あや',to:'group',type:'photo',text:'一緒に作った料理',sealed:true,openAt:addDays(25),days:30,createdAt:now-4*864e5},
     {id:'c5',from:'そう',to:'group',type:'photo',text:'いつもの勉強場所',sealed:true,openAt:addDays(28),days:30,createdAt:now-5*864e5},
@@ -7358,7 +7540,7 @@ function defaults(){
     opened:[
       {id:'o1',from:'そう',type:'photo',text:'試験終わった！',openedAt:now-5*864e5,loc:{lat:35.0116,lng:135.7681}},
       {id:'o2',from:'ゆい',type:'video',text:'あの頃ずっと聴いてた曲',openedAt:now-12*864e5,loc:{lat:34.6937,lng:135.5023}},
-      {id:'o-demo',from:'みお',type:'photo',text:'開封済みの写真サンプル',openedAt:now-864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671,placeName:'渋谷区 · 道玄坂'},
+      {id:'o-demo',from:'みお',type:'mood',text:'開封済みの写真サンプル',skyMood:'sunny',moodWord:'いい感じ',moodBattery:68,openedAt:now-864e5,mediaId:'demo_photo',loc:{lat:35.6812,lng:139.7671,placeName:'渋谷区 · 道玄坂'},
         sealContext:{place:'渋谷区 · 道玄坂',weather:'晴れ',temp:24,dateLabel:'昨日の記憶'},linkedSong:{title:'夜に駆ける',artist:'YOASOBI'}},
       {id:'o-map3',from:'ゆうま',type:'photo',text:'旅の途中',openedAt:now-3*864e5,mediaId:'demo_photo',loc:{lat:35.4437,lng:139.6380,placeName:'横浜市 · みなとみらい'},
         sealContext:{place:'横浜市 · みなとみらい',weather:'くもり',temp:19,dateLabel:'旅の記憶'},linkedSong:{title:'Lemon',artist:'米津玄師'}},
@@ -7393,10 +7575,10 @@ function defaults(){
     ],
     feedPosts:[
       {id:'f1',from:'みお',type:'photo',text:'屋上からの夕焼け',at:now-2*3600e3,sealed:true,mediaId:'demo_photo'},
-      {id:'f2',from:'けんと',type:'video',text:'ライブの余韻',at:now-4*3600e3,sealed:true},
+      {id:'f2',from:'けんと',type:'video',text:'ライブの余韻',at:now-4*3600e3,sealed:true,linkedSong:{title:'Pretender',artist:'Official髭男dism'}},
       {id:'f3',from:'あや',type:'photo',text:'カフェで',at:now-6*3600e3,sealed:true},
       {id:'f4',from:'そう',type:'photo',text:'図書館',at:now-8*3600e3,sealed:true},
-      {id:'f5',from:'ゆい',type:'text',text:'今日なんかいい感じだった',at:now-10*3600e3,sealed:true},
+      {id:'f5',from:'ゆい',type:'mood',text:'まったりしてた',skyMood:'snow',moodWord:'まったり',moodBattery:58,at:now-10*3600e3,sealed:false},
     ],
     musicMonths:defaultMusicMonths(),
     musicToday:defaultMusicToday(),
