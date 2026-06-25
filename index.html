@@ -2665,6 +2665,15 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .friend-music-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink-2)}
 .friend-music-rank{font-size:11px;font-weight:600;color:var(--ink-3);min-width:16px}
 .friend-diary-item{padding:10px 0;border-bottom:1px solid var(--line)}
+.insight-drill-map{height:180px;border-radius:12px;margin:12px 0 16px;overflow:hidden;background:var(--bg-3)}
+.insight-drill-map .leaflet-container{border-radius:12px}
+.music-timeline-row{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.music-timeline-row .mt-date{font-size:11px;color:var(--ink-3);min-width:52px}
+.people-rank-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.people-rank-av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:600;color:#fff;flex-shrink:0}
+.people-rank-n{flex:1;font-size:14px;font-weight:500}
+.people-rank-c{font-size:12px;color:var(--ink-3)}
+#wrappedVlogSave.hidden{display:none}
 .montage-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:12px}
 .montage-preview img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px}
 .mood-color-preview{
@@ -3302,6 +3311,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   <div>
     <div class="wrapped-card" id="wrappedCard"></div>
     <div class="wrapped-actions">
+      <button type="button" id="wrappedVlogSave" class="hidden">動画を保存</button>
       <button type="button" id="wrappedShare">シェアする</button>
       <button type="button" class="ghost" id="wrappedClose">閉じる</button>
     </div>
@@ -5139,25 +5149,28 @@ function openInsightDrill(type,insKey){
   const body=$('insightDrillBody');
   const title=$('insightDrillTitle');
   if(!body)return;
+  destroyInsightDrillMap();
   if(type==='music'){
     title.textContent='音楽の推移';
     const songs={};
     (ins.songTimeline||[]).forEach(s=>{songs[s.title]=(songs[s.title]||0)+1});
     const entries=Object.entries(songs).sort((a,b)=>b[1]-a[1]).slice(0,6);
     const max=Math.max(1,...entries.map(e=>e[1]));
+    const timeline=(ins.songTimeline||[]).slice().sort((a,b)=>b.at-a.at).slice(0,8);
     body.innerHTML=`<div class="trend-bars">${entries.map(([t,c])=>`<div class="trend-bar" style="height:${Math.round(c/max*100)}%"><span>${esc(t.slice(0,8))}</span></div>`).join('')}</div>
-      <p style="font-size:12px;color:var(--ink-3);margin-top:28px">今月よく流れた曲の回数です。</p>`;
+      ${timeline.length?`<div style="margin-top:32px">${timeline.map(s=>`<div class="music-timeline-row"><span class="mt-date">${new Date(s.at).getDate()}日</span><span>${tcIcon('music')} ${esc(s.title)}</span></div>`).join('')}</div>`:''}
+      <p style="font-size:12px;color:var(--ink-3);margin-top:12px">今月よく流れた曲と、その日付です。</p>`;
   }else if(type==='place'){
     title.textContent='場所の推移';
     const places={};
-    [...(S.dailyRecords||[]),...(S.opened||[])].forEach(p=>{
-      const ctx=resolveSealContext(p);
-      const name=ctx?.place||p.loc?.placeName;
-      if(name)places[name]=(places[name]||0)+1;
-    });
-    body.innerHTML=Object.entries(places).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,c])=>
+    (ins.places||[]).forEach(p=>{places[p.name]=(places[p.name]||0)+1});
+    const mapPts=monthMapPoints(insKey);
+    body.innerHTML=`${mapPts.length?`<div class="insight-drill-map" id="insightDrillMap"></div>`:''}
+      ${Object.entries(places).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,c])=>
       `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><span>${tcIcon('pin')} ${esc(n)}</span><span style="color:var(--ink-3)">${c}回</span></div>`
-    ).join('')||'<div class="empty-state" style="padding:16px 0">場所の記録がありません</div>';
+    ).join('')||'<div class="empty-state" style="padding:16px 0">場所の記録がありません</div>'}
+      ${mapPts.length?`<p style="font-size:12px;color:var(--ink-3);margin-top:12px">ピンをタップすると、思い出マップでも見られます。</p>`:''}`;
+    if(mapPts.length)setTimeout(()=>initInsightDrillMap(mapPts),80);
   }else{
     title.textContent='言葉の変遷';
     body.innerHTML=(ins.catchphrases||[]).map(c=>`<div style="padding:10px 0;border-bottom:1px solid var(--line)">「${esc(c.word)}」<span style="color:var(--ink-3);font-size:12px;margin-left:8px">${c.count}回</span></div>`).join('')
@@ -5166,6 +5179,34 @@ function openInsightDrill(type,insKey){
   $('insightDrillOverlay')?.classList.add('open');
   loadLazyThumbs(body);
   haptic();
+}
+let insightDrillMapInst=null;
+function destroyInsightDrillMap(){
+  if(insightDrillMapInst){insightDrillMapInst.remove();insightDrillMapInst=null}
+}
+function monthMapPoints(insKey){
+  const {start,end}=monthInsightRange(insKey||monthInsightKey());
+  return mapPointsAll().filter(p=>{
+    const t=p.openedAt||0;
+    return t>=start&&t<end&&p.loc?.lat!=null&&p.loc?.lng!=null;
+  });
+}
+function initInsightDrillMap(points){
+  if(typeof L==='undefined'||!points?.length)return;
+  destroyInsightDrillMap();
+  const el=$('insightDrillMap');
+  if(!el)return;
+  insightDrillMapInst=L.map(el,{zoomControl:false,attributionControl:false,scrollWheelZoom:false}).setView([points[0].loc.lat,points[0].loc.lng],11);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19}).addTo(insightDrillMapInst);
+  const bounds=[];
+  points.forEach(p=>{
+    bounds.push([p.loc.lat,p.loc.lng]);
+    L.circleMarker([p.loc.lat,p.loc.lng],{radius:6,color:'#C9A84C',fillColor:'#C9A84C',fillOpacity:.85,weight:1})
+      .bindTooltip(esc(p.loc.placeName||p.text||'記憶'),{direction:'top'})
+      .addTo(insightDrillMapInst);
+  });
+  if(bounds.length>1)insightDrillMapInst.fitBounds(bounds,{padding:[24,24]});
+  setTimeout(()=>insightDrillMapInst?.invalidateSize({animate:false}),120);
 }
 async function openFriendProfile(memberId){
   const m=memberFromId(memberId);
@@ -5284,6 +5325,8 @@ function profileVisibilitySettingsHtml(){
   </div>`;
 }
 function openPeriodMontage(key,mode='month'){
+  setVlogMode(false);
+  vlogPhotos=null;
   const ins=mode==='year'?null:collectMonthData(key||monthInsightKey());
   const photos=mode==='year'
     ?(S.dailyRecords||[]).filter(r=>r.mediaId).map(r=>({mediaId:r.mediaId,at:r.createdAt}))
@@ -5300,21 +5343,97 @@ function openPeriodMontage(key,mode='month'){
   haptic();
 }
 let vlogTimer=null;
+let vlogPhotos=null;
+let vlogLabel='';
+function setVlogMode(on){
+  $('wrappedVlogSave')?.classList.toggle('hidden',!on);
+}
+async function exportVlogWebM(photos,label){
+  if(!photos?.length)return null;
+  const canvas=document.createElement('canvas');
+  const W=720,H=960;
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const fps=24;
+  const stream=canvas.captureStream(fps);
+  const mime=typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
+  if(typeof MediaRecorder==='undefined')return null;
+  const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2200000});
+  const chunks=[];
+  rec.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data)};
+  const imgs=[];
+  for(const p of photos){
+    try{
+      const data=await idbGet(p.mediaId);
+      if(!data)continue;
+      const img=new Image();
+      await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=data});
+      imgs.push(img);
+    }catch(e){}
+  }
+  if(imgs.length<2)return null;
+  const drawSlide=(img,idx,total)=>{
+    ctx.fillStyle='#100D0A';ctx.fillRect(0,0,W,H);
+    const scale=Math.max(W/img.width,H/img.height);
+    const w=img.width*scale,h=img.height*scale;
+    ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h);
+    ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,0,W,72);
+    ctx.fillStyle='#f5f0e8';ctx.font='600 20px sans-serif';ctx.textAlign='center';
+    ctx.fillText(label, W/2, 32);
+    ctx.font='13px sans-serif';ctx.fillStyle='rgba(245,240,232,.65)';
+    ctx.fillText(`${idx+1} / ${total}`, W/2, 54);
+    ctx.fillStyle='rgba(245,240,232,.45)';ctx.font='11px sans-serif';
+    ctx.fillText('TIME CAP', W/2, H-20);
+  };
+  return new Promise((resolve,reject)=>{
+    rec.onstop=()=>resolve(new Blob(chunks,{type:mime}));
+    rec.onerror=reject;
+    rec.start(200);
+    (async()=>{
+      for(let i=0;i<imgs.length;i++){
+        drawSlide(imgs[i],i,imgs.length);
+        await new Promise(r=>setTimeout(r,1200));
+      }
+      rec.stop();
+    })().catch(reject);
+  });
+}
+async function saveVlogVideo(){
+  if(!vlogPhotos?.length){toast('動画を作る写真がありません');return}
+  toast('動画を生成中…');
+  try{
+    const blob=await exportVlogWebM(vlogPhotos,vlogLabel);
+    if(!blob){toast('動画の生成に失敗しました');return}
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=(vlogLabel||'timecap-vlog').replace(/\s/g,'_')+'.webm';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+    if(navigator.share&&navigator.canShare?.({files:[new File([blob],'timecap-vlog.webm',{type:blob.type})]})){
+      try{
+        await navigator.share({files:[new File([blob],'timecap-vlog.webm',{type:blob.type})],title:vlogLabel||'TIME CAP'});
+      }catch(e){}
+    }
+    toast('動画を保存しました');haptic();
+  }catch(e){toast('動画の生成に失敗しました')}
+}
 async function openMonthVlog(key){
   const ins=collectMonthData(key||monthInsightKey());
   const photos=ins?.photos||[];
   if(photos.length<2){toast('動画まとめには写真が2枚以上必要です');return}
   if(vlogTimer){clearInterval(vlogTimer);vlogTimer=null}
-  const label=ins?.label||'';
+  vlogPhotos=photos;
+  vlogLabel=ins?.label||'';
+  setVlogMode(true);
   let idx=0;
   const first=photos[0];
-  $('wrappedCard').innerHTML=`<div class="wc-period">${esc(label)} · Vlog</div>
+  $('wrappedCard').innerHTML=`<div class="wc-period">${esc(vlogLabel)} · Vlog</div>
     <div class="vlog-frame" id="vlogFrame" style="aspect-ratio:4/5;overflow:hidden;border-radius:12px;background:var(--bg-3)">
       <img data-lazy="${esc(first.mediaId)}" alt="" style="width:100%;height:100%;object-fit:cover">
     </div>
-    <div style="font-size:13px;color:var(--ink-2);margin-top:12px;text-align:center;line-height:1.5">${photos.length}枚から自動生成</div>
+    <div style="font-size:13px;color:var(--ink-2);margin-top:12px;text-align:center;line-height:1.5">${photos.length}枚から自動生成 · 「動画を保存」で書き出し</div>
     <div class="wrapped-footer">TIME CAP</div>`;
-  lastShareCaption=shareSheetCaption(label+'の動画まとめ');
+  lastShareCaption=shareSheetCaption(vlogLabel+'の動画まとめ');
   $('wrappedOverlay')?.classList.add('open');
   await loadLazyThumbs($('wrappedCard'));
   const frame=$('vlogFrame');
@@ -6654,6 +6773,7 @@ function musicMonthKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMont
  * 振り返りの核は「1つのまとめ＋シェアカード」。人・声・ルート・推しは別実装せず
  * 同じテンプレに genre を足す。ARCHITECTURE.md 参照。 */
 const PERIOD_GENRE_MUSIC='music';
+const PERIOD_GENRE_PEOPLE='people';
 function musicWeekKey(d=new Date()){
   const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
   const day=x.getUTCDay()||7;
@@ -6857,6 +6977,7 @@ function collectMonthData(key){
     ...sealed.filter(c=>c.mediaId&&((c.tags||[]).includes('部屋')||/部屋/.test(c.text||'')||/部屋/.test(c.promptText||'')))
       .map(c=>({mediaId:c.mediaId,at:c.createdAt,label:'部屋'})),
   ].sort((a,b)=>a.at-b.at);
+  const peopleRanking=collectPeopleRanking(key);
   return{
     key,label:monthInsightRange(key).label,
     dailyCount:daily.length,photoCount:photos.length,moodCounts,moodDominant,moods,songTimeline,
@@ -6864,7 +6985,49 @@ function collectMonthData(key){
     topPlace:topPlace?{name:topPlace[0],count:topPlace[1]}:null,
     placeFirst,placeLast,placeCount:Object.keys(placeCounts).length,catchphrases,
     recordDays:new Set(daily.map(r=>new Date(r.createdAt).toISOString().slice(0,10))).size,
+    peopleRanking,places,
   };
+}
+function collectPeopleRanking(key){
+  const {start,end}=monthInsightRange(key);
+  const inR=ts=>ts!=null&&ts>=start&&ts<end;
+  const counts={};
+  const bump=(name,w=1)=>{
+    if(!name)return;
+    const n=String(name);
+    if(n===meName()||n==='ゆうま')return;
+    counts[n]=(counts[n]||0)+w;
+  };
+  (S.capsules||[]).filter(c=>inR(c.createdAt)).forEach(c=>{
+    if(isPairCap(c))bump(c.pairWith,3);
+    if(MEMBERS.some(m=>m.n===c.to))bump(c.to,2);
+    if(MEMBERS.some(m=>m.n===c.from))bump(c.from,1);
+  });
+  (S.opened||[]).filter(o=>inR(o.openedAt)).forEach(o=>bump(o.from,1));
+  (S.feedPosts||[]).filter(p=>inR(p.at)).forEach(p=>bump(p.from,1));
+  (S.dms||[]).forEach(d=>{
+    const recent=(d.messages||[]).filter(m=>inR(m.at));
+    if(recent.length)bump(d.with,2+recent.length);
+  });
+  (S.posts||[]).filter(p=>p.visibility==='inner'&&inR(p.createdAt)).forEach(p=>{
+    const author=postAuthorName(p);
+    if(author)bump(author,1);
+  });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,count],i)=>{
+    const m=MEMBERS.find(x=>x.n===name);
+    return{rank:i+1,name,count:Math.round(count),member:m};
+  });
+}
+function peopleInsightHtml(ins){
+  const rows=ins.peopleRanking||[];
+  if(!rows.length){
+    return`<div class="empty-state" style="padding:16px 0;font-size:13px">ふたりの記憶やメッセージが増えると、ここに並びます</div>`;
+  }
+  return`<div class="people-rank-list">${rows.map(p=>{
+    const m=p.member;
+    const av=m?`<div class="people-rank-av" style="background:${m.c}">${esc(m.i)}</div>`:`<div class="people-rank-av" style="background:var(--bg-3)">${esc(p.name.charAt(0))}</div>`;
+    return`<div class="people-rank-row">${av}<div class="people-rank-n"><span style="color:var(--ink-3);margin-right:6px">${p.rank}</span>${esc(p.name)}</div><div class="people-rank-c">${p.count}回</div></div>`;
+  }).join('')}</div>`;
 }
 function listInsightMonthKeys(){
   const keys=new Set();
@@ -6954,6 +7117,7 @@ function generateMonthlyNarrative(ins){
   if(ins.moodDominant)lines.push(`空模様の記録が、今月の気配を映しています。`);
   if(ins.topPlace)lines.push(`${ins.topPlace.name}に、何度も足を運んでいます。`);
   if(ins.topSong)lines.push(`「${ins.topSong.title}」が、あなたのBGMでした。`);
+  if(ins.peopleRanking?.[0])lines.push(`${ins.peopleRanking[0].name}との記憶が、今月いちばん多く残りました。`);
   if(ins.photoCount>=2)lines.push(`写真に残った${ins.photoCount}の瞬間が、変化の軌跡になっています。`);
   if(!lines.length)lines.push('記録が増えるほど、ここにあなただけの物語が育ちます。');
   return lines.join(' ');
@@ -7047,12 +7211,17 @@ function renderInsightPanel(key,opts={}){
       ${roomTimelineHtml(ins.roomPhotos)}
     </div>
     <div class="insight-section">
+      <h3>一緒にいた人</h3>
+      ${peopleInsightHtml(ins)}
+    </div>
+    <div class="insight-section">
       <h3>音楽 · 場所 · 口癖</h3>
       ${insightCardsHtml(ins)}
     </div>
     ${voiceInsightHtml()}
     <div class="insight-share-row">
       <button type="button" class="dq-cta" id="openMonthInsightShare" style="width:100%;margin-bottom:8px">この月のまとめをシェア</button>
+      <button type="button" class="create-pick" id="openPeopleInsightShare" style="width:100%;margin-bottom:8px">いっしょにいた人をシェア</button>
       <button type="button" class="create-pick" id="openMonthMontage" style="width:100%;margin-bottom:8px">写真まとめを見る</button>
       <button type="button" class="create-pick" id="openMonthVlog" style="width:100%">動画まとめを見る</button>
     </div>`;
@@ -7065,6 +7234,7 @@ function bindInsightPanelEvents(root,key){
     else{renderArchive();haptic()}
   }));
   root.querySelector('#openMonthInsightShare')?.addEventListener('click',()=>openMonthInsightShare(key));
+  root.querySelector('#openPeopleInsightShare')?.addEventListener('click',()=>openPeopleInsightShare(key));
   root.querySelector('#openMonthMontage')?.addEventListener('click',()=>openPeriodMontage(key,'month'));
   root.querySelector('#openMonthVlog')?.addEventListener('click',()=>openMonthVlog(key));
   root.querySelectorAll('[data-insight-drill]').forEach(b=>b.addEventListener('click',()=>openInsightDrill(b.dataset.insightDrill,key)));
@@ -7286,6 +7456,8 @@ function bindProfileInsightEvents(el){
   });
 }
 function openMonthInsightShare(key){
+  setVlogMode(false);
+  vlogPhotos=null;
   const ins=collectMonthData(key||monthInsightKey());
   const moodColor=ins.moodDominant&&(String(ins.moodDominant).startsWith('hsl')||String(ins.moodDominant).startsWith('#'))?ins.moodDominant:null;
   $('wrappedCard').className='wrapped-card';
@@ -7303,6 +7475,28 @@ function openMonthInsightShare(key){
     </div>
     <div class="wrapped-footer">${APP_URL}</div>`;
   lastShareCaption=shareSheetCaption(`${ins.label}まとめ`);
+  $('wrappedOverlay')?.classList.add('open');
+  haptic();
+}
+function openPeopleInsightShare(key){
+  const ins=collectMonthData(key||monthInsightKey());
+  const top=ins.peopleRanking?.[0];
+  if(!top){toast('一緒にいた人の記録がありません');return}
+  setVlogMode(false);
+  vlogPhotos=null;
+  $('wrappedCard').className='wrapped-card';
+  $('wrappedCard').innerHTML=`
+    <div class="wc-brand">TIME CAP</div>
+    <div class="wc-period">${esc(ins.label)}<br>いっしょにいた人</div>
+    <div class="wc-stat">今月、記憶に残った<br>ふたりの時間</div>
+    <div class="wc-theme">
+      <div class="wc-theme-lbl">いちばん多かった人</div>
+      <div class="wc-theme-title">${top.member?`<span style="display:inline-block;width:28px;height:28px;border-radius:50%;background:${top.member.c};vertical-align:middle;margin-right:8px;text-align:center;line-height:28px;font-size:14px;color:#fff">${esc(top.member.i)}</span>`:''}${esc(top.name)}</div>
+      <div class="wc-theme-artist">${top.count}回、記憶に登場</div>
+      <div class="wc-stat" style="margin-top:16px;font-size:13px">${(ins.peopleRanking||[]).slice(1,4).map(p=>`${p.rank}. ${esc(p.name)}`).join('<br>')}</div>
+    </div>
+    <div class="wrapped-footer">${APP_URL}</div>`;
+  lastShareCaption=shareSheetCaption(`${ins.label} · いっしょにいた人`);
   $('wrappedOverlay')?.classList.add('open');
   haptic();
 }
@@ -9220,6 +9414,8 @@ function renderArchive(){
 }
 
 function openWrappedCard(monthKey){
+  setVlogMode(false);
+  vlogPhotos=null;
   /* ジャンル非依存のシェアカード。highlight / ranking はテンプレ共通フィールド */
   const m=(S.musicMonths||[]).find(x=>x.key===monthKey)||S.musicMonths?.[0];
   if(!m)return;
@@ -11054,10 +11250,21 @@ if(urlInvite&&!S.invitedBy){
 })();
 $('wrappedClose')?.addEventListener('click',()=>{
   if(vlogTimer){clearInterval(vlogTimer);vlogTimer=null}
+  vlogPhotos=null;
+  setVlogMode(false);
   $('wrappedOverlay')?.classList.remove('open');
 });
-$('insightDrillClose')?.addEventListener('click',()=>$('insightDrillOverlay')?.classList.remove('open'));
-$('insightDrillOverlay')?.addEventListener('click',e=>{if(e.target===$('insightDrillOverlay'))$('insightDrillOverlay').classList.remove('open')});
+$('wrappedVlogSave')?.addEventListener('click',()=>saveVlogVideo());
+$('insightDrillClose')?.addEventListener('click',()=>{
+  destroyInsightDrillMap();
+  $('insightDrillOverlay')?.classList.remove('open');
+});
+$('insightDrillOverlay')?.addEventListener('click',e=>{
+  if(e.target===$('insightDrillOverlay')){
+    destroyInsightDrillMap();
+    $('insightDrillOverlay').classList.remove('open');
+  }
+});
 $('friendProfileClose')?.addEventListener('click',()=>$('friendProfileOverlay')?.classList.remove('open'));
 $('friendProfileOverlay')?.addEventListener('click',e=>{if(e.target===$('friendProfileOverlay'))$('friendProfileOverlay').classList.remove('open')});
 $('wrappedShare')?.addEventListener('click',async()=>{
@@ -11102,6 +11309,8 @@ $('wrappedShare')?.addEventListener('click',async()=>{
 $('wrappedOverlay')?.addEventListener('click',e=>{
   if(e.target===$('wrappedOverlay')){
     if(vlogTimer){clearInterval(vlogTimer);vlogTimer=null}
+    vlogPhotos=null;
+    setVlogMode(false);
     $('wrappedOverlay').classList.remove('open');
   }
 });
