@@ -1372,10 +1372,24 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
   background:var(--ink);border:2px solid var(--bg);box-shadow:var(--shadow);
 }
-.map-heat-dot{
-  border-radius:50%;background:rgba(255,255,255,.42);border:1.5px solid rgba(255,255,255,.14);
-  box-shadow:none;
+.map-pin-photo{
+  width:44px;height:44px;border-radius:50%;overflow:hidden;position:relative;
+  border:2px solid rgba(201,168,76,.45);box-shadow:0 2px 10px rgba(0,0,0,.45);
+  background:var(--bg-3);
 }
+.map-pin-photo.locked{filter:grayscale(.9) brightness(.55);border-color:rgba(255,255,255,.12)}
+.map-pin-thumb{width:100%;height:100%;object-fit:cover;display:block}
+.map-pin-ph{width:100%;height:100%;background:rgba(255,255,255,.08)}
+.map-pin-badge{
+  position:absolute;right:-4px;bottom:-2px;min-width:16px;height:16px;padding:0 4px;
+  border-radius:8px;background:var(--sc-gold,#C9A84C);color:#100D0A;font-size:9px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+}
+.map-route-line-gold{color:rgba(201,168,76,.55)!important}
+.music-art{width:40px;height:40px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--bg-3)}
+.music-art-ph{width:40px;height:40px;border-radius:6px;background:var(--bg-3);flex-shrink:0;display:grid;place-items:center}
+.post-detail-sc{padding:0 12px 24px}
+.post-detail-sc .sc-card{max-width:100%;border-radius:20px}
 .leaflet-container{background:var(--bg-2)!important;font-family:var(--font);touch-action:none}
 .leaflet-tile-pane{filter:grayscale(.75) brightness(.56) contrast(1.04) saturate(.35)}
 .leaflet-pane,.leaflet-top,.leaflet-bottom{z-index:400}
@@ -1943,9 +1957,9 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 }
 .mem-photo-month{padding:4px 16px 8px}
 .mem-photo-month-title{font-size:15px;font-weight:600;color:var(--ink-2);margin-bottom:8px}
-.mem-photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:0 16px 24px}
+.mem-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:0 16px 24px}
 .mem-photo-cell{
-  aspect-ratio:1;border-radius:4px;overflow:hidden;position:relative;background:var(--bg-2);border:none;padding:0;
+  aspect-ratio:1;position:relative;border-radius:8px;overflow:hidden;background:var(--bg-2);border:none;padding:0;
 }
 .mem-photo-cell img{width:100%;height:100%;object-fit:cover}
 .mem-photo-cell .cal-day-num{
@@ -2573,6 +2587,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .daily-confirm-preview{margin:12px 0;border-radius:var(--r-sm);overflow:hidden;max-height:200px}
 .daily-confirm-preview img{width:100%;display:block;object-fit:cover}
 .song-pick-current{
+  display:flex;gap:12px;align-items:center;
   margin:12px 0;padding:14px;border-radius:var(--r-sm);background:var(--bg-2);
   border:1px solid rgba(255,255,255,.06);text-align:left;
 }
@@ -3644,28 +3659,79 @@ function capsuleMaturityColor(cap){
   return `rgb(${r},${g},${b})`;
 }
 let postDetailItem=null;
-function openPostDetail(p){
+async function openPostDetail(p){
   if(!p)return;
   postDetailItem=p;
   const body=$('postDetailBody');
   const ctx=resolveSealContext(p);
   const date=p.at?new Date(p.at).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'}):'';
-  const place=ctx?.place||'';
-  let media='';
-  if(p.moodColor){
-    media=`<div class="post-detail-color" style="background:${esc(p.moodColor)}"></div>${p.moodWord?`<div class="post-detail-word">${esc(p.moodWord)}</div>`:''}`;
-  }else if(p.mediaId){
-    media=`<div class="post-detail-photo"><img data-lazy="${esc(p.mediaId)}" alt="" style="${photoMemoryFilter(p.at)}"></div>`;
-  }else if(p.type==='song'||p.songTitle){
-    media=`<div class="post-detail-song">${tcIcon('music')} ${esc(p.songTitle||p.text||'')}</div>`;
+  const author=p.from===meName()||p.from==='ゆうま'?'あなた':(p.from||'');
+  let photoHtml='';
+  if(p.mediaId){
+    try{
+      const data=await idbGet(p.mediaId);
+      if(data)photoHtml=`<img class="sc-photo" src="${data}" alt="" style="width:72%;max-height:48vh">`;
+    }catch(e){}
+  }else if(p.moodColor){
+    photoHtml=`<div class="sc-photo-ph" style="width:72%;aspect-ratio:1;background:${esc(p.moodColor)}"></div>`;
   }
-  body.innerHTML=`${media}
-    <div class="post-detail-meta">${esc(date)}${place?' · '+esc(place):''}</div>
-    ${p.text&&!p.moodColor?`<div class="post-detail-word">${esc(p.text)}</div>`:''}
-    <div class="post-detail-brand">TIME CAP.</div>`;
-  loadLazyThumbs(body);
+  const song=p.linkedSong||(p.songTitle?{title:p.songTitle,artist:p.songArtist||''}:null);
+  const caption=p.text&&!p.moodColor?p.text:'';
+  const place=ctx?.place||p.contextCity||'';
+  body.innerHTML=`<div class="post-detail-sc">
+    <div class="sc-card sc-open-card" style="aspect-ratio:auto;min-height:420px">
+      <div class="sc-open-head">
+        <span class="sc-label">${esc(author)} · ${esc(date.split('(')[0].trim())}</span>
+        ${backgroundContextHtml(p)}
+      </div>
+      <div class="sc-photo-wrap">${photoHtml||`<div class="sc-photo-ph">${tcIcon('camera','lg')}</div>`}</div>
+      ${caption?`<div style="font-size:13px;color:var(--sc-cream);text-align:center;margin:-8px 0 12px;padding:0 8%">${esc(caption)}</div>`:''}
+      ${song?`<div class="sc-song-bar"><span class="sc-song-icon">♪</span><div class="sc-song-line"></div></div>
+        <div style="font-size:11px;color:var(--sc-muted);text-align:center;margin:-10px 0 14px">${esc(song.title)}${song.artist?' · '+esc(song.artist):''}</div>`:''}
+      ${place?`<button type="button" id="postDetailMapLink" style="font-size:11px;color:var(--sc-muted);background:none;border:none;width:100%;margin-bottom:8px">${tcIcon('pin')} ${esc(place)}</button>`:''}
+      <div class="sc-open-foot"><div class="sc-brand">TIME CAP</div></div>
+    </div>
+  </div>`;
+  $('postDetailMapLink')?.addEventListener('click',()=>{
+    $('postDetailOverlay')?.classList.remove('open');
+    switchTab('map');haptic();
+  });
   $('postDetailOverlay')?.classList.add('open');
   haptic();
+}
+async function openPostDetailShareCard(){
+  if(!postDetailItem)return;
+  const p=postDetailItem;
+  const card=$('wrappedCard');
+  card.className='wrapped-card sc-card-host';
+  const ctx=resolveSealContext(p);
+  const date=p.at?new Date(p.at):new Date();
+  const fmt=`${date.getFullYear()} . ${date.getMonth()+1} . ${date.getDate()}`;
+  let photoHtml='';
+  if(p.mediaId){
+    try{
+      const data=await idbGet(p.mediaId);
+      if(data)photoHtml=`<img class="sc-photo" src="${data}" alt="">`;
+    }catch(e){}
+  }
+  const song=p.linkedSong||(p.songTitle?{title:p.songTitle,artist:p.songArtist||''}:null);
+  card.innerHTML=`
+    <div class="sc-card sc-open-card">
+      <div class="sc-open-head">
+        <span class="sc-label">${esc(fmt)}</span>
+        ${backgroundContextHtml(p)}
+      </div>
+      <div class="sc-photo-wrap">${photoHtml||`<div class="sc-photo-ph">${tcIcon('camera','lg')}</div>`}</div>
+      ${song?`<div class="sc-song-bar"><span class="sc-song-icon">♪</span><div class="sc-song-line"></div></div>`:''}
+      <div class="sc-open-foot">
+        <div class="sc-date">${fmt}</div>
+        <div class="sc-date-sub">残した日</div>
+        <div class="sc-brand">TIME CAP</div>
+      </div>
+    </div>`;
+  lastShareCaption=shareSheetCaption('記録');
+  $('postDetailOverlay')?.classList.remove('open');
+  $('wrappedOverlay')?.classList.add('open');
 }
 function renderInnerFilter(){
   const el=$('innerFilter');
@@ -3845,7 +3911,9 @@ async function createDailyRecord(type,data={}){
   const rec={
     id,userId:meName(),type,
     mood:data.mood,moodColor:data.moodColor,moodWord:data.moodWord,
-    songTitle:data.songTitle,songId:data.songId,
+    songTitle:data.songTitle,songArtist:data.songArtist,songId:data.songId,
+    songArtworkUrl:data.songArtworkUrl,songSource:data.songSource,songCapturedAt:data.songCapturedAt,
+    caption:data.caption,
     visibility:data.visibility||'private',
     shareTo,
     createdAt:existing?.createdAt||Date.now(),updatedAt:Date.now(),resurfaceAt:addDays(365),
@@ -3897,15 +3965,28 @@ async function saveDailyMood(data,scope){
 }
 function openSongPickOverlay(){
   ensureMusicPeriods();
-  const top=currentTodaySong();
-  const box=$('songPickCurrent');
-  if(box){
-    if(top)box.innerHTML=`<div class="sp-title">${esc(top.title)}</div><div class="sp-artist">${esc(top.artist)} · Spotify連携時</div>`;
-    else box.innerHTML='<div class="sp-artist" style="line-height:1.5">まずは曲名を手入力で残せます。<br>Spotify連携はあとから設定できます。</div>';
-  }
-  const useBtn=$('songPickUseTop');
-  if(useBtn){useBtn.disabled=!top;useBtn.style.opacity=top?'1':'.45'}
+  const renderPick=()=>{
+    const top=currentTodaySong();
+    const box=$('songPickCurrent');
+    if(box){
+      if(top){
+        const src=top.source==='currently'?'再生中':top.source==='recent'?'直近':top.source==='manual'?'手入力':'Spotify';
+        box.innerHTML=`${musicArtHtml(top.artworkUrl)}<div><div class="sp-title">${esc(top.title)}</div><div class="sp-artist">${esc(top.artist)} · ${src}</div></div>`;
+      }else{
+        box.innerHTML='<div class="sp-artist" style="line-height:1.5">いま再生中の曲がありません。<br>「曲名を入力」で手動指定できます。</div>';
+      }
+    }
+    const useBtn=$('songPickUseTop');
+    if(useBtn){
+      useBtn.textContent=top?'この曲を残す':'今日の一曲を選ぶ';
+      useBtn.disabled=false;useBtn.style.opacity='1';
+    }
+  };
+  renderPick();
   $('songPickOverlay')?.classList.add('open');
+  if(S.spotify?.connected){
+    fetchSpotifyLiveTrack(true).then(()=>{renderPick();renderHome()});
+  }
 }
 function showDailyConfirm(dataUrl){
   const type=pendingDailyType||'photo';
@@ -4025,7 +4106,8 @@ function dailyRecordsAsTimelinePosts(){
     at:r.createdAt,mediaId:r.mediaId,
     sealed:false,opened:true,visibility:r.visibility,shareTo:r.shareTo,
     sealContext:r.sealContext,
-    linkedSong:r.type==='song'&&r.songTitle?{title:r.songTitle.split(' · ')[0],artist:r.songTitle.split(' · ')[1]||''}:null,
+    linkedSong:r.type==='song'&&r.songTitle?{title:r.songTitle,artist:r.songArtist||'',artworkUrl:r.songArtworkUrl}:null,
+    songArtist:r.songArtist,
   }));
 }
 function renderHomeTodayGrid(){/* replaced by renderDailyStrip */}
@@ -5058,11 +5140,13 @@ function linkedSongSnapshot(){
 function autoMusicSnapshot(){
   const manual=linkedSongSnapshot();
   if(manual)return manual;
-  const sp=S.spotify?.nowPlaying||S.spotify?.tracks?.[0];
-  if(sp)return{title:sp.title,artist:sp.artist||'',source:'spotify',url:sp.url,plays:sp.plays,at:Date.now(),auto:true};
+  const sp=S.spotify?.nowPlaying;
+  if(sp&&(sp.source==='currently'||sp.source==='recent')){
+    return{title:sp.title,artist:sp.artist||'',source:sp.source,url:sp.url,id:sp.id,artworkUrl:sp.artworkUrl,plays:1,at:sp.capturedAt||Date.now(),auto:true};
+  }
   const s=pendingMusicShare||currentTodaySong();
   if(!s)return null;
-  return{title:s.title,artist:s.artist||'',source:s.source||'spotify',url:s.url,plays:s.plays,at:Date.now(),auto:true};
+  return{title:s.title,artist:s.artist||'',source:s.source||'manual',url:s.url,id:s.id,artworkUrl:s.artworkUrl,plays:s.plays,at:s.capturedAt||Date.now(),auto:true};
 }
 function weatherCodeJa(code){
   const m={0:'快晴',1:'晴れ',2:'くもり',3:'曇り',45:'霧',48:'霧',51:'小雨',53:'雨',55:'雨',61:'雨',63:'雨',65:'大雨',71:'雪',80:'にわか雨',95:'雷雨'};
@@ -6074,35 +6158,36 @@ function currentWeekTop3(){ensureMusicPeriods();return S.musicWeek?.top3||[]}
 function musicTodayCardHtml(compact){
   const t=currentTodaySong();
   if(!t)return'';
+  const art=musicArtHtml(t.artworkUrl);
   if(compact)return`<div class="music-now-strip">
-    <div class="mns-ico">${tcIcon('music')}</div>
+    ${art}
     <div class="mns-body">
-      <div class="mns-label">今日いちばん聴いた曲</div>
+      <div class="mns-label">今日の一曲</div>
       <div class="mns-title">${esc(t.title)} · ${esc(t.artist)}</div>
     </div>
-    <div class="mtc-plays">${t.plays}回</div>
   </div>`;
-  return`<div class="music-today-card">
-    <div class="mtc-ico">${tcIcon('music')}</div>
-    <div>
-      <div class="mtc-label">今日いちばん聴いた曲</div>
+  return`<div class="music-today-card" style="display:flex;gap:12px;align-items:center">
+    ${art}
+    <div style="flex:1">
+      <div class="mtc-label">今日の一曲</div>
       <div class="mtc-title">${esc(t.title)}</div>
       <div class="mtc-artist">${esc(t.artist)}</div>
     </div>
-    <div class="mtc-plays">${t.plays}回</div>
   </div>`;
 }
 function musicWeekBlockHtml(){
   const top3=currentWeekTop3();
   const label=S.musicWeek?.label||weekLabel();
   if(!top3.length)return'';
+  const rankColor=r=>r===1?'var(--sc-gold,#C9A84C)':r===2?'var(--silver)':'var(--ink-3)';
   return`<div class="music-week-block">
     <div class="music-week-head">今週のトップ3 <span style="font-weight:400;color:var(--ink-3)">· ${esc(label)}</span></div>
     <div class="music-week-list">${top3.map(t=>`
-      <div class="music-week-item">
-        <div class="wk">${t.rank}</div>
-        <div class="info"><div class="title">${esc(t.title)}</div><div class="artist">${esc(t.artist)}</div></div>
-        <div class="plays">${t.plays}回</div>
+      <div class="music-week-item" style="display:flex;gap:10px;align-items:center">
+        <div class="wk" style="color:${rankColor(t.rank)}">${t.rank}</div>
+        ${musicArtHtml(t.artworkUrl)}
+        <div class="info" style="flex:1"><div class="title">${esc(t.title)}</div><div class="artist">${esc(t.artist)}</div></div>
+        <div class="plays">${t.plays||1}回</div>
       </div>`).join('')}
     </div>
   </div>`;
@@ -6816,8 +6901,30 @@ function currentThemeSong(){
   return m?.themeSong||m?.ranking?.[0]||null;
 }
 function isCapLocked(c){return c.sealed&&!canViewCapContent(c)}
+function mapPointsFromDaily(){
+  const me=meName();
+  return(S.dailyRecords||[])
+    .filter(r=>{
+      const lat=r.sealContext?.coords?.lat??r.loc?.lat;
+      const lng=r.sealContext?.coords?.lng??r.loc?.lng;
+      return Number.isFinite(lat)&&Number.isFinite(lng);
+    })
+    .map(r=>{
+      const lat=r.sealContext?.coords?.lat??r.loc?.lat;
+      const lng=r.sealContext?.coords?.lng??r.loc?.lng;
+      return{
+        id:r.id,from:me,type:r.type,
+        loc:{lat,lng,placeName:r.sealContext?.place||r.contextCity||r.loc?.placeName},
+        text:r.caption||r.moodWord||r.songTitle||DAILY_RECORD_TYPES[r.type]?.label||'',
+        mediaId:r.mediaId,openedAt:r.createdAt,locked:false,source:'daily',
+        sealContext:r.sealContext,
+        linkedSong:r.songTitle?{title:r.songTitle,artist:r.songArtist||''}:null,
+      };
+    });
+}
 function mapPointsAll(){
-  const opened=mapPointsFromOpened().map(p=>({...p,locked:false,source:'opened'}));
+  const opened=mapPointsFromOpened().map(p=>({...p,locked:false,source:p.source||'opened'}));
+  const daily=mapPointsFromDaily();
   const me=meName();
   const sealed=(S.capsules||[])
     .filter(c=>c.loc&&isCapLocked(c)&&(c.from===me||c.from==='ゆうま'||c.to==='group'))
@@ -6827,7 +6934,7 @@ function mapPointsAll(){
       locked:true,openedAt:c.createdAt||0,source:'sealed',
       sealContext:c.sealContext,linkedSong:c.linkedSong,
     }));
-  return[...opened,...sealed].sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
+  return[...opened,...daily,...sealed].sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
 }
 function greeting(){
   const h=new Date().getHours();
@@ -7817,55 +7924,94 @@ function renderMemoryMap(opts={}){
   mapHeatLayer=L.layerGroup();
   const zoom=mapInst.getZoom();
   const detail=zoom>=MAP_CONTEXT_ZOOM;
-  groups.forEach(g=>{
-    allLatlngs.push([g.loc.lat,g.loc.lng]);
-    if(!g.locked)latlngs.push([g.loc.lat,g.loc.lng]);
-    const n=g.items.length;
-    const size=Math.min(14,6+n*2);
-    const dotOp=g.locked?0.32:Math.min(.68,.42+n*0.05);
-    const rep=g.items[g.items.length-1];
-    const ctxLabel=mapCtxLabelHtml(rep,detail);
-    const pinW=Math.max(size,ctxLabel?96:size);
-    const pinH=size+(ctxLabel?22:0);
-    const heatIcon=L.divIcon({
-      html:`<div class="map-pin-wrap"><div class="map-heat-dot" style="width:${size}px;height:${size}px;opacity:${dotOp}"></div>${ctxLabel}</div>`,
-      className:'map-dot-wrap',iconSize:[pinW,pinH],iconAnchor:[pinW/2,size/2],
-    });
-    const m=L.marker([g.loc.lat,g.loc.lng],{icon:heatIcon});
-    m.on('click',()=>openMapPoint(rep));
-    mapHeatLayer.addLayer(m);
-  });
-  mapInst.addLayer(mapHeatLayer);
-  if(latlngs.length>1){
-    const pct=S.mapTimePct??100;
-    const endIdx=Math.max(2,Math.ceil(latlngs.length*pct/100));
-    const visible=latlngs.slice(0,endIdx);
-    mapRouteLine=L.polyline(visible,{color:'rgba(255,255,255,.26)',weight:1.5,opacity:.65,dashArray:pct>=100?null:'3 8'});
-    mapRouteLine.addTo(mapInst);
-    const head=visible[visible.length-1];
-    mapPlayheadMarker=L.marker(head,{
-      icon:L.divIcon({html:'<div class="map-route-head"></div>',className:'',iconSize:[8,8]}),
-      zIndexOffset:1000,
-    });
-    mapPlayheadMarker.addTo(mapInst);
-  }
-  if(allLatlngs.length){
-    if(fitOnce||(!keepView&&!mapInitialFitDone)){
-      const bounds=L.latLngBounds(allLatlngs);
-      mapInst.fitBounds(bounds.pad(.15));
-      mapInitialFitDone=true;
+  (async()=>{
+    for(const g of groups){
+      allLatlngs.push([g.loc.lat,g.loc.lng]);
+      if(!g.locked)latlngs.push([g.loc.lat,g.loc.lng]);
+      const n=g.items.length;
+      const rep=g.items[g.items.length-1];
+      let thumb='';
+      if(rep.mediaId&&!rep.locked){
+        try{
+          const data=await idbGet(rep.mediaId);
+          if(data)thumb=`<img class="map-pin-thumb" src="${data}" alt="">`;
+        }catch(e){}
+      }
+      const ctxLabel=detail?mapCtxLabelHtml(rep,true):'';
+      const pinInner=thumb||`<div class="map-pin-ph"></div>`;
+      const badge=n>1?`<span class="map-pin-badge">${n}</span>`:'';
+      const pinHtml=`<div class="map-pin-wrap"><div class="map-pin-photo${g.locked?' locked':''}">${pinInner}${badge}</div>${ctxLabel}</div>`;
+      const pinW=48;
+      const pinH=48+(ctxLabel?22:0);
+      const heatIcon=L.divIcon({
+        html:pinHtml,
+        className:'map-dot-wrap',iconSize:[pinW,pinH],iconAnchor:[pinW/2,24],
+      });
+      const m=L.marker([g.loc.lat,g.loc.lng],{icon:heatIcon});
+      m.on('click',()=>openMapPointGroup(g.items));
+      mapHeatLayer.addLayer(m);
     }
-  }
-  const pct=S.mapTimePct??100;
-  const sorted=[...mapPointsAll()].sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
-  const last=sorted[Math.max(0,Math.ceil(sorted.length*pct/100)-1)];
-  const lbl=last?.openedAt?new Date(last.openedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'}):'全期間';
-  $('mapTimeLabel').textContent=pct>=100?'思い出の軌跡 · 全期間':`思い出の軌跡 · 〜 ${lbl}`;
-  setTimeout(()=>mapInst?.invalidateSize(),100);
+    mapInst.addLayer(mapHeatLayer);
+    if(latlngs.length>1){
+      const pct=S.mapTimePct??100;
+      const endIdx=Math.max(2,Math.ceil(latlngs.length*pct/100));
+      const visible=latlngs.slice(0,endIdx);
+      mapRouteLine=L.polyline(visible,{color:'rgba(201,168,76,.42)',weight:1.5,opacity:.7,dashArray:pct>=100?null:'3 8'});
+      mapRouteLine.addTo(mapInst);
+      const head=visible[visible.length-1];
+      mapPlayheadMarker=L.marker(head,{
+        icon:L.divIcon({html:'<div class="map-route-head"></div>',className:'',iconSize:[8,8]}),
+        zIndexOffset:1000,
+      });
+      mapPlayheadMarker.addTo(mapInst);
+    }
+    if(allLatlngs.length){
+      if(fitOnce||(!keepView&&!mapInitialFitDone)){
+        const bounds=L.latLngBounds(allLatlngs);
+        mapInst.fitBounds(bounds.pad(.15));
+        mapInitialFitDone=true;
+      }
+    }
+    const pct=S.mapTimePct??100;
+    const sorted=[...mapPointsAll()].sort((a,b)=>(a.openedAt||0)-(b.openedAt||0));
+    const last=sorted[Math.max(0,Math.ceil(sorted.length*pct/100)-1)];
+    const lbl=last?.openedAt?new Date(last.openedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'}):'全期間';
+    $('mapTimeLabel').textContent=pct>=100?'思い出の軌跡 · 全期間':`思い出の軌跡 · 〜 ${lbl}`;
+    setTimeout(()=>mapInst?.invalidateSize(),100);
+  })();
+}
+function openMapPointGroup(items){
+  if(!items?.length)return;
+  if(items.length===1)return openMapPoint(items[0]);
+  const sheet=$('mapPointSheet');
+  const photo=$('mapPointPhoto');
+  const meta=$('mapPointMeta');
+  photo.innerHTML='';
+  sheet?.classList.remove('map-point-locked');
+  meta.innerHTML=`<div style="font-size:12px;color:var(--ink-3);margin-bottom:8px">この場所の記録 · ${items.length}件</div>
+    ${items.map(p=>{
+      const d=new Date(p.openedAt||Date.now());
+      const label=esc((p.text||'記録').slice(0,36));
+      return`<button type="button" class="map-point-list-item" data-map-item="${esc(p.id)}" style="display:block;width:100%;text-align:left;padding:10px 0;border:none;border-bottom:1px solid rgba(255,255,255,.06);background:transparent;color:var(--ink)">
+        <div style="font-size:11px;color:var(--ink-3)">${d.toLocaleDateString('ja-JP',{month:'short',day:'numeric'})}</div>
+        <div style="font-size:14px;margin-top:2px">${label}</div>
+      </button>`;
+    }).join('')}`;
+  sheet?.classList.add('open');
+  meta.querySelectorAll('[data-map-item]').forEach(btn=>btn.addEventListener('click',()=>{
+    const item=items.find(x=>x.id===btn.dataset.mapItem);
+    if(item)openMapPoint(item);
+  }));
+  haptic();
 }
 
 async function openMapPoint(p){
   const sheet=$('mapPointSheet');
+  if(p.source==='daily'){
+    sheet?.classList.remove('open');
+    openDayReflect(dateKeyFromTs(p.openedAt));
+    return;
+  }
   const photo=$('mapPointPhoto');
   const meta=$('mapPointMeta');
   photo.innerHTML='';
@@ -8386,10 +8532,14 @@ function renderArchive(){
     ?renderMemPhotoGrid(memFilter)
     :renderMemCalendarView(memFilter);
 
-  const musicRank=(monthData?.ranking||[]).slice(0,5).map(t=>`
-    <div class="music-rank-item${t.rank===1?' theme':''}">
-      <div class="rk">${t.rank}</div><div class="info"><div class="title">${esc(t.title)}</div><div class="artist">${esc(t.artist)}</div></div>
-    </div>`).join('');
+  const musicRank=(monthData?.ranking||[]).slice(0,5).map(t=>{
+    const rkColor=t.rank===1?'var(--sc-gold,#C9A84C)':t.rank===2?'var(--silver)':'var(--ink-3)';
+    return`<div class="music-rank-item${t.rank===1?' theme':''}" style="display:flex;gap:10px;align-items:center">
+      <div class="rk" style="color:${rkColor}">${t.rank}</div>
+      ${musicArtHtml(t.artworkUrl)}
+      <div class="info" style="flex:1"><div class="title">${esc(t.title)}</div><div class="artist">${esc(t.artist)}</div></div>
+    </div>`;
+  }).join('');
 
   let panel='';
   if(tab==='all'){
@@ -8463,7 +8613,12 @@ function renderArchive(){
   $('openFamilyFromProfile')?.addEventListener('click',()=>{
     S.archiveFamilyOpen=true;save();renderArchive();haptic();
   });
-  if(tab==='all')bindReflectViewEvents($('memReflectRoot'));
+  if(tab==='all'){
+    bindReflectViewEvents($('memReflectRoot'));
+    document.querySelectorAll('[data-memview]').forEach(btn=>btn.addEventListener('click',()=>{
+      S.archiveMemView=btn.dataset.memview;save();renderArchive();haptic();
+    }));
+  }
   if(tab==='settings')renderAccountPanel($('accountPanelRoot'));
   el.querySelectorAll('.archive-tab').forEach(t=>t.addEventListener('click',()=>{
     S.archiveTab=t.dataset.atab;save();renderArchive();haptic();
@@ -9740,7 +9895,8 @@ $('moodColorSave')?.addEventListener('click',async()=>{
 $('postDetailClose')?.addEventListener('click',()=>$('postDetailOverlay')?.classList.remove('open'));
 $('postDetailOverlay')?.addEventListener('click',e=>{if(e.target===$('postDetailOverlay'))$('postDetailOverlay').classList.remove('open')});
 $('postDetailShare')?.addEventListener('click',()=>{
-  haptic();toast('シェアシートを開きます（デモ）');
+  haptic();
+  openPostDetailShareCard();
 });
 function mapZoomStep(delta){
   initMemoryMap();
@@ -9777,9 +9933,19 @@ $('dailyConfirmSave')?.addEventListener('click',async()=>{
 $('songPickClose')?.addEventListener('click',()=>$('songPickOverlay')?.classList.remove('open'));
 $('songPickOverlay')?.addEventListener('click',e=>{if(e.target===$('songPickOverlay'))$('songPickOverlay').classList.remove('open')});
 $('songPickUseTop')?.addEventListener('click',async()=>{
-  const top=currentTodaySong();
-  if(!top)return;
-  await createDailyRecord('song',dailyRecordPayload('song',{songTitle:top.title,songId:top.title}));
+  let top=currentTodaySong();
+  if(!top){
+    $('songPickManual')?.click();
+    return;
+  }
+  await createDailyRecord('song',dailyRecordPayload('song',{
+    songTitle:top.title,
+    songArtist:top.artist||'',
+    songId:top.id||top.title,
+    songArtworkUrl:top.artworkUrl||'',
+    songSource:top.source||'manual',
+    songCapturedAt:top.capturedAt||Date.now(),
+  }));
   $('songPickOverlay')?.classList.remove('open');
   finishDailyRecordToast();
 });
@@ -9787,7 +9953,13 @@ $('songPickManual')?.addEventListener('click',async()=>{
   const title=prompt('曲名を入力','')?.trim();
   if(!title)return;
   const artist=prompt('アーティスト（任意）','')?.trim()||'';
-  await createDailyRecord('song',dailyRecordPayload('song',{songTitle:artist?`${title} · ${artist}`:title,songId:title}));
+  await createDailyRecord('song',dailyRecordPayload('song',{
+    songTitle:title,
+    songArtist:artist,
+    songId:title,
+    songSource:'manual',
+    songCapturedAt:Date.now(),
+  }));
   $('songPickOverlay')?.classList.remove('open');
   finishDailyRecordToast();
 });
@@ -9959,6 +10131,109 @@ $('copyInviteBtn')?.addEventListener('click',()=>{
   navigator.clipboard?.writeText(link).then(()=>toast('招待リンクをコピーしました')).catch(()=>toast(link));
   haptic();
 });
+function spotifyTrackFromApi(tr,plays,source,playedAt){
+  if(!tr)return null;
+  const art=tr.album?.images?.[1]?.url||tr.album?.images?.[0]?.url||'';
+  return{
+    id:tr.id,
+    title:tr.name,
+    artist:tr.artists?.[0]?.name||'',
+    artworkUrl:art,
+    url:tr.external_urls?.spotify||'',
+    plays:plays||1,
+    source:source||'recent',
+    capturedAt:playedAt||Date.now(),
+  };
+}
+const SPOTIFY_RECENT_MAX_MS=3*3600*1000;
+async function fetchSpotifyLiveTrack(updateToday=true){
+  const token=await ensureSpotifyAccessToken();
+  if(!token)return null;
+  const headers={Authorization:'Bearer '+token};
+  try{
+    const playR=await fetch('https://api.spotify.com/v1/me/player/currently-playing',{headers});
+    if(playR.ok&&playR.status!==204){
+      const pd=await playR.json();
+      const tr=pd.item;
+      if(tr){
+        const track=spotifyTrackFromApi(tr,1,'currently',Date.now());
+        S.spotify=S.spotify||{};
+        S.spotify.nowPlaying=track;
+        if(updateToday){
+          ensureMusicPeriods();
+          S.musicToday={date:todayStr(),top:{title:track.title,artist:track.artist,plays:1,artworkUrl:track.artworkUrl,id:track.id,source:'currently',capturedAt:track.capturedAt}};
+          save();
+        }
+        return track;
+      }
+    }
+    const recentR=await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=1',{headers});
+    if(recentR.ok){
+      const rj=await recentR.json();
+      const item=rj.items?.[0];
+      if(item?.track){
+        const playedAt=new Date(item.played_at).getTime();
+        if(Date.now()-playedAt<=SPOTIFY_RECENT_MAX_MS){
+          const track=spotifyTrackFromApi(item.track,1,'recent',playedAt);
+          S.spotify=S.spotify||{};
+          S.spotify.nowPlaying=track;
+          if(updateToday){
+            ensureMusicPeriods();
+            S.musicToday={date:todayStr(),top:{title:track.title,artist:track.artist,plays:1,artworkUrl:track.artworkUrl,id:track.id,source:'recent',capturedAt:track.capturedAt}};
+            save();
+          }
+          return track;
+        }
+      }
+    }
+    S.spotify=S.spotify||{};
+    S.spotify.nowPlaying=null;
+    if(updateToday&&S.musicToday?.top?.source!=='manual'){
+      ensureMusicPeriods();
+      S.musicToday={date:todayStr(),top:null};
+      save();
+    }
+    return null;
+  }catch(e){return null}
+}
+function aggregateSongRankings(sinceTs){
+  const counts=new Map();
+  (S.dailyRecords||[]).forEach(r=>{
+    if(r.type!=='song'||!r.songTitle)return;
+    if(r.createdAt<sinceTs)return;
+    const key=r.songId||r.songTitle;
+    const prev=counts.get(key)||{title:r.songTitle,artist:r.songArtist||'',plays:0,artworkUrl:r.songArtworkUrl||'',id:r.songId||''};
+    prev.plays++;
+    if(r.songArtworkUrl)prev.artworkUrl=r.songArtworkUrl;
+    if(r.songArtist)prev.artist=r.songArtist;
+    counts.set(key,prev);
+  });
+  return[...counts.values()].sort((a,b)=>b.plays-a.plays);
+}
+function weekStartMonday(d=new Date()){
+  const x=new Date(d);const day=x.getDay()||7;x.setDate(x.getDate()-(day-1));x.setHours(0,0,0,0);return x;
+}
+function monthStart(d=new Date()){return new Date(d.getFullYear(),d.getMonth(),1).getTime()}
+function mergeRankLists(apiList,recordList,limit){
+  const map=new Map();
+  recordList.forEach(t=>{
+    const key=t.id||t.title;
+    map.set(key,{...t,plays:t.plays||1});
+  });
+  apiList.forEach(t=>{
+    const key=t.id||t.title;
+    const prev=map.get(key);
+    if(prev){
+      prev.plays=Math.max(prev.plays||1,t.plays||1);
+      if(t.artworkUrl)prev.artworkUrl=t.artworkUrl;
+      if(t.artist&&!prev.artist)prev.artist=t.artist;
+    }else map.set(key,{...t,plays:t.plays||1});
+  });
+  return[...map.values()].sort((a,b)=>(b.plays||0)-(a.plays||0)).slice(0,limit).map((t,i)=>({...t,rank:i+1}));
+}
+function musicArtHtml(url,icon='music'){
+  return url?`<img class="music-art" src="${esc(url)}" alt="">`:`<div class="music-art-ph">${tcIcon(icon)}</div>`;
+}
 const SPOTIFY_SCOPES='user-read-recently-played user-top-read user-read-currently-playing';
 function randomString(n=64){
   const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -10003,49 +10278,51 @@ async function syncSpotifyTracks(showToast=true){
   }
   try{
     const headers={Authorization:'Bearer '+token};
-    const [recentR,topR,playR]=await Promise.all([
-      fetch('https://api.spotify.com/v1/me/player/recently-played?limit=10',{headers}),
+    const live=await fetchSpotifyLiveTrack(true);
+    const [topR,recentR]=await Promise.all([
       fetch('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=10',{headers}),
-      fetch('https://api.spotify.com/v1/me/player/currently-playing',{headers}),
+      fetch('https://api.spotify.com/v1/me/player/recently-played?limit=10',{headers}),
     ]);
-    if(recentR.status===401||topR.status===401){
-      S.spotify.connected=false;
-      S.spotify.token='';
-      save();
+    if(topR.status===401||recentR.status===401){
+      S.spotify.connected=false;S.spotify.token='';save();
       if(showToast)toast('Spotify連携の期限が切れました');
       return;
     }
-    const recentItems=recentR.ok?(await recentR.json()).items||[]:[];
     const topItems=topR.ok?(await topR.json()).items||[]:[];
-    const mapTrack=(t,i,plays)=>({
+    const recentItems=recentR.ok?(await recentR.json()).items||[]:[];
+    const mapTrack=(t,i,plays,source)=>({
       rank:i+1,title:t.name,artist:t.artists?.[0]?.name||'',
       plays:plays||Math.max(1,10-i),url:t.external_urls?.spotify,id:t.id,
+      artworkUrl:t.album?.images?.[1]?.url||t.album?.images?.[0]?.url||'',
+      source:source||'top',
     });
-    const tracks=topItems.length
-      ?topItems.map((t,i)=>mapTrack(t,i,Math.max(1,20-i*2)))
-      :recentItems.map((it,i)=>mapTrack(it.track,i,1));
+    const apiTracks=topItems.length
+      ?topItems.map((t,i)=>mapTrack(t,i,Math.max(1,20-i*2),'top'))
+      :recentItems.map((it,i)=>mapTrack(it.track,i,1,'recent'));
     S.spotify=S.spotify||{};
     S.spotify.connected=true;
-    S.spotify.tracks=tracks;
-    if(playR.ok&&playR.status!==204){
-      const pd=await playR.json();
-      const tr=pd.item;
-      if(tr)S.spotify.nowPlaying={title:tr.name,artist:tr.artists?.[0]?.name||'',url:tr.external_urls?.spotify,id:tr.id};
-    }
+    S.spotify.tracks=apiTracks;
     ensureMusicPeriods();
-    if(tracks[0])S.musicToday.top={title:tracks[0].title,artist:tracks[0].artist,plays:tracks[0].plays||1};
-    S.musicWeek.top3=tracks.slice(0,3).map(t=>({rank:t.rank,title:t.title,artist:t.artist,plays:t.plays||1}));
+    const weekSince=weekStartMonday().getTime();
+    const monthSince=monthStart();
+    const weekFromRecords=aggregateSongRankings(weekSince);
+    const monthFromRecords=aggregateSongRankings(monthSince);
+    const weekMerged=mergeRankLists(apiTracks,weekFromRecords,3);
+    const monthMerged=mergeRankLists(apiTracks,monthFromRecords,5);
+    if(!live&&!S.musicToday?.top)S.musicToday={date:todayStr(),top:null};
+    else if(live)S.musicToday={date:todayStr(),top:{title:live.title,artist:live.artist,plays:1,artworkUrl:live.artworkUrl,id:live.id,source:live.source,capturedAt:live.capturedAt}};
+    S.musicWeek.top3=weekMerged.map(t=>({rank:t.rank,title:t.title,artist:t.artist,plays:t.plays||1,artworkUrl:t.artworkUrl,id:t.id}));
     S.musicWeek.label=weekLabel();
     S.musicMonths=S.musicMonths||defaultMusicMonths();
     const mk=musicMonthKey();
     let month=S.musicMonths.find(m=>m.key===mk);
     if(!month&&S.musicMonths[0])month=S.musicMonths[0];
     if(month){
-      month.ranking=tracks.slice(0,5).map(t=>({rank:t.rank,title:t.title,artist:t.artist,plays:t.plays||1}));
+      month.ranking=monthMerged.map(t=>({rank:t.rank,title:t.title,artist:t.artist,plays:t.plays||1,artworkUrl:t.artworkUrl,id:t.id}));
       if(month.ranking[0]){month.themeSong={...month.ranking[0]};month.highlight={...month.ranking[0]};}
     }
-    save();renderArchive();
-    if(showToast)toast('Spotifyから同期しました');
+    save();renderArchive();renderHome();
+    if(showToast)toast(live?'Spotifyから同期しました':'再生中の曲はありません');
   }catch(e){
     if(showToast)toast('同期に失敗しました');
   }
@@ -10194,6 +10471,16 @@ $('wrappedShare')?.addEventListener('click',async()=>{
           haptic();
           return;
         }
+      }
+      if(blob){
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;a.download='timecap.png';a.click();
+        URL.revokeObjectURL(url);
+        try{await navigator.clipboard.writeText(caption)}catch(e){}
+        toast('画像を保存 · リンクをコピーしました');
+        haptic();
+        return;
       }
     }
     if(navigator.share){
