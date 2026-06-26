@@ -565,14 +565,14 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .tl-open-body.tl-media-wrap{position:relative;border-radius:var(--r-sm);overflow:hidden}
 .map-pin-wrap{display:flex;flex-direction:column;align-items:center}
 .map-ctx-label{
-  margin-top:4px;padding:2px 7px;border-radius:6px;max-width:120px;
-  font-family:var(--font);font-size:8px;font-weight:500;letter-spacing:.02em;line-height:1.35;white-space:nowrap;
+  margin-top:5px;padding:3px 8px;border-radius:6px;max-width:132px;
+  font-family:var(--font);font-size:9px;font-weight:500;letter-spacing:.02em;line-height:1.35;white-space:nowrap;
   overflow:hidden;text-overflow:ellipsis;
-  background:rgba(0,0,0,.5);color:rgba(255,255,255,.52);
-  border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(4px);
+  background:rgba(10,10,12,.78);color:rgba(255,255,255,.78);
+  border:1px solid rgba(201,168,76,.18);backdrop-filter:blur(6px);
   pointer-events:none;
 }
-.map-ctx-label--detail{max-width:148px;white-space:normal;text-align:center;line-height:1.4}
+.map-ctx-label--detail{max-width:156px;white-space:normal;text-align:center;line-height:1.4;font-size:9px}
 .map-point-ctx{margin:12px 0 4px}
 .map-point-ctx .ctx-stamp--inline{margin:0;justify-content:flex-start}
 @keyframes contextReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -1353,13 +1353,25 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .map-sub-tab.on{color:var(--ink)}
 .map-sub-tab.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--ink)}
 .map-route-view{flex:1;display:flex;flex-direction:column;min-height:0;padding-bottom:calc(var(--safe-b) + 8px)}
-.map-canvas-wrap{position:relative;flex:1;min-height:min(52vh,440px);margin:0 12px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+.map-canvas-wrap{position:relative;flex:1;min-height:min(52vh,440px);margin:0 12px;border-radius:var(--r);overflow:hidden;border:1px solid rgba(201,168,76,.14);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),0 8px 32px rgba(0,0,0,.35)}
+.map-canvas-wrap::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:500;
+  background:linear-gradient(180deg,rgba(10,10,12,.12) 0%,transparent 18%,transparent 72%,rgba(10,10,12,.42) 100%);
+}
 .memory-map{position:absolute;inset:0;width:100%!important;height:100%!important;min-height:280px;z-index:1}
+.map-legend{
+  display:flex;align-items:center;justify-content:center;gap:16px;padding:8px 20px 4px;
+  font-size:10px;color:var(--ink-3);letter-spacing:.04em;
+}
+.map-legend-pin{display:inline-flex;align-items:center;gap:5px}
+.map-legend-pin::before{content:'';width:8px;height:8px;border-radius:50%;background:rgba(201,168,76,.75);box-shadow:0 0 0 2px rgba(201,168,76,.2)}
+.map-legend-route{display:inline-flex;align-items:center;gap:5px}
+.map-legend-route::before{content:'';width:18px;height:2px;border-radius:1px;background:linear-gradient(90deg,rgba(201,168,76,.25),rgba(201,168,76,.7))}
 .map-time-controls{
   padding:12px 20px 8px;background:var(--bg);border-top:1px solid rgba(255,255,255,.06);flex-shrink:0;
 }
 .map-time-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.map-time-head span{font-size:12px;color:var(--ink-2)}
+.map-time-head span{font-size:12px;color:var(--ink);font-weight:500}
 .map-time-head button{
   padding:6px 12px;border-radius:999px;font-size:11px;font-weight:600;
   background:var(--bg-2);color:var(--ink);
@@ -1373,11 +1385,11 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   background:var(--ink);border:2px solid var(--bg);box-shadow:var(--shadow);
 }
 .map-pin-photo{
-  width:44px;height:44px;border-radius:50%;overflow:hidden;position:relative;
-  border:2px solid rgba(201,168,76,.45);box-shadow:0 2px 10px rgba(0,0,0,.45);
+  width:52px;height:52px;border-radius:50%;overflow:hidden;position:relative;
+  border:2.5px solid rgba(201,168,76,.62);box-shadow:0 2px 14px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.08);
   background:var(--bg-3);
 }
-.map-pin-photo.locked{filter:grayscale(.9) brightness(.55);border-color:rgba(255,255,255,.12)}
+.map-pin-photo.locked{filter:grayscale(.85) brightness(.5);border-color:rgba(255,255,255,.16)}
 .map-pin-thumb{width:100%;height:100%;object-fit:cover;display:block}
 .map-pin-ph{width:100%;height:100%;background:rgba(255,255,255,.08)}
 .map-pin-badge{
@@ -1390,8 +1402,8 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .music-art-ph{width:40px;height:40px;border-radius:6px;background:var(--bg-3);flex-shrink:0;display:grid;place-items:center}
 .post-detail-sc{padding:0 12px 24px}
 .post-detail-sc .sc-card{max-width:100%;border-radius:20px}
-.leaflet-container{background:var(--bg-2)!important;font-family:var(--font);touch-action:none}
-.leaflet-tile-pane{filter:grayscale(.75) brightness(.56) contrast(1.04) saturate(.35)}
+.leaflet-container{background:#12141a!important;font-family:var(--font);touch-action:none}
+.leaflet-tile-pane{filter:grayscale(.42) brightness(.72) contrast(1.1) saturate(.5)}
 .leaflet-pane,.leaflet-top,.leaflet-bottom{z-index:400}
 .map-zoom-btns{position:absolute;right:12px;bottom:12px;z-index:1000;display:flex;flex-direction:column;gap:8px;pointer-events:auto}
 .map-zoom-btns button{
@@ -1400,16 +1412,16 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   backdrop-filter:blur(10px);box-shadow:var(--shadow);touch-action:manipulation;-webkit-tap-highlight-color:transparent;
 }
 .map-zoom-btns button:active{transform:scale(.94)}
-.map-route-head{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.2);box-shadow:none}
+.map-route-head{width:10px;height:10px;border-radius:50%;background:rgba(201,168,76,.9);border:2px solid var(--bg);box-shadow:0 0 0 2px rgba(201,168,76,.35),0 0 12px rgba(201,168,76,.4)}
 .map-dot-wrap{background:none;border:none}
 .map-dot{
-  width:12px;height:12px;border-radius:50%;background:var(--ink);
-  border:2px solid var(--bg);box-shadow:0 0 0 1px rgba(255,255,255,.3);
+  width:14px;height:14px;border-radius:50%;background:var(--ink);
+  border:2px solid var(--bg);box-shadow:0 0 0 1px rgba(255,255,255,.35),0 0 8px rgba(255,255,255,.12);
 }
 .map-cluster-dot{
-  width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.55);font-size:10px;font-weight:500;
-  display:grid;place-items:center;
+  width:26px;height:26px;border-radius:50%;background:rgba(18,18,22,.88);
+  border:1.5px solid rgba(201,168,76,.35);color:rgba(255,255,255,.82);font-size:11px;font-weight:600;
+  display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.4);
 }
 .map-route-view{padding-bottom:0}
 .map-music-view{flex:1;overflow-y:auto;padding-bottom:calc(var(--safe-b) + 8px)}
@@ -1889,12 +1901,14 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .spotify-row.connected .spotify-sync{background:var(--bg-3);color:var(--ink-2)}
 .duration-pill.multi-on{box-shadow:0 0 0 2px var(--ink)}
 .notif-poetic{
-  padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.04);position:relative;overflow:hidden;
+  padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;
+  border-left:3px solid transparent;
 }
-.notif-poetic.unread{background:linear-gradient(90deg,rgba(255,255,255,.06),transparent)}
-.notif-poetic .np-icon{font-size:22px;margin-bottom:8px}
-.notif-poetic .np-poetic{font-family:var(--font);font-size:15px;font-weight:500;line-height:1.4}
-.notif-poetic .np-detail{font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.45}
+.notif-poetic.unread{background:rgba(255,255,255,.03);border-left-color:rgba(255,255,255,.12)}
+.notif-poetic.ready.unread{background:rgba(201,168,76,.05);border-left-color:rgba(201,168,76,.45)}
+.notif-poetic .np-icon{font-size:20px;margin-bottom:6px;opacity:.85}
+.notif-poetic .np-poetic{font-family:var(--font);font-size:14px;font-weight:600;line-height:1.45;color:var(--ink-2)}
+.notif-poetic .np-detail{font-size:12px;color:var(--ink-3);margin-top:5px;line-height:1.45}
 .notif-poetic .np-time{font-size:10px;color:var(--ink-4);margin-top:8px;letter-spacing:.04em}
 .notif-poetic.ready .np-poetic{color:var(--ink)}
 .mem-bento{padding:0 20px 20px;display:grid;grid-template-columns:2fr 1fr;grid-auto-rows:100px;gap:6px}
@@ -2024,7 +2038,13 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .capsule-up-card .cu-when{font-size:15px;font-weight:600}
 .capsule-up-card .cu-sub{font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.45}
 .capsule-past{display:flex;flex-direction:column;gap:12px}
-.capsule-past-card{padding:14px 16px;border-radius:var(--r-sm);background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
+.capsule-past-card{
+  padding:14px 16px;border-radius:var(--r-sm);background:var(--bg-2);
+  border:1px solid rgba(255,255,255,.08);border-left:3px solid rgba(201,168,76,.3);
+}
+.capsule-past-card .cp-date{font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.capsule-past-card .cp-title{font-size:15px;font-weight:600;margin-top:6px;line-height:1.4;font-family:var(--font-display)}
+.capsule-past-card .cp-meta{font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.45}
 .capsule-past-card img{width:100%;border-radius:var(--r-sm);margin-top:10px;max-height:200px;object-fit:cover}
 .profile-family-entry{
   display:flex;align-items:center;justify-content:space-between;margin:0 20px 12px;padding:14px 16px;
@@ -2427,9 +2447,45 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .today-card .tc-label{font-size:13px;font-weight:600;margin-top:10px}
 .today-card .tc-done{font-size:10px;color:var(--ink-3);margin-top:4px}
 .today-card .tc-preview{font-size:22px;margin-top:6px}
-.home-capsule-widget{margin:0 20px 16px;padding:14px 16px;border-radius:var(--r-sm);
-  background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
-.home-capsule-widget .hw-label{font-size:11px;color:var(--ink-3)}
+.home-capsule-widget{
+  margin:12px 20px 0;padding:0;border-radius:var(--r-sm);overflow:hidden;
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.08);
+  position:relative;
+}
+.home-capsule-widget.ready{border-color:rgba(201,168,76,.28);box-shadow:0 0 0 1px rgba(201,168,76,.08),0 8px 28px rgba(0,0,0,.22)}
+.home-capsule-widget .hw-label{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+.past-arrival-inner{
+  display:flex;gap:12px;align-items:flex-start;padding:14px 16px;
+}
+.past-arrival-icon{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  display:grid;place-items:center;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);color:var(--ink-2);
+}
+.home-capsule-widget.ready .past-arrival-icon{
+  background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.22);color:rgba(201,168,76,.9);
+}
+.past-arrival-body{flex:1;min-width:0}
+.past-arrival-body .hw-countdown{font-size:18px;font-weight:600;margin-top:2px;line-height:1.35;font-family:var(--font-display)}
+.home-capsule-widget.ready .past-arrival-body .hw-countdown{color:var(--ink)}
+.past-arrival-body .hw-sub{font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.45}
+.home-capsule-widget .hw-open-btn{margin:0 16px 14px;width:calc(100% - 32px)}
+.past-arrival-card{
+  margin:12px 20px 0;padding:14px 16px;border-radius:var(--r-sm);
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.08);
+  border-left:3px solid rgba(201,168,76,.35);position:relative;
+}
+.past-arrival-card.is-actionable{border-left-color:rgba(201,168,76,.55);cursor:pointer}
+.past-arrival-card .pa-label{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.past-arrival-card .pa-title{font-size:15px;font-weight:600;margin-top:6px;line-height:1.4;font-family:var(--font-display)}
+.past-arrival-card .pa-sub{font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.45}
+.past-arrival-card .pa-cta{
+  margin-top:10px;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;
+  background:rgba(255,255,255,.06);color:var(--ink-2);display:inline-block;
+}
+.past-arrival-card.is-actionable .pa-cta{background:rgba(201,168,76,.12);color:rgba(201,168,76,.95)}
+.lyt-section.past-arrival-card{margin:12px 20px 16px}
+.lyt-section.past-arrival-card .lyt-label{display:flex;align-items:center;gap:6px}
 .home-secondary{display:none}
 
 /* ホーム · タイムライン流し */
@@ -2461,7 +2517,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 }
 .demo-mini-item .dm-av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:11px;color:#fff;flex-shrink:0}
 .daily-strip-card{
-  margin:16px 20px 0;padding:14px;border-radius:var(--r);
+  margin:12px 20px 0;padding:14px;border-radius:var(--r);
   background:var(--bg-2);border:1px solid rgba(255,255,255,.06);
 }
 .daily-strip-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
@@ -2614,8 +2670,10 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 }
 .inner-echo-note{font-size:11px;color:var(--ink-3);margin-top:8px;font-style:italic}
 
-/* v3 今日の色 */
+/* 今日の空（天気アイコン） */
 .mood-color-sheet{padding-bottom:8px}
+.home-appearance-section{margin:12px 0 4px}
+.home-appearance-section .sec-label{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase;padding:0 20px;margin-bottom:8px}
 .sky-mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
 .sky-mood-btn{
   aspect-ratio:1;border-radius:var(--r-sm);background:var(--bg-3);border:1px solid rgba(255,255,255,.08);
@@ -2746,9 +2804,11 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
         <h1 class="home-tagline">今日を、未来に残そう。</h1>
         <div class="home-stats" id="homeStats"></div>
       </div>
+      <div id="dailyStripMount"></div>
+      <div id="homeAppearanceMount"></div>
       <div class="morning-nudge hidden" id="morningNudge"></div>
       <div class="home-demo-guide hidden" id="homeDemoGuide"></div>
-      <div id="dailyStripMount"></div>
+      <div id="pastArrivalsMount"></div>
       <div class="home-capsule-widget hidden" id="homeCapsuleWidget">
         <div class="hw-label">過去から届いた記憶</div>
         <div class="hw-countdown" id="widgetCountdown" style="font-size:20px;font-weight:600;margin-top:4px">—</div>
@@ -2815,6 +2875,10 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
           <button type="button" id="mapZoomIn" aria-label="拡大">+</button>
           <button type="button" id="mapZoomOut" aria-label="縮小">−</button>
         </div>
+      </div>
+      <div class="map-legend" id="mapLegend">
+        <span class="map-legend-pin">思い出の場所</span>
+        <span class="map-legend-route">歩いた軌跡</span>
       </div>
       <div class="map-time-controls">
         <div class="map-time-head">
@@ -3056,7 +3120,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       </div>
     </div>
     <div class="create-expand" id="expandMood">
-      <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px">いまの色</div>
+      <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px">今日の空（任意）</div>
       <div class="mood-palette" id="moodPalette"></div>
     </div>
     <div class="create-expand" id="expandPrompt">
@@ -3258,9 +3322,9 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     <button type="button" id="onboardNextDemo">自分もやってみる</button>
   </div>
   <div class="onboard-panel hidden" id="onboardStepMood">
-    <h2 style="font-family:var(--font-display);font-size:22px">まずは、今日の色を</h2>
-    <p style="font-size:14px">言葉にしなくていい。色だけで残せます。</p>
-    <button type="button" class="dq-cta btn-gold" id="onboardPickColor" style="width:100%;margin-top:24px">色を選ぶ</button>
+    <h2 style="font-family:var(--font-display);font-size:22px">まずは、今日の空を</h2>
+    <p style="font-size:14px">晴れ・くもり・雨… 天気アイコンで、いまの気分を残せます。</p>
+    <button type="button" class="dq-cta btn-gold" id="onboardPickColor" style="width:100%;margin-top:24px">空を選ぶ</button>
   </div>
   <div class="onboard-panel hidden" id="onboardStepDone">
     <h2>残りました</h2>
@@ -3272,8 +3336,8 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 
 <div class="mood-pick-overlay" id="moodPickOverlay">
   <div class="mood-pick-sheet mood-color-sheet">
-    <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;font-family:var(--font-display)">いまの気分</h3>
-    <p style="font-size:13px;color:var(--ink-3);margin-bottom:12px">空の様子を選ぶ（任意で充電％も）</p>
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;font-family:var(--font-display)">今日の空</h3>
+    <p style="font-size:13px;color:var(--ink-3);margin-bottom:12px">晴れ / くもり / 雨 / 雷 / 雪 · 任意で充電％も</p>
     <div class="sky-mood-grid" id="skyMoodGrid"></div>
     <label class="mood-battery-toggle"><input type="checkbox" id="moodUseBattery"> 充電％でも気分を表す</label>
     <div class="mood-battery-panel hidden" id="moodBatteryPanel">
@@ -3396,7 +3460,7 @@ const PROMPT_POOL=[
   {id:'tap2',text:'今日の自分を一言で',type:'tap',options:['がんばった','もう無理','ふつうだった']},
   {id:'tap3',text:'今いちばん欲しいものは？',type:'tap',options:['時間','お金','眠り','自由']},
   {id:'tap4',text:'今日の帰り道の気分は？',type:'tap',options:['ほくほく','もやもや','へとへと']},
-  {id:'tap5',text:'今の気分の色は？',type:'tap',options:['青','オレンジ','グレー']},
+  {id:'tap5',text:'今日の空は？',type:'tap',options:['晴れ','くもり','雨']},
   {id:'tap6',text:'今日の天気みたいな自分は？',type:'tap',options:['晴れ','くもり','嵐']},
   {id:'tap7',text:'今週の自分、どっち寄り？',type:'tap',options:['充実','消耗','ふつう']},
   {id:'tap8',text:'今日のごはん気分は？',type:'tap',options:['がっつり','さっぱり','何でもいい']},
@@ -3567,15 +3631,15 @@ const SKY_MOODS=[
   {id:'snow',icon:'snow',label:'雪'},
 ];
 const DAILY_RECORD_TYPES={
-  mood:{iconKey:'cloud',label:'気分'},
+  mood:{iconKey:'cloud',label:'今日の空'},
   photo:{iconKey:'camera',label:'今日の一枚'},
   song:{iconKey:'music',label:'今日の一曲'},
   food:{iconKey:'food',label:'今日のごはん'},
-  sky:{iconKey:'cloud',label:'今日の空'},
+  sky:{iconKey:'cloud',label:'空の写真'},
 };
 const DEFAULT_PROFILE_VISIBILITY={mood:'inner',recentPhoto:'inner',music:'inner',changes:'inner',pastPhotos:'self',textDiary:'self'};
 const PROFILE_VIS_FIELDS=[
-  {key:'mood',label:'いまの気分'},
+  {key:'mood',label:'今日の空'},
   {key:'recentPhoto',label:'最近の一枚'},
   {key:'music',label:'曲・ランキング'},
   {key:'changes',label:'変化（顔・音楽・場所）'},
@@ -3754,6 +3818,7 @@ function renderTextDiaryList(){
 }
 function hslFromHue(h,s=42,l=42){return `hsl(${h},${s}%,${l}%)`}
 let selectedSkyMood='sunny';
+let selectedSealSkyMood=null;
 function initSkyMoodPicker(){
   const grid=$('skyMoodGrid');
   if(!grid)return;
@@ -3772,19 +3837,6 @@ function initSkyMoodPicker(){
     grid.querySelectorAll('.sky-mood-btn').forEach(b=>b.classList.toggle('on',b.dataset.sky===selectedSkyMood));
   }
   initMoodBatteryPanel();
-}
-function updateMoodColorPreview(){
-  const h=+$('moodHueSlider')?.value||42;
-  const prev=$('moodColorPreview');
-  if(prev)prev.style.background=hslFromHue(h);
-}
-function initMoodColorPicker(){
-  const sl=$('moodHueSlider');
-  if(sl&&!sl.dataset.ready){
-    sl.dataset.ready='1';
-    sl.addEventListener('input',updateMoodColorPreview);
-  }
-  updateMoodColorPreview();
 }
 function photoMemoryFilter(ts){
   if(!ts)return '';
@@ -4274,6 +4326,18 @@ function renderHome(){
   $('homeDate').textContent=`今日 ${d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'})}`;
   $('homeStats').textContent=`${totalRecordDays()}日分を残した · 連続 ${recordStreakDisplay()}日`;
   renderDailyStrip();
+  renderHomeAppearance();
+}
+function renderHomeAppearance(){
+  const el=$('homeAppearanceMount');
+  if(!el)return;
+  const shots=getAppearanceTimeline();
+  el.innerHTML=`<section class="home-appearance-section" aria-label="あなたの変化">
+    <div class="sec-label">あなたの変化</div>
+    <div style="padding:0 20px">${appearanceTimelineHtml()}</div>
+  </section>`;
+  el.querySelector('#exportAppearanceBtn')?.addEventListener('click',()=>exportAppearanceMontage());
+  if(shots.length)loadLazyThumbs(el);
 }
 function demoInnerTodayPosts(){
   const sky=['sunny','cloud','rain','snow'];
@@ -4282,7 +4346,7 @@ function demoInnerTodayPosts(){
     name:m.n,char:m.i,color:m.c,
     type:['mood','photo','food','mood'][i],
     skyMood:sky[i],moodBattery:batt[i],
-    moodColor:hslFromHue([42,200,12,280][i]),moodWord:['ふつうだった','','学食のカレー','まったり'][i],
+    moodWord:['ふつうだった','','学食のカレー','まったり'][i],
     text:['','カフェのラテ','学食のカレー',''][i],
     at:Date.now()-(i+1)*3600e3,mediaId:i===1?'demo_photo':null,
   }));
@@ -4954,6 +5018,34 @@ function canAddDailyType(type){
 function skyMoodIcon(id){
   return SKY_MOODS.find(s=>s.id===id)?.icon||'cloud';
 }
+function skyMoodBg(id){
+  const map={sunny:'#2e2a1e',cloudy:'#252a32',rain:'#1a2430',storm:'#2a2218',snow:'#2a2e38'};
+  return map[id]||'var(--bg-2)';
+}
+function migrateSkyMoodRecords(){
+  let ch=false;
+  const bump=r=>{
+    if(r.moodColor&&!r.skyMood){
+      r.skyMood='cloudy';
+      delete r.moodColor;
+      ch=true;
+    }
+  };
+  (S.dailyRecords||[]).forEach(bump);
+  (S.opened||[]).forEach(bump);
+  (S.capsules||[]).forEach(bump);
+  if(ch)save();
+}
+function ensureDemoAppearanceShots(){
+  if((S.appearanceShots||[]).length>=2)return;
+  const now=Date.now();
+  S.appearanceShots=[
+    {id:'as-demo1',userId:meName(),photoRef:'demo_photo',faceVector:null,changed:false,capturedAt:now-120*864e5,source:'photo'},
+    {id:'as-demo2',userId:meName(),photoRef:'demo_photo',faceVector:null,changed:true,capturedAt:now-45*864e5,source:'photo'},
+    {id:'as-demo3',userId:meName(),photoRef:'demo_photo',faceVector:null,changed:true,capturedAt:now,source:'avatar'},
+  ];
+  save();
+}
 function moodBatteryGaugeHtml(pct,compact){
   const n=Math.max(0,Math.min(100,Math.round(pct||0)));
   if(compact)return `<span class="mood-battery-inline">${tcIcon('zap')} ${n}%</span>`;
@@ -5066,14 +5158,14 @@ function memberMoodCardHtml(mood){
       ${tcIcon(skyMoodIcon(mood.skyMood),'lg')}
       ${lbl?`<div style="font-size:14px;margin-top:8px">${esc(lbl)}</div>`:''}
       ${batt}
-      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">いまの気分 · ${timeAgo(mood.at)}</div>
+      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">今日の空 · ${timeAgo(mood.at)}</div>
     </div>`;
   }
   if(mood.moodColor){
     return`<div style="margin:16px 0;padding:16px;background:var(--bg-3);border-radius:var(--r-sm);text-align:center">
       <div style="width:48px;height:48px;border-radius:50%;background:${esc(mood.moodColor)};margin:0 auto"></div>
       ${lbl?`<div style="font-size:14px;margin-top:8px">${esc(lbl)}</div>`:''}
-      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">いまの気分 · ${timeAgo(mood.at)}</div>
+      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">今日の空 · ${timeAgo(mood.at)}</div>
     </div>`;
   }
   return'';
@@ -5311,6 +5403,8 @@ async function openFriendProfile(memberId){
   }
   let changesHtml='';
   if(canViewProfileField('changes',memberId)){
+    const isSelf=m.n===meName();
+    const faceHtml=isSelf?`<div style="margin:12px 0"><div class="sec-label">顔の推移</div>${appearanceTimelineHtml()}</div>`:'';
     const ch=memberChangesSummary(memberId);
     const bits=[];
     if(ch.topPlace)bits.push(`${tcIcon('pin')} ${esc(ch.topPlace.name)}（${ch.topPlace.count}回）`);
@@ -5322,7 +5416,7 @@ async function openFriendProfile(memberId){
       const b=last.skyMood?SKY_MOODS.find(s=>s.id===last.skyMood)?.label:'';
       if(a&&b&&a!==b)bits.push(`${esc(a)} → ${esc(b)}`);
     }
-    changesHtml=`<div style="margin:12px 0"><div class="sec-label">変化</div>`;
+    changesHtml=faceHtml+`<div style="margin:12px 0"><div class="sec-label">変化</div>`;
     if(bits.length){
       changesHtml+=bits.map(b=>`<div style="font-size:13px;color:var(--ink-2);padding:6px 0;border-bottom:1px solid var(--line)">${b}</div>`).join('');
     }else{
@@ -5331,6 +5425,7 @@ async function openFriendProfile(memberId){
     changesHtml+='</div>';
     const trail=memberTrailHtml(memberId);
     if(trail)changesHtml+=trail;
+    if(isSelf)changesHtml+=`<button type="button" class="create-pick" id="exportAppearanceBtn" style="width:100%;margin-top:8px">変化を動画で保存</button>`;
   }
   let pastHtml='';
   if(canViewProfileField('pastPhotos',memberId)){
@@ -5367,6 +5462,7 @@ async function openFriendProfile(memberId){
     $('friendProfileOverlay')?.classList.remove('open');
     openFriendSpace(memberId);
   });
+  body.querySelector('#exportAppearanceBtn')?.addEventListener('click',()=>exportAppearanceMontage());
   $('friendProfileOverlay')?.classList.add('open');
   await loadLazyThumbs(body);
   haptic();
@@ -5567,14 +5663,14 @@ function timelinePosts(){
     sealed:c.sealed,tags:c.tags||[],loc:c.loc,capsule:c,
     kind:capKind(c),layer:c.layer,promoted:!!c.promoted,
     opened:canViewCapContent(c)||isInstantPost(c),visibility:c.visibility,
-    sealContext:c.sealContext,linkedSong:c.linkedSong,moodColor:c.moodColor,moodWord:c.moodWord,
+    sealContext:c.sealContext,linkedSong:c.linkedSong,skyMood:c.skyMood,moodBattery:c.moodBattery,moodColor:c.moodColor,moodWord:c.moodWord,
     openable:canOpenCapsule(c),
   }));
   const opened=(S.opened||[]).filter(o=>!isPairCap(o)&&!isDirectCap(o)).map(o=>({
     id:o.id,from:o.from,to:o.to||'self',type:o.type,text:o.text,
     at:o.openedAt,openAt:o.openedAt,mediaId:o.mediaId,
     sealed:false,tags:o.tags||[],opened:true,capsule:null,kind:'opened',
-    sealContext:o.sealContext,linkedSong:o.linkedSong,loc:o.loc,moodColor:o.moodColor,
+    sealContext:o.sealContext,linkedSong:o.linkedSong,loc:o.loc,skyMood:o.skyMood,moodBattery:o.moodBattery,moodColor:o.moodColor,moodWord:o.moodWord,
   }));
   return[...caps,...opened].sort((a,b)=>b.at-a.at);
 }
@@ -5702,7 +5798,7 @@ function updateMediaPickState(){
   $('quickVoiceBtn')?.classList.toggle('has-content',!!pendingVoice);
   document.querySelector('.create-icon[data-expand="photo"]')?.classList.toggle('has-content',!!pendingMedia);
   document.querySelector('.create-icon[data-expand="voice"]')?.classList.toggle('has-content',!!pendingVoice);
-  document.querySelector('.create-icon[data-expand="mood"]')?.classList.toggle('has-content',!!S.sealMoodColor);
+  document.querySelector('.create-icon[data-expand="mood"]')?.classList.toggle('has-content',!!S.sealSkyMood);
   document.querySelector('.create-icon[data-expand="prompt"]')?.classList.toggle('has-content',!!(S.createPromptChoice||S.createPromptText));
   document.querySelector('.create-icon[data-expand="tag"]')?.classList.toggle('has-content',!!parseTagsFromInput().length);
   $('pickSelfieBtn')?.classList.toggle('hidden',!$('selfieToggle')?.checked||!pendingMedia);
@@ -5711,18 +5807,18 @@ function initCreateExpands(){
   const moods=$('moodPalette');
   if(moods&&!moods.dataset.ready){
     moods.dataset.ready='1';
-    moods.innerHTML=`<input type="range" id="sealMoodHue" min="0" max="360" value="42" style="width:100%">
-      <div id="sealMoodPreview" class="mood-color-preview" style="height:40px;margin-top:8px;border-radius:10px"></div>`;
-    const sl=$('sealMoodHue');
-    const update=()=>{
-      const col=hslFromHue(+sl.value);
-      const prev=$('sealMoodPreview');
-      if(prev)prev.style.background=col;
-      S.sealMoodColor=col;
+    selectedSealSkyMood=selectedSealSkyMood||'sunny';
+    moods.innerHTML=`<div class="sky-mood-grid">${SKY_MOODS.map(s=>`
+      <button type="button" class="sky-mood-btn${s.id===selectedSealSkyMood?' on':''}" data-seal-sky="${s.id}">
+        ${tcIcon(s.icon)}<span>${esc(s.label)}</span>
+      </button>`).join('')}</div>`;
+    moods.querySelectorAll('[data-seal-sky]').forEach(btn=>btn.addEventListener('click',()=>{
+      selectedSealSkyMood=btn.dataset.sealSky;
+      S.sealSkyMood=selectedSealSkyMood;
+      moods.querySelectorAll('.sky-mood-btn').forEach(b=>b.classList.toggle('on',b.dataset.sealSky===selectedSealSkyMood));
       updateMediaPickState();
-    };
-    sl.addEventListener('input',update);
-    update();
+      haptic();
+    }));
   }
   $('createIconRow')?.querySelectorAll('.create-icon').forEach(btn=>{
     btn.addEventListener('click',()=>{
@@ -5739,7 +5835,7 @@ function initCreateExpands(){
   });
 }
 function resetCreateExtras(){
-  pendingVoice=null;pendingSelfie=null;pendingMusicShare=null;S.sealMood=null;S.sealMoodColor=null;
+  pendingVoice=null;pendingSelfie=null;pendingMusicShare=null;S.sealMood=null;S.sealSkyMood=null;selectedSealSkyMood=null;
   S.createPromptChoice=null;S.createPromptText=null;
   voiceSeconds=0;
   $('voiceTimer').textContent='0s / '+VOICE_MAX_SECONDS+'s';
@@ -5754,7 +5850,7 @@ function resetCreateExtras(){
   if($('voicePreviewAudio'))$('voicePreviewAudio').src='';
   document.querySelectorAll('.create-expand').forEach(p=>p.classList.remove('open'));
   $('createIconRow')?.querySelectorAll('.create-icon').forEach(b=>b.classList.remove('on'));
-  $('moodPalette')?.querySelector('#sealMoodHue')?.dispatchEvent(new Event('input'));
+  $('moodPalette')?.querySelectorAll('.sky-mood-btn').forEach(b=>b.classList.remove('on'));
   createExpandOpen=null;
 }
 async function blobToDataUrl(blob){
@@ -6189,11 +6285,15 @@ async function openMemoryShareCard(cap){
   $('wrappedOverlay')?.classList.add('open');
 }
 function buildChangeSeries(){
+  const shots=getAppearanceTimeline();
+  if(shots.length>=2){
+    return shots.map(s=>({mediaId:s.photoRef,createdAt:s.capturedAt,appearanceShot:true}));
+  }
   const items=[...(S.dailyRecords||[]),...(S.opened||[])]
-    .filter(r=>r.mediaId||r.moodColor)
+    .filter(r=>r.mediaId||(r.skyMood&&!r.moodColor))
     .sort((a,b)=>(a.createdAt||a.openedAt||0)-(b.createdAt||b.openedAt||0));
   if(items.length>=2)return items;
-  return moodChangeSeries();
+  return [];
 }
 function pickChangeFrames(series,count){
   if(!series.length)return [];
@@ -6223,6 +6323,7 @@ async function openChangeShareCard(frameCount){
         if(data)inner=`<img src="${data}" alt="">`;
       }catch(e){}
     }
+    if(!inner&&f.item.skyMood)inner=`<div class="sc-change-swatch" style="display:flex;align-items:center;justify-content:center;background:${skyMoodBg(f.item.skyMood)}">${tcIcon(skyMoodIcon(f.item.skyMood))}</div>`;
     if(!inner&&f.item.moodColor)inner=`<div class="sc-change-swatch" style="background:${esc(f.item.moodColor)}"></div>`;
     if(!inner)inner=`<div class="sc-change-swatch" style="background:var(--sc-ink2)"></div>`;
     return`<div class="sc-change-frame${f.isNow?' sc-change-frame--now':''}">${inner}<span class="sc-change-lbl">${esc(f.label)}</span></div>`;
@@ -7002,7 +7103,14 @@ function buildYearWrapStats(year=new Date().getFullYear()){
   const topSong=Object.entries(songs).sort((a,b)=>b[1]-a[1])[0];
   return{year,openedCount:opened.length,topTag,topFriend,placeCount:places.size,bestMonth,topSong};
 }
-function monthInsightKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function dominantSkyMood(id){
+  if(!id)return null;
+  return SKY_MOODS.find(s=>s.id===id)?id:null;
+}
+function dominantSkyLabel(id){
+  const sky=dominantSkyMood(id);
+  return sky?SKY_MOODS.find(s=>s.id===sky)?.label:null;
+}
 function monthInsightRange(key){
   const [y,m]=key.split('-').map(Number);
   const start=new Date(y,m-1,1).getTime();
@@ -7018,7 +7126,10 @@ function collectMonthData(key){
   const sealed=(S.capsules||[]).filter(c=>inR(c.createdAt));
   const moods=daily.filter(r=>r.type==='mood'&&(r.skyMood||r.moodColor||r.mood));
   const moodCounts={};
-  moods.forEach(r=>{const k=r.skyMood||r.moodColor||r.mood;moodCounts[k]=(moodCounts[k]||0)+1});
+  moods.forEach(r=>{
+    const k=r.skyMood||r.mood;
+    if(k)moodCounts[k]=(moodCounts[k]||0)+1;
+  });
   const moodDominant=Object.entries(moodCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
   const songTimeline=[];
   daily.filter(r=>r.type==='song'&&r.songTitle).forEach(r=>songTimeline.push({title:r.songTitle,at:r.createdAt}));
@@ -7728,10 +7839,10 @@ function buildYearInsight(year=new Date().getFullYear()){
   const base=buildYearWrapStats(year);
   const allPhotos=months.flatMap(m=>m.photos);
   const allRooms=months.flatMap(m=>m.roomPhotos||[]);
-  const moodByMonth=months.map((m,i)=>{
-    const col=m.moodDominant&&(String(m.moodDominant).startsWith('hsl')||String(m.moodDominant).startsWith('#'))?m.moodDominant:null;
-    return{month:i+1,mood:m.moodDominant,moodColor:col,label:monthInsightRange(m.key).label};
-  });
+  const moodByMonth=months.map((m,i)=>({
+    month:i+1,mood:m.moodDominant,skyMood:dominantSkyMood(m.moodDominant),
+    label:monthInsightRange(m.key).label,
+  }));
   const songCounts={};
   months.forEach(m=>{if(m.topSong)songCounts[m.topSong.title]=(songCounts[m.topSong.title]||0)+m.topSong.count});
   const yearTopSong=Object.entries(songCounts).sort((a,b)=>b[1]-a[1])[0];
@@ -7771,11 +7882,11 @@ function generateYearNarrative(yi){
 function yearMoodStripHtml(yi){
   const names=['1','2','3','4','5','6','7','8','9','10','11','12'];
   return`<div class="year-mood-strip">${yi.moodByMonth.map((m,i)=>{
-    const col=m.moodColor||(String(m.mood||'').startsWith('hsl')?m.mood:null);
-    return`<div class="year-mood-month${col?' has':''}" title="${names[i]}月">
-      <span class="ym-ico" style="${col?`background:${col};width:10px;height:10px;border-radius:50%;display:inline-block`:'opacity:.3'}"></span>${names[i]}月</div>`;
+    const sky=m.skyMood||dominantSkyMood(m.mood);
+    return`<div class="year-mood-month${sky?' has':''}" title="${names[i]}月${sky?' · '+esc(dominantSkyLabel(sky)||''):''}">
+      <span class="ym-ico">${sky?tcIcon(skyMoodIcon(sky)):'·'}</span>${names[i]}月</div>`;
   }).join('')}</div>
-    <p style="font-size:11px;color:var(--ink-3);margin-top:4px">月ごとの色</p>`;
+    <p style="font-size:11px;color:var(--ink-3);margin-top:4px">月ごとの空</p>`;
 }
 function renderYearInsightPanel(year){
   const yi=buildYearInsight(year);
@@ -7786,7 +7897,7 @@ function renderYearInsightPanel(year){
       <div class="insight-hero-text">${esc(generateYearNarrative(yi))}</div>
     </div>
     <div class="insight-section">
-      <h3>一年の色</h3>
+      <h3>一年の空</h3>
       ${yearMoodStripHtml(yi)}
     </div>
     <div class="insight-section">
@@ -7920,15 +8031,16 @@ function openMonthInsightShare(key){
   setVlogMode(false);
   vlogPhotos=null;
   const ins=collectMonthData(key||monthInsightKey());
-  const moodColor=ins.moodDominant&&(String(ins.moodDominant).startsWith('hsl')||String(ins.moodDominant).startsWith('#'))?ins.moodDominant:null;
+  const sky=dominantSkyMood(ins.moodDominant);
+  const skyLbl=dominantSkyLabel(ins.moodDominant);
   $('wrappedCard').className='wrapped-card';
   $('wrappedCard').innerHTML=`
     <div class="wc-brand">TIME CAP</div>
     <div class="wc-period">${esc(ins.label)}<br>まとめ</div>
     <div class="wc-stat">${esc(generateMonthlyNarrative(ins))}</div>
     <div class="wc-theme">
-      <div class="wc-theme-lbl">今月の色</div>
-      <div class="wc-theme-title">${moodColor?`<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:${moodColor};vertical-align:middle;margin-right:8px"></span>`:''}${moodColor?'あなたの月':'—'}</div>
+      <div class="wc-theme-lbl">今月の空</div>
+      <div class="wc-theme-title">${sky?`${tcIcon(skyMoodIcon(sky))} ${esc(skyLbl||'')}`:'—'}</div>
       ${ins.topSong?`<div class="wc-theme-artist">${tcIcon('music')} ${esc(ins.topSong.title)}</div>`:''}
       <div class="wc-stat" style="margin-top:12px;font-size:13px">
         記録 ${ins.dailyCount} · 写真 ${ins.photoCount}${ins.topPlace?`<br>${tcIcon('pin')} ${esc(ins.topPlace.name)}`:''}
@@ -8226,7 +8338,7 @@ function defaults(){
       {id:'dr-demo1',userId:'ゆうま',type:'photo',createdAt:now-2*864e5,mediaId:'demo_photo',visibility:'private',
         sealContext:{place:'渋谷',weather:'晴れ',temp:21},contextCity:'渋谷区 · 神南',contextTime:'day',
         contextWeather:{condition:'晴れ',tempC:21},contextSong:{title:'怪獣の花唄',artist:'Vaundy'}},
-      {id:'dr-demo2',userId:'ゆうま',type:'mood',createdAt:now-4*864e5,moodColor:'hsl(200,42%,42%)',moodWord:'ふつう',
+      {id:'dr-demo2',userId:'ゆうま',type:'mood',createdAt:now-4*864e5,skyMood:'cloudy',moodWord:'ふつう',
         visibility:'private',sealContext:{place:'川崎',weather:'雨',temp:16},contextCity:'川崎市 · 武蔵小杉',contextTime:'night',
         contextWeather:{condition:'雨',tempC:16}},
     ],
@@ -8303,8 +8415,10 @@ if(!S.innerReactions)S.innerReactions=[];
 if(!S.dailyAnswers)S.dailyAnswers=[];
 ensureDailyRecords();
 if(!S.activityFeed)S.activityFeed=[];
-if(!S.appearanceShots)S.appearanceShots=[];
+if(!S.shownPastArrivals)S.shownPastArrivals=[];
 if(S.appearanceTrackingEnabled===undefined)S.appearanceTrackingEnabled=true;
+migrateSkyMoodRecords();
+ensureDemoAppearanceShots();
 ensureProfileVisibility();
 if(!S.albums)S.albums={};
 if(!S.shownNotifs)S.shownNotifs=[];
@@ -8360,7 +8474,8 @@ let waitTimer=null;
 let mapInst=null,mapCluster=null,mapRouteLine=null,mapHeatLayer=null,mapPlayTimer=null,mapPlayheadMarker=null;
 let mapZoomBound=false;
 let mapInitialFitDone=false;
-const MAP_CONTEXT_ZOOM=12;
+const MAP_CONTEXT_ZOOM=10;
+const MAP_LABEL_ZOOM=9;
 let mapSubTab='route';
 
 function switchTab(tab){
@@ -8434,30 +8549,55 @@ function timelineFeedPosts(){
   const texts=textPostsForTimeline();
   return[...daily,...inner,...texts,...caps].sort((a,b)=>b.at-a.at);
 }
+function renderPastArrivals(){
+  const mount=$('pastArrivalsMount');
+  if(!mount)return;
+  if(!S.shownPastArrivals)S.shownPastArrivals=[];
+  const resurfaced=(S.posts||[]).filter(p=>
+    p.resurfaceAt&&p.resurfaceAt<=Date.now()&&isMyPost(p)&&!S.shownPastArrivals.includes(p.id)
+  ).slice(0,2);
+  if(!resurfaced.length){mount.innerHTML='';return}
+  mount.innerHTML=resurfaced.map(p=>`
+    <button type="button" class="past-arrival-card is-actionable" data-resurface-id="${esc(p.id)}">
+      <div class="pa-label">${tcIcon('mail')} 過去から届いた</div>
+      <div class="pa-title">${esc((p.text||'').slice(0,48))}${(p.text||'').length>48?'…':''}</div>
+      <div class="pa-sub">${p.promptText?esc(p.promptText)+' · ':''}${new Date(p.createdAt).toLocaleDateString('ja-JP',{year:'numeric',month:'short',day:'numeric'})}</div>
+      <span class="pa-cta">読む</span>
+    </button>`).join('');
+  mount.querySelectorAll('[data-resurface-id]').forEach(btn=>btn.addEventListener('click',()=>{
+    const p=S.posts?.find(x=>x.id===btn.dataset.resurfaceId);
+    if(p){
+      if(!S.shownPastArrivals.includes(p.id))S.shownPastArrivals.push(p.id);
+      save();
+      openTextCompose({prefill:p.text||'',promptText:p.promptText||''});
+    }
+    haptic();
+  }));
+}
 function renderNextCapsule(){
   const w=$('homeCapsuleWidget');
   if(!w)return;
   const next=getNextCapsule();
-  const cdEl=$('widgetCountdown');
-  const subEl=$('widgetSub');
-  const barEl=$('widgetBar');
-  const openBtn=$('widgetOpenBtn');
   if(!next){
     w?.classList.add('hidden');
     return;
   }
   w?.classList.remove('hidden');
-  if(barEl)barEl?.classList.add('hidden');
   const ready=canOpenOwnCapsuleToday(next);
   w.classList.toggle('ready',ready);
   const cd=countdownText(unlockAtOf(next));
-  cdEl.textContent=ready?'今日、開けられる':cd.text;
-  subEl.textContent=`${capDestLabel(next)} · ${TYPE_JA[next.type]||next.type}${next.text?' · '+next.text.slice(0,28):''}`;
-  $('widgetFill')?.style&&( $('widgetFill').style.width=ready?'100%':sealProgress(next)+'%');
-  if(openBtn){
-    openBtn.classList.toggle('hidden',!ready);
-    openBtn.onclick=()=>{if(next)startOpening([next],false);haptic()};
-  }
+  const countdown=ready?'今日、開けられる':cd.text;
+  const sub=`${capDestLabel(next)} · ${TYPE_JA[next.type]||next.type}${next.text?' · '+next.text.slice(0,28):''}`;
+  w.innerHTML=`<div class="past-arrival-inner">
+      <div class="past-arrival-icon">${tcIcon(ready?'mail':'moon')}</div>
+      <div class="past-arrival-body">
+        <div class="hw-label">過去から届いた記憶</div>
+        <div class="hw-countdown" id="widgetCountdown">${esc(countdown)}</div>
+        <div class="hw-sub" id="widgetSub">${esc(sub)}</div>
+      </div>
+    </div>
+    <button type="button" class="hw-open-btn dq-cta${ready?' btn-gold':''}" id="widgetOpenBtn" style="${ready?'':'display:none'}">開ける</button>`;
+  $('widgetOpenBtn')?.addEventListener('click',()=>{if(next)startOpening([next],false);haptic()});
 }
 function renderHomeWidget(){renderNextCapsule()}
 
@@ -8494,6 +8634,8 @@ function renderTimelineFeed(){
     if(locked){
       const daysLbl=capsuleDaysShort(p.unlockAt||p.openAt);
       body=`<div class="tl-sealed-compact"><div class="lock-core"><div class="lbl">${esc(p.from)} · タイムカプセル</div><div class="when capsule-days-badge">${esc(daysLbl)}</div></div></div>`;
+    }else if(p.skyMood||(p.type==='mood'&&!p.moodColor)){
+      body=postBodyHtml(p);
     }else if(p.moodColor){
       body=`<div class="tl-photo-hero tl-color-fill" style="background:${esc(p.moodColor)}">${p.moodWord?`<span class="tl-color-word">${esc(p.moodWord)}</span>`:''}</div>`;
     }else if(p.mediaId){
@@ -8559,6 +8701,12 @@ function renderLastYearToday(){
   if(!sec)return;
   if(!item){sec.classList.add('hidden');return}
   sec.classList.remove('hidden');
+  sec.classList.add('past-arrival-card');
+  sec.onclick=()=>{
+    if(item.mediaId||item.text)openPostDetail({...item,at:item.at||item.openedAt||item.createdAt,from:meName()});
+    haptic();
+  };
+  sec.style.cursor='pointer';
   const isText=item.type==='text'&&!item.mediaId;
   $('lytTitle').textContent=isText?'去年の今日、こんな言葉を残してた':(item.text||'この日の記憶');
   const card=$('lytCard');
@@ -8573,6 +8721,8 @@ function renderLastYearToday(){
   }else{
     card.innerHTML=`${ctxStamp}<p style="font-size:14px;line-height:1.55;margin:0">${esc(item.text||'')}</p>`;
   }
+  const labelEl=sec.querySelector('.lyt-label');
+  if(labelEl)labelEl.innerHTML=`${tcIcon('mail')} 去年の今日`;
 }
 function renderTimelineFamilyCard(p,me){
   const isMe=p.isInner?false:(p.from===me||p.from==='ゆうま');
@@ -8614,6 +8764,7 @@ function renderTimeline(){
   checkBirthday();
   checkOpenPreview();
   renderHome();
+  renderPastArrivals();
   renderMorningNudge();
   renderHomeDemoGuide();
   renderTimelineFeed();
@@ -8931,12 +9082,6 @@ function upcomingCapsulesList(){
     .sort((a,b)=>new Date(unlockAtOf(a))-new Date(unlockAtOf(b)))
     .slice(0,6);
 }
-function moodChangeSeries(){
-  return(S.dailyRecords||[])
-    .filter(r=>r.moodColor)
-    .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))
-    .slice(-8);
-}
 function placeLabelsFromRecords(){
   const seen=new Set(),out=[];
   [...(S.dailyRecords||[]),...(S.opened||[]),...(S.capsules||[])].sort((a,b)=>(b.createdAt||b.openedAt||0)-(a.createdAt||a.openedAt||0)).forEach(r=>{
@@ -8946,25 +9091,20 @@ function placeLabelsFromRecords(){
   return out.slice(0,5);
 }
 function renderCapsuleChangeSection(){
-  const moods=moodChangeSeries();
   const places=placeLabelsFromRecords();
   const frames=S.changeCardFrames||4;
   const canShare=buildChangeSeries().length>=2;
-  const moodHtml=moods.length?`<div class="capsule-change-scroll">${moods.map(r=>{
-    const d=new Date(r.createdAt);
-    return`<div class="capsule-change-chip"><div class="cc-swatch" style="background:${esc(r.moodColor)}"></div><div class="cc-lbl">${d.toLocaleDateString('ja-JP',{month:'short',day:'numeric'})}</div></div>`;
-  }).join('')}</div>`:'<p style="font-size:13px;color:var(--ink-3);line-height:1.5">気分の色を残すと、ここに移ろいが静かに並びます。</p>';
+  const appearanceHtml=appearanceTimelineHtml();
   const placeHtml=places.length?`<p style="font-size:13px;color:var(--ink-2);margin-top:12px;line-height:1.5">${tcIcon('pin')} ${places.map(esc).join(' · ')}</p>`:'';
   return`<div class="capsule-section">
-    <div class="capsule-section-label">変化</div>
-    ${moodHtml}
+    <div class="capsule-section-label">あなたの変化</div>
+    ${appearanceHtml}
     ${placeHtml}
     <div class="change-frame-seg" id="changeFrameSeg">
       <button type="button" data-frames="4" class="${frames===4?'on':''}">4コマ</button>
       <button type="button" data-frames="2" class="${frames===2?'on':''}">2コマ</button>
     </div>
     ${canShare?`<button type="button" class="dq-cta" id="shareChangeCardBtn" style="width:100%;margin-top:12px">変化をシェア</button>`:''}
-    <p style="font-size:11px;color:var(--ink-3);margin-top:10px;line-height:1.45">365日 · この一年。評価の言葉は入れません。</p>
   </div>`;
 }
 function renderCapsuleUpcomingSection(){
@@ -8994,17 +9134,17 @@ function renderCapsulePastSection(){
       ?`<img data-lazy="${esc(item.mediaId)}" alt="">`
       :`<p style="font-size:14px;line-height:1.55;margin:8px 0 0;color:var(--ink-2)">「${esc((item.text||'').slice(0,80))}」</p>`;
     cards.push(`<article class="capsule-past-card">
-      <div style="font-size:11px;color:var(--ink-3)">${y}年前の今日 · ${d.toLocaleDateString('ja-JP',{month:'long',day:'numeric'})}</div>
-      <div style="font-size:15px;font-weight:500;margin-top:4px">${esc(item.text||'この日の記憶')}</div>
-      ${meta?`<div style="font-size:12px;color:var(--ink-3);margin-top:4px">${esc(meta)}</div>`:''}
+      <div class="cp-date">${tcIcon('mail')} ${y}年前の今日 · ${d.toLocaleDateString('ja-JP',{month:'long',day:'numeric'})}</div>
+      <div class="cp-title">${esc(item.text||'この日の記憶')}</div>
+      ${meta?`<div class="cp-meta">${esc(meta)}</div>`:''}
       ${body}
     </article>`);
   });
   const resurfaced=(S.posts||[]).filter(p=>p.resurfaceAt&&p.resurfaceAt<=Date.now()&&isMyPost(p)).slice(0,3);
   resurfaced.forEach(p=>{
     cards.push(`<article class="capsule-past-card">
-      <div style="font-size:11px;color:var(--ink-3)">戻ってきた言葉</div>
-      <p style="font-size:15px;line-height:1.55;margin-top:6px">「${esc(p.text||'')}」</p>
+      <div class="cp-date">${tcIcon('mail')} 戻ってきた言葉</div>
+      <p class="cp-title" style="font-size:15px;line-height:1.55;margin-top:6px;font-weight:500">「${esc(p.text||'')}」</p>
     </article>`);
   });
   if(!cards.length){
@@ -9029,6 +9169,7 @@ function renderCapsuleTab(){
     S.changeCardFrames=+b.dataset.frames;save();renderCapsuleTab();haptic();
   }));
   el.querySelector('#shareChangeCardBtn')?.addEventListener('click',()=>openChangeShareCard(S.changeCardFrames));
+  el.querySelector('#exportAppearanceBtn')?.addEventListener('click',()=>exportAppearanceMontage());
   el.querySelectorAll('[data-cap-open]').forEach(b=>b.addEventListener('click',()=>{
     const cap=S.capsules?.find(c=>c.id===b.dataset.capOpen);
     if(cap&&canOpenOwnCapsuleToday(cap))startOpening([cap],false);
@@ -9130,6 +9271,7 @@ function renderMemoryMap(opts={}){
   mapHeatLayer=L.layerGroup();
   const zoom=mapInst.getZoom();
   const detail=zoom>=MAP_CONTEXT_ZOOM;
+  const showLabel=zoom>=MAP_LABEL_ZOOM;
   (async()=>{
     for(const g of groups){
       allLatlngs.push([g.loc.lat,g.loc.lng]);
@@ -9143,15 +9285,15 @@ function renderMemoryMap(opts={}){
           if(data)thumb=`<img class="map-pin-thumb" src="${data}" alt="">`;
         }catch(e){}
       }
-      const ctxLabel=detail?mapCtxLabelHtml(rep,true):'';
+      const ctxLabel=(detail||showLabel)?mapCtxLabelHtml(rep,detail):'';
       const pinInner=thumb||`<div class="map-pin-ph"></div>`;
       const badge=n>1?`<span class="map-pin-badge">${n}</span>`:'';
       const pinHtml=`<div class="map-pin-wrap"><div class="map-pin-photo${g.locked?' locked':''}">${pinInner}${badge}</div>${ctxLabel}</div>`;
-      const pinW=48;
-      const pinH=48+(ctxLabel?22:0);
+      const pinW=56;
+      const pinH=56+(ctxLabel?24:0);
       const heatIcon=L.divIcon({
         html:pinHtml,
-        className:'map-dot-wrap',iconSize:[pinW,pinH],iconAnchor:[pinW/2,24],
+        className:'map-dot-wrap',iconSize:[pinW,pinH],iconAnchor:[pinW/2,28],
       });
       const m=L.marker([g.loc.lat,g.loc.lng],{icon:heatIcon});
       m.on('click',()=>openMapPointGroup(g.items));
@@ -9162,7 +9304,7 @@ function renderMemoryMap(opts={}){
       const pct=S.mapTimePct??100;
       const endIdx=Math.max(2,Math.ceil(latlngs.length*pct/100));
       const visible=latlngs.slice(0,endIdx);
-      mapRouteLine=L.polyline(visible,{color:'rgba(201,168,76,.42)',weight:1.5,opacity:.7,dashArray:pct>=100?null:'3 8'});
+      mapRouteLine=L.polyline(visible,{color:'rgba(201,168,76,.62)',weight:2.5,opacity:.82,dashArray:pct>=100?null:'4 10'});
       mapRouteLine.addTo(mapInst);
       const head=visible[visible.length-1];
       mapPlayheadMarker=L.marker(head,{
@@ -9508,7 +9650,7 @@ function renderMemCalCell(dayKey,dayNum,dayData,isToday){
   if(dayData.thumb){
     return`<button type="button" class="mem-cal-cell has-data${isToday?' today':''}" data-day="${esc(dayKey)}">${streak}<img data-lazy="${esc(dayData.thumb)}" alt="">${badge}${skyIcon?`<span class="cal-mood-icon" style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.5);border-radius:50%;padding:2px">${skyIcon}</span>`:''}<span class="cal-day-num on-photo">${label}</span></button>`;
   }
-  const mood=moodRec?.moodColor||'var(--bg-2)';
+  const mood=moodRec?.skyMood?skyMoodBg(moodRec.skyMood):(moodRec?.moodColor||'var(--bg-2)');
   const preview=allSealed?tcIcon('lock'):skyIcon||(dayData.items.find(i=>i.text)?.text||'').slice(0,12);
   return`<button type="button" class="mem-cal-cell has-data${isToday?' today':''}" data-day="${esc(dayKey)}">${streak}<div class="mem-cal-fallback" style="background:${esc(mood)};display:flex;align-items:center;justify-content:center">${typeof preview==='string'&&preview.startsWith('<')?preview:`<span style="font-size:8px;color:var(--ink-3);padding:6px;line-height:1.3">${esc(preview)}</span>`}</div>${badge}<span class="cal-day-num">${label}</span></button>`;
 }
@@ -9567,7 +9709,8 @@ function renderMemPhotoGrid(filter='all'){
       if(day.thumb){
         return`<button type="button" class="mem-photo-cell${isToday?' today':''}" data-day="${esc(day.key)}"><img data-lazy="${esc(day.thumb)}" alt=""><span class="cal-day-num">${label}</span></button>`;
       }
-      const mood=day.items.find(i=>i.moodColor)?.moodColor||'var(--bg-2)';
+      const moodRec=day.items.find(i=>i.skyMood||i.type==='mood');
+      const mood=moodRec?.skyMood?skyMoodBg(moodRec.skyMood):(moodRec?.moodColor||'var(--bg-2)');
       return`<button type="button" class="mem-photo-cell${isToday?' today':''}" data-day="${esc(day.key)}"><div class="mem-photo-fallback" style="background:${esc(mood)}"></div><span class="cal-day-num">${label}</span></button>`;
     }).join('');
     return`<div class="mem-photo-month"><div class="mem-photo-month-title">${title}</div><div class="mem-photo-grid">${cells}</div></div>`;
@@ -10585,7 +10728,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
     mediaItems=hasMedia?[media]:[null];
   }
   const displayText=caption||(hasVoice?'（声）':(hasMedia?`（${TYPE_JA[type]}）`:''));
-  const sealMood=S.sealMoodColor||S.sealMood||undefined;
+  const sealSkyMood=S.sealSkyMood||undefined;
   const selfieData=pendingSelfie?.dataUrl;
   const seasonTag=S.seasonEvent?.joined?'grad2026':undefined;
   const doSeal=async()=>{
@@ -10618,7 +10761,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
             loc:capLoc,tags:tags.length?tags:undefined,
             groupId:t.groupId,seasonEvent:seasonTag,pairWith:t.pairWith,
             album:isInstantPost&&mItem?.type==='photo'?getSeasonAlbumKey():undefined,
-            linkedSong:shareSong||undefined,mood:sealMood,moodColor:S.sealMoodColor||undefined,selfieMediaId,
+            linkedSong:shareSong||undefined,skyMood:sealSkyMood,moodBattery:undefined,selfieMediaId,
             voiceDuration:mItem?.type==='voice'?pendingVoice?.duration:undefined,
             sealContext:sealContext||undefined,
             ...(promptMeta||{}),
@@ -10941,7 +11084,7 @@ function finishOpen(){
         S.opened=S.opened||[];
         openingItems.forEach(c=>S.opened.unshift({
           id:c.id,from:c.from,to:c.to,type:c.type,text:c.text,openedAt:Date.now(),mediaId:c.mediaId,
-          goal:c.goal,loc:c.loc,tags:c.tags,linkedSong:c.linkedSong,mood:c.mood,selfieMediaId:c.selfieMediaId,
+          goal:c.goal,loc:c.loc,tags:c.tags,linkedSong:c.linkedSong,mood:c.mood,skyMood:c.skyMood,moodBattery:c.moodBattery,moodWord:c.moodWord,selfieMediaId:c.selfieMediaId,
           promptId:c.promptId,promptText:c.promptText,choice:c.choice,visibility:c.visibility,pairWith:c.pairWith,
           sealContext:c.sealContext,voiceSeriesId:c.voiceSeriesId,voiceMonthKey:c.voiceMonthKey,
           contextWeather:c.sealContext?.weather?{condition:c.sealContext.weather,tempC:c.sealContext.temp}:undefined,
@@ -10992,7 +11135,7 @@ function finishOpen(){
 }
 
 function showMoodNowPick(cap){
-  if(!cap?.mood&&!cap?.moodColor)return;
+  if(!cap?.skyMood&&!cap?.mood&&!cap?.moodColor)return;
   let el=$('moodCompare');
   if(!el){
     el=document.createElement('div');
@@ -11000,20 +11143,22 @@ function showMoodNowPick(cap){
     el.className='mood-compare';
     $('reactions')?.before(el);
   }
-  el.innerHTML=`<span style="font-size:13px;color:var(--ink-3)">あのとき → いまは？</span>
-    <input type="range" min="0" max="360" value="42" style="width:100%;margin-top:8px" id="moodNowHue">
-    <div id="moodNowPreview" class="mood-color-preview" style="height:36px;margin-top:8px;border-radius:8px"></div>`;
-  const sl=el.querySelector('#moodNowHue');
-  const prev=el.querySelector('#moodNowPreview');
-  const update=()=>{if(prev)prev.style.background=hslFromHue(+sl.value)};
-  sl.addEventListener('input',update);update();
-  sl.addEventListener('change',()=>{
-    const col=hslFromHue(+sl.value);
-    el.innerHTML=`<span style="font-size:13px;color:var(--ink-2)">いまの色を残しました</span>`;
+  const thenIcon=cap.skyMood?tcIcon(skyMoodIcon(cap.skyMood)):'';
+  el.innerHTML=`<span style="font-size:13px;color:var(--ink-3)">あのとき ${thenIcon} → いまは？</span>
+    <div class="sky-mood-grid" id="moodNowSkyGrid" style="margin-top:10px"></div>`;
+  const grid=el.querySelector('#moodNowSkyGrid');
+  grid.innerHTML=SKY_MOODS.map(s=>`
+    <button type="button" class="sky-mood-btn" data-now-sky="${s.id}">
+      ${tcIcon(s.icon)}<span>${esc(s.label)}</span>
+    </button>`).join('');
+  grid.querySelectorAll('[data-now-sky]').forEach(btn=>btn.addEventListener('click',()=>{
+    const sky=btn.dataset.nowSky;
+    const lbl=SKY_MOODS.find(s=>s.id===sky)?.label||'';
+    el.innerHTML=`<span style="font-size:13px;color:var(--ink-2)">いまの空（${esc(lbl)}）を残しました</span>`;
     const o=S.opened?.find(x=>x.id===cap.id);
-    if(o){o.moodNow=col;o.moodColorNow=col;save()}
+    if(o){o.skyMoodNow=sky;delete o.moodColorNow;delete o.moodNow;save()}
     haptic();
-  });
+  }));
 }
 
 function showGoalReflect(cap){
