@@ -22,7 +22,29 @@ cd sealed && python3 -m http.server 8770
 | **振り返り** | 思い出・音楽・ストリーク・招待 |
 | **メッセージ** | 未来DM · 個人的な返信 |
 
-状態は `localStorage`（`timecap_v9`）と IndexedDB（メディア）。
+状態は `localStorage`（`timecap_v9`）と IndexedDB（メディア）。  
+ログイン後は **API セッション** で `promptAnswers` と写真をサーバー同期（Vercel Blob + Upstash KV）。
+
+### 本番 API 環境変数（Vercel）
+
+| 変数 | 用途 |
+|------|------|
+| `RESEND_API_KEY` | 確認コードメール・セッション署名 |
+| `API_SESSION_SECRET` | （任意）セッショントークン署名。未設定時は `RESEND_API_KEY` を使用 |
+| `UPSTASH_REDIS_REST_URL` | `promptAnswers` 保存 |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash 認証 |
+| `BLOB_READ_WRITE_TOKEN` | 振り返り写真アップロード |
+
+### API エンドポイント
+
+| メソッド | パス | 説明 |
+|----------|------|------|
+| POST | `/api/verify-code` | 確認コード検証 → `session` 返却 |
+| GET | `/api/prompt-answers?date=&groupId=&memberIds=` | 自分＋Family の回答取得（写真ゲート適用） |
+| POST | `/api/prompt-answers` | 回答の保存・更新 |
+| POST | `/api/upload-media` | 写真アップロード（`dataUrl` または `base64`） |
+
+KV / Blob 未設定時はローカルのみ動作（503 で API はフォールバック）。
 
 ## 開発者向け
 

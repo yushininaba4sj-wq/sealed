@@ -4496,7 +4496,89 @@ function recordPromptAnswer(opts={}){
   }
   pushActivity('prompt_answered',{choice:answer.answerText||'写真'});
   save();
+  syncPromptAnswerToServer({...answer,groupId:primaryGroupId()});
   return answer;
+}
+function primaryGroupId(){
+  return S.groups?.[0]?.id||'g1';
+}
+function familyMemberUserIds(){
+  return MEMBERS.map(m=>m.id).filter(id=>id!=='me');
+}
+function apiEnabled(){return !!S.apiSession}
+async function apiFetch(path,opts={}){
+  const headers={'Content-Type':'application/json',...(opts.headers||{})};
+  if(S.apiSession)headers.Authorization='Bearer '+S.apiSession;
+  const r=await fetch(path,{...opts,headers});
+  const data=await r.json().catch(()=>({}));
+  return{ok:r.ok,status:r.status,data};
+}
+async function apiUploadReflectPhoto(dataUrl){
+  if(!apiEnabled())return null;
+  const {ok,data}=await apiFetch('/api/upload-media',{
+    method:'POST',
+    body:JSON.stringify({dataUrl}),
+  });
+  if(!ok||!data?.ok)return null;
+  return data.answerPhotoUrl||data.url||null;
+}
+async function apiSyncPromptAnswer(answer){
+  if(!apiEnabled()||!answer)return null;
+  const {ok,data}=await apiFetch('/api/prompt-answers',{
+    method:'POST',
+    body:JSON.stringify({
+      ...answer,
+      groupId:answer.groupId||primaryGroupId(),
+      resurfaceAt:answer.resurfaceAt||addDays(365),
+    }),
+  });
+  if(!ok||!data?.ok)return null;
+  return data.answer;
+}
+async function apiFetchPromptAnswers(dateStr){
+  if(!apiEnabled())return null;
+  const memberIds=familyMemberUserIds().join(',');
+  const q=new URLSearchParams({date:dateStr,groupId:primaryGroupId(),memberIds});
+  const {ok,data}=await apiFetch('/api/prompt-answers?'+q.toString());
+  if(!ok||!data?.ok)return null;
+  return data;
+}
+function mergeServerPromptAnswer(serverAnswer){
+  if(!serverAnswer)return;
+  ensurePromptAnswers();
+  const idx=S.promptAnswers.findIndex(a=>a.userId===serverAnswer.userId&&a.date===serverAnswer.date);
+  if(idx>=0)S.promptAnswers[idx]={...S.promptAnswers[idx],...serverAnswer};
+  else S.promptAnswers.push(serverAnswer);
+  save();
+}
+async function syncPromptAnswerToServer(answer){
+  const saved=await apiSyncPromptAnswer(answer);
+  if(saved)mergeServerPromptAnswer(saved);
+  return saved;
+}
+async function refreshPromptAnswersFromServer(dateStr){
+  const remote=await apiFetchPromptAnswers(dateStr);
+  if(!remote)return null;
+  if(remote.mine)mergeServerPromptAnswer(remote.mine);
+  S._familyPromptAnswers=S._familyPromptAnswers||{};
+  S._familyPromptAnswers[dateStr]=remote.family||[];
+  save();
+  return remote;
+}
+function familyPromptAnswersForDate(dateStr){
+  const remote=S._familyPromptAnswers?.[dateStr];
+  if(remote?.length){
+    return remote.map(a=>{
+      const m=MEMBERS.find(x=>x.id===a.userId);
+      return{
+        name:m?.n||a.userId,id:a.userId,
+        answerText:a.locked?null:a.answerText,
+        answerPhotoUrl:a.locked?null:a.answerPhotoUrl,
+        locked:!!a.locked,
+      };
+    });
+  }
+  return demoFriendPromptAnswers(dateStr);
 }
 function demoFriendPromptAnswers(dateStr){
   const texts=['静かな一日だった','友達と話した','勉強に集中','のんびり過ごした'];
@@ -5124,7 +5206,7 @@ function migrateUserProfiles(){
 }
 function logoutUser(){
   persistCurrentUserFromSession();
-  S.auth=null;S.authStep=null;S.pendingAuth=null;
+  S.auth=null;S.authStep=null;S.pendingAuth=null;S.apiSession=null;
   save();renderAll();toast('ログアウトしました');haptic();
 }
 function switchToUser(target){
@@ -5183,15 +5265,20 @@ async function sendVerificationCode(email,mode,name){
     return{ok:false,reason:'send_failed'};
   }catch(e){return{ok:false,reason:'network'}}
 }
-async function verifyCodeWithServer(code,ticket){
+async function verifyCodeWithServer(code,ticket,userId,name){
   try{
     const r=await fetch('/api/verify-code',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ticket,code}),
+      body:JSON.stringify({ticket,code,userId,name}),
     });
     const data=await r.json().catch(()=>({}));
-    return r.ok&&!!data.ok;
+    if(r.ok&&data.ok&&data.session){
+      S.apiSession=data.session;
+      save();
+      return true;
+    }
+    return false;
   }catch(e){return false}
 }
 function pairwiseItems(friendName){
@@ -6689,6 +6776,8 @@ function thumbHtml(c,blur){
 async function loadLazyThumbs(root){
   root?.querySelectorAll('img[data-lazy]').forEach(async img=>{
     const id=img.dataset.lazy;
+    if(!id)return;
+    if(/^https?:\/\//i.test(id)){img.src=id;return;}
     const data=await idbGet(id);
     if(data)img.src=data;
   });
@@ -9911,6 +10000,7 @@ ensureDemoAppearanceShots();
 ensureProfileVisibility();
 if(!S.albums)S.albums={};
 if(!S.shownNotifs)S.shownNotifs=[];
+if(S.apiSession===undefined)S.apiSession=null;
 if(S.mapTimePct===undefined)S.mapTimePct=100;
 if(!S.ctxDisplayPref)S.ctxDisplayPref='weather';
 if(!S.changeCardFrames)S.changeCardFrames=4;
@@ -10324,7 +10414,7 @@ function startWaitTimer(){
 function stopWaitTimer(){if(waitTimer){clearInterval(waitTimer);waitTimer=null}}
 
 let reflectViewDate=null;
-function renderDailyQuestion(){
+async function renderDailyQuestion(){
   ensurePromptAnswers();
   const prompt=getNightReflectPrompt();
   const block=$('dailyQuestionBlock');
@@ -10360,6 +10450,7 @@ function renderDailyQuestion(){
   }
   const mine=getMyPromptAnswer(viewDate);
   const done=!!mine;
+  if(apiEnabled())await refreshPromptAnswersFromServer(viewDate);
   const canView=canViewOthersPrompt(viewDate);
   const streak=S.currentStreak||0;
   if(streakPill){
@@ -10386,12 +10477,21 @@ function renderDailyQuestion(){
           <img data-lazy="${esc(r.mediaId)}" alt="">
         </button>`).join('');
       loadLazyThumbs(reusePicker);
-      reusePicker.querySelectorAll('.dq-reuse-cell').forEach(cell=>cell.addEventListener('click',()=>{
+      reusePicker.querySelectorAll('.dq-reuse-cell').forEach(cell=>cell.addEventListener('click',async()=>{
+        const rec=S.dailyRecords?.find(r=>r.id===cell.dataset.rid);
+        let photoUrl=cell.dataset.mid;
+        if(rec?.mediaId&&apiEnabled()){
+          const data=await idbGet(rec.mediaId);
+          if(data){
+            const uploaded=await apiUploadReflectPhoto(data);
+            if(uploaded)photoUrl=uploaded;
+          }
+        }
         recordPromptAnswer({
-          answerPhotoUrl:cell.dataset.mid,photoSource:'reuse',reusedRecordId:cell.dataset.rid,
+          answerPhotoUrl:photoUrl,photoSource:'reuse',reusedRecordId:cell.dataset.rid,
         });
         reusePicker.classList.add('hidden');
-        renderDailyQuestion();
+        await renderDailyQuestion();
         toast('今日の一枚で答えました');
         haptic();
       }));
@@ -10424,12 +10524,13 @@ function renderDailyQuestion(){
   friends?.classList.remove('hidden');
   const list=$('dqFriendsList');
   if(list){
-    list.innerHTML=demoFriendPromptAnswers(viewDate).map((f,i)=>`
-      <div class="dq-friend-card${canView?' unlocked':' locked'}" style="animation-delay:${i*80}ms">
+    const familyRows=familyPromptAnswersForDate(viewDate);
+    list.innerHTML=familyRows.map((f,i)=>`
+      <div class="dq-friend-card${canView&&!f.locked?' unlocked':' locked'}" style="animation-delay:${i*80}ms">
         <div class="dq-unlock-hint">写真で答えると、みんなの今日が見える</div>
         <div style="font-size:12px;color:var(--ink-3);margin-bottom:4px">${esc(f.name)}</div>
-        ${canView&&f.answerPhotoUrl?`<img data-lazy="${esc(f.answerPhotoUrl)}" alt="" style="width:100%;border-radius:8px;margin-bottom:6px;max-height:120px;object-fit:cover">`:''}
-        <div class="dq-friend-ans">${esc(f.answerText||'—')}</div>
+        ${canView&&!f.locked&&f.answerPhotoUrl?`<img data-lazy="${esc(f.answerPhotoUrl)}" alt="" style="width:100%;border-radius:8px;margin-bottom:6px;max-height:120px;object-fit:cover">`:''}
+        <div class="dq-friend-ans">${esc(canView&&!f.locked?(f.answerText||'—'):'—')}</div>
       </div>`).join('');
     loadLazyThumbs(list);
   }
@@ -11996,7 +12097,7 @@ function renderAuth(container){
         toast('コードの有効期限が切れました');S.authStep=null;S.pendingAuth=null;save();renderAuth(el);return;
       }
       const pa=S.pendingAuth;
-      const ok=await verifyCodeWithServer(code,pa.ticket);
+      const ok=await verifyCodeWithServer(code,pa.ticket,pa.userId,pa.name);
       if(!ok){toast('コードが正しくないか、期限切れです');return}
       if(pa.mode==='signup'){
         if(findUserByUserId(pa.userId)){toast('このIDは使われています');return}
@@ -12999,9 +13100,13 @@ async function handleReflectPhotoInput(e){
   if(!file)return;
   try{
     const dataUrl=await compressImage(file);
-    const id='pa_ph_'+Date.now();
-    await idbPut(id,dataUrl);
-    recordPromptAnswer({answerPhotoUrl:id,photoSource:'new'});
+    let photoUrl=await apiUploadReflectPhoto(dataUrl);
+    if(!photoUrl){
+      const id='pa_ph_'+Date.now();
+      await idbPut(id,dataUrl);
+      photoUrl=id;
+    }
+    recordPromptAnswer({answerPhotoUrl:photoUrl,photoSource:'new'});
     renderAll();
     toast('写真で答えました');
     haptic();

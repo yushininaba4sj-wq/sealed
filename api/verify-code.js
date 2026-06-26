@@ -1,17 +1,4 @@
-import crypto from 'crypto';
-
-function verifyTicket(ticket, code, secret) {
-  try {
-    const { email, exp, mode, mac } = JSON.parse(Buffer.from(ticket, 'base64url').toString());
-    if (!email || !exp || !mode || !mac) return false;
-    if (Date.now() > exp) return false;
-    const expected = crypto.createHmac('sha256', secret).update(`${email}|${code}|${exp}|${mode}`).digest('hex');
-    if (mac.length !== expected.length) return false;
-    return crypto.timingSafeEqual(Buffer.from(mac), Buffer.from(expected));
-  } catch (e) {
-    return false;
-  }
-}
+import { createSession, verifyTicketCode } from './_lib/auth.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -24,14 +11,30 @@ export default async function handler(req, res) {
     return res.status(503).json({ ok: false, error: 'mail_unavailable' });
   }
 
-  const { ticket, code } = req.body || {};
+  const { ticket, code, userId, name } = req.body || {};
   if (!ticket || !code || !/^\d{6}$/.test(String(code))) {
     return res.status(400).json({ ok: false, error: 'invalid' });
   }
 
-  if (!verifyTicket(ticket, String(code), apiKey)) {
+  const ticketData = verifyTicketCode(ticket, String(code));
+  if (!ticketData) {
     return res.status(400).json({ ok: false, error: 'invalid' });
   }
 
-  return res.status(200).json({ ok: true });
+  const uid = String(userId || '').trim();
+  if (!uid) {
+    return res.status(400).json({ ok: false, error: 'missing_user_id' });
+  }
+
+  const session = createSession({
+    userId: uid,
+    email: ticketData.email,
+    name: name || '',
+  });
+
+  return res.status(200).json({
+    ok: true,
+    session,
+    email: ticketData.email,
+  });
 }
