@@ -506,6 +506,13 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
   background:rgba(255,255,255,.08);font-size:12px;color:rgba(255,255,255,.85);margin-bottom:8px;
 }
+.opening-mood-chip{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+  background:rgba(255,255,255,.06);font-size:13px;color:rgba(255,255,255,.75);margin:-12px 0 20px;
+  animation:fadeUp .8s var(--spring) .25s both;
+}
+.opening-mood-chip .battery-gauge{height:8px;min-width:64px}
+.reveal-stack.show~.opening-mood-chip{display:none}
 .drag-seal::after{content:'↑';color:rgba(255,255,255,.6);font-size:13px;position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);animation:bounce 1.5s ease-in-out infinite}
 @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
 .drag-seal.hidden{opacity:0;pointer-events:none}
@@ -3153,8 +3160,19 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       </div>
     </div>
     <div class="create-expand" id="expandMood">
-      <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px">今日の空（任意）</div>
+      <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px" id="expandMoodSub">今日の空（任意）</div>
+      <div class="mood-mode-seg" id="sealMoodModeSeg">
+        <button type="button" class="on" data-seal-mood-mode="sky">天気で表す</button>
+        <button type="button" data-seal-mood-mode="battery">充電％で表す</button>
+      </div>
       <div class="mood-palette" id="moodPalette"></div>
+      <div class="mood-battery-panel hidden" id="sealMoodBatteryPanel">
+        <div class="battery-gauge-wrap">
+          <div class="battery-gauge"><div class="battery-fill" id="sealMoodBatteryFill" style="width:50%"></div></div>
+          <span class="mood-battery-pct" id="sealMoodBatteryPct">50%</span>
+        </div>
+        <input type="range" class="mood-hue-slider" id="sealMoodBatterySlider" min="0" max="100" value="50">
+      </div>
     </div>
     <div class="create-expand" id="expandPrompt">
       <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px">今日の問いに答える形で残す</div>
@@ -3255,6 +3273,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   <div class="opening-content">
     <p class="opening-poetic" id="openingPoetic">過去から、何かが届きました。</p>
     <p class="opening-meta hidden" id="openingMeta"></p>
+    <div class="opening-mood-chip hidden" id="openingMoodChip"></div>
     <div class="opening-envelope" id="openingEnvelope">
       <div class="flap"></div><div class="body"></div>
       <div class="drag-seal" id="dragSeal">封</div>
@@ -3856,7 +3875,58 @@ function renderTextDiaryList(){
 function hslFromHue(h,s=42,l=42){return `hsl(${h},${s}%,${l}%)`}
 let selectedSkyMood='sunny';
 let selectedSealSkyMood=null;
+let selectedSealBattery=null;
+let sealMoodInputMode='sky';
 let moodInputMode='sky';
+function setSealMoodInputMode(mode){
+  sealMoodInputMode=mode==='battery'?'battery':'sky';
+  $('sealMoodModeSeg')?.querySelectorAll('[data-seal-mood-mode]').forEach(b=>{
+    b.classList.toggle('on',b.dataset.sealMoodMode===sealMoodInputMode);
+  });
+  $('moodPalette')?.classList.toggle('hidden',sealMoodInputMode!=='sky');
+  $('sealMoodBatteryPanel')?.classList.toggle('hidden',sealMoodInputMode!=='battery');
+  const sub=$('expandMoodSub');
+  if(sub)sub.textContent=sealMoodInputMode==='sky'?'今日の空（任意）':'充電％で気分を残す（任意）';
+}
+function updateSealMoodBatteryUI(pct){
+  const n=Math.max(0,Math.min(100,Math.round(pct||0)));
+  selectedSealBattery=n;
+  S.sealBattery=n;
+  S.sealSkyMood=null;
+  selectedSealSkyMood=null;
+  $('moodPalette')?.querySelectorAll('.sky-mood-btn').forEach(b=>b.classList.remove('on'));
+  const fill=$('sealMoodBatteryFill');
+  const lbl=$('sealMoodBatteryPct');
+  const sl=$('sealMoodBatterySlider');
+  if(fill)fill.style.width=n+'%';
+  if(lbl)lbl.textContent=n+'%';
+  if(sl&&sl.value!=n)sl.value=n;
+  updateMediaPickState();
+}
+async function initSealMoodBatteryPanel(){
+  const panel=$('sealMoodBatteryPanel');
+  const sl=$('sealMoodBatterySlider');
+  if(!panel||!sl)return;
+  if(!sl.dataset.ready){
+    sl.dataset.ready='1';
+    sl.addEventListener('input',()=>updateSealMoodBatteryUI(+sl.value));
+  }
+  let pct=selectedSealBattery;
+  if(pct==null)pct=await captureBatteryLevel();
+  if(pct==null)pct=72;
+  updateSealMoodBatteryUI(pct);
+}
+function initSealMoodModeSeg(){
+  const seg=$('sealMoodModeSeg');
+  if(!seg||seg.dataset.ready)return;
+  seg.dataset.ready='1';
+  seg.querySelectorAll('[data-seal-mood-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+    setSealMoodInputMode(btn.dataset.sealMoodMode);
+    if(sealMoodInputMode==='battery')initSealMoodBatteryPanel();
+    haptic();
+  }));
+  setSealMoodInputMode(S.moodInputMode||'sky');
+}
 function setMoodInputMode(mode){
   moodInputMode=mode==='battery'?'battery':'sky';
   $('moodModeSeg')?.querySelectorAll('[data-mood-mode]').forEach(b=>{
@@ -5886,12 +5956,13 @@ function updateMediaPickState(){
   $('quickVoiceBtn')?.classList.toggle('has-content',!!pendingVoice);
   document.querySelector('.create-icon[data-expand="photo"]')?.classList.toggle('has-content',!!pendingMedia);
   document.querySelector('.create-icon[data-expand="voice"]')?.classList.toggle('has-content',!!pendingVoice);
-  document.querySelector('.create-icon[data-expand="mood"]')?.classList.toggle('has-content',!!S.sealSkyMood);
+  document.querySelector('.create-icon[data-expand="mood"]')?.classList.toggle('has-content',!!(S.sealSkyMood||S.sealBattery!=null));
   document.querySelector('.create-icon[data-expand="prompt"]')?.classList.toggle('has-content',!!(S.createPromptChoice||S.createPromptText));
   document.querySelector('.create-icon[data-expand="tag"]')?.classList.toggle('has-content',!!parseTagsFromInput().length);
   $('pickSelfieBtn')?.classList.toggle('hidden',!$('selfieToggle')?.checked||!pendingMedia);
 }
 function initCreateExpands(){
+  initSealMoodModeSeg();
   const moods=$('moodPalette');
   if(moods&&!moods.dataset.ready){
     moods.dataset.ready='1';
@@ -5903,6 +5974,8 @@ function initCreateExpands(){
     moods.querySelectorAll('[data-seal-sky]').forEach(btn=>btn.addEventListener('click',()=>{
       selectedSealSkyMood=btn.dataset.sealSky;
       S.sealSkyMood=selectedSealSkyMood;
+      S.sealBattery=null;
+      selectedSealBattery=null;
       moods.querySelectorAll('.sky-mood-btn').forEach(b=>b.classList.toggle('on',b.dataset.sealSky===selectedSealSkyMood));
       updateMediaPickState();
       haptic();
@@ -5918,12 +5991,14 @@ function initCreateExpands(){
       document.querySelectorAll('.create-expand').forEach(p=>p.classList.remove('open'));
       $('createIconRow')?.querySelectorAll('.create-icon').forEach(b=>b.classList.toggle('on',b.dataset.expand===open));
       if(open)panel.classList.add('open');
+      if(open==='mood'&&sealMoodInputMode==='battery')initSealMoodBatteryPanel();
       haptic();
     });
   });
 }
 function resetCreateExtras(){
-  pendingVoice=null;pendingSelfie=null;pendingMusicShare=null;S.sealMood=null;S.sealSkyMood=null;selectedSealSkyMood=null;
+  pendingVoice=null;pendingSelfie=null;pendingMusicShare=null;S.sealMood=null;S.sealSkyMood=null;S.sealBattery=null;
+  selectedSealSkyMood=null;selectedSealBattery=null;sealMoodInputMode=S.moodInputMode||'sky';
   S.createPromptChoice=null;S.createPromptText=null;
   voiceSeconds=0;
   $('voiceTimer').textContent='0s / '+VOICE_MAX_SECONDS+'s';
@@ -5939,6 +6014,7 @@ function resetCreateExtras(){
   document.querySelectorAll('.create-expand').forEach(p=>p.classList.remove('open'));
   $('createIconRow')?.querySelectorAll('.create-icon').forEach(b=>b.classList.remove('on'));
   $('moodPalette')?.querySelectorAll('.sky-mood-btn').forEach(b=>b.classList.remove('on'));
+  setSealMoodInputMode(sealMoodInputMode);
   createExpandOpen=null;
 }
 async function blobToDataUrl(blob){
@@ -6977,6 +7053,17 @@ function openingMetaHtml(cap){
   if(!days&&!sealed)return'';
   const ago=days>=365?`約${Math.round(days/365)}年前`:days>=30?`約${Math.round(days/30)}ヶ月前`:`${days}日前`;
   return sealed?`封をしたのは <strong>${esc(sealed)}</strong> · ${esc(ago)}`:`${esc(ago)}に封じた記憶`;
+}
+function openingMoodChipHtml(cap){
+  if(!cap)return'';
+  if(cap.skyMood){
+    const lbl=cap.moodWord||SKY_MOODS.find(s=>s.id===cap.skyMood)?.label||'';
+    return `${tcIcon(skyMoodIcon(cap.skyMood))} あの日の空${lbl?` · ${esc(lbl)}`:''}`;
+  }
+  if(cap.moodBattery!=null){
+    return `${tcIcon('zap')} あの日の充電 ${Math.round(cap.moodBattery)}%`;
+  }
+  return'';
 }
 function checkLastYearTodayNotif(){
   const item=getLastYearToday();
@@ -10867,7 +10954,8 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
     mediaItems=hasMedia?[media]:[null];
   }
   const displayText=caption||(hasVoice?'（声）':(hasMedia?`（${TYPE_JA[type]}）`:''));
-  const sealSkyMood=S.sealSkyMood||undefined;
+  const sealSkyMood=sealMoodInputMode==='sky'?(S.sealSkyMood||undefined):undefined;
+  const sealBattery=sealMoodInputMode==='battery'?(S.sealBattery??undefined):undefined;
   const selfieData=pendingSelfie?.dataUrl;
   const seasonTag=S.seasonEvent?.joined?'grad2026':undefined;
   const doSeal=async()=>{
@@ -10900,7 +10988,7 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
             loc:capLoc,tags:tags.length?tags:undefined,
             groupId:t.groupId,seasonEvent:seasonTag,pairWith:t.pairWith,
             album:isInstantPost&&mItem?.type==='photo'?getSeasonAlbumKey():undefined,
-            linkedSong:shareSong||undefined,skyMood:sealSkyMood,moodBattery:undefined,selfieMediaId,
+            linkedSong:shareSong||undefined,skyMood:sealSkyMood,moodBattery:sealBattery,selfieMediaId,
             voiceDuration:mItem?.type==='voice'?pendingVoice?.duration:undefined,
             sealContext:sealContext||undefined,
             ...(promptMeta||{}),
@@ -11120,6 +11208,7 @@ function startOpening(items,flash){
   const c=items[0];
   const selfItem=items.find(x=>x.to==='self'&&(x.from==='ゆうま'||x.from===meName()));
   $('openingMeta')?.classList.add('hidden');
+  $('openingMoodChip')?.classList.add('hidden');
   $('openingEnvelope')?.classList.remove('near-open');
   dragSeal?.classList.remove('near-open');
   const days=openingDaysAgo(c);
@@ -11135,6 +11224,13 @@ function startOpening(items,flash){
     if(meta){metaEl.innerHTML=meta;metaEl.classList.remove('hidden')}
     else metaEl.classList.add('hidden');
   }
+  const chipEl=$('openingMoodChip');
+  if(chipEl){
+    const chip=openingMoodChipHtml(c);
+    if(chip){chipEl.innerHTML=chip;chipEl.classList.remove('hidden')}
+    else chipEl.classList.add('hidden');
+  }
+  $('openingHint').textContent='シールを上にスワイプして開封';
   $('openingEnvelope').classList.remove('opened');
   $('openingEnvelope').style.opacity='1';
   $('dragSeal').classList.remove('hidden');
@@ -11171,6 +11267,8 @@ function onDragMove(y){
   const near=currentY<-45;
   dragSeal.classList.toggle('near-open',near);
   $('openingEnvelope')?.classList.toggle('near-open',near);
+  const hint=$('openingHint');
+  if(hint)hint.textContent=near?'もう少し…':'シールを上にスワイプして開封';
   if(currentY<-70)finishOpen();
 }
 function onDragEnd(){if(!dragging)return;dragging=false;if(currentY>-70)dragSeal.style.transform='translateX(-50%)'}
@@ -11231,7 +11329,8 @@ function finishOpen(){
         return media;
       }));
       const skyLine=cap?.skyMood?`<div class="opening-sky-pill">${tcIcon(skyMoodIcon(cap.skyMood))} ${esc(cap.moodWord||SKY_MOODS.find(s=>s.id===cap.skyMood)?.label||'')}</div>`:'';
-      const moodLine=skyLine||(cap?.moodWord?`<div class="opening-sky-pill">${esc(cap.moodWord)}</div>`:'');
+      const battLine=(!cap?.skyMood&&cap?.moodBattery!=null)?`<div class="opening-sky-pill">${moodBatteryGaugeHtml(cap.moodBattery,true)}${cap.moodWord?` · ${esc(cap.moodWord)}`:''}</div>`:'';
+      const moodLine=skyLine||battLine||(cap?.moodWord?`<div class="opening-sky-pill">${esc(cap.moodWord)}</div>`:'');
       const ctxCard=memoryContextHtml(resolveSealContext(cap),cap?.linkedSong);
       const afterReveal=()=>{
         $('reactions').classList.add('show');
@@ -11292,13 +11391,44 @@ function finishOpen(){
 }
 
 function showMoodNowPick(cap){
-  if(!cap?.skyMood&&!cap?.mood&&!cap?.moodColor)return;
+  if(!cap?.skyMood&&!cap?.mood&&!cap?.moodColor&&cap?.moodBattery==null)return;
   let el=$('moodCompare');
   if(!el){
     el=document.createElement('div');
     el.id='moodCompare';
     el.className='mood-compare';
     $('reactions')?.before(el);
+  }
+  if(cap.moodBattery!=null&&!cap.skyMood){
+    const then=Math.round(cap.moodBattery);
+    el.innerHTML=`<span style="font-size:13px;color:var(--ink-3)">あのとき ${tcIcon('zap')} ${then}% → いまは？</span>
+      <div class="mood-battery-panel" style="margin-top:10px">
+        <div class="battery-gauge-wrap">
+          <div class="battery-gauge"><div class="battery-fill" id="moodNowBatteryFill" style="width:50%"></div></div>
+          <span class="mood-battery-pct" id="moodNowBatteryPct">50%</span>
+        </div>
+        <input type="range" class="mood-hue-slider" id="moodNowBatterySlider" min="0" max="100" value="50">
+        <button type="button" class="dq-cta" id="moodNowBatterySave" style="width:100%;margin-top:10px">残す</button>
+      </div>`;
+    const sl=el.querySelector('#moodNowBatterySlider');
+    const fill=el.querySelector('#moodNowBatteryFill');
+    const lbl=el.querySelector('#moodNowBatteryPct');
+    const sync=v=>{
+      const n=Math.max(0,Math.min(100,Math.round(v||0)));
+      if(fill)fill.style.width=n+'%';
+      if(lbl)lbl.textContent=n+'%';
+      return n;
+    };
+    captureBatteryLevel().then(p=>sync(p??50));
+    sl?.addEventListener('input',()=>sync(+sl.value));
+    el.querySelector('#moodNowBatterySave')?.addEventListener('click',()=>{
+      const n=sync(+sl.value);
+      el.innerHTML=`<span style="font-size:13px;color:var(--ink-2)">いまの充電（${n}%）を残しました</span>`;
+      const o=S.opened?.find(x=>x.id===cap.id);
+      if(o){o.moodBatteryNow=n;delete o.skyMoodNow;delete o.moodNow;save()}
+      haptic();
+    });
+    return;
   }
   const thenIcon=cap.skyMood?tcIcon(skyMoodIcon(cap.skyMood)):'';
   el.innerHTML=`<span style="font-size:13px;color:var(--ink-3)">あのとき ${thenIcon} → いまは？</span>
