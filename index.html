@@ -5156,7 +5156,30 @@ function appearanceTimelineHtml(){
     const lbl=s.isNow?'今':new Date(s.capturedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'});
     return`<div class="appearance-shot"><img data-lazy="${esc(s.photoRef)}" alt=""><div class="as-label">${esc(lbl)}</div></div>`;
   }).join('')}</div>
-  <p style="font-size:11px;color:var(--ink-3);margin-top:8px;line-height:1.5">大きく変わった時点だけを静かに並べます。評価や言葉は付けません。</p>`;
+  <p style="font-size:11px;color:var(--ink-3);margin-top:8px;line-height:1.5">大きく変わった時点だけを静かに並べます。評価や言葉は付けません。</p>
+  ${shots.length>=2?`<button type="button" class="create-pick" id="exportAppearanceBtn" style="width:100%;margin-top:10px">変化を動画で保存</button>`:''}`;
+}
+async function exportAppearanceMontage(){
+  const shots=getAppearanceTimeline();
+  if(shots.length<2){toast('もう1枚の記録があると動画にできます');return}
+  const photos=shots.map(s=>({mediaId:s.photoRef}));
+  toast('動画を作成中…');
+  try{
+    const blob=await exportVlogWebM(photos,'あなたの変化');
+    if(!blob){toast('動画の作成に失敗しました');return}
+    const file=new File([blob],'timecap-appearance.webm',{type:blob.type});
+    if(navigator.canShare?.({files:[file]})){
+      await navigator.share({files:[file],title:'あなたの変化',text:shareSheetCaption('あなたの変化')});
+      toast('共有しました');haptic();return;
+    }
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='timecap-appearance.webm';a.click();
+    URL.revokeObjectURL(url);
+    toast('動画を保存しました');haptic();
+  }catch(e){
+    if(e?.name!=='AbortError')toast('動画の保存に失敗しました');
+  }
 }
 function openInsightDrill(type,insKey){
   const ins=collectMonthData(insKey||monthInsightKey());
@@ -5222,6 +5245,31 @@ function initInsightDrillMap(points){
   if(bounds.length>1)insightDrillMapInst.fitBounds(bounds,{padding:[24,24]});
   setTimeout(()=>insightDrillMapInst?.invalidateSize({animate:false}),120);
 }
+function memberTrailHtml(memberId){
+  const m=memberFromId(memberId);
+  if(!m)return'';
+  const pts=friendTrailPoints(m.n);
+  if(!pts.length)return'';
+  const lats=pts.map(p=>p.loc.lat),lngs=pts.map(p=>p.loc.lng);
+  const minLat=Math.min(...lats),maxLat=Math.max(...lats);
+  const minLng=Math.min(...lngs),maxLng=Math.max(...lngs);
+  const latR=(maxLat-minLat)||0.01,lngR=(maxLng-minLng)||0.01;
+  const dots=pts.map(p=>{
+    const x=((p.loc.lng-minLng)/lngR)*80+10;
+    const y=((maxLat-p.loc.lat)/latR)*70+10;
+    return`<div class="fs-trail-point" style="left:${x}%;top:${y}%"></div>`;
+  }).join('');
+  const list=pts.slice().reverse().slice(0,4).map(p=>`
+    <div style="font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+      <span style="color:var(--ink-3);font-size:11px">${new Date(p.openedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'})}</span>
+      <span style="margin-left:8px">${esc((p.text||'').slice(0,28))}</span>
+    </div>`).join('');
+  return`<div style="margin:12px 0">
+    <div class="sec-label">足跡 · ${pts.length}地点</div>
+    <div class="fs-trail-map" style="margin-top:8px">${dots}</div>
+    <div class="fs-trail-list" style="margin-top:8px">${list}</div>
+  </div>`;
+}
 async function openFriendProfile(memberId){
   const m=memberFromId(memberId);
   if(!m)return;
@@ -5281,6 +5329,8 @@ async function openFriendProfile(memberId){
       changesHtml+=`<div style="font-size:13px;color:var(--ink-3)">記録が増えると、場所や音楽の変化が見えます</div>`;
     }
     changesHtml+='</div>';
+    const trail=memberTrailHtml(memberId);
+    if(trail)changesHtml+=trail;
   }
   let pastHtml='';
   if(canViewProfileField('pastPhotos',memberId)){
@@ -6734,6 +6784,22 @@ function checkMonthInsightNotif(){
   S.shownNotifs.push(key);
   pushHomeNotif('今月のまとめができました','振り返りで、あなたの今月を見てみよう','insight',{priority:4});
 }
+function checkPrevMonthInsightNotif(){
+  const now=new Date();
+  if(now.getDate()>3)return;
+  const prev=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const pk=prev.getFullYear()+'-'+String(prev.getMonth()+1).padStart(2,'0');
+  const key='insight_prev_'+pk;
+  if(S.shownNotifs?.includes(key))return;
+  const {start,end}=monthInsightRange(pk);
+  const has=(S.dailyRecords||[]).some(r=>r.createdAt>=start&&r.createdAt<end)
+    ||(S.opened||[]).some(o=>(o.openedAt||o.createdAt)>=start&&(o.openedAt||o.createdAt)<end);
+  if(!has)return;
+  S.shownNotifs=S.shownNotifs||[];
+  S.shownNotifs.push(key);
+  const lb=monthInsightRange(pk).label;
+  pushHomeNotif(lb+'のまとめ','先月のあなたを振り返ろう','insight',{priority:3,monthKey:pk});
+}
 function checkYearInsightNotif(){
   const now=new Date();
   if(now.getMonth()!==11||now.getDate()<25)return;
@@ -6861,6 +6927,7 @@ function musicWeekBlockHtml(){
         <div class="plays">${t.plays||1}回</div>
       </div>`).join('')}
     </div>
+    <button type="button" class="create-pick" id="openWeekMusicShare" style="width:100%;margin-top:12px">今週の音楽をシェア</button>
   </div>`;
 }
 function defaultMusicMonths(){
@@ -7114,9 +7181,10 @@ function genreWrappedCardHtml(summary){
   const hi=summary.highlight;
   const top3=(summary.ranking||[]).slice(0,3);
   const genreLbl={music:'まとめ',people:'いっしょにいた人',route:'歩いた軌跡',voice:'声の記憶',fandom:'推し・ハマり'}[summary.genre]||'まとめ';
+  const periodLbl=summary.period==='week'?'今週の記憶':summary.period==='year'||String(summary.key).length===4?'一年の記憶':'今月の記憶';
   const statLine=summary.genre===PERIOD_GENRE_ROUTE?`${summary.pointCount||0}地点 · ${summary.placeCount||0}か所`
     :summary.genre===PERIOD_GENRE_VOICE?`${summary.voiceCount||0}つの声 · 約${summary.totalSeconds||0}秒`
-    :summary.genre===PERIOD_GENRE_FANDOM?'今月のハマり':'今月の記憶';
+    :summary.genre===PERIOD_GENRE_FANDOM?periodLbl.replace('記憶','ハマり'):periodLbl;
   return`
     <div class="wc-brand">TIME CAP</div>
     <div class="wc-period">${esc(summary.label)}<br>${genreLbl}</div>
@@ -7139,7 +7207,24 @@ function collectMusicSummary(key){
   }
   const top=ranking[0];
   return{
-    key:k,label:ins.label||monthInsightRange(k).label,genre:PERIOD_GENRE_MUSIC,
+    key:k,label:ins.label||monthInsightRange(k).label,genre:PERIOD_GENRE_MUSIC,period:'month',
+    highlight:top?{title:top.title,subtitle:top.subtitle||(top.plays?top.plays+'回':'')}:null,
+    ranking,
+  };
+}
+function collectWeekMusicSummary(){
+  ensureMusicPeriods();
+  const wk=S.musicWeek||{};
+  let ranking=(wk.top3||[]).map(t=>({rank:t.rank,title:t.title,subtitle:t.artist,plays:t.plays}));
+  if(!ranking.length){
+    const weekSince=weekStartMonday().getTime();
+    ranking=aggregateSongRankings(weekSince).slice(0,5).map((t,i)=>({
+      rank:i+1,title:t.title,subtitle:t.artist,plays:t.plays,
+    }));
+  }
+  const top=ranking[0];
+  return{
+    key:wk.key||musicWeekKey(),label:wk.label||weekLabel(),genre:PERIOD_GENRE_MUSIC,period:'week',
     highlight:top?{title:top.title,subtitle:top.subtitle||(top.plays?top.plays+'回':'')}:null,
     ranking,
   };
@@ -7197,7 +7282,25 @@ function collectYearFandomSummary(year){
   }
   const ranking=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([title,count],i)=>({rank:i+1,title,subtitle:'年間',plays:count}));
   const top=ranking[0];
-  return{key:String(year),label:year+'年',genre:PERIOD_GENRE_FANDOM,highlight:top?{title:top.title,subtitle:`${top.plays}回`}:null,ranking};
+  return{key:String(year),label:year+'年',genre:PERIOD_GENRE_FANDOM,period:'year',highlight:top?{title:top.title,subtitle:`${top.plays}回`}:null,ranking};
+}
+function collectYearVoiceSummary(year){
+  let voiceCount=0,totalSeconds=0;
+  const monthRanks=[];
+  for(let m=1;m<=12;m++){
+    const vm=collectVoiceMonthSummary(year+'-'+String(m).padStart(2,'0'));
+    if(vm.voiceCount){
+      voiceCount+=vm.voiceCount;
+      totalSeconds+=vm.totalSeconds||0;
+      monthRanks.push({rank:monthRanks.length+1,title:m+'月',subtitle:`${vm.voiceCount}つ`,plays:vm.voiceCount});
+    }
+  }
+  return{
+    key:String(year),label:year+'年',genre:PERIOD_GENRE_VOICE,period:'year',
+    voiceCount,totalSeconds:totalSeconds,
+    highlight:voiceCount?{title:`${voiceCount}つの声`,subtitle:`合計約${totalSeconds}秒`}:null,
+    ranking:monthRanks.slice(0,5),
+  };
 }
 function collectAllTimeRouteSummary(){
   const points=mapPointsAll().filter(p=>!p.locked);
@@ -7214,6 +7317,17 @@ function collectAllTimeRouteSummary(){
     highlight:top?{title:top.title,subtitle:`${top.plays}回 · ${points.length}地点`}:null,
     ranking,
   };
+}
+function openWeekGenreWrappedCard(genre){
+  if(genre!==PERIOD_GENRE_MUSIC){toast('今週は音楽まとめのみ');return}
+  const summary=collectWeekMusicSummary();
+  if(!summary?.ranking?.length){toast('今週の音楽記録がありません');return}
+  setVlogMode(false);vlogPhotos=null;
+  $('wrappedCard').className='wrapped-card';
+  $('wrappedCard').innerHTML=genreWrappedCardHtml(summary);
+  lastShareCaption=shareSheetCaption(`${summary.label} · 今週の音楽`);
+  $('wrappedOverlay')?.classList.add('open');
+  haptic();
 }
 function openGenreWrappedCard(genre,key){
   const k=key||monthInsightKey();
@@ -7241,16 +7355,17 @@ function openYearGenreWrappedCard(genre,year){
   else if(genre===PERIOD_GENRE_MUSIC){
     const yi=buildYearInsight(y);
     summary={
-      key:String(y),label:y+'年',genre,
+      key:String(y),label:y+'年',genre,period:'year',
       highlight:yi.yearTopSong?{title:yi.yearTopSong.title,subtitle:`${yi.yearTopSong.count}回`}:null,
       ranking:yi.yearTopSong?[{rank:1,title:yi.yearTopSong.title,plays:yi.yearTopSong.count}]:[],
     };
-  }else return;
+  }else if(genre===PERIOD_GENRE_VOICE)summary=collectYearVoiceSummary(y);
+  else return;
   if(!summary?.highlight&&!summary?.ranking?.length){toast('記録がありません');return}
   setVlogMode(false);vlogPhotos=null;
   $('wrappedCard').className='wrapped-card';
   $('wrappedCard').innerHTML=genreWrappedCardHtml(summary);
-  const cap={music:'年間音楽',people:'年間の人',route:'年間軌跡',fandom:'年間ハマり'};
+  const cap={music:'年間音楽',people:'年間の人',route:'年間軌跡',fandom:'年間ハマり',voice:'年間の声'};
   lastShareCaption=shareSheetCaption(`${y}年 · ${cap[genre]||''}`);
   $('wrappedOverlay')?.classList.add('open');
   haptic();
@@ -7561,6 +7676,8 @@ function bindInsightPanelEvents(root,key){
   });
   root.querySelector('#openMonthMontage')?.addEventListener('click',()=>openPeriodMontage(key,'month'));
   root.querySelector('#openMonthVlog')?.addEventListener('click',()=>openMonthVlog(key));
+  root.querySelector('#exportAppearanceBtn')?.addEventListener('click',()=>exportAppearanceMontage());
+  root.querySelector('#openWeekMusicShare')?.addEventListener('click',()=>openWeekGenreWrappedCard(PERIOD_GENRE_MUSIC));
   root.querySelectorAll('[data-insight-drill]').forEach(b=>b.addEventListener('click',()=>openInsightDrill(b.dataset.insightDrill,key)));
   root.querySelector('#saveMonthlyLetterBtn')?.addEventListener('click',()=>{
     saveMonthlyLetter(root.querySelector('#monthlyLetterInput')?.value);
@@ -7713,6 +7830,7 @@ function renderYearInsightPanel(year){
         <button type="button" data-year-genre-share="music">音楽</button>
         <button type="button" data-year-genre-share="people">人</button>
         <button type="button" data-year-genre-share="route">軌跡</button>
+        <button type="button" data-year-genre-share="voice">声</button>
         <button type="button" data-year-genre-share="fandom">ハマり</button>
       </div>
     </div>`;
@@ -8488,6 +8606,7 @@ function renderTimeline(){
   checkMorningPromptNotif();
   checkLastYearTodayNotif();
   checkMonthInsightNotif();
+  checkPrevMonthInsightNotif();
   checkYearInsightNotif();
   checkUnlockNotifs();
   checkLimitedPromptNotif();
@@ -9724,6 +9843,7 @@ function renderArchive(){
     S.archiveMemFilter=b.dataset.amf;save();renderArchive();haptic();
   }));
   $('openWrappedBtn')?.addEventListener('click',()=>openWrappedCard(musicKey));
+  $('openWeekMusicShare')?.addEventListener('click',()=>openWeekGenreWrappedCard(PERIOD_GENRE_MUSIC));
   $('openYearWrapBtn')?.addEventListener('click',()=>openYearWrapCard(yr));
   $('textDiaryComposeBtn')?.addEventListener('click',()=>openTextCompose());
   $('textDiaryEmptyBtn')?.addEventListener('click',()=>openTextCompose());
@@ -10016,7 +10136,7 @@ function renderNotifDropdown(){
       else if(item.dataset.action==='dm'){const dm=S.dms?.find(x=>x.id===item.dataset.dmid);if(dm)openFriendSpace(dm.withId)}
       else if(item.dataset.action==='timeline'){switchTab('waiting');$('timeMachineSection')?.scrollIntoView({behavior:'smooth',block:'start'})}
       else if(item.dataset.action==='home'){switchTab('waiting');renderTimeline();haptic()}
-      else if(item.dataset.action==='insight'){S.archiveTab='insight';save();switchTab('archive');renderArchive();openInsightSheet(monthInsightKey())}
+      else if(item.dataset.action==='insight'){S.archiveTab='insight';save();switchTab('archive');renderArchive();openInsightSheet(n?.monthKey||monthInsightKey())}
       else if(item.dataset.action==='yearInsight')openInsightSheet(String(new Date().getFullYear()));
       haptic();
     });
