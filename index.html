@@ -2713,8 +2713,15 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 }
 .tl-inner-react button.on{background:rgba(201,168,76,.14);color:var(--sc-gold,#C9A84C);border-color:rgba(201,168,76,.28)}
 .capsule-days-badge{font-size:11px;color:var(--sc-gold,#C9A84C);letter-spacing:.04em}
-.mood-battery-toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);margin:8px 0 4px;cursor:pointer}
+.mood-mode-seg{display:flex;gap:8px;margin-bottom:12px}
+.mood-mode-seg button{
+  flex:1;padding:10px 8px;border-radius:var(--r-sm);font-size:12px;font-weight:600;
+  background:var(--bg-3);color:var(--ink-3);border:1px solid rgba(255,255,255,.06);
+}
+.mood-mode-seg button.on{background:var(--ink);color:var(--accent-inv);border-color:var(--ink)}
 .mood-battery-panel{margin-bottom:12px}
+.mood-battery-panel.hidden{display:none!important}
+.sky-mood-grid.hidden{display:none!important}
 .battery-gauge-wrap{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .battery-gauge{flex:1;height:14px;border-radius:7px;border:1px solid rgba(255,255,255,.12);padding:2px;background:var(--bg-3)}
 .battery-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#5A5A5A,var(--sc-gold,#C9A84C));transition:width .3s}
@@ -3350,7 +3357,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   </div>
   <div class="onboard-panel hidden" id="onboardStepMood">
     <h2 style="font-family:var(--font-display);font-size:22px">まずは、今日の空を</h2>
-    <p style="font-size:14px">晴れ・くもり・雨… 天気アイコンで、いまの気分を残せます。</p>
+    <p style="font-size:14px">晴れ・くもり・雨… または充電％で、いまの気分を残せます。</p>
     <button type="button" class="dq-cta btn-gold" id="onboardPickColor" style="width:100%;margin-top:24px">空を選ぶ</button>
   </div>
   <div class="onboard-panel hidden" id="onboardStepDone">
@@ -3364,9 +3371,12 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 <div class="mood-pick-overlay" id="moodPickOverlay">
   <div class="mood-pick-sheet mood-color-sheet">
     <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;font-family:var(--font-display)">今日の空</h3>
-    <p style="font-size:13px;color:var(--ink-3);margin-bottom:12px">晴れ / くもり / 雨 / 雷 / 雪 · 任意で充電％も</p>
+    <p style="font-size:13px;color:var(--ink-3);margin-bottom:12px" id="moodPickSub">晴れ / くもり / 雨 / 雷 / 雪</p>
+    <div class="mood-mode-seg" id="moodModeSeg">
+      <button type="button" class="on" data-mood-mode="sky">天気で表す</button>
+      <button type="button" data-mood-mode="battery">充電％で表す</button>
+    </div>
     <div class="sky-mood-grid" id="skyMoodGrid"></div>
-    <label class="mood-battery-toggle"><input type="checkbox" id="moodUseBattery"> 充電％でも気分を表す</label>
     <div class="mood-battery-panel hidden" id="moodBatteryPanel">
       <div class="battery-gauge-wrap">
         <div class="battery-gauge"><div class="battery-fill" id="moodBatteryFill" style="width:50%"></div></div>
@@ -3846,7 +3856,35 @@ function renderTextDiaryList(){
 function hslFromHue(h,s=42,l=42){return `hsl(${h},${s}%,${l}%)`}
 let selectedSkyMood='sunny';
 let selectedSealSkyMood=null;
+let moodInputMode='sky';
+function setMoodInputMode(mode){
+  moodInputMode=mode==='battery'?'battery':'sky';
+  $('moodModeSeg')?.querySelectorAll('[data-mood-mode]').forEach(b=>{
+    b.classList.toggle('on',b.dataset.moodMode===moodInputMode);
+  });
+  $('skyMoodGrid')?.classList.toggle('hidden',moodInputMode!=='sky');
+  $('moodBatteryPanel')?.classList.toggle('hidden',moodInputMode!=='battery');
+  const sub=$('moodPickSub');
+  if(sub)sub.textContent=moodInputMode==='sky'?'晴れ / くもり / 雨 / 雷 / 雪':'残り％をスライドで、いまの気分に合わせる';
+}
+function initMoodModeSeg(){
+  const seg=$('moodModeSeg');
+  if(!seg||seg.dataset.ready)return;
+  seg.dataset.ready='1';
+  seg.querySelectorAll('[data-mood-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+    setMoodInputMode(btn.dataset.moodMode);
+    haptic();
+  }));
+  setMoodInputMode(S.moodInputMode||'sky');
+}
+function resetMoodPicker(){
+  moodInputMode=S.moodInputMode||'sky';
+  selectedSkyMood='sunny';
+  $('moodWordInput')&&( $('moodWordInput').value='');
+  setMoodInputMode(moodInputMode);
+}
 function initSkyMoodPicker(){
+  initMoodModeSeg();
   const grid=$('skyMoodGrid');
   if(!grid)return;
   if(!grid.dataset.ready){
@@ -3896,9 +3934,11 @@ async function openPostDetail(p){
       const data=await idbGet(p.mediaId);
       if(data)photoHtml=`<img class="sc-photo" src="${data}" alt="" style="width:72%;max-height:48vh">`;
     }catch(e){}
-  }else if(p.skyMood||(p.type==='mood'&&!p.moodColor)){
+  }else if(p.skyMood){
     const batt=p.moodBattery!=null?moodBatteryGaugeHtml(p.moodBattery):'';
     photoHtml=`<div class="sc-photo-ph" style="width:72%;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--bg-3)">${tcIcon(skyMoodIcon(p.skyMood),'lg')}${batt}</div>`;
+  }else if(p.moodBattery!=null){
+    photoHtml=`<div class="sc-photo-ph" style="width:72%;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--bg-3)">${moodBatteryGaugeHtml(p.moodBattery)}</div>`;
   }else if(p.moodColor){
     photoHtml=`<div class="sc-photo-ph" style="width:72%;aspect-ratio:1;background:${esc(p.moodColor)}"></div>`;
   }
@@ -4109,7 +4149,11 @@ function recordStreakDisplay(){
 }
 function dailyRecordPreview(rec){
   if(!rec)return '';
-  if(rec.type==='mood')return rec.skyMood?tcIcon(skyMoodIcon(rec.skyMood)):rec.moodColor?'':tcIcon('cloud');
+  if(rec.type==='mood'){
+    if(rec.moodBattery!=null&&!rec.skyMood)return `${tcIcon('zap')} ${Math.round(rec.moodBattery)}%`;
+    if(rec.skyMood)return tcIcon(skyMoodIcon(rec.skyMood));
+    return tcIcon('cloud');
+  }
   if(rec.type==='song')return rec.songTitle?tcIcon('music')+' '+esc(rec.songTitle.slice(0,8)):tcIcon('music');
   if(rec.mediaId)return tcIcon(rec.type==='sky'?'cloud':rec.type==='food'?'food':'camera');
   return tcIcon('check');
@@ -4228,6 +4272,7 @@ function openDailyRecord(type){
     return;
   }
   if(type==='mood'){
+    resetMoodPicker();
     initSkyMoodPicker();
     renderDailySharePicker('mood',$('moodSharePicker'));
     $('moodPickOverlay')?.classList.add('open');
@@ -5179,6 +5224,13 @@ function memberTextDiary(memberId,limit=5){
 function memberMoodCardHtml(mood){
   if(!mood)return'';
   const lbl=mood.moodWord||SKY_MOODS.find(s=>s.id===mood.skyMood)?.label||'';
+  if(mood.moodBattery!=null&&!mood.skyMood){
+    return`<div style="margin:16px 0;padding:16px;background:var(--bg-3);border-radius:var(--r-sm);text-align:center">
+      ${moodBatteryGaugeHtml(mood.moodBattery)}
+      ${lbl?`<div style="font-size:14px;margin-top:8px">${esc(lbl)}</div>`:''}
+      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">充電％ · ${timeAgo(mood.at)}</div>
+    </div>`;
+  }
   const batt=mood.moodBattery!=null?moodBatteryGaugeHtml(mood.moodBattery):'';
   if(mood.skyMood||(mood.type==='mood'&&!mood.moodColor)){
     return`<div style="margin:16px 0;padding:16px;background:var(--bg-3);border-radius:var(--r-sm);text-align:center">
@@ -5208,21 +5260,15 @@ function updateMoodBatteryUI(pct){
 }
 async function initMoodBatteryPanel(){
   const panel=$('moodBatteryPanel');
-  const toggle=$('moodUseBattery');
   const sl=$('moodBatterySlider');
-  if(!panel||!toggle)return;
-  if(!toggle.dataset.ready){
-    toggle.dataset.ready='1';
-    toggle.addEventListener('change',()=>{
-      panel.classList.toggle('hidden',!toggle.checked);
-      haptic();
-    });
-    sl?.addEventListener('input',()=>updateMoodBatteryUI(+sl.value));
+  if(!panel||!sl)return;
+  if(!sl.dataset.ready){
+    sl.dataset.ready='1';
+    sl.addEventListener('input',()=>updateMoodBatteryUI(+sl.value));
   }
   let pct=await captureBatteryLevel();
   if(pct==null)pct=72;
   updateMoodBatteryUI(pct);
-  panel.classList.toggle('hidden',!toggle.checked);
 }
 function computeImageVector(dataUrl){
   return new Promise((res,rej)=>{
@@ -5635,12 +5681,24 @@ async function openMonthVlog(key){
   },1200);
   haptic();
 }
+function moodBatteryHeroHtml(pct,word,large){
+  const n=Math.max(0,Math.min(100,Math.round(pct||0)));
+  const gauge=moodBatteryGaugeHtml(n,!large);
+  const lbl=word?`<span class="tl-color-word" style="color:var(--ink-2)">${esc(word)}</span>`:'';
+  return `<div class="tl-photo-hero" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:140px;background:var(--bg-3)">${gauge}${lbl}</div>`;
+}
 function postBodyHtml(p){
-  if(p.skyMood||(p.type==='mood'&&!p.moodColor)){
+  if(p.type==='mood'&&p.moodBattery!=null&&!p.skyMood){
+    return moodBatteryHeroHtml(p.moodBattery,p.moodWord,true);
+  }
+  if(p.skyMood){
     const icon=skyMoodIcon(p.skyMood);
     const lbl=p.moodWord||SKY_MOODS.find(s=>s.id===p.skyMood)?.label||'';
     const batt=p.moodBattery!=null?moodBatteryGaugeHtml(p.moodBattery):'';
     return `<div class="tl-photo-hero" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;background:var(--bg-3)">${tcIcon(icon,'lg')}${lbl?`<span class="tl-color-word">${esc(lbl)}</span>`:''}${batt}</div>`;
+  }
+  if(p.type==='mood'&&!p.moodColor){
+    return `<div class="tl-photo-hero" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;background:var(--bg-3)">${tcIcon('cloud','lg')}</div>`;
   }
   if(p.moodColor)return `<div class="tl-photo-hero tl-color-fill" style="background:${esc(p.moodColor)}">${p.moodWord?`<span class="tl-color-word">${esc(p.moodWord)}</span>`:''}</div>`;
   if(p.mediaId)return `<div class="tl-photo-hero"><img data-lazy="${esc(p.mediaId)}" alt="" style="${photoMemoryFilter(p.at)}"></div>`;
@@ -5651,7 +5709,10 @@ function postBodyHtml(p){
 function consolidatedThumbsHtml(items){
   return items.map(it=>{
     if(it.mediaId)return `<img data-lazy="${esc(it.mediaId)}" alt="">`;
-    if(it.skyMood||(it.type==='mood'&&!it.moodColor)){
+    if(it.moodBattery!=null&&!it.skyMood){
+      return `<div style="width:56px;height:56px;border-radius:8px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:600;color:var(--ink-2)">${tcIcon('zap')} ${Math.round(it.moodBattery)}%</div>`;
+    }
+    if(it.skyMood){
       return `<div style="width:56px;height:56px;border-radius:8px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;flex-shrink:0">${tcIcon(skyMoodIcon(it.skyMood))}</div>`;
     }
     if(it.moodColor)return `<div style="width:56px;height:56px;border-radius:8px;background:${esc(it.moodColor)};flex-shrink:0"></div>`;
@@ -8468,6 +8529,7 @@ if(!S.dailyAnswers)S.dailyAnswers=[];
 ensureDailyRecords();
 if(!S.activityFeed)S.activityFeed=[];
 if(!S.shownPastArrivals)S.shownPastArrivals=[];
+if(S.moodInputMode===undefined)S.moodInputMode='sky';
 if(S.appearanceTrackingEnabled===undefined)S.appearanceTrackingEnabled=true;
 migrateSkyMoodRecords();
 ensureDemoAppearanceShots();
@@ -8686,6 +8748,8 @@ function renderTimelineFeed(){
     if(locked){
       const daysLbl=capsuleDaysShort(p.unlockAt||p.openAt);
       body=`<div class="tl-sealed-compact"><div class="lock-core"><div class="lbl">${esc(p.from)} · タイムカプセル</div><div class="when capsule-days-badge">${esc(daysLbl)}</div></div></div>`;
+    }else if(p.moodBattery!=null&&!p.skyMood){
+      body=moodBatteryHeroHtml(p.moodBattery,p.moodWord,true);
     }else if(p.skyMood||(p.type==='mood'&&!p.moodColor)){
       body=postBodyHtml(p);
     }else if(p.moodColor){
@@ -9018,6 +9082,8 @@ function renderTimeMachine(){
     }else if(item.skyMood){
       const lbl=item.moodWord||SKY_MOODS.find(s=>s.id===item.skyMood)?.label||'';
       body=`<div class="tm-sky">${tcIcon(skyMoodIcon(item.skyMood))}<span>${esc(lbl)}</span></div>`;
+    }else if(item.moodBattery!=null){
+      body=`<div class="tm-sky">${moodBatteryGaugeHtml(item.moodBattery)}${item.moodWord?`<span>${esc(item.moodWord)}</span>`:''}</div>`;
     }else{
       body=`<p class="tm-body">${esc((item.text||item.moodWord||'この日の記憶').slice(0,80))}</p>`;
     }
@@ -11313,15 +11379,14 @@ $('moodPickClose')?.addEventListener('click',()=>$('moodPickOverlay')?.classList
 $('moodPickOverlay')?.addEventListener('click',e=>{if(e.target===$('moodPickOverlay'))$('moodPickOverlay').classList.remove('open')});
 $('moodColorSave')?.addEventListener('click',async()=>{
   const moodWord=$('moodWordInput')?.value?.trim()||'';
-  const useBattery=$('moodUseBattery')?.checked;
-  const batteryPct=useBattery?+($('moodBatterySlider')?.value||0):null;
   const overlay=$('moodPickOverlay');
+  const payload=moodInputMode==='battery'
+    ?{moodBattery:+($('moodBatterySlider')?.value||0),moodWord,skyMood:null}
+    :{skyMood:selectedSkyMood,moodWord,moodBattery:null};
+  S.moodInputMode=moodInputMode;
+  save();
   try{
-    const rec=await saveDailyMood({
-      skyMood:selectedSkyMood,
-      moodWord,
-      moodBattery:batteryPct,
-    });
+    const rec=await saveDailyMood(payload);
     if(!rec)return;
     overlay?.classList.remove('open');
     if(overlay?._onboard){
