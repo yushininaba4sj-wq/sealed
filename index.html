@@ -2149,6 +2149,22 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
   background:rgba(255,255,255,.08);font-size:12px;font-weight:500;margin-bottom:12px;
 }
+.dq-date-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dq-date-nav button{padding:6px 10px;border-radius:8px;font-size:12px;color:var(--ink-2);background:var(--bg-3)}
+.dq-date-nav span{font-size:11px;color:var(--ink-3)}
+.dq-answer-opts{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.dq-answer-opts button{
+  padding:12px 14px;border-radius:var(--r-sm);background:var(--bg-3);font-size:13px;font-weight:500;text-align:left;
+  border:1px solid rgba(255,255,255,.06);
+}
+.dq-answer-opts button:disabled{opacity:.45}
+.dq-reuse-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 12px}
+.dq-reuse-cell{aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden;cursor:pointer;border:2px solid transparent}
+.dq-reuse-cell.on{border-color:var(--ink)}
+.dq-reuse-cell img{width:100%;height:100%;object-fit:cover}
+.dq-answer-photo{margin:8px 0 12px;border-radius:var(--r-sm);overflow:hidden;max-height:180px}
+.dq-answer-photo img{width:100%;display:block;object-fit:cover}
+.dq-late-badge{font-size:10px;color:var(--ink-3);margin-left:8px;font-weight:500}
 
 /* タイムマシン */
 .lyt-section{margin:0 20px 20px;padding:16px;border-radius:var(--r);background:var(--bg-2);border:1px solid rgba(255,255,255,.06)}
@@ -2961,10 +2977,22 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     </div>
     <div class="home-secondary hidden" id="homeSecondary" aria-hidden="true">
     <div class="daily-question hidden" id="dailyQuestionBlock">
-        <div class="dq-label">今日の問い</div>
+        <div class="dq-label" id="dqSectionLabel">夜の振り返り</div>
         <div class="dq-streak-pill hidden" id="streakPill">連続 <span id="streakCount">0</span> 日</div>
+        <div class="dq-date-nav hidden" id="dqDateNav">
+          <button type="button" id="dqDatePrev" aria-label="前の日">←</button>
+          <span id="dqDateLabel">—</span>
+          <button type="button" id="dqDateNext" aria-label="次の日">→</button>
+        </div>
         <div class="dq-text" id="dailyQuestionText">—</div>
         <div class="dq-tap-row hidden" id="dqTapRow"></div>
+        <div class="dq-answer-opts hidden" id="dqAnswerOpts">
+          <button type="button" id="dqAnswerPhotoBtn">写真を撮る / 選ぶ</button>
+          <button type="button" id="dqAnswerReuseBtn">今日の投稿から選ぶ</button>
+          <button type="button" id="dqAnswerTextBtn">言葉で答える</button>
+        </div>
+        <div class="dq-reuse-grid hidden" id="dqReusePicker"></div>
+        <div class="dq-answer-photo hidden" id="dqAnswerPhotoPreview"></div>
         <button type="button" class="dq-cta hidden" id="dailyQuestionBtn">一言で答える</button>
         <div class="dq-mode-row hidden" id="dqModeRow">
           <button type="button" class="on" data-pmode="today">今日見せ合う</button>
@@ -3548,6 +3576,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 </div>
 <input type="file" id="dailyPhotoInput" accept="image/*,.heic,.heif" capture="environment" class="hidden">
 <input type="file" id="dailySkyInput" accept="image/*,.heic,.heif" capture="environment" class="hidden">
+<input type="file" id="reflectPhotoInput" accept="image/*,.heic,.heif" class="hidden">
 
 <div class="wrapped-overlay" id="wrappedOverlay">
   <div>
@@ -3809,7 +3838,9 @@ const DAILY_RECORD_TYPES={
   food:{iconKey:'food',label:'今日のごはん'},
   sky:{iconKey:'cloud',label:'空の写真'},
 };
-const DEFAULT_PROFILE_VISIBILITY={mood:'inner',recentPhoto:'inner',music:'inner',changes:'inner',pastPhotos:'self',textDiary:'self'};
+const DEFAULT_PROFILE_VISIBILITY={mood:'inner',recentPhoto:'inner',music:'inner',changes:'inner',pastPhotos:'self',textDiary:'self',streak:'self',totalPosts:'self',totalDays:'self'};
+const PRIVATE_PROFILE_STATS=['streak','totalPosts','totalDays'];
+const NIGHT_REFLECT_DEFAULT='今日は、どんな日だった？';
 const PROFILE_VIS_FIELDS=[
   {key:'mood',label:'今日の空'},
   {key:'recentPhoto',label:'最近の一枚'},
@@ -3941,6 +3972,7 @@ function textPostsForTimeline(){
 }
 function openTextCompose(opts={}){
   if(!isLoggedIn()){toast('投稿するにはログインしてください');switchTab('archive');S.archiveTab='settings';save();renderArchive();return}
+  S._reflectTextMode=!!opts.reflectMode;
   textComposeDest=opts.dest||'inner';
   textComposeDays=opts.days||365;
   const ov=$('textComposeOverlay');
@@ -3949,22 +3981,24 @@ function openTextCompose(opts={}){
   if(promptEl)promptEl.textContent=opts.promptText||textPromptLine();
   if(input){
     input.value=opts.prefill||'';
-    input.placeholder=textPlaceholder();
+    input.placeholder=S._reflectTextMode?'今日を言葉で振り返る…':textPlaceholder();
     $('textComposeCount').textContent=String(input.value.length);
   }
-  document.querySelectorAll('#textDestToggle button').forEach(b=>{
-    b.classList.toggle('on',b.dataset.tdest===textComposeDest);
-  });
-  $('textDurationBlock')?.classList.toggle('hidden',textComposeDest!=='capsule');
+  const destToggle=$('textDestToggle');
+  destToggle?.classList.toggle('hidden',S._reflectTextMode);
+  $('textDurationBlock')?.classList.toggle('hidden',S._reflectTextMode||textComposeDest!=='capsule');
   const pickerWrap=$('textSharePickerWrap');
   if(pickerWrap){
-    const showInner=textComposeDest==='inner';
+    const showInner=!S._reflectTextMode&&textComposeDest==='inner';
     pickerWrap.classList.toggle('hidden',!showInner);
     if(showInner){
       pickerWrap.innerHTML=dailySharePickerHtml('text');
       bindDailySharePicker(pickerWrap,'text');
     }
   }
+  document.querySelectorAll('#textDestToggle button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.tdest===textComposeDest);
+  });
   document.querySelectorAll('#textDurationPills .duration-pill').forEach(b=>{
     b.classList.toggle('on',+b.dataset.tdays===textComposeDays);
   });
@@ -3975,6 +4009,7 @@ function openTextCompose(opts={}){
 function closeTextCompose(){
   $('textComposeOverlay')?.classList.remove('open');
   if($('textComposeInput'))$('textComposeInput').value='';
+  S._reflectTextMode=false;
 }
 function renderTextDiaryList(){
   const posts=myTextDiaryPosts();
@@ -4354,7 +4389,141 @@ function todayDailyRecords(){
   return S.dailyRecords.filter(r=>new Date(r.createdAt).toISOString().slice(0,10)===d);
 }
 function hasTodayDaily(type){return dailyTypeCount(type)>0}
-function recordCountDisplay(){return totalRecordDays()||0}
+function totalPostsCount(){
+  const recs=(S.dailyRecords||[]).length;
+  const posts=(S.posts||[]).filter(isMyPost).length;
+  const caps=(S.capsules||[]).filter(c=>(c.from===meName()||c.from==='ゆうま')&&c.layer==='now').length;
+  return recs+posts+caps;
+}
+function ensurePromptAnswers(){
+  if(!S.promptAnswers)S.promptAnswers=[];
+  if(!S._promptAnswersMigrated){
+    (S.dailyAnswers||[]).forEach(da=>{
+      if(!S.promptAnswers.some(p=>p.date===da.date&&(p.userId===meName()||p.userId==='ゆうま'||p.userId===meUserId()))){
+        S.promptAnswers.push({
+          id:'pa_m_'+da.date,promptId:'legacy',userId:meUserId()||meName(),date:da.date,
+          answerText:da.text||da.choice||null,answerPhotoUrl:null,photoSource:null,reusedRecordId:null,
+          mode:'today',answeredAt:da.at||Date.now(),isLate:false,resurfaceAt:addDays(365),
+        });
+      }
+    });
+    if(S.dailyAnswerToday?.date&&!S.promptAnswers.some(p=>p.date===S.dailyAnswerToday.date)){
+      S.promptAnswers.push({
+        id:'pa_m_today',promptId:'legacy',userId:meUserId()||meName(),date:S.dailyAnswerToday.date,
+        answerText:S.dailyAnswerToday.text||S.dailyAnswerToday.choice||null,
+        answerPhotoUrl:null,photoSource:null,reusedRecordId:null,
+        mode:'today',answeredAt:Date.now(),isLate:false,resurfaceAt:addDays(365),
+      });
+    }
+    S._promptAnswersMigrated=true;
+    save();
+  }
+}
+function getNightReflectSettings(){
+  if(!S.eveningReflectSettings)S.eveningReflectSettings={enabled:true,hour:21};
+  return S.eveningReflectSettings;
+}
+function getNightReflectDate(){
+  const d=new Date(),h=d.getHours();
+  if(h<5)d.setDate(d.getDate()-1);
+  return d.toISOString().slice(0,10);
+}
+function nightReflectLabel(){
+  const h=new Date().getHours();
+  if(h>=0&&h<5)return'昨夜の問い';
+  if(h>=getNightReflectSettings().hour)return'今夜の問い';
+  return'今日の問い';
+}
+function getNightReflectPrompt(){
+  return{id:'night-reflect',text:NIGHT_REFLECT_DEFAULT,type:'free'};
+}
+function getMyPromptAnswer(dateStr){
+  ensurePromptAnswers();
+  const uid=meUserId(),me=meName();
+  return S.promptAnswers.find(a=>a.date===dateStr&&(a.userId===uid||a.userId===me||a.userId==='ゆうま'));
+}
+function canViewOthersPrompt(dateStr){
+  const mine=getMyPromptAnswer(dateStr);
+  return!!(mine?.answerPhotoUrl);
+}
+function listReflectDates(){
+  ensurePromptAnswers();
+  const dates=new Set(S.promptAnswers.map(a=>a.date));
+  dates.add(getNightReflectDate());
+  return[...dates].sort().reverse();
+}
+function myTodayPhotoRecords(){
+  return todayDailyRecords().filter(r=>r.mediaId&&['photo','food','sky'].includes(r.type));
+}
+function recordPromptAnswer(opts={}){
+  ensurePromptAnswers();
+  const dateStr=opts.date||getNightReflectDate();
+  const h=new Date().getHours();
+  const isLate=h>=0&&h<5;
+  const existing=getMyPromptAnswer(dateStr);
+  const answer={
+    id:existing?.id||('pa'+Date.now()),
+    promptId:opts.promptId||'night-reflect',
+    userId:meUserId()||meName(),
+    date:dateStr,
+    answerText:opts.answerText??existing?.answerText??null,
+    answerPhotoUrl:opts.answerPhotoUrl??existing?.answerPhotoUrl??null,
+    photoSource:opts.photoSource??existing?.photoSource??null,
+    reusedRecordId:opts.reusedRecordId??existing?.reusedRecordId??null,
+    mode:opts.mode||dqPromptMode||'today',
+    answeredAt:Date.now(),
+    isLate:opts.isLate!=null?opts.isLate:isLate,
+    resurfaceAt:addDays(365),
+  };
+  if(existing){
+    const idx=S.promptAnswers.findIndex(a=>a.id===existing.id);
+    S.promptAnswers[idx]=answer;
+  }else S.promptAnswers.push(answer);
+  S.dailyAnswerToday={choice:answer.answerText,text:answer.answerText||'',date:dateStr};
+  S.dailyQuestionDate=dateStr;
+  S.dailyQuestionDone=true;
+  S.dailyAnswers=S.dailyAnswers||[];
+  if(!S.dailyAnswers.some(a=>a.date===dateStr)){
+    S.dailyAnswers.push({date:dateStr,choice:answer.answerText||'',text:answer.answerText||'',at:Date.now()});
+    const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+    const yStr=yesterday.toISOString().slice(0,10);
+    const hadYesterday=S.dailyAnswers.filter(a=>a.date===yStr).length>0||S.lastAnswerDate===yStr;
+    S.currentStreak=hadYesterday?(S.currentStreak||0)+1:1;
+    S.lastAnswerDate=dateStr;
+    S.longestStreak=Math.max(S.longestStreak||0,S.currentStreak);
+    if(S.currentStreak>=7)grantBonus('badge-streak-7');
+    S.streak=S.currentStreak;
+  }
+  pushActivity('prompt_answered',{choice:answer.answerText||'写真'});
+  save();
+  return answer;
+}
+function demoFriendPromptAnswers(dateStr){
+  const texts=['静かな一日だった','友達と話した','勉強に集中','のんびり過ごした'];
+  const photos=['demo_photo',null,'demo_photo',null];
+  return MEMBERS.slice(0,4).map((m,i)=>({
+    name:m.n,id:m.id,
+    answerText:texts[i],
+    answerPhotoUrl:photos[i],
+    photoSource:photos[i]?'new':null,
+  }));
+}
+function shouldShowNightReflect(){
+  ensurePromptAnswers();
+  const settings=getNightReflectSettings();
+  const h=new Date().getHours();
+  if(S.promptAnswers.length>0)return true;
+  if(getMyPromptAnswer(getNightReflectDate()))return true;
+  if(!settings.enabled)return false;
+  return h>=settings.hour||h<5;
+}
+function renderNightReflect(){
+  const secondary=$('homeSecondary');
+  const show=shouldShowNightReflect();
+  secondary?.classList.toggle('hidden',!show);
+  secondary?.setAttribute('aria-hidden',show?'false':'true');
+  if(show)renderDailyQuestion();
+}
 function recordStreakDisplay(){
   return S.currentStreak||0;
 }
@@ -4608,9 +4777,10 @@ function renderHomeTodayGrid(){/* replaced by renderDailyStrip */}
 function renderHome(){
   const d=new Date();
   $('homeDate').textContent=`今日 ${d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'})}`;
-  $('homeStats').textContent=`${totalRecordDays()}日分を残した · 連続 ${recordStreakDisplay()}日`;
+  $('homeStats').textContent=`${totalRecordDays()}日分を残した · 連続 ${recordStreakDisplay()}日 · ${totalPostsCount()}件`;
   renderDailyStrip();
   renderHomeAppearance();
+  renderNightReflect();
 }
 function renderHomeAppearance(){
   const el=$('homeAppearanceMount');
@@ -5392,6 +5562,7 @@ function moodBatteryGaugeHtml(pct,compact){
 function ensureProfileVisibility(){
   if(!S.profileVisibility)S.profileVisibility={...DEFAULT_PROFILE_VISIBILITY};
   PROFILE_VIS_FIELDS.forEach(f=>{if(!S.profileVisibility[f.key])S.profileVisibility[f.key]=DEFAULT_PROFILE_VISIBILITY[f.key]});
+  PRIVATE_PROFILE_STATS.forEach(k=>{S.profileVisibility[k]='self'});
 }
 function isMeMemberId(memberId){
   const m=memberFromId(memberId);
@@ -5965,7 +6136,6 @@ async function openFriendProfile(memberId){
     <div style="text-align:center;margin-bottom:16px">
       <div style="width:72px;height:72px;border-radius:50%;background:${m.c};display:grid;place-items:center;font-size:24px;font-weight:600;color:#fff;margin:0 auto">${esc(m.i)}</div>
       <div style="font-size:20px;font-weight:600;margin-top:10px">${esc(m.n)}</div>
-      ${hasContent?`<div style="font-size:12px;color:var(--ink-3);margin-top:4px">${items.length}件の記録</div>`:''}
     </div>
     ${moodHtml}${photoHtml}${musicHtml}${changesHtml}${pastHtml}${diaryHtml}
     ${hiddenNote}${privateNote}${visNote}
@@ -5982,6 +6152,7 @@ async function openFriendProfile(memberId){
 }
 function profileVisibilitySettingsHtml(){
   ensureProfileVisibility();
+  const s=getNightReflectSettings();
   return`<div style="margin-top:20px">
     <div class="sec-label">プロフィールの公開</div>
     <p style="font-size:12px;color:var(--ink-3);margin:4px 0 12px;line-height:1.45">項目ごとに${INNER_LABEL}か自分だけかを選べます。初期設定のままで大丈夫です。</p>
@@ -5995,6 +6166,18 @@ function profileVisibilitySettingsHtml(){
     <label style="display:flex;align-items:center;gap:8px;margin-top:16px;font-size:13px;color:var(--ink-2)">
       <input type="checkbox" id="appearanceTrackingToggle"${S.appearanceTrackingEnabled!==false?' checked':''}> 顔の変化を記録する（端末内・face-api）
     </label>
+    <div class="sec-label" style="margin-top:20px">夜の振り返り</div>
+    <p style="font-size:12px;color:var(--ink-3);margin:4px 0 12px;line-height:1.45">デフォルト21:00。24時を過ぎても答えられます（昨夜の問い）。</p>
+    <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:13px;color:var(--ink-2)">
+      <input type="checkbox" id="eveningReflectEnabled"${s.enabled?' checked':''}> 夜の振り返り通知
+    </label>
+    <div class="profile-vis-row">
+      <span>通知の時刻</span>
+      <select id="eveningReflectHour">
+        ${[19,20,21,22,23].map(h=>`<option value="${h}"${s.hour===h?' selected':''}>${h}:00</option>`).join('')}
+      </select>
+    </div>
+    <p style="font-size:11px;color:var(--ink-4);margin-top:12px;line-height:1.45">連続記録・総投稿数・累計日数は常に自分だけが見られます（公開設定の対象外）。</p>
   </div>`;
 }
 function collectPeriodVlogItems(key,mode='month'){
@@ -7377,6 +7560,17 @@ function checkMorningPromptNotif(){
   S.shownNotifs.push(key);
   pushHomeNotif('今日の問いが届きました',p.text,'timeline',{priority:5});
 }
+function checkEveningReflectNotif(){
+  const settings=getNightReflectSettings();
+  if(!settings.enabled)return;
+  const h=new Date().getHours();
+  if(h!==settings.hour)return;
+  const key='reflect_pm_'+todayStr();
+  if(S.shownNotifs?.includes(key))return;
+  S.shownNotifs=S.shownNotifs||[];
+  S.shownNotifs.push(key);
+  pushHomeNotif(NIGHT_REFLECT_DEFAULT,'夜の振り返りの時間です','timeline',{priority:6});
+}
 function checkMorningDailyNotif(){
   const h=new Date().getHours();
   if(h<7||h>10)return;
@@ -7590,7 +7784,7 @@ function saveProfileFromForm(){
   haptic();
 }
 function isDailyQuestionDone(){
-  return S.dailyQuestionDate===todayStr()&&(S.dailyQuestionDone||!!S.dailyAnswerToday);
+  return !!getMyPromptAnswer(getNightReflectDate());
 }
 function grantBonus(id){
   S.bonusItems=S.bonusItems||[];
@@ -9706,6 +9900,7 @@ if(!S.dailyShareDest)S.dailyShareDest={};
 if(S.homeGuideSeen===undefined)S.homeGuideSeen=false;
 if(!S.innerReactions)S.innerReactions=[];
 if(!S.dailyAnswers)S.dailyAnswers=[];
+ensurePromptAnswers();
 ensureDailyRecords();
 if(!S.activityFeed)S.activityFeed=[];
 if(!S.shownPastArrivals)S.shownPastArrivals=[];
@@ -10052,6 +10247,7 @@ function renderTimelineFamilyCard(p,me){
 }
 function renderTimeline(){
   checkMorningPromptNotif();
+  checkEveningReflectNotif();
   checkLastYearTodayNotif();
   checkOneYearChangeNotif();
   checkSeasonalReflectionNotif();
@@ -10088,7 +10284,7 @@ function renderTodayPhotos(){
   block?.classList.remove('hidden');
   grid.innerHTML=cards.map((c,i)=>`
     <div class="tp-card${!c.mine&&!unlocked?' locked':' unlocked'}" style="animation-delay:${i*80}ms">
-      ${!c.mine&&!unlocked?'<div class="tp-hint">撮ると、みんなの写真が見える</div>':''}
+      ${!c.mine&&!unlocked?'<div class="tp-hint">写真で答えると、みんなの今日が見える</div>':''}
       ${c.mediaId
         ?`<img class="tp-img" data-lazy="${esc(c.mediaId)}" alt="">`
         :`<div class="tp-placeholder tp-img">${c.char}</div>`}
@@ -10127,96 +10323,126 @@ function startWaitTimer(){
 }
 function stopWaitTimer(){if(waitTimer){clearInterval(waitTimer);waitTimer=null}}
 
+let reflectViewDate=null;
 function renderDailyQuestion(){
-  const prompt=getTodayPrompt();
+  ensurePromptAnswers();
+  const prompt=getNightReflectPrompt();
   const block=$('dailyQuestionBlock');
   const text=$('dailyQuestionText');
   const tapRow=$('dqTapRow');
   const btn=$('dailyQuestionBtn');
   const friends=$('dqFriends');
   const streakPill=$('streakPill');
+  const answerOpts=$('dqAnswerOpts');
+  const reusePicker=$('dqReusePicker');
+  const photoPreview=$('dqAnswerPhotoPreview');
+  const dateNav=$('dqDateNav');
   if(!text)return;
-  if(!prompt){
+  if(!shouldShowNightReflect()){
     block?.classList.add('hidden');
     return;
   }
   block?.classList.remove('hidden');
-  text.textContent=prompt.text;
-  const limitedLbl=$('dqLimitedBadge');
-  if(prompt.limited){
-    if(!limitedLbl){
-      const b=document.createElement('div');
-      b.id='dqLimitedBadge';b.className='limited-prompt-badge';
-      b.innerHTML=tcIcon('sparkle')+' 今夜だけの問い';
-      text.parentElement?.insertBefore(b,text);
-    }else limitedLbl.classList.remove('hidden');
-  }else limitedLbl?.classList.add('hidden');
-  const done=isDailyQuestionDone();
+  const viewDate=reflectViewDate||getNightReflectDate();
+  const isCurrentDate=viewDate===getNightReflectDate();
+  $('dqSectionLabel').textContent='夜の振り返り';
+  const lateTag=isCurrentDate&&new Date().getHours()>=0&&new Date().getHours()<5?' <span class="dq-late-badge">昨夜の問い</span>':'';
+  text.innerHTML=esc(prompt.text)+lateTag;
+  const dates=listReflectDates();
+  if(dateNav){
+    const idx=dates.indexOf(viewDate);
+    dateNav.classList.toggle('hidden',dates.length<=1);
+    $('dqDateLabel').textContent=new Date(viewDate+'T12:00:00').toLocaleDateString('ja-JP',{month:'short',day:'numeric',weekday:'short'});
+    $('dqDatePrev').disabled=idx>=dates.length-1;
+    $('dqDateNext').disabled=idx<=0;
+    $('dqDatePrev').onclick=()=>{if(idx<dates.length-1){reflectViewDate=dates[idx+1];renderDailyQuestion();haptic()}};
+    $('dqDateNext').onclick=()=>{if(idx>0){reflectViewDate=dates[idx-1];renderDailyQuestion();haptic()}};
+  }
+  const mine=getMyPromptAnswer(viewDate);
+  const done=!!mine;
+  const canView=canViewOthersPrompt(viewDate);
   const streak=S.currentStreak||0;
   if(streakPill){
-    streakPill.classList.toggle('hidden',!streak);
+    streakPill.classList.toggle('hidden',!streak||!isCurrentDate);
     $('streakCount').textContent=streak;
   }
   block?.classList.toggle('done',done);
   const modeRow=$('dqModeRow');
   const sealFutureBtn=$('dqSealFutureBtn');
-  if(prompt.type==='tap'||prompt.type==='hybrid'){
-    modeRow?.classList.toggle('hidden',done);
-    sealFutureBtn?.classList.toggle('hidden',!done);
-    modeRow?.querySelectorAll('button').forEach(b=>{
-      b.classList.toggle('on',b.dataset.pmode===(dqPromptMode||'today'));
-      b.onclick=()=>{dqPromptMode=b.dataset.pmode;renderDailyQuestion();haptic()};
-    });
-    tapRow?.classList.remove('hidden');
-    btn?.classList.add('hidden');
-    tapRow.innerHTML=(prompt.options||[]).map((o,i)=>`
-      <button type="button" class="dq-tap-btn${S.dailyAnswerToday?.choice===o?' on':''}" data-choice="${esc(o)}" ${done?'disabled':''}>${esc(o)}</button>`).join('');
-    tapRow.querySelectorAll('.dq-tap-btn').forEach(b=>b.addEventListener('click',()=>{
-      if(done)return;
-      if(dqPromptMode==='sealed'){
-        sealPromptToFuture(b.dataset.choice,'',365);
-        recordDailyAnswer(b.dataset.choice);
+  modeRow?.classList.toggle('hidden',done||!isCurrentDate);
+  sealFutureBtn?.classList.toggle('hidden',!done||!isCurrentDate);
+  tapRow?.classList.add('hidden');
+  btn?.classList.add('hidden');
+  if(answerOpts){
+    answerOpts.classList.toggle('hidden',done||!isCurrentDate);
+    $('dqAnswerPhotoBtn').onclick=()=>{$('reflectPhotoInput')?.click();haptic()};
+    $('dqAnswerReuseBtn').onclick=()=>{
+      const recs=myTodayPhotoRecords();
+      if(!recs.length){toast('今日の写真つき投稿がまだありません');return}
+      reusePicker?.classList.toggle('hidden');
+      if(reusePicker?.classList.contains('hidden'))return;
+      reusePicker.innerHTML=recs.map(r=>`
+        <button type="button" class="dq-reuse-cell" data-rid="${esc(r.id)}" data-mid="${esc(r.mediaId)}">
+          <img data-lazy="${esc(r.mediaId)}" alt="">
+        </button>`).join('');
+      loadLazyThumbs(reusePicker);
+      reusePicker.querySelectorAll('.dq-reuse-cell').forEach(cell=>cell.addEventListener('click',()=>{
+        recordPromptAnswer({
+          answerPhotoUrl:cell.dataset.mid,photoSource:'reuse',reusedRecordId:cell.dataset.rid,
+        });
+        reusePicker.classList.add('hidden');
         renderDailyQuestion();
-        return;
-      }
-      recordDailyAnswer(b.dataset.choice);
-      renderDailyQuestion();
-      toast('答えました');
+        toast('今日の一枚で答えました');
+        haptic();
+      }));
       haptic();
-    }));
-    sealFutureBtn?.replaceWith(sealFutureBtn.cloneNode(true));
-    $('dqSealFutureBtn')?.addEventListener('click',()=>{
-      const ch=S.dailyAnswerToday?.choice;
-      if(!ch)return;
-      sealPromptToFuture(ch,S.dailyAnswerToday?.text||'',365);
-    });
-  }else{
-    modeRow?.classList.add('hidden');
-    sealFutureBtn?.classList.add('hidden');
-    tapRow?.classList.add('hidden');
-    btn?.classList.remove('hidden');
-    if(btn){
-      btn.innerHTML=done?tcIcon('check')+' 今日は答え済み':'一言で答える';
-      btn.disabled=done;
-    }
+    };
+    $('dqAnswerTextBtn').onclick=()=>{
+      S._reflectTextMode=true;
+      openTextCompose({prefill:'',promptText:prompt.text,reflectMode:true});
+      haptic();
+    };
   }
+  if(reusePicker&&(!isCurrentDate||done))reusePicker.classList.add('hidden');
+  if(photoPreview){
+    if(mine?.answerPhotoUrl){
+      photoPreview.classList.remove('hidden');
+      photoPreview.innerHTML=`<img data-lazy="${esc(mine.answerPhotoUrl)}" alt="">${mine.answerText?`<div style="font-size:12px;color:var(--ink-2);padding:8px 0">${esc(mine.answerText)}</div>`:''}`;
+      loadLazyThumbs(photoPreview);
+    }else photoPreview.classList.add('hidden');
+  }
+  modeRow?.querySelectorAll('button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.pmode===(dqPromptMode||'today'));
+    b.onclick=()=>{dqPromptMode=b.dataset.pmode;renderDailyQuestion();haptic()};
+  });
+  sealFutureBtn?.replaceWith(sealFutureBtn.cloneNode(true));
+  $('dqSealFutureBtn')?.addEventListener('click',()=>{
+    const ch=mine?.answerText;
+    if(!ch&&!mine?.answerPhotoUrl)return;
+    sealPromptToFuture(ch||'',mine?.answerText||'',365);
+  });
   friends?.classList.remove('hidden');
-  const answered=!!S.dailyAnswerToday?.date&&S.dailyAnswerToday.date===todayStr();
   const list=$('dqFriendsList');
   if(list){
-    list.innerHTML=demoFriendAnswers().map((f,i)=>`
-      <div class="dq-friend-card${answered?' unlocked':' locked'}" style="animation-delay:${i*80}ms">
-        <div class="dq-unlock-hint">答えると、みんなの答えが見える</div>
+    list.innerHTML=demoFriendPromptAnswers(viewDate).map((f,i)=>`
+      <div class="dq-friend-card${canView?' unlocked':' locked'}" style="animation-delay:${i*80}ms">
+        <div class="dq-unlock-hint">写真で答えると、みんなの今日が見える</div>
         <div style="font-size:12px;color:var(--ink-3);margin-bottom:4px">${esc(f.name)}</div>
-        <div class="dq-friend-ans">${esc(f.choice)}${f.text?' · '+esc(f.text):''}</div>
+        ${canView&&f.answerPhotoUrl?`<img data-lazy="${esc(f.answerPhotoUrl)}" alt="" style="width:100%;border-radius:8px;margin-bottom:6px;max-height:120px;object-fit:cover">`:''}
+        <div class="dq-friend-ans">${esc(f.answerText||'—')}</div>
       </div>`).join('');
+    loadLazyThumbs(list);
   }
 }
 
 function renderActivityFeed(){
   const el=$('activityFeed');
   if(!el)return;
-  const feed=(S.activityFeed||[]).filter(a=>Date.now()-a.at<864e5);
+  const feed=(S.activityFeed||[]).filter(a=>{
+    if(Date.now()-a.at>=864e5)return false;
+    if(a.action==='streak'&&a.userName!==meName()&&a.userId!=='me')return false;
+    return true;
+  });
   if(!feed.length){
     el.innerHTML='<div class="empty-state" style="padding:20px 0;font-size:13px">まだ動きがありません</div>';
     return;
@@ -11624,6 +11850,14 @@ function renderAccountPanel(el){
     S.appearanceTrackingEnabled=e.target.checked;
     save();haptic();
   });
+  el.querySelector('#eveningReflectEnabled')?.addEventListener('change',e=>{
+    getNightReflectSettings().enabled=e.target.checked;
+    save();haptic();
+  });
+  el.querySelector('#eveningReflectHour')?.addEventListener('change',e=>{
+    getNightReflectSettings().hour=+e.target.value;
+    save();haptic();
+  });
   bindProfileInsightEvents(el);
 }
 
@@ -12060,6 +12294,17 @@ document.querySelectorAll('#textDurationPills .duration-pill').forEach(b=>b.addE
 }));
 $('textComposeSubmit')?.addEventListener('click',()=>{
   const text=$('textComposeInput')?.value||'';
+  if(S._reflectTextMode){
+    S._reflectTextMode=false;
+    const trimmed=String(text).trim();
+    if(!trimmed){toast('ひとこと書いてみよう');return}
+    recordPromptAnswer({answerText:trimmed});
+    closeTextCompose();
+    renderAll();
+    toast('答えました');
+    haptic();
+    return;
+  }
   const post=createTextPost({text,dest:textComposeDest,days:textComposeDays});
   if(!post)return;
   if(post.kind==='instant'){
@@ -12744,9 +12989,25 @@ $('darkToggle').addEventListener('click',()=>{
 updateCreateUI();
 $('dailyQuestionBtn')?.addEventListener('click',()=>{
   if(isDailyQuestionDone())return;
-  openTextCompose({prefill:'',promptText:todayQuestion()});
+  S._reflectTextMode=true;
+  openTextCompose({prefill:'',promptText:NIGHT_REFLECT_DEFAULT,reflectMode:true});
   haptic();
 });
+async function handleReflectPhotoInput(e){
+  const file=e.target.files?.[0];
+  e.target.value='';
+  if(!file)return;
+  try{
+    const dataUrl=await compressImage(file);
+    const id='pa_ph_'+Date.now();
+    await idbPut(id,dataUrl);
+    recordPromptAnswer({answerPhotoUrl:id,photoSource:'new'});
+    renderAll();
+    toast('写真で答えました');
+    haptic();
+  }catch(err){toast('写真の読み込みに失敗しました')}
+}
+$('reflectPhotoInput')?.addEventListener('change',handleReflectPhotoInput);
 $('onboardNext1')?.addEventListener('click',()=>{
   if(!isLoggedIn()){toast('まず登録またはログインしてください');$('onboardOverlay')?.classList.remove('open');switchTab('archive');S.archiveTab='settings';save();renderArchive();return}
   const inv=$('onboardInviteInput')?.value.trim();
