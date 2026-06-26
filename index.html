@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
@@ -619,6 +620,8 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   max-width:300px;margin-left:auto;margin-right:auto;
 }
 .opening-actions.show{opacity:1}
+.opening-actions--highlight .primary{animation:sharePulse 1.4s ease 2}
+@keyframes sharePulse{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.45)}50%{box-shadow:0 0 0 12px rgba(201,168,76,0)}}
 .opening-actions button{
   padding:12px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:500;
   background:rgba(255,255,255,.1);color:#fff;
@@ -2821,10 +2824,17 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .inner-member-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;padding:0}
 .inner-member-btn .im-av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:600;color:#fff}
 .inner-member-btn span{font-size:10px;color:var(--ink-3)}
-.appearance-swipe{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scroll-snap-type:x mandatory}
-.appearance-shot{flex-shrink:0;width:120px;scroll-snap-align:start}
-.appearance-shot img{width:120px;height:120px;border-radius:var(--r-sm);object-fit:cover}
-.appearance-shot .as-label{font-size:10px;color:var(--ink-3);margin-top:4px;text-align:center}
+.appearance-swipe{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.appearance-shot{flex:0 0 72%;scroll-snap-align:center;border-radius:var(--r-sm);overflow:hidden;position:relative;aspect-ratio:3/4;background:var(--bg-3)}
+.appearance-shot img{width:100%;height:100%;object-fit:cover;display:block}
+.appearance-shot .as-label{position:absolute;bottom:0;left:0;right:0;padding:8px;font-size:11px;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#fff}
+.sc-change-grid.sc-swipe{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:8px;padding:4px 2px 8px;-webkit-overflow-scrolling:touch}
+.sc-change-grid.sc-swipe .sc-change-frame{flex:0 0 42%;scroll-snap-align:center}
+.sc-change-grid.sc-2.sc-swipe .sc-change-frame{flex:0 0 46%}
+.resurface-block{margin:12px 0 4px}
+.resurface-block.hidden{display:none}
+.resurface-block{margin:12px 0 4px}
+.resurface-block.hidden{display:none}
 .insight-drill-overlay{position:fixed;inset:0;z-index:360;background:rgba(0,0,0,.72);display:none;align-items:flex-end;justify-content:center}
 .insight-drill-overlay.open{display:flex}
 .insight-drill-sheet{width:100%;max-width:480px;max-height:85vh;overflow-y:auto;background:var(--bg);border-radius:var(--r-md) var(--r-md) 0 0;padding:20px}
@@ -3153,6 +3163,10 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   <div class="create-sheet">
     <div class="sheet-handle"></div>
     <h2 class="create-title" id="createTitle">いまを残す</h2>
+    <div class="layer-toggle">
+      <button type="button" data-layer="now" class="on">いまを残す</button>
+      <button type="button" data-layer="seal">未来に封じる</button>
+    </div>
     <div class="dest-multi" id="destMulti">
       <div class="duration-label">送り先</div>
       <div class="dest-chips" id="destChips">
@@ -3272,7 +3286,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     <input type="file" id="folderInput" accept="image/*,image/heic,image/heif" multiple webkitdirectory directory class="hidden">
     <input type="file" id="videoInput" accept="video/*" class="hidden">
     <input type="file" id="voiceFileInput" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.webm,.caf" class="hidden">
-    <div class="duration-label">いつ開封しますか？</div>
+    <div class="duration-label" id="unlockDurationLabel">いつ開封しますか？</div>
     <div class="duration-pills multi" id="durationPills">
       <button type="button" class="duration-pill instant-pill" data-days="0">今すぐ</button>
       <button type="button" class="duration-pill" data-days="3">3日後</button>
@@ -3285,6 +3299,19 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
     <div class="custom-days" id="customDays">
       <input type="number" id="customDaysInput" min="1" max="3650" value="14" inputmode="numeric">
       <span>日後に開封</span>
+    </div>
+    <div class="resurface-block" id="resurfaceBlock">
+      <div class="duration-label">未来の自分に、いつ会いに行く？</div>
+      <p style="font-size:12px;color:var(--ink-3);margin:0 0 8px;line-height:1.45">記録が戻ってくる日。デフォルトは1年後の今日。</p>
+      <div class="duration-pills" id="resurfacePills">
+        <button type="button" class="duration-pill on" data-resurface="365">1年後の今日</button>
+        <button type="button" class="duration-pill" data-resurface="180">半年後</button>
+        <button type="button" class="duration-pill" data-resurface="custom">日付を選ぶ</button>
+      </div>
+      <div class="custom-days" id="resurfaceCustomWrap">
+        <input type="number" id="resurfaceDaysInput" min="30" max="3650" value="400" inputmode="numeric">
+        <span>日後に戻る</span>
+      </div>
     </div>
     <button type="button" class="create-pick" id="postInstantBtn" style="width:100%;margin-bottom:8px">Post to Family</button>
     <button type="button" class="seal-cta" id="sealBtn">未来に封じる</button>
@@ -3302,6 +3329,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
       <button type="button" data-tdest="private">自分だけ</button>
       <button type="button" data-tdest="capsule">未来に封じる</button>
     </div>
+    <div id="textSharePickerWrap" class="hidden"></div>
     <div class="text-duration-block hidden" id="textDurationBlock">
       <div class="duration-label">いつ開封しますか？</div>
       <div class="duration-pills multi" id="textDurationPills">
@@ -3661,8 +3689,11 @@ const BONUS_DEFS={
   'badge-season':{label:'シーズンバッジ',icon:'grad'},
 };
 const MEMBERS=[
-  {n:'みお',i:'み',c:'#2A2A2A',id:'u1'},{n:'けんと',i:'け',c:'#4A4A4A',id:'u2'},
-  {n:'あや',i:'あ',c:'#6A6A6A',id:'u3'},{n:'そう',i:'そ',c:'#8A8A8A',id:'u4'},{n:'ゆい',i:'ゆ',c:'#5A5A5A',id:'u5'},
+  {n:'みお',i:'み',c:'#2A2A2A',id:'u1',profileVisibility:{mood:'inner',recentPhoto:'inner',music:'inner',changes:'inner',pastPhotos:'self',textDiary:'self'}},
+  {n:'けんと',i:'け',c:'#4A4A4A',id:'u2',profileVisibility:{mood:'inner',recentPhoto:'inner',music:'self',changes:'inner',pastPhotos:'self',textDiary:'self'}},
+  {n:'あや',i:'あ',c:'#6A6A6A',id:'u3',profileVisibility:{mood:'inner',recentPhoto:'self',music:'inner',changes:'self',pastPhotos:'self',textDiary:'self'}},
+  {n:'そう',i:'そ',c:'#8A8A8A',id:'u4',profileVisibility:{mood:'self',recentPhoto:'inner',music:'inner',changes:'inner',pastPhotos:'self',textDiary:'self'}},
+  {n:'ゆい',i:'ゆ',c:'#5A5A5A',id:'u5',profileVisibility:{mood:'inner',recentPhoto:'inner',music:'inner',changes:'inner',pastPhotos:'self',textDiary:'self'}},
 ];
 const BUCKETS=[
   {key:'3d',label:'3日後',pill:'3 DAYS'},
@@ -3838,6 +3869,8 @@ function createTextPost({text,dest,days,promptId,promptText}){
   const destination=dest||textComposeDest||'inner';
   const kind=destination==='capsule'?'capsule':'instant';
   const visibility=destination==='inner'?'inner':'private';
+  const textShare=getDailyShareDest('text');
+  const shareTo=visibility==='inner'?{friends:[...textShare.friends],groups:[...textShare.groups]}:null;
   const prompt=getTodayPrompt();
   const id='p'+Date.now();
   const now=Date.now();
@@ -3848,6 +3881,7 @@ function createTextPost({text,dest,days,promptId,promptText}){
     promptText:promptText||prompt?.text||null,
     visibility,createdAt:now,resurfaceAt:addDays(365),
     unlockAt:kind==='capsule'?addDays(openDays):null,
+    shareTo,
   };
   const finish=()=>{
     if(kind==='capsule'){
@@ -3858,7 +3892,7 @@ function createTextPost({text,dest,days,promptId,promptText}){
         openAt:post.unlockAt,unlockAt:post.unlockAt,days:openDays,
         layer:'sealed',createdAt:now,
         promptId:post.promptId,promptText:post.promptText,
-        resurfaceAt:post.resurfaceAt,
+        resurfaceAt:post.resurfaceAt,shareTo,
       });
     }
     S.posts.unshift(post);
@@ -3885,7 +3919,7 @@ function textPostToFeed(p,opts={}){
     id:p.id,from:name,name,char:m.i||name.charAt(0),color:m.c||'#5A5A5A',
     type:'text',isTextPost:true,text:p.text,promptText:p.promptText,
     at:p.createdAt,visibility:p.visibility,kind:p.kind,
-    unlockAt:p.unlockAt,shareTo:p.visibility==='inner'?{friends:[],groups:['g1']}:null,
+    unlockAt:p.unlockAt,shareTo:p.shareTo||(p.visibility==='inner'?{friends:[],groups:['g1']}:null),
     ...opts,
   };
 }
@@ -3922,6 +3956,15 @@ function openTextCompose(opts={}){
     b.classList.toggle('on',b.dataset.tdest===textComposeDest);
   });
   $('textDurationBlock')?.classList.toggle('hidden',textComposeDest!=='capsule');
+  const pickerWrap=$('textSharePickerWrap');
+  if(pickerWrap){
+    const showInner=textComposeDest==='inner';
+    pickerWrap.classList.toggle('hidden',!showInner);
+    if(showInner){
+      pickerWrap.innerHTML=dailySharePickerHtml('text');
+      bindDailySharePicker(pickerWrap,'text');
+    }
+  }
   document.querySelectorAll('#textDurationPills .duration-pill').forEach(b=>{
     b.classList.toggle('on',+b.dataset.tdays===textComposeDays);
   });
@@ -4374,6 +4417,7 @@ async function createDailyRecord(type,data={}){
   S.onboardingDone=true;
   S.homeGuideSeen=true;
   save();
+  refreshChangeSummaries();
   rec._replaced=isReplace;
   return rec;
 }
@@ -4577,6 +4621,7 @@ function renderHomeAppearance(){
     <div style="padding:0 20px">${appearanceTimelineHtml()}</div>
   </section>`;
   el.querySelector('#exportAppearanceBtn')?.addEventListener('click',()=>exportAppearanceMontage());
+  el.querySelector('#playAppearanceSwipeBtn')?.addEventListener('click',()=>playAppearanceSwipe(el));
   if(shots.length)loadLazyThumbs(el);
 }
 function demoInnerTodayPosts(){
@@ -5348,10 +5393,18 @@ function ensureProfileVisibility(){
   if(!S.profileVisibility)S.profileVisibility={...DEFAULT_PROFILE_VISIBILITY};
   PROFILE_VIS_FIELDS.forEach(f=>{if(!S.profileVisibility[f.key])S.profileVisibility[f.key]=DEFAULT_PROFILE_VISIBILITY[f.key]});
 }
+function isMeMemberId(memberId){
+  const m=memberFromId(memberId);
+  return m?.n===meName();
+}
 function getMemberProfileVisibility(memberId){
   ensureProfileVisibility();
+  if(!memberId||isMeMemberId(memberId))return {...DEFAULT_PROFILE_VISIBILITY,...S.profileVisibility};
   const custom=S.friendProfileVisibility?.[memberId];
-  return custom?{...DEFAULT_PROFILE_VISIBILITY,...custom}:{...DEFAULT_PROFILE_VISIBILITY};
+  if(custom)return {...DEFAULT_PROFILE_VISIBILITY,...custom};
+  const m=memberFromId(memberId);
+  if(m?.profileVisibility)return {...DEFAULT_PROFILE_VISIBILITY,...m.profileVisibility};
+  return {...DEFAULT_PROFILE_VISIBILITY};
 }
 function canViewProfileField(field,ownerMemberId){
   const vis=ownerMemberId?getMemberProfileVisibility(ownerMemberId):S.profileVisibility||DEFAULT_PROFILE_VISIBILITY;
@@ -5489,15 +5542,123 @@ async function initMoodBatteryPanel(){
   if(pct==null)pct=72;
   updateMoodBatteryUI(pct);
 }
+function ensureChangeSummaries(){
+  if(!S.changeSummaries)S.changeSummaries=[];
+}
+function refreshChangeSummaries(){
+  ensureChangeSummaries();
+  const key=monthInsightKey();
+  const ins=collectMonthData(key);
+  const appSeries=getAppearanceTimeline().map(s=>({
+    photoRef:s.faceRef||s.photoRef,capturedAt:s.capturedAt,changed:s.changed,source:s.source,
+  }));
+  const moodSeries=(S.dailyRecords||[]).filter(r=>r.skyMood||r.moodBattery!=null).slice(-36)
+    .map(r=>({skyMood:r.skyMood,moodBattery:r.moodBattery,at:r.createdAt}));
+  const musicSeries=(ins.songTimeline||[]).slice(0,24).map(s=>({title:s.title,artist:s.artist,at:s.at,artworkUrl:s.artworkUrl}));
+  const placeSeries=(ins.places||[]).map(p=>({name:p.name,count:p.count}));
+  const wordSeries=(ins.catchphrases||[]).map(c=>({word:c.word,count:c.count}));
+  ['capsule','profile'].forEach(surf=>{
+    upsertChangeSummary('appearance',appSeries,surf);
+    upsertChangeSummary('mood',moodSeries,surf);
+    upsertChangeSummary('music',musicSeries,surf);
+    upsertChangeSummary('place',placeSeries,surf);
+    upsertChangeSummary('words',wordSeries,surf);
+  });
+}
+function upsertChangeSummary(type,series,surface='capsule'){
+  ensureChangeSummaries();
+  const existing=S.changeSummaries.find(c=>c.type===type&&c.surface===surface);
+  const entry={
+    id:existing?.id||'cs'+Date.now(),
+    userId:meName(),
+    type,
+    series:series||[],
+    detectedAt:Date.now(),
+    shownAt:existing?.shownAt||null,
+    surface,
+  };
+  if(existing)Object.assign(existing,entry);
+  else S.changeSummaries.unshift(entry);
+  if(S.changeSummaries.length>40)S.changeSummaries.length=40;
+}
+const FACE_MODEL_URL='https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model';
+const FACE_CHANGE_THRESHOLD=0.42;
+let faceModelsReady=false;
+let faceModelsLoading=null;
+async function ensureFaceModels(){
+  if(faceModelsReady)return true;
+  if(faceModelsLoading)return faceModelsLoading;
+  if(typeof faceapi==='undefined')return false;
+  faceModelsLoading=(async()=>{
+    try{
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL),
+        faceapi.nets.faceLandmark68TinyNet.loadFromUri(FACE_MODEL_URL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL),
+      ]);
+      faceModelsReady=true;
+      return true;
+    }catch(e){return false}
+    finally{faceModelsLoading=null}
+  })();
+  return faceModelsLoading;
+}
+async function storeFaceCrop(dataUrl,box,baseId){
+  if(!box||!dataUrl)return null;
+  const pad=Math.max(box.width,box.height)*0.18;
+  const img=new Image();
+  await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=dataUrl});
+  const x=Math.max(0,box.x-pad),y=Math.max(0,box.y-pad);
+  const w=Math.min(img.width-x,box.width+pad*2),h=Math.min(img.height-y,box.height+pad*2);
+  const c=document.createElement('canvas');
+  c.width=256;c.height=256;
+  const ctx=c.getContext('2d');
+  ctx.drawImage(img,x,y,w,h,0,0,256,256);
+  const crop=c.toDataURL('image/jpeg',0.88);
+  const faceId=(baseId||'face')+'_fc';
+  try{await idbPut(faceId,crop)}catch(e){return null}
+  return faceId;
+}
+async function extractFaceSignature(dataUrl,baseId){
+  const ok=await ensureFaceModels();
+  if(ok&&typeof faceapi!=='undefined'){
+    try{
+      const img=await faceapi.fetchImage(dataUrl);
+      const det=await faceapi.detectSingleFace(img,new faceapi.TinyFaceDetectorOptions({inputSize:352,scoreThreshold:0.42}))
+        .withFaceLandmarks(true).withFaceDescriptor();
+      if(det?.descriptor){
+        const box=det.detection.box;
+        const faceRef=await storeFaceCrop(dataUrl,box,baseId);
+        return{vector:Array.from(det.descriptor),faceBox:{x:box.x,y:box.y,w:box.width,h:box.height},method:'faceapi',faceRef};
+      }
+    }catch(e){}
+  }
+  return{vector:await computeImageVector(dataUrl),method:'fallback',faceRef:null};
+}
+function faceVectorDistance(a,b,aMethod,bMethod){
+  if(a?.length===128&&b?.length===128&&typeof faceapi!=='undefined')
+    return faceapi.euclideanDistance(a,b);
+  return vectorDistance(a,b);
+}
 function computeImageVector(dataUrl){
   return new Promise((res,rej)=>{
     const img=new Image();
     img.onload=()=>{
       const c=document.createElement('canvas');
-      c.width=16;c.height=16;
+      c.width=32;c.height=32;
       const ctx=c.getContext('2d');
-      ctx.drawImage(img,0,0,16,16);
-      res(Array.from(ctx.getImageData(0,0,16,16).data));
+      ctx.drawImage(img,0,0,32,32);
+      const px=ctx.getImageData(0,0,32,32).data;
+      const vec=[];
+      for(let y=0;y<32;y++){
+        for(let x=0;x<32;x++){
+          const i=(y*32+x)*4;
+          const cx=Math.abs(x-16)/16,cy=Math.abs(y-16)/16;
+          const w=1.4-Math.min(1,(cx+cy)*0.35);
+          vec.push(px[i]/255*w,px[i+1]/255*w,px[i+2]/255*w);
+        }
+      }
+      res(vec);
     };
     img.onerror=rej;
     img.src=dataUrl;
@@ -5507,22 +5668,38 @@ function vectorDistance(a,b){
   if(!a?.length||!b?.length||a.length!==b.length)return 1;
   let sum=0;
   for(let i=0;i<a.length;i++){const d=a[i]-b[i];sum+=d*d;}
-  return Math.sqrt(sum)/(255*Math.sqrt(a.length));
+  return Math.sqrt(sum)/Math.sqrt(a.length);
 }
 async function registerAppearanceShot(mediaId,source='photo'){
   if(S.appearanceTrackingEnabled===false||!mediaId)return;
   try{
     const data=await idbGet(mediaId);
     if(!data)return;
-    const vector=await computeImageVector(data);
+    const sig=await extractFaceSignature(data,mediaId);
     S.appearanceShots=S.appearanceShots||[];
     const prev=S.appearanceShots[0];
-    const dist=prev?vectorDistance(vector,prev.faceVector):1;
-    const changed=!prev||dist>0.1;
+    const dist=prev?faceVectorDistance(sig.vector,prev.faceVector,prev.method,sig.method):1;
+    const threshold=(prev?.method==='faceapi'||sig.method==='faceapi')?FACE_CHANGE_THRESHOLD:0.08;
+    const changed=!prev||dist>threshold;
     if(prev&&!changed)return;
-    S.appearanceShots.unshift({id:'as'+Date.now(),userId:meName(),photoRef:mediaId,faceVector:vector,changed:!!prev&&changed,capturedAt:Date.now(),source});
+    const shot={
+      id:'as'+Date.now(),userId:meName(),photoRef:mediaId,faceRef:sig.faceRef||null,
+      faceVector:sig.vector,faceMethod:sig.method,faceBox:sig.faceBox||null,
+      changed:!!prev&&changed,capturedAt:Date.now(),source,
+    };
+    S.appearanceShots.unshift(shot);
     if(S.appearanceShots.length>30)S.appearanceShots.length=30;
+    refreshChangeSummaries();
     save();
+    if(prev&&changed){
+      toast('見た目の変化を記録しました');
+      const key='appchg_'+shot.id;
+      if(!S.shownNotifs?.includes(key)){
+        S.shownNotifs=S.shownNotifs||[];
+        S.shownNotifs.push(key);
+        pushHomeNotif('見た目の変化','カプセルで静かに並んでいます','capsule',{priority:2});
+      }
+    }
   }catch(e){}
 }
 function getAppearanceTimeline(){
@@ -5538,15 +5715,38 @@ function appearanceTimelineHtml(){
   if(!shots.length)return'<div class="empty-state" style="padding:16px 0;font-size:13px">セルフィーやプロフィール写真が増えると、変化の軌跡が並びます</div>';
   return`<div class="appearance-swipe">${shots.map(s=>{
     const lbl=s.isNow?'今':new Date(s.capturedAt).toLocaleDateString('ja-JP',{month:'short',day:'numeric'});
-    return`<div class="appearance-shot"><img data-lazy="${esc(s.photoRef)}" alt=""><div class="as-label">${esc(lbl)}</div></div>`;
+    return`<div class="appearance-shot"><img data-lazy="${esc(s.faceRef||s.photoRef)}" alt=""><div class="as-label">${esc(lbl)}</div></div>`;
   }).join('')}</div>
   <p style="font-size:11px;color:var(--ink-3);margin-top:8px;line-height:1.5">大きく変わった時点だけを静かに並べます。評価や言葉は付けません。</p>
-  ${shots.length>=2?`<button type="button" class="create-pick" id="exportAppearanceBtn" style="width:100%;margin-top:10px">変化を動画で保存</button>`:''}`;
+  ${shots.length>=2?`<button type="button" class="create-pick" id="playAppearanceSwipeBtn" style="width:100%;margin-top:8px">変化をなぞる</button>`:''}
+  ${shots.length>=2?`<button type="button" class="create-pick" id="exportAppearanceBtn" style="width:100%;margin-top:8px">変化を動画で保存</button>`:''}`;
+}
+function playAppearanceSwipe(root){
+  const strip=(root||document).querySelector?.('.appearance-swipe')||root;
+  if(!strip||strip.scrollWidth<=strip.clientWidth+4)return;
+  strip.scrollLeft=0;
+  let x=0;
+  const max=strip.scrollWidth-strip.clientWidth;
+  const tick=()=>{
+    x+=Math.max(2,max/120);
+    strip.scrollLeft=x;
+    if(x<max)requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  haptic();
+}
+function memberAppearanceTimelineHtml(memberId){
+  const photos=collectMemberPublicItems(memberId).filter(i=>i.mediaId).slice(0,8);
+  if(!photos.length)return'<div style="font-size:13px;color:var(--ink-3)">写真の記録が増えると、変化が見えます</div>';
+  return`<div class="appearance-swipe">${photos.map((p,i)=>{
+    const lbl=new Date(p.at).toLocaleDateString('ja-JP',{month:'short',day:'numeric'});
+    return`<div class="appearance-shot"><img data-lazy="${esc(p.mediaId)}" alt=""><div class="as-label">${esc(lbl)}</div></div>`;
+  }).join('')}</div>`;
 }
 async function exportAppearanceMontage(){
   const shots=getAppearanceTimeline();
   if(shots.length<2){toast('もう1枚の記録があると動画にできます');return}
-  const photos=shots.map(s=>({mediaId:s.photoRef}));
+  const photos=shots.map(s=>({mediaId:s.faceRef||s.photoRef}));
   toast('動画を作成中…');
   try{
     const blob=await exportVlogWebM(photos,'あなたの変化');
@@ -5714,7 +5914,9 @@ async function openFriendProfile(memberId){
   let changesHtml='';
   if(canViewProfileField('changes',memberId)){
     const isSelf=m.n===meName();
-    const faceHtml=isSelf?`<div style="margin:12px 0"><div class="sec-label">顔の推移</div>${appearanceTimelineHtml()}</div>`:'';
+    const faceHtml=isSelf
+      ?`<div style="margin:12px 0"><div class="sec-label">顔の推移</div>${appearanceTimelineHtml()}</div>`
+      :`<div style="margin:12px 0"><div class="sec-label">写真の推移</div>${memberAppearanceTimelineHtml(memberId)}</div>`;
     const ch=memberChangesSummary(memberId);
     const bits=[];
     if(ch.topPlace)bits.push(`${tcIcon('pin')} ${esc(ch.topPlace.name)}（${ch.topPlace.count}回）`);
@@ -5758,6 +5960,7 @@ async function openFriendProfile(memberId){
   const hasContent=items.length>0;
   const hiddenNote=!hasContent&&anyVisible?`<p style="font-size:12px;color:var(--ink-3);text-align:center;margin-top:20px">${INNER_LABEL}に見せる記録がまだありません</p>`:'';
   const privateNote=!anyVisible?`<p style="font-size:12px;color:var(--ink-3);text-align:center;margin-top:20px">非公開の記録があります</p>`:'';
+  const visNote=isMeMemberId(memberId)?'':`<p style="font-size:11px;color:var(--ink-4);text-align:center;margin-top:8px">公開設定に従って表示しています</p>`;
   body.innerHTML=`
     <div style="text-align:center;margin-bottom:16px">
       <div style="width:72px;height:72px;border-radius:50%;background:${m.c};display:grid;place-items:center;font-size:24px;font-weight:600;color:#fff;margin:0 auto">${esc(m.i)}</div>
@@ -5765,7 +5968,7 @@ async function openFriendProfile(memberId){
       ${hasContent?`<div style="font-size:12px;color:var(--ink-3);margin-top:4px">${items.length}件の記録</div>`:''}
     </div>
     ${moodHtml}${photoHtml}${musicHtml}${changesHtml}${pastHtml}${diaryHtml}
-    ${hiddenNote}${privateNote}
+    ${hiddenNote}${privateNote}${visNote}
     <button type="button" class="dq-cta" id="friendProfileDmBtn" style="width:100%;margin-top:20px">メッセージ</button>`;
   $('friendProfileTitle').textContent=m.n;
   $('friendProfileDmBtn')?.addEventListener('click',()=>{
@@ -5790,22 +5993,81 @@ function profileVisibilitySettingsHtml(){
       </select>
     </div>`).join('')}
     <label style="display:flex;align-items:center;gap:8px;margin-top:16px;font-size:13px;color:var(--ink-2)">
-      <input type="checkbox" id="appearanceTrackingToggle"${S.appearanceTrackingEnabled!==false?' checked':''}> 顔の変化を記録する
+      <input type="checkbox" id="appearanceTrackingToggle"${S.appearanceTrackingEnabled!==false?' checked':''}> 顔の変化を記録する（端末内・face-api）
     </label>
   </div>`;
 }
-function openPeriodMontage(key,mode='month'){
-  let photos,label;
+function collectPeriodVlogItems(key,mode='month'){
+  let photos,label,start,end;
   if(mode==='year'){
     const y=+(key||new Date().getFullYear());
     const yi=buildYearInsight(y);
     photos=yi.allPhotos||[];
     label=y+'年';
+    ({start,end}=periodTimeRange(String(y)));
   }else{
     const ins=collectMonthData(key||monthInsightKey());
     photos=ins?.photos||[];
     label=ins?.label||'';
+    ({start,end}=monthInsightRange(key||monthInsightKey()));
   }
+  const items=photos.map(p=>({mediaId:p.mediaId,type:'photo',skyMood:p.skyMood,moodColor:p.moodColor}));
+  [...(S.opened||[]),...(S.capsules||[])].forEach(c=>{
+    if(c.type!=='video'||!c.mediaId)return;
+    const t=c.openedAt||c.createdAt||0;
+    if(t>=start&&t<end)items.push({mediaId:c.mediaId,type:'video'});
+  });
+  return{items:items.slice(0,24),label};
+}
+function collectPeriodVideoItems(key,mode='month'){
+  const {items,label}=collectPeriodVlogItems(key,mode);
+  return{items:items.filter(i=>i.type==='video'&&i.mediaId),label};
+}
+function openVideoVlog(key,mode='month'){
+  const {items,label}=collectPeriodVideoItems(key,mode);
+  if(items.length<2){toast('動画が2本以上あるとVlogにできます');return}
+  openPeriodMontageFromItems(items,label+' · 動画');
+}
+function openPeriodMontageFromItems(items,label){
+  const photos=items.filter(i=>i.mediaId);
+  if(photos.length<2){toast('まとめには2件以上必要です');return}
+  if(vlogTimer){clearInterval(vlogTimer);vlogTimer=null}
+  vlogPhotos=photos;
+  vlogLabel=label||'';
+  setVlogMode(true);
+  let idx=0;
+  const first=photos[0];
+  lastGenreShareSummary=null;
+  $('musicLayoutSeg')?.classList.add('hidden');
+  $('wrappedCard').className='wrapped-card sc-card-host';
+  $('wrappedCard').innerHTML=`<div class="sc-card sc-summary-card">
+    <div class="sc-open-head"><span class="sc-label">動画まとめ</span><span class="sc-ctx">${esc(vlogLabel)}</span></div>
+    <div class="sc-summary-body">
+      <div class="sc-vlog-frame" id="vlogFrame">
+        <img data-lazy="${esc(first.mediaId)}" alt="">
+      </div>
+      <div class="sc-summary-stats">${photos.length}本 · 「動画を保存」で書き出し</div>
+    </div>
+    <div class="sc-open-foot"><div class="sc-brand">TIME CAP</div></div>
+  </div>`;
+  lastShareCaption=shareSheetCaption(vlogLabel);
+  $('wrappedOverlay')?.classList.add('open');
+  loadLazyThumbs($('wrappedCard'));
+  const frame=$('vlogFrame');
+  vlogTimer=setInterval(async()=>{
+    idx=(idx+1)%photos.length;
+    const img=frame?.querySelector('img');
+    if(!img)return;
+    try{
+      const data=await idbGet(photos[idx].mediaId);
+      if(data)img.src=data;
+    }catch(e){}
+  },1200);
+  haptic();
+}
+function openPeriodMontage(key,mode='month'){
+  const {items,label}=collectPeriodVlogItems(key,mode);
+  const photos=items.filter(i=>i.mediaId);
   if(!photos.length){toast('まとめる写真がありません');return}
   showSummaryShareCard(photoMontageShareCardHtml(photos,label),shareSheetCaption(label+'の写真まとめ'));
 }
@@ -5828,6 +6090,25 @@ function vlogMimeType(){
 }
 function vlogFileExt(mime){return mime?.includes('mp4')?'.mp4':'.webm'}
 async function vlogFrameToImage(item){
+  if(item?.type==='video'||(item?.mediaId&&item?.video)){
+    const id=item.mediaId;
+    try{
+      const data=await idbGet(id);
+      if(data){
+        const vid=document.createElement('video');
+        vid.muted=true;vid.playsInline=true;vid.preload='auto';
+        await new Promise((res,rej)=>{vid.onloadeddata=res;vid.onerror=rej;vid.src=data});
+        vid.currentTime=Math.min(0.5,(vid.duration||1)*0.1);
+        await new Promise(res=>{vid.onseeked=res});
+        const c=document.createElement('canvas');
+        c.width=vid.videoWidth||540;c.height=vid.videoHeight||540;
+        c.getContext('2d').drawImage(vid,0,0,c.width,c.height);
+        const img=new Image();
+        await new Promise(res=>{img.onload=res;img.src=c.toDataURL('image/png')});
+        return img;
+      }
+    }catch(e){}
+  }
   if(item?.mediaId){
     try{
       const data=await idbGet(item.mediaId);
@@ -5849,49 +6130,128 @@ async function vlogFrameToImage(item){
   await new Promise(res=>{img.onload=res;img.src=c.toDataURL('image/png')});
   return img;
 }
+function vlogSleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function vlogDrawOverlay(ctx,W,H,label,idx,total){
+  ctx.fillStyle='rgba(0,0,0,.42)';ctx.fillRect(0,0,W,72);
+  ctx.fillStyle='#f5f0e8';ctx.font='600 20px sans-serif';ctx.textAlign='center';
+  ctx.fillText(label||'',W/2,32);
+  ctx.font='13px sans-serif';ctx.fillStyle='rgba(245,240,232,.65)';
+  ctx.fillText(`${idx+1} / ${total}`,W/2,54);
+  ctx.fillStyle='rgba(245,240,232,.4)';ctx.font='11px sans-serif';
+  ctx.fillText('TIME CAP',W/2,H-20);
+}
+function vlogDrawCover(ctx,img,W,H,opts={}){
+  const zoom=opts.zoom||1;
+  const panX=opts.panX||0,panY=opts.panY||0;
+  const sc=Math.max(W/img.width,H/img.height)*zoom;
+  const w=img.width*sc,h=img.height*sc;
+  ctx.fillStyle='#100D0A';ctx.fillRect(0,0,W,H);
+  ctx.drawImage(img,(W-w)/2+panX,(H-h)/2+panY,w,h);
+}
+async function vlogLoadVideoData(item){
+  const data=await idbGet(item.mediaId);
+  if(!data)return null;
+  const vid=document.createElement('video');
+  vid.muted=true;vid.playsInline=true;vid.preload='auto';
+  await new Promise((res,rej)=>{vid.onloadeddata=res;vid.onerror=rej;vid.src=data});
+  return vid;
+}
 async function exportVlogWebM(photos,label){
   if(!photos?.length)return null;
-  const canvas=document.createElement('canvas');
   const W=SC_EXPORT_W,H=SC_EXPORT_H;
+  const fps=24;
+  const PHOTO_MS=450;
+  const VIDEO_MAX_MS=2800;
+  const XFADE_MS=140;
+  const frameMs=1000/fps;
+  const canvas=document.createElement('canvas');
   canvas.width=W;canvas.height=H;
   const ctx=canvas.getContext('2d');
-  const fps=24;
-  const stream=canvas.captureStream(fps);
   const mime=vlogMimeType();
   if(!mime)return null;
-  const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:4500000});
+  const stream=canvas.captureStream(fps);
+  const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:5200000});
   const chunks=[];
   rec.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data)};
-  const imgs=[];
+  const clips=[];
   for(const p of photos){
     try{
-      const img=await vlogFrameToImage(p);
-      if(img)imgs.push(img);
+      if(p.type==='video'&&p.mediaId){
+        const vid=await vlogLoadVideoData(p);
+        if(vid)clips.push({kind:'video',vid});
+        else{
+          const img=await vlogFrameToImage(p);
+          if(img)clips.push({kind:'photo',img});
+        }
+      }else{
+        const img=await vlogFrameToImage(p);
+        if(img)clips.push({kind:'photo',img});
+      }
     }catch(e){}
   }
-  if(imgs.length<2)return null;
-  const drawSlide=(img,idx,total)=>{
-    ctx.fillStyle='#100D0A';ctx.fillRect(0,0,W,H);
-    const scale=Math.max(W/img.width,H/img.height);
-    const w=img.width*scale,h=img.height*scale;
-    ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h);
-    ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,0,W,72);
-    ctx.fillStyle='#f5f0e8';ctx.font='600 20px sans-serif';ctx.textAlign='center';
-    ctx.fillText(label, W/2, 32);
-    ctx.font='13px sans-serif';ctx.fillStyle='rgba(245,240,232,.65)';
-    ctx.fillText(`${idx+1} / ${total}`, W/2, 54);
-    ctx.fillStyle='rgba(245,240,232,.45)';ctx.font='11px sans-serif';
-    ctx.fillText('TIME CAP', W/2, H-20);
+  if(clips.length<1)return null;
+  const drawPhoto=(img,progress=0)=>{
+    const zoom=1+progress*0.04;
+    const panY=-progress*12;
+    vlogDrawCover(ctx,img,W,H,{zoom,panY});
+  };
+  const drawVideoFrame=(vid)=>{
+    vlogDrawCover(ctx,vid,W,H,{zoom:1});
+  };
+  const crossfade=(fromImg,toImg,t)=>{
+    const a=1-t;
+    ctx.globalAlpha=a;
+    vlogDrawCover(ctx,fromImg,W,H);
+    ctx.globalAlpha=t;
+    vlogDrawCover(ctx,toImg,W,H);
+    ctx.globalAlpha=1;
   };
   return new Promise((resolve,reject)=>{
     rec.onstop=()=>resolve(new Blob(chunks,{type:mime}));
     rec.onerror=reject;
-    rec.start(200);
+    rec.start(100);
     (async()=>{
-      for(let i=0;i<imgs.length;i++){
-        drawSlide(imgs[i],i,imgs.length);
-        await new Promise(r=>setTimeout(r,1200));
+      for(let i=0;i<clips.length;i++){
+        const c=clips[i];
+        vlogDrawOverlay(ctx,W,H,label,i,clips.length);
+        if(c.kind==='video'){
+          const vid=c.vid;
+          const segMs=Math.min((vid.duration||2)*1000,VIDEO_MAX_MS);
+          let elapsed=0;
+          vid.currentTime=0;
+          await new Promise(r=>{vid.onseeked=r;setTimeout(r,120)});
+          while(elapsed<segMs){
+            drawVideoFrame(vid);
+            vlogDrawOverlay(ctx,W,H,label,i,clips.length);
+            await vlogSleep(frameMs);
+            elapsed+=frameMs;
+            const next=Math.min(vid.duration||0,vid.currentTime+1/fps);
+            if(next<=vid.currentTime)break;
+            vid.currentTime=next;
+            await new Promise(r=>{vid.onseeked=r;setTimeout(r,80)});
+          }
+        }else{
+          const frames=Math.max(1,Math.round(PHOTO_MS/frameMs));
+          for(let f=0;f<frames;f++){
+            drawPhoto(c.img,f/(frames-1||1));
+            vlogDrawOverlay(ctx,W,H,label,i,clips.length);
+            await vlogSleep(frameMs);
+          }
+        }
+        if(i<clips.length-1){
+          const next=clips[i+1];
+          const nextImg=next.kind==='photo'?next.img:await vlogFrameToImage({mediaId:photos[i+1]?.mediaId,type:'video'});
+          if(nextImg&&c.kind==='photo'){
+            const xFrames=Math.max(1,Math.round(XFADE_MS/frameMs));
+            for(let x=0;x<xFrames;x++){
+              crossfade(c.img,nextImg,(x+1)/xFrames);
+              vlogDrawOverlay(ctx,W,H,label,i,clips.length);
+              await vlogSleep(frameMs);
+            }
+          }
+        }
       }
+      await vlogSleep(280);
       rec.stop();
     })().catch(reject);
   });
@@ -5939,12 +6299,12 @@ async function exportChangeVideo(frameCount){
   }catch(e){toast('動画の生成に失敗しました')}
 }
 async function openMonthVlog(key){
-  const ins=collectMonthData(key||monthInsightKey());
-  const photos=ins?.photos||[];
-  if(photos.length<2){toast('動画まとめには写真が2枚以上必要です');return}
+  const {items,label}=collectPeriodVlogItems(key,'month');
+  const photos=items.filter(i=>i.mediaId);
+  if(photos.length<2){toast('動画まとめには写真か動画が2件以上必要です');return}
   if(vlogTimer){clearInterval(vlogTimer);vlogTimer=null}
   vlogPhotos=photos;
-  vlogLabel=ins?.label||'';
+  vlogLabel=label||'';
   setVlogMode(true);
   let idx=0;
   const first=photos[0];
@@ -5977,12 +6337,12 @@ async function openMonthVlog(key){
   haptic();
 }
 async function openYearVlog(year){
-  const yi=buildYearInsight(year);
-  const photos=(yi.allPhotos||[]).slice(0,24);
-  if(photos.length<2){toast('動画まとめには写真が2枚以上必要です');return}
+  const {items,label}=collectPeriodVlogItems(String(year),'year');
+  const photos=items.filter(i=>i.mediaId);
+  if(photos.length<2){toast('動画まとめには写真か動画が2件以上必要です');return}
   if(vlogTimer){clearInterval(vlogTimer);vlogTimer=null}
   vlogPhotos=photos;
-  vlogLabel=yi.year+'年';
+  vlogLabel=label;
   setVlogMode(true);
   let idx=0;
   const first=photos[0];
@@ -5990,7 +6350,7 @@ async function openYearVlog(year){
   $('musicLayoutSeg')?.classList.add('hidden');
   $('wrappedCard').className='wrapped-card sc-card-host';
   $('wrappedCard').innerHTML=`<div class="sc-card sc-summary-card">
-    <div class="sc-open-head"><span class="sc-label">動画まとめ</span><span class="sc-ctx">${yi.year}年</span></div>
+    <div class="sc-open-head"><span class="sc-label">動画まとめ</span><span class="sc-ctx">${esc(vlogLabel)}</span></div>
     <div class="sc-summary-body">
       <div class="sc-vlog-frame" id="vlogFrame">
         <img data-lazy="${esc(first.mediaId)}" alt="">
@@ -5999,7 +6359,7 @@ async function openYearVlog(year){
     </div>
     <div class="sc-open-foot"><div class="sc-brand">TIME CAP</div></div>
   </div>`;
-  lastShareCaption=shareSheetCaption(yi.year+'年の動画まとめ');
+  lastShareCaption=shareSheetCaption(vlogLabel+'の動画まとめ');
   $('wrappedOverlay')?.classList.add('open');
   await loadLazyThumbs($('wrappedCard'));
   const frame=$('vlogFrame');
@@ -6150,10 +6510,19 @@ async function loadLazyThumbs(root){
     if(data)img.src=data;
   });
 }
+function getSelectedResurfaceDays(){
+  const customOn=document.querySelector('#resurfacePills [data-resurface="custom"]')?.classList.contains('on');
+  if(customOn){
+    const n=parseInt($('resurfaceDaysInput')?.value,10);
+    return Number.isFinite(n)&&n>=30?n:365;
+  }
+  const on=document.querySelector('#resurfacePills .duration-pill.on');
+  return on?+(on.dataset.resurface||365):365;
+}
 function updateCreateUI(){
   ensureSealDestSet();
   const d=S.sealDestSet;
-  const layer=S.sealLayer||'seal';
+  const layer=S.sealLayer||'now';
   const isNow=layer==='now';
   const showFriend=!!d.friend||!!d.pair;
   $('createFriendPick')?.classList.toggle('hidden',!showFriend);
@@ -6167,7 +6536,13 @@ function updateCreateUI(){
   document.querySelectorAll('#durationPills')?.forEach?.(()=>{});
   const durLbl=document.querySelector('#durationPills')?.previousElementSibling;
   if(durLbl&&durLbl.classList.contains('duration-label'))durLbl.classList.toggle('hidden',isNow);
+  $('unlockDurationLabel')?.classList.toggle('hidden',isNow);
   $('customDays')?.classList.toggle('hidden',isNow);
+  $('resurfaceBlock')?.classList.toggle('hidden',isNow);
+  const resCustomOn=document.querySelector('#resurfacePills [data-resurface="custom"]')?.classList.contains('on');
+  $('resurfaceCustomWrap')?.classList.toggle('show',!isNow&&!!resCustomOn);
+  $('postInstantBtn')?.classList.toggle('hidden',!isNow);
+  $('sealBtn')?.classList.toggle('hidden',isNow);
   const destParts=getDestSummaryParts();
   const destCount=countSealTargets();
   $('destSummary').innerHTML=destParts.length
@@ -6718,7 +7093,7 @@ async function openMemoryShareCard(cap){
 function buildChangeSeries(){
   const shots=getAppearanceTimeline();
   if(shots.length>=2){
-    return shots.map(s=>({mediaId:s.photoRef,createdAt:s.capturedAt,appearanceShot:true}));
+    return shots.map(s=>({mediaId:s.faceRef||s.photoRef,createdAt:s.capturedAt,appearanceShot:true,type:'photo'}));
   }
   const items=[...(S.dailyRecords||[]),...(S.opened||[])]
     .filter(r=>r.mediaId||(r.skyMood&&!r.moodColor))
@@ -6764,7 +7139,7 @@ async function openChangeShareCard(frameCount){
   card.innerHTML=`
     <div class="sc-card sc-change-card">
       <div class="sc-change-head"><span class="sc-label">${label}</span></div>
-      <div class="sc-change-grid sc-${count}">${frameHtml.join('')}</div>
+      <div class="sc-change-grid sc-${count} sc-swipe">${frameHtml.join('')}</div>
       ${count===2?`<div class="sc-change-arrow">→</div>`:''}
       <div class="sc-change-foot">
         <span>${esc(frames[0]?.label||'')}</span>
@@ -7325,7 +7700,9 @@ function openingMetaHtml(cap){
   const sealed=cap?.createdAt?new Date(cap.createdAt).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'}):'';
   if(!days&&!sealed)return'';
   const ago=days>=365?`約${Math.round(days/365)}年前`:days>=30?`約${Math.round(days/30)}ヶ月前`:`${days}日前`;
-  return sealed?`封をしたのは <strong>${esc(sealed)}</strong> · ${esc(ago)}`:`${esc(ago)}に封じた記憶`;
+  const ctxLine=formatBackgroundContext(cap);
+  const base=sealed?`封をしたのは <strong>${esc(sealed)}</strong> · ${esc(ago)}`:`${esc(ago)}に封じた記憶`;
+  return ctxLine?`${base}<br><span style="font-size:12px;color:var(--ink-3)">${esc(ctxLine)}</span>`:base;
 }
 function openingMoodChipHtml(cap){
   if(!cap)return'';
@@ -7337,6 +7714,34 @@ function openingMoodChipHtml(cap){
     return `${tcIcon('zap')} あの日の充電 ${Math.round(cap.moodBattery)}%`;
   }
   return'';
+}
+function checkOneYearChangeNotif(){
+  const shots=S.appearanceShots||[];
+  if(shots.length<2)return;
+  const key='oyc_'+todayStr();
+  if(S.shownNotifs?.includes(key))return;
+  const now=new Date();
+  const hit=shots.some(s=>{
+    const d=new Date(s.capturedAt);
+    return d.getMonth()===now.getMonth()&&d.getDate()===now.getDate()&&now.getFullYear()-d.getFullYear()>=1;
+  });
+  if(!hit)return;
+  S.shownNotifs=S.shownNotifs||[];
+  S.shownNotifs.push(key);
+  pushHomeNotif('この一年の変化','カプセルで見た目の変遷を振り返ろう','capsule',{priority:3});
+}
+function checkSeasonalReflectionNotif(){
+  const now=new Date();
+  if(now.getDate()>3)return;
+  const seasonMap={3:'春',6:'夏',9:'秋',12:'冬'};
+  const label=seasonMap[now.getMonth()+1];
+  if(!label)return;
+  const key='season_'+now.getFullYear()+'_'+(now.getMonth()+1);
+  if(S.shownNotifs?.includes(key))return;
+  if(!(S.dailyRecords?.length||S.opened?.length||S.appearanceShots?.length))return;
+  S.shownNotifs=S.shownNotifs||[];
+  S.shownNotifs.push(key);
+  pushHomeNotif(label+'のはじまり','カプセルで、これまでの変化を見てみよう','capsule',{priority:3});
 }
 function checkLastYearTodayNotif(){
   const item=getLastYearToday();
@@ -7373,6 +7778,18 @@ function checkPrevMonthInsightNotif(){
   S.shownNotifs.push(key);
   const lb=monthInsightRange(pk).label;
   pushHomeNotif(lb+'のまとめ','先月のあなたを振り返ろう','insight',{priority:3,monthKey:pk});
+}
+function checkPeriodMontageNotif(){
+  const now=new Date();
+  const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  if(now.getDate()<daysInMonth-2)return;
+  const key=monthInsightKey();
+  if(S.shownNotifs?.includes('montage_'+key))return;
+  const ins=collectMonthData(key);
+  if((ins.photos||[]).length<3)return;
+  S.shownNotifs=S.shownNotifs||[];
+  S.shownNotifs.push('montage_'+key);
+  pushHomeNotif('写真まとめができました',monthInsightRange(key).label+'の動画・写真まとめをシェア','montage',{priority:3,monthKey:key});
 }
 function checkYearInsightNotif(){
   const now=new Date();
@@ -8401,18 +8818,18 @@ function extractCatchphrases(texts,limit=3){
 function generateMonthlyNarrative(ins){
   if(!ins)return'';
   const lines=[];
-  if(ins.recordDays)lines.push(`今月は${ins.recordDays}日、静かに残しました。`);
-  if(ins.moodDominant)lines.push(`空模様の記録が、今月の気配を映しています。`);
-  if(ins.topPlace)lines.push(`${ins.topPlace.name}に、何度も足を運んでいます。`);
-  if(ins.topSong)lines.push(`「${ins.topSong.title}」が、あなたのBGMでした。`);
-  if(ins.peopleRanking?.[0])lines.push(`${ins.peopleRanking[0].name}との記憶が、今月いちばん多く残りました。`);
+  if(ins.recordDays)lines.push(`${ins.recordDays}日 · 記録`);
+  if(ins.moodDominant)lines.push(`空模様 · ${dominantSkyLabel(dominantSkyMood(ins.moodDominant))||'—'}`);
+  if(ins.topPlace)lines.push(`${ins.topPlace.name} · ${ins.topPlace.count}回`);
+  if(ins.topSong)lines.push(`「${ins.topSong.title}」 · ${ins.topSong.count}回`);
+  if(ins.peopleRanking?.[0])lines.push(`${ins.peopleRanking[0].name} · ${ins.peopleRanking[0].plays||ins.peopleRanking[0].count||0}回`);
   const route=collectRouteSummary(ins.key);
-  if(route.pointCount>=2)lines.push(`${route.pointCount}地点の足跡が、この月を彩りました。`);
+  if(route.pointCount>=2)lines.push(`${route.pointCount}地点`);
   const fandom=collectFandomRanking(ins.key);
-  if(fandom.ranking?.[0])lines.push(`${fandom.ranking[0].title.replace(/^#|「|」/g,'')}に、心が何度も向きました。`);
-  if(ins.photoCount>=2)lines.push(`写真に残った${ins.photoCount}の瞬間が、変化の軌跡になっています。`);
-  if(!lines.length)lines.push('記録が増えるほど、ここにあなただけの物語が育ちます。');
-  return lines.join(' ');
+  if(fandom.ranking?.[0])lines.push(`${fandom.ranking[0].title.replace(/^#|「|」/g,'')} · ${fandom.ranking[0].plays}回`);
+  if(ins.photoCount>=2)lines.push(`写真 ${ins.photoCount}枚`);
+  if(!lines.length)lines.push('記録が増えるほど、ここに並びます');
+  return lines.join(' · ');
 }
 function moodWeatherCalendarHtml(ins){
   const {year,month}=monthInsightRange(ins.key);
@@ -8530,7 +8947,8 @@ function renderInsightPanel(key,opts={}){
         <button type="button" data-genre-share="fandom">好きなもの</button>
       </div>
       <button type="button" class="create-pick" id="openMonthMontage" style="width:100%;margin-bottom:8px">写真まとめをシェア</button>
-      <button type="button" class="create-pick" id="openMonthVlog" style="width:100%">動画まとめを見る</button>
+      <button type="button" class="create-pick" id="openMonthVlog" style="width:100%;margin-bottom:8px">動画まとめを見る</button>
+      <button type="button" class="create-pick" id="openMonthVideoVlog" style="width:100%">動画Vlogを見る</button>
     </div>`;
 }
 function bindInsightPanelEvents(root,key){
@@ -8549,6 +8967,7 @@ function bindInsightPanelEvents(root,key){
   });
   root.querySelector('#openMonthMontage')?.addEventListener('click',()=>openPeriodMontage(key,'month'));
   root.querySelector('#openMonthVlog')?.addEventListener('click',()=>openMonthVlog(key));
+  root.querySelector('#openMonthVideoVlog')?.addEventListener('click',()=>openVideoVlog(key,'month'));
   root.querySelector('#openVoiceShareBtn')?.addEventListener('click',()=>openGenreWrappedCard(PERIOD_GENRE_VOICE,key));
   root.querySelector('#exportAppearanceBtn')?.addEventListener('click',()=>exportAppearanceMontage());
   root.querySelector('#openWeekMusicShare')?.addEventListener('click',()=>openWeekGenreWrappedCard(PERIOD_GENRE_MUSIC));
@@ -8633,14 +9052,14 @@ function buildYearInsight(year=new Date().getFullYear()){
 function generateYearNarrative(yi){
   if(!yi)return'';
   const lines=[];
-  if(yi.recordDays)lines.push(`${yi.year}年、${yi.recordDays}日分の記録が残りました。`);
-  if(yi.base.openedCount)lines.push(`${yi.base.openedCount}の記憶を開封し、時間を取り戻しました。`);
-  if(yi.yearTopSong)lines.push(`「${yi.yearTopSong.title}」が、一年を通してのBGMでした。`);
-  if(yi.yearTopPlace)lines.push(`${yi.yearTopPlace.name}が、いちばん足跡の多い場所。`);
-  if(yi.letters.length)lines.push(`${yi.letters.length}通の手紙を、未来の自分に預けました。`);
-  if(yi.voiceMonths)lines.push(`声の記録が${yi.voiceMonths}ヶ月分、積み重なっています。`);
-  if(!lines.length)lines.push('記録が育つほど、年末のまとめが豊かになります。');
-  return lines.join(' ');
+  if(yi.recordDays)lines.push(`${yi.year}年 · ${yi.recordDays}日`);
+  if(yi.base?.openedCount)lines.push(`開封 ${yi.base.openedCount}`);
+  if(yi.yearTopSong)lines.push(`「${yi.yearTopSong.title}」 · ${yi.yearTopSong.count}回`);
+  if(yi.yearTopPlace)lines.push(`${yi.yearTopPlace.name} · ${yi.yearTopPlace.count}回`);
+  if(yi.letters.length)lines.push(`手紙 ${yi.letters.length}通`);
+  if(yi.voiceMonths)lines.push(`声 ${yi.voiceMonths}ヶ月`);
+  if(!lines.length)lines.push('記録が育つほど、年末のまとめが豊かになります');
+  return lines.join(' · ');
 }
 function yearMoodStripHtml(yi){
   const names=['1','2','3','4','5','6','7','8','9','10','11','12'];
@@ -8709,7 +9128,8 @@ function renderYearInsightPanel(year){
         <button type="button" data-year-genre-share="fandom">好きなもの</button>
       </div>
       <button type="button" class="create-pick" id="openYearMontage" style="width:100%;margin-bottom:8px">写真まとめをシェア</button>
-      <button type="button" class="create-pick" id="openYearVlog" style="width:100%">動画まとめを見る</button>
+      <button type="button" class="create-pick" id="openYearVlog" style="width:100%;margin-bottom:8px">動画まとめを見る</button>
+      <button type="button" class="create-pick" id="openYearVideoVlog" style="width:100%">動画Vlogを見る</button>
     </div>`;
 }
 function bindYearInsightEvents(root,year){
@@ -8724,6 +9144,7 @@ function bindYearInsightEvents(root,year){
   root.querySelector('#openYearMoodShareBtn')?.addEventListener('click',()=>openMoodMosaicShare(String(year)));
   root.querySelector('#openYearMontage')?.addEventListener('click',()=>openPeriodMontage(String(year),'year'));
   root.querySelector('#openYearVlog')?.addEventListener('click',()=>openYearVlog(year));
+  root.querySelector('#openYearVideoVlog')?.addEventListener('click',()=>openVideoVlog(String(year),'year'));
   root.querySelector('#openVoiceShareBtn')?.addEventListener('click',()=>openYearGenreWrappedCard(PERIOD_GENRE_VOICE,year));
   root.querySelector('#openYearPhraseShareBtn')?.addEventListener('click',()=>openYearPhraseShare(year));
   root.querySelectorAll('[data-year-genre-share]').forEach(b=>b.addEventListener('click',()=>openYearGenreWrappedCard(b.dataset.yearGenreShare,year)));
@@ -9299,7 +9720,8 @@ if(S.mapTimePct===undefined)S.mapTimePct=100;
 if(!S.ctxDisplayPref)S.ctxDisplayPref='weather';
 if(!S.changeCardFrames)S.changeCardFrames=4;
 if(S.dismissedVoiceHint===undefined)S.dismissedVoiceHint=false;
-if(!S.sealLayer)S.sealLayer='seal';
+if(!S.sealLayer)S.sealLayer='now';
+if(!S.changeSummaries)S.changeSummaries=[];
 if(S.onboardingDone===undefined)S.onboardingDone=false;
 migrateMessages();
 document.documentElement.dataset.theme=S.dark?'':'light';
@@ -9631,8 +10053,11 @@ function renderTimelineFamilyCard(p,me){
 function renderTimeline(){
   checkMorningPromptNotif();
   checkLastYearTodayNotif();
+  checkOneYearChangeNotif();
+  checkSeasonalReflectionNotif();
   checkMonthInsightNotif();
   checkPrevMonthInsightNotif();
+  checkPeriodMontageNotif();
   checkYearInsightNotif();
   checkUnlockNotifs();
   checkLimitedPromptNotif();
@@ -9988,6 +10413,38 @@ function placeLabelsFromRecords(){
   });
   return out.slice(0,5);
 }
+function appearanceOneYearBannerHtml(){
+  const shots=S.appearanceShots||[];
+  if(shots.length<2)return '';
+  const now=new Date();
+  const hit=shots.some(s=>{
+    const d=new Date(s.capturedAt);
+    return d.getMonth()===now.getMonth()&&d.getDate()===now.getDate()&&now.getFullYear()-d.getFullYear()>=1;
+  });
+  if(!hit)return '';
+  return`<p class="capsule-one-year-note" style="font-size:12px;color:var(--gold-lo);margin:0 0 12px;line-height:1.5">365日 · 同じ日に残した顔が、静かに並んでいます</p>`;
+}
+function capsuleWordsPillarHtml(){
+  const key=monthInsightKey();
+  const ins=collectMonthData(key);
+  const phrases=ins.catchphrases||[];
+  if(!phrases.length)return `<p style="font-size:13px;color:var(--ink-3);line-height:1.5">言葉の記録が増えると、ここに並びます</p>`;
+  const prev=new Date();
+  prev.setMonth(prev.getMonth()-1);
+  const prevKey=prev.getFullYear()+'-'+String(prev.getMonth()+1).padStart(2,'0');
+  const prevPhrases=(collectMonthData(prevKey).catchphrases||[]).map(c=>c.word);
+  const nowWords=phrases.slice(0,3).map(c=>c.word);
+  const prevLine=prevPhrases.length?prevPhrases.slice(0,2).map(w=>`「${esc(w)}」`).join(' '):'—';
+  const nowLine=nowWords.map(w=>`「${esc(w)}」`).join(' ');
+  return`<div style="font-size:13px;color:var(--ink-2);line-height:1.55">
+    <div style="font-size:11px;color:var(--ink-3);margin-bottom:6px">よく使う言葉</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span style="color:var(--ink-3)">${prevLine}</span>
+      <span style="color:var(--ink-3)">→</span>
+      <span>${nowLine}</span>
+    </div>
+  </div>`;
+}
 function capsuleMoodPillarHtml(){
   const {start,end}=monthInsightRange(monthInsightKey());
   const moods=(S.dailyRecords||[]).filter(r=>r.createdAt>=start&&r.createdAt<end&&(r.skyMood||r.moodBattery!=null)).slice(-8);
@@ -10019,7 +10476,8 @@ function renderCapsuleChangeSection(){
     ?`<p style="font-size:13px;color:var(--ink-2);line-height:1.5">${tcIcon('pin')} ${places.map(esc).join(' · ')}</p>`
     :`<p style="font-size:13px;color:var(--ink-3);line-height:1.5">位置付きの記録が増えると並びます</p>`;
   return`<div class="capsule-section">
-    <div class="capsule-section-label">変化 · 4つの柱</div>
+    <div class="capsule-section-label">あなたの変化</div>
+    ${appearanceOneYearBannerHtml()}
     <div class="capsule-pillars">
       <div class="capsule-pillar">
         <div class="capsule-pillar-lbl">見た目</div>
@@ -10028,8 +10486,10 @@ function renderCapsuleChangeSection(){
       <div class="capsule-pillar">
         <div class="capsule-pillar-lbl">心</div>
         ${capsuleMoodPillarHtml()}
+        <div style="margin-top:8px">${capsuleWordsPillarHtml()}</div>
         <div class="capsule-pillar-actions">
           <button type="button" class="create-pick" id="capsuleMoodShareBtn">気分をシェア</button>
+          <button type="button" class="create-pick" data-capsule-drill="words">言葉の推移</button>
         </div>
       </div>
       <div class="capsule-pillar">
@@ -10037,6 +10497,7 @@ function renderCapsuleChangeSection(){
         ${capsuleFandomPillarHtml(ins,fandom)}
         <div class="capsule-pillar-actions">
           <button type="button" class="create-pick" data-capsule-share="fandom">好きなものをシェア</button>
+          <button type="button" class="create-pick" data-capsule-drill="music">音楽の推移</button>
         </div>
       </div>
       <div class="capsule-pillar">
@@ -10045,6 +10506,7 @@ function renderCapsuleChangeSection(){
         <div class="capsule-pillar-actions">
           <button type="button" class="create-pick" data-capsule-share="route">場所をシェア</button>
           <button type="button" class="create-pick" id="capsuleOpenMapBtn">マップで見る</button>
+          <button type="button" class="create-pick" data-capsule-drill="place">場所の推移</button>
         </div>
       </div>
     </div>
@@ -10058,6 +10520,7 @@ function renderCapsuleChangeSection(){
     <button type="button" class="create-pick" data-capsule-share="people" style="width:100%;margin-top:8px">人をシェア</button>
     <button type="button" class="create-pick" data-capsule-share="voice" style="width:100%;margin-top:8px">声をシェア</button>
     <button type="button" class="create-pick" id="capsulePhotoMontageBtn" style="width:100%;margin-top:8px">写真をシェア</button>
+    <button type="button" class="create-pick" id="capsuleVideoVlogBtn" style="width:100%;margin-top:8px">動画Vlogを見る</button>
   </div>`;
 }
 function renderCapsuleUpcomingSection(){
@@ -10107,11 +10570,12 @@ function renderCapsulePastSection(){
   return`<div class="capsule-section"><div class="capsule-section-label">過去から</div><div class="capsule-past">${cards.join('')}</div></div>`;
 }
 function renderCapsuleTab(){
+  refreshChangeSummaries();
   const el=$('capsuleView');
   if(!el)return;
   el.innerHTML=`
     <div class="capsule-hero">
-      <h1>365日</h1>
+      <h1>過去が、会いに来た。</h1>
       <p>変化 · もうすぐ開く · 過去から</p>
     </div>
     ${renderCapsuleChangeSection()}
@@ -10124,6 +10588,7 @@ function renderCapsuleTab(){
   el.querySelector('#shareChangeCardBtn')?.addEventListener('click',()=>openChangeShareCard(S.changeCardFrames));
   el.querySelector('#exportChangeVideoBtn')?.addEventListener('click',()=>exportChangeVideo(S.changeCardFrames));
   el.querySelector('#exportAppearanceBtn')?.addEventListener('click',()=>exportAppearanceMontage());
+  el.querySelector('#playAppearanceSwipeBtn')?.addEventListener('click',()=>playAppearanceSwipe(el));
   el.querySelector('#capsuleOpenMapBtn')?.addEventListener('click',()=>{switchTab('map');renderMapPanel();haptic()});
   el.querySelectorAll('[data-capsule-share]').forEach(b=>b.addEventListener('click',()=>{
     const genre=b.dataset.capsuleShare;
@@ -10133,8 +10598,10 @@ function renderCapsuleTab(){
     else if(genre==='people')openGenreWrappedCard(PERIOD_GENRE_PEOPLE);
     else if(genre==='voice')openGenreWrappedCard(PERIOD_GENRE_VOICE);
   }));
+  el.querySelectorAll('[data-capsule-drill]').forEach(b=>b.addEventListener('click',()=>openInsightDrill(b.dataset.capsuleDrill,monthInsightKey())));
   el.querySelector('#capsuleMoodShareBtn')?.addEventListener('click',()=>openMoodMosaicShare(monthInsightKey()));
   el.querySelector('#capsulePhotoMontageBtn')?.addEventListener('click',()=>openPeriodMontage(monthInsightKey(),'month'));
+  el.querySelector('#capsuleVideoVlogBtn')?.addEventListener('click',()=>openVideoVlog(monthInsightKey(),'month'));
   el.querySelectorAll('[data-cap-open]').forEach(b=>b.addEventListener('click',()=>{
     const cap=S.capsules?.find(c=>c.id===b.dataset.capOpen);
     if(cap&&canOpenOwnCapsuleToday(cap))startOpening([cap],false);
@@ -11173,6 +11640,7 @@ function renderAll(){
   migrateCapsuleKinds();
   migrateMessages();
   migrateTextPosts();
+  refreshChangeSummaries();
   initStaticIcons();
   if(!S.activityFeed?.length){
     S.activityFeed=MEMBERS.slice(0,4).map((m,i)=>({
@@ -11241,6 +11709,8 @@ function renderNotifDropdown(){
       else if(item.dataset.action==='timeline'){switchTab('waiting');$('timeMachineSection')?.scrollIntoView({behavior:'smooth',block:'start'})}
       else if(item.dataset.action==='home'){switchTab('waiting');renderTimeline();haptic()}
       else if(item.dataset.action==='insight'){S.archiveTab='insight';save();switchTab('archive');renderArchive();openInsightSheet(n?.monthKey||monthInsightKey())}
+      else if(item.dataset.action==='montage'){openMonthVlog(n?.monthKey||monthInsightKey())}
+      else if(item.dataset.action==='capsule'){switchTab('capsule');renderCapsuleTab();$('capsuleView')?.scrollIntoView({behavior:'smooth',block:'start'})}
       else if(item.dataset.action==='yearInsight')openInsightSheet(String(new Date().getFullYear()));
       haptic();
     });
@@ -11572,6 +12042,15 @@ document.querySelectorAll('#textDestToggle button').forEach(b=>b.addEventListene
   textComposeDest=b.dataset.tdest;
   document.querySelectorAll('#textDestToggle button').forEach(x=>x.classList.toggle('on',x===b));
   $('textDurationBlock')?.classList.toggle('hidden',textComposeDest!=='capsule');
+  const pickerWrap=$('textSharePickerWrap');
+  if(pickerWrap){
+    const showInner=textComposeDest==='inner';
+    pickerWrap.classList.toggle('hidden',!showInner);
+    if(showInner){
+      pickerWrap.innerHTML=dailySharePickerHtml('text');
+      bindDailySharePicker(pickerWrap,'text');
+    }
+  }
   haptic();
 }));
 document.querySelectorAll('#textDurationPills .duration-pill').forEach(b=>b.addEventListener('click',()=>{
@@ -11596,6 +12075,25 @@ $('textComposeCancel')?.addEventListener('click',()=>{closeTextCompose();haptic(
 textComposeOverlay?.addEventListener('click',e=>{if(e.target===textComposeOverlay)closeTextCompose()});
 
 $('inviteContact')?.addEventListener('input',()=>{save();updateCreateUI()});
+
+document.querySelectorAll('#resurfacePills .duration-pill').forEach(b=>{
+  b.addEventListener('click',()=>{
+    if(b.dataset.resurface==='custom'){
+      $('resurfaceCustomWrap')?.classList.toggle('show');
+      b.classList.toggle('on');
+      document.querySelectorAll('#resurfacePills .duration-pill').forEach(x=>{
+        if(x!==b)x.classList.remove('on');
+      });
+      if(!b.classList.contains('on'))document.querySelector('#resurfacePills [data-resurface="365"]')?.classList.add('on');
+    }else{
+      document.querySelectorAll('#resurfacePills .duration-pill').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      $('resurfaceCustomWrap')?.classList.remove('show');
+    }
+    updateCreateUI();
+    save();haptic();
+  });
+});
 
 document.querySelectorAll('#durationPills .duration-pill').forEach(b=>{
   b.addEventListener('click',()=>{
@@ -11709,6 +12207,9 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
   const sealBattery=sealMoodInputMode==='battery'?(S.sealBattery??undefined):undefined;
   const selfieData=pendingSelfie?.dataUrl;
   const seasonTag=S.seasonEvent?.joined?'grad2026':undefined;
+  const resurfaceDays=getSelectedResurfaceDays();
+  const resurfaceCustom=!!document.querySelector('#resurfacePills [data-resurface="custom"]')?.classList.contains('on');
+  const resurfaceChosenBase=resurfaceCustom||resurfaceDays!==365;
   const doSeal=async()=>{
     let count=0;
     const hadTodayPhoto=hasPostedTodayPhoto();
@@ -11722,12 +12223,15 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
           const itemLoc=(!stripLoc&&mItem?.geo)?{...mItem.geo}:loc;
           const capLoc=enrichLocFromContext(itemLoc,sealContext,stripLoc);
           if(mItem?.dataUrl){
-            try{await idbPut(capId,mItem.dataUrl)}catch(e){toast('メディアの保存に失敗');return}
+            try{
+              await idbPut(capId,mItem.dataUrl);
+              if(mItem.type==='photo'&&!selfieData)await registerAppearanceShot(capId,'photo');
+            }catch(e){toast('メディアの保存に失敗');return}
           }
           let selfieMediaId=null;
           if(selfieData&&mItem?.type==='photo'){
             selfieMediaId=capId+'_sf';
-            try{await idbPut(selfieMediaId,selfieData)}catch(e){}
+            try{await idbPut(selfieMediaId,selfieData);await registerAppearanceShot(selfieMediaId,'selfie')}catch(e){}
           }
           const cap={
             id:capId,from:fromName,to:t.to,visibility:isInstantPost?'today':t.vis,type:promptMeta?'prompt':(mItem?.type||type),
@@ -11742,6 +12246,9 @@ async function sealCapsule({caption,media,fromCreate,fromDaily,instant}){
             linkedSong:shareSong||undefined,skyMood:sealSkyMood,moodBattery:sealBattery,selfieMediaId,
             voiceDuration:mItem?.type==='voice'?pendingVoice?.duration:undefined,
             sealContext:sealContext||undefined,
+            resurfaceAt:isInstantPost?addDays(365):addDays(resurfaceDays),
+            resurfaceChosen:!isInstantPost&&resurfaceChosenBase,
+            isCapsule:!isInstantPost,
             ...(promptMeta||{}),
             ...(voiceMeta||{}),
           };
@@ -12087,6 +12594,8 @@ function finishOpen(){
         $('reactions').classList.add('show');
         showEchoReply(cap);
         $('openingActions')?.classList.add('show');
+        $('openingActions')?.classList.add('opening-actions--highlight');
+        setTimeout(()=>$('openingActions')?.classList.remove('opening-actions--highlight'),4000);
         lastOpenedItem={...cap};
         S.opened=S.opened||[];
         openingItems.forEach(c=>S.opened.unshift({
@@ -12880,15 +13389,26 @@ $('insightDrillOverlay')?.addEventListener('click',e=>{
 });
 $('friendProfileClose')?.addEventListener('click',()=>$('friendProfileOverlay')?.classList.remove('open'));
 $('friendProfileOverlay')?.addEventListener('click',e=>{if(e.target===$('friendProfileOverlay'))$('friendProfileOverlay').classList.remove('open')});
+async function exportShareCardPng(cardEl){
+  if(typeof html2canvas==='undefined'||!cardEl)return null;
+  const exportEl=cardEl.querySelector('.sc-card')||cardEl;
+  const scale=SC_EXPORT_W/(exportEl.offsetWidth||300);
+  const raw=await html2canvas(exportEl,{backgroundColor:'#100D0A',scale,useCORS:true,allowTaint:true});
+  const out=document.createElement('canvas');
+  out.width=SC_EXPORT_W;out.height=SC_EXPORT_H;
+  const ctx=out.getContext('2d');
+  ctx.fillStyle='#100D0A';ctx.fillRect(0,0,SC_EXPORT_W,SC_EXPORT_H);
+  const ratio=Math.min(SC_EXPORT_W/raw.width,SC_EXPORT_H/raw.height);
+  const w=raw.width*ratio,h=raw.height*ratio;
+  ctx.drawImage(raw,(SC_EXPORT_W-w)/2,(SC_EXPORT_H-h)/2,w,h);
+  return await new Promise(res=>out.toBlob(res,'image/png'));
+}
 $('wrappedShare')?.addEventListener('click',async()=>{
   const caption=lastShareCaption||shareSheetCaption();
   const cardEl=$('wrappedCard');
   try{
-    if(typeof html2canvas!=='undefined'&&cardEl){
-      const exportEl=cardEl.querySelector('.sc-card')||cardEl;
-      const scale=SC_EXPORT_W/(exportEl.offsetWidth||300);
-      const canvas=await html2canvas(exportEl,{backgroundColor:'#100D0A',scale,useCORS:true,allowTaint:true});
-      const blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
+    if(cardEl){
+      const blob=await exportShareCardPng(cardEl);
       if(blob&&navigator.share){
         const file=new File([blob],'timecap.png',{type:'image/png'});
         if(navigator.canShare?.({files:[file]})){
@@ -12936,6 +13456,24 @@ $('insightViewShare')?.addEventListener('click',()=>{
   haptic();
 });
 $('insightViewOverlay')?.addEventListener('click',e=>{if(e.target===$('insightViewOverlay'))$('insightViewOverlay').classList.remove('open')});
+function runSelfChecks(){
+  const checks=[
+    ['tabs',typeof switchTab==='function'],
+    ['sharePng',typeof exportShareCardPng==='function'],
+    ['faceApi',typeof faceapi!=='undefined'],
+    ['changeSummaries',Array.isArray(S.changeSummaries)],
+    ['vlog',typeof exportVlogWebM==='function'],
+    ['spotify',typeof fetchSpotifyLiveTrack==='function'],
+    ['postDetail',typeof openPostDetail==='function'],
+    ['calendar',typeof openDayReflect==='function'],
+    ['faceModels',typeof ensureFaceModels==='function'],
+    ['refreshSummaries',typeof refreshChangeSummaries==='function'],
+  ];
+  const failed=checks.filter(([,ok])=>!ok).map(([n])=>n);
+  if(failed.length)console.warn('[Time Cap self-check] missing:',failed.join(', '));
+  else console.info('[Time Cap self-check] ok');
+  return !failed.length;
+}
 startWaitTimer();
 (async()=>{
   try{
@@ -12950,6 +13488,8 @@ startWaitTimer();
     }
   }catch(e){}
   save();renderAll();
+  runSelfChecks();
+  if(isLoggedIn()&&S.appearanceTrackingEnabled!==false)ensureFaceModels();
   if(S.spotify?.connected)syncSpotifyTracks(false);
 })();
 </script>
