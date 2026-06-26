@@ -493,7 +493,19 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .opening-envelope .body{width:100%;height:110px;background:linear-gradient(180deg,#F5E6D3,#E8D4BC);border-radius:12px 12px 16px 16px;position:absolute;bottom:0;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 .opening-envelope .flap{width:0;height:0;position:absolute;top:30px;left:50%;border-left:100px solid transparent;border-right:100px solid transparent;border-top:70px solid #EDD9C0;transform:translateX(-50%);transform-origin:top center;transition:transform 1s var(--spring)}
 .opening-envelope.opened .flap{transform:translateX(-50%) rotateX(180deg)}
-.drag-seal{width:52px;height:52px;border-radius:50%;cursor:grab;background:radial-gradient(circle at 35% 35%,#E85A4A,#B84A3A);position:absolute;top:70px;left:50%;transform:translateX(-50%);box-shadow:0 6px 20px rgba(184,74,58,.55);touch-action:none;user-select:none;transition:opacity .3s}
+.opening-meta{
+  text-align:center;font-size:12px;color:rgba(255,255,255,.5);margin:-20px 0 28px;line-height:1.5;
+  animation:fadeUp .8s var(--spring) .15s both;
+}
+.opening-meta strong{color:rgba(255,255,255,.82);font-weight:600}
+.drag-seal{width:52px;height:52px;border-radius:50%;cursor:grab;background:radial-gradient(circle at 35% 35%,#E85A4A,#B84A3A);position:absolute;top:70px;left:50%;transform:translateX(-50%);box-shadow:0 6px 20px rgba(184,74,58,.55);touch-action:none;user-select:none;transition:opacity .3s,transform .15s var(--smooth)}
+.drag-seal.near-open{box-shadow:0 8px 28px rgba(232,168,124,.45),0 0 0 4px rgba(232,168,124,.15)}
+.opening-envelope.near-open .body{box-shadow:0 24px 70px rgba(232,168,124,.18),0 20px 60px rgba(0,0,0,.4)}
+.reveal-stack.show~.opening-envelope,.reveal-stack.show~.opening-hint,.reveal-stack.show~.opening-meta{display:none}
+.opening-sky-pill{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+  background:rgba(255,255,255,.08);font-size:12px;color:rgba(255,255,255,.85);margin-bottom:8px;
+}
 .drag-seal::after{content:'↑';color:rgba(255,255,255,.6);font-size:13px;position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);animation:bounce 1.5s ease-in-out infinite}
 @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
 .drag-seal.hidden{opacity:0;pointer-events:none}
@@ -2133,12 +2145,22 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .lyt-label{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
 .lyt-title{font-size:16px;font-weight:600;margin:8px 0 12px}
 .lyt-card img{width:100%;border-radius:var(--r-sm);max-height:200px;object-fit:cover}
-.tm-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.tm-section{margin:12px 20px 16px;padding:0}
+.tm-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 2px 10px}
+.tm-label{font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+.tm-sub{font-size:11px;color:var(--ink-3)}
+.tm-scroll{display:flex;gap:12px;overflow-x:auto;padding:2px 0 6px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
 .tm-scroll::-webkit-scrollbar{display:none}
-.tm-card{flex:0 0 72%;max-width:280px;scroll-snap-align:start;padding:12px;border-radius:var(--r-sm);background:var(--bg-3);border:1px solid rgba(255,255,255,.06)}
-.tm-years{font-size:10px;color:var(--ink-3);letter-spacing:.08em;margin-bottom:6px}
-.tm-title{font-size:14px;font-weight:600;margin-bottom:8px;line-height:1.35}
-.tm-card img{width:100%;border-radius:8px;max-height:140px;object-fit:cover}
+.tm-card{
+  flex:0 0 78%;max-width:300px;scroll-snap-align:start;padding:14px;border-radius:var(--r-sm);
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.08);border-left:3px solid rgba(201,168,76,.28);
+  cursor:pointer;text-align:left;
+}
+.tm-years{font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase}
+.tm-title{font-size:15px;font-weight:600;margin:6px 0 8px;line-height:1.4;font-family:var(--font-display)}
+.tm-body{font-size:13px;color:var(--ink-2);line-height:1.45}
+.tm-card img{width:100%;border-radius:8px;max-height:140px;object-fit:cover;margin-top:4px}
+.tm-sky{display:flex;align-items:center;gap:8px;padding:12px;border-radius:8px;background:var(--bg-3);margin-top:4px}
 .pair-hint{font-size:12px;color:var(--warm,#e8a87c);margin:-8px 0 16px;line-height:1.45}
 .gift-row{display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
 .gift-chip{padding:8px 12px;border-radius:999px;background:var(--bg-2);font-size:13px;border:1px solid rgba(255,255,255,.08)}
@@ -2820,6 +2842,13 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
         <div class="lyt-title" id="lytTitle">—</div>
         <div class="lyt-card" id="lytCard"></div>
       </div>
+      <div class="tm-section hidden" id="timeMachineSection">
+        <div class="tm-head">
+          <span class="tm-label">過去の今日</span>
+          <span class="tm-sub" id="timeMachineSub"></span>
+        </div>
+        <div class="tm-scroll" id="timeMachineScroll"></div>
+      </div>
       <div class="tl-feed-head">
         <span class="tl-feed-label">タイムライン</span>
         <span class="tl-feed-sub" id="tlFeedSub"></span>
@@ -2848,9 +2877,6 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
         <p style="font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.45">撮ると、友達の今日が見える</p>
         <div class="today-photo-grid" id="todayPhotoGrid"></div>
       </div>
-    <div class="lyt-section tm-section hidden" id="timeMachineSection">
-      <div class="tm-scroll" id="timeMachineScroll"></div>
-    </div>
     <div class="season-banner hidden" id="seasonBanner"></div>
     <div class="unlock-festival hidden" id="unlockFestival"></div>
     <div class="cohort-section hidden" id="cohortSection"><div class="cohort-feed" id="cohortFeed"></div></div>
@@ -3221,6 +3247,7 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
   <button type="button" class="opening-close" id="openingClose">×</button>
   <div class="opening-content">
     <p class="opening-poetic" id="openingPoetic">過去から、何かが届きました。</p>
+    <p class="opening-meta hidden" id="openingMeta"></p>
     <div class="opening-envelope" id="openingEnvelope">
       <div class="flap"></div><div class="body"></div>
       <div class="drag-seal" id="dragSeal">封</div>
@@ -6848,7 +6875,8 @@ function getMemoriesOnDay(yearsAgo){
     if(p.mediaId)s+=10;
     if(p.type==='photo'||p.type==='food'||p.type==='sky')s+=5;
     if(p.type==='text')s+=12;
-    if(p.mood)s+=3;
+    if(p.skyMood)s+=4;
+    if(p.type==='mood'&&p.skyMood)s+=6;
     return s;
   };
   const candidates=[
@@ -6865,6 +6893,30 @@ function getMemoriesOnDay(yearsAgo){
   return candidates[0];
 }
 function getLastYearToday(){return getMemoriesOnDay(1)}
+function memoryItemToPost(item){
+  if(!item)return null;
+  return{
+    id:item.id||'mem_'+item.at,
+    from:item.from||item.userId||meName(),
+    type:item.type,text:item.text||item.caption||item.moodWord||'',
+    at:item.at||item.openedAt||item.createdAt,
+    mediaId:item.mediaId,skyMood:item.skyMood,moodBattery:item.moodBattery,moodWord:item.moodWord,
+    sealContext:item.sealContext,linkedSong:item.linkedSong,loc:item.loc,
+    promptText:item.promptText,caption:item.caption,
+  };
+}
+function openingDaysAgo(cap){
+  const created=cap?.createdAt||cap?.sealedAt;
+  if(!created)return null;
+  return Math.max(1,Math.round((Date.now()-created)/864e5));
+}
+function openingMetaHtml(cap){
+  const days=openingDaysAgo(cap);
+  const sealed=cap?.createdAt?new Date(cap.createdAt).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'}):'';
+  if(!days&&!sealed)return'';
+  const ago=days>=365?`約${Math.round(days/365)}年前`:days>=30?`約${Math.round(days/30)}ヶ月前`:`${days}日前`;
+  return sealed?`封をしたのは <strong>${esc(sealed)}</strong> · ${esc(ago)}`:`${esc(ago)}に封じた記憶`;
+}
 function checkLastYearTodayNotif(){
   const item=getLastYearToday();
   if(!item)return;
@@ -8703,7 +8755,8 @@ function renderLastYearToday(){
   sec.classList.remove('hidden');
   sec.classList.add('past-arrival-card');
   sec.onclick=()=>{
-    if(item.mediaId||item.text)openPostDetail({...item,at:item.at||item.openedAt||item.createdAt,from:meName()});
+    const post=memoryItemToPost(item);
+    if(post)openPostDetail(post);
     haptic();
   };
   sec.style.cursor='pointer';
@@ -8769,6 +8822,7 @@ function renderTimeline(){
   renderHomeDemoGuide();
   renderTimelineFeed();
   renderLastYearToday();
+  renderTimeMachine();
   renderNextCapsule();
 }
 
@@ -8949,22 +9003,41 @@ function renderActivityFeed(){
 function renderTimeMachine(){
   const sec=$('timeMachineSection');
   if(!sec)return;
-  const items=[1,2,3].map(y=>({years:y,item:getMemoriesOnDay(y)})).filter(x=>x.item);
+  const items=[1,2,3,4,5].map(y=>({years:y,item:getMemoriesOnDay(y)})).filter(x=>x.item);
   if(!items.length){sec.classList.add('hidden');return}
   sec.classList.remove('hidden');
+  const sub=$('timeMachineSub');
+  if(sub)sub.textContent=`${items.length}件`;
   const scroll=$('timeMachineScroll');
   if(!scroll)return;
   scroll.innerHTML=items.map(({years,item})=>{
     const d=new Date(item.at||item.openedAt||item.createdAt);
-    const body=item.mediaId
-      ?`<img data-lazy="${esc(item.mediaId)}" alt="">`
-      :`<p style="font-size:13px;color:var(--ink-2);line-height:1.45;margin:0">${esc(item.text||'')}</p>`;
-    return`<article class="tm-card">
+    let body='';
+    if(item.mediaId){
+      body=`<img data-lazy="${esc(item.mediaId)}" alt="">`;
+    }else if(item.skyMood){
+      const lbl=item.moodWord||SKY_MOODS.find(s=>s.id===item.skyMood)?.label||'';
+      body=`<div class="tm-sky">${tcIcon(skyMoodIcon(item.skyMood))}<span>${esc(lbl)}</span></div>`;
+    }else{
+      body=`<p class="tm-body">${esc((item.text||item.moodWord||'この日の記憶').slice(0,80))}</p>`;
+    }
+    const ctx=resolveSealContext(item);
+    const meta=ctx?.place?`<div class="tm-body" style="margin-top:6px;font-size:11px;color:var(--ink-3)">${tcIcon('pin')} ${esc(ctx.place)}</div>`:'';
+    return`<button type="button" class="tm-card" data-tm-years="${years}">
       <div class="tm-years">${years}年前の今日 · ${d.toLocaleDateString('ja-JP',{month:'long',day:'numeric'})}</div>
-      <div class="tm-title">${esc(item.text||'この日の記憶')}</div>
-      ${body}
-    </article>`;
+      <div class="tm-title">${esc(item.text||item.moodWord||'この日の記憶')}</div>
+      ${body}${meta}
+    </button>`;
   }).join('');
+  scroll.querySelectorAll('.tm-card').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const years=+btn.dataset.tmYears;
+      const item=getMemoriesOnDay(years);
+      const post=memoryItemToPost(item);
+      if(post)openPostDetail(post);
+      haptic();
+    });
+  });
   loadLazyThumbs(sec);
 }
 
@@ -10980,9 +11053,22 @@ function startOpening(items,flash){
   makeStars();makeParticles();
   const c=items[0];
   const selfItem=items.find(x=>x.to==='self'&&(x.from==='ゆうま'||x.from===meName()));
-  $('openingPoetic').innerHTML=selfItem
-    ?tcIcon('mail')+' 去年の今日<br><span style="font-size:14px;opacity:.65;font-weight:400">'+esc(capFromLabel(c))+' · 封を開く</span>'
+  $('openingMeta')?.classList.add('hidden');
+  $('openingEnvelope')?.classList.remove('near-open');
+  dragSeal?.classList.remove('near-open');
+  const days=openingDaysAgo(c);
+  const isPast=days&&days>=7;
+  $('openingPoetic').innerHTML=isPast
+    ?tcIcon('mail')+' 過去から、届きました。<br><span style="font-size:14px;opacity:.65;font-weight:400">'+esc((c.text||'').slice(0,36)||capFromLabel(c))+'</span>'
+    :selfItem
+    ?tcIcon('mail')+' 未来の自分から<br><span style="font-size:14px;opacity:.65;font-weight:400">'+esc(capFromLabel(c))+'</span>'
     :tcIcon('sparkle')+' 開封<br><span style="font-size:14px;opacity:.65;font-weight:400">'+esc(capFromLabel(c))+'</span>';
+  const metaEl=$('openingMeta');
+  if(metaEl){
+    const meta=openingMetaHtml(c);
+    if(meta){metaEl.innerHTML=meta;metaEl.classList.remove('hidden')}
+    else metaEl.classList.add('hidden');
+  }
   $('openingEnvelope').classList.remove('opened');
   $('openingEnvelope').style.opacity='1';
   $('dragSeal').classList.remove('hidden');
@@ -11016,6 +11102,9 @@ function onDragMove(y){
   if(!dragging)return;
   currentY=Math.min(0,y-startY);
   dragSeal.style.transform=`translateX(-50%) translateY(${currentY}px)`;
+  const near=currentY<-45;
+  dragSeal.classList.toggle('near-open',near);
+  $('openingEnvelope')?.classList.toggle('near-open',near);
   if(currentY<-70)finishOpen();
 }
 function onDragEnd(){if(!dragging)return;dragging=false;if(currentY>-70)dragSeal.style.transform='translateX(-50%)'}
@@ -11042,6 +11131,7 @@ function finishOpen(){
   dragSeal.classList.add('hidden');
   $('openingEnvelope').classList.add('opened');
   $('openingHint').style.display='none';
+  $('openingMeta')?.classList.add('hidden');
   playTear();
   haptic();try{navigator.vibrate?.([20,30,20])}catch(e){}
 
@@ -11074,7 +11164,8 @@ function finishOpen(){
         if(!media&&c.type==='voice')media=`<div class="thumb">${tcIcon('mic','lg')}</div>`;
         return media;
       }));
-      const moodLine=cap?.mood?`<div class="mood-compare">あのとき ${cap.mood}</div>`:'';
+      const skyLine=cap?.skyMood?`<div class="opening-sky-pill">${tcIcon(skyMoodIcon(cap.skyMood))} ${esc(cap.moodWord||SKY_MOODS.find(s=>s.id===cap.skyMood)?.label||'')}</div>`:'';
+      const moodLine=skyLine||(cap?.moodWord?`<div class="opening-sky-pill">${esc(cap.moodWord)}</div>`:'');
       const ctxCard=memoryContextHtml(resolveSealContext(cap),cap?.linkedSong);
       const afterReveal=()=>{
         $('reactions').classList.add('show');
