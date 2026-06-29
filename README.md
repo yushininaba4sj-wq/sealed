@@ -29,11 +29,19 @@ cd sealed && python3 -m http.server 8770
 
 | 変数 | 用途 |
 |------|------|
-| `RESEND_API_KEY` | 確認コードメール・セッション署名 |
-| `API_SESSION_SECRET` | （任意）セッショントークン署名。未設定時は `RESEND_API_KEY` を使用 |
-| `UPSTASH_REDIS_REST_URL` | `promptAnswers` 保存 |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash 認証 |
-| `BLOB_READ_WRITE_TOKEN` | 振り返り写真アップロード |
+| `RESEND_API_KEY` | 確認コードメール（設定済み） |
+| `API_SESSION_SECRET` | セッション署名（`scripts/setup-production.sh` で自動生成） |
+| `BLOB_READ_WRITE_TOKEN` | 写真＋promptAnswers 保存（Blob 連携で自動注入） |
+| `UPSTASH_REDIS_REST_URL` | （任意）Upstash KV。未設定時は Blob にフォールバック |
+| `UPSTASH_REDIS_REST_TOKEN` | （任意）Upstash 認証 |
+
+### 本番セットアップ（ワンコマンド）
+
+```bash
+cd sealed && bash scripts/setup-production.sh
+```
+
+Blob ストア作成・環境変数・本番デプロイまで自動実行します。
 
 ### API エンドポイント
 
