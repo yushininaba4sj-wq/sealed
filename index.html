@@ -2654,6 +2654,61 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 .daily-strip-label{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase}
 .daily-strip-progress{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .daily-strip-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.daily-7-grid{
+  margin:12px 20px 0;padding:14px;border-radius:var(--r);
+  background:var(--bg-2);border:1px solid rgba(255,255,255,.06);
+}
+.daily-7-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.daily-7-label{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase}
+.daily-7-sub{font-size:11px;color:var(--ink-4)}
+.daily-7-layout{display:flex;gap:8px;align-items:stretch}
+.d7-hero-col{width:40%;flex-shrink:0;display:flex}
+.d7-hero-col .d7-cell.hero{flex:1;min-height:188px}
+.d7-rest{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.d7-change-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.d7-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.d7-side{width:76px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+.d7-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.d7-cell{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  min-height:64px;padding:10px 8px;border-radius:14px;background:var(--bg-3);
+  border:1px solid rgba(255,255,255,.06);position:relative;text-align:center;
+}
+.d7-cell.small{min-height:52px;padding:8px 6px}
+.d7-cell.small .d7-label{font-size:9px}
+.d7-cell.hero{
+  min-height:112px;width:100%;
+  background:linear-gradient(145deg,rgba(201,168,76,.18),rgba(255,255,255,.05));
+  border-color:rgba(201,168,76,.32);
+  box-shadow:0 0 0 1px rgba(201,168,76,.08) inset;
+}
+.d7-cell.hero .d7-icon{font-size:32px}
+.d7-cell.hero .d7-label{font-size:13px;font-weight:700;color:var(--sc-gold,#C9A84C)}
+.d7-cell.need-axis{opacity:.55}
+.d7-cell .d7-hint{font-size:8px;color:var(--ink-4);line-height:1.3;margin-top:2px}
+.d7-cell.done{opacity:.72}
+.d7-cell .d7-icon{font-size:20px;line-height:1}
+.d7-cell .d7-label{font-size:10px;font-weight:600;color:var(--ink-2)}
+.d7-cell .d7-slots{font-size:9px;color:var(--ink-4);margin-top:2px}
+.now-capture-sheet{max-height:92vh}
+.now-capture-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.now-capture-head h3{font-size:20px;font-weight:600;font-family:var(--font-display)}
+.now-flip-btn{padding:8px 12px;border-radius:999px;font-size:11px;background:var(--bg-3);color:var(--ink-2)}
+.now-capture-hint{font-size:12px;color:var(--ink-3);margin:8px 0 12px;line-height:1.5}
+.now-capture-preview{border-radius:var(--r-sm);overflow:hidden;background:var(--bg-3);min-height:200px;margin-bottom:12px}
+.now-capture-preview img{width:100%;display:block;max-height:45vh;object-fit:cover}
+.now-capture-actions{display:flex;flex-direction:column;gap:8px}
+.now-branded-preview{max-width:min(92vw,360px);margin:0 auto 16px;border-radius:12px;overflow:hidden;box-shadow:var(--shadow-lg)}
+.now-branded-preview img{width:100%;display:block}
+.wrapped-actions .primary-share{background:var(--sc-gold);color:var(--sc-ink);font-weight:600}
+.now-share-caption-hint{font-size:11px;color:var(--ink-3);text-align:center;margin-top:10px;line-height:1.5;padding:0 16px}
+.profile-rec-tabs{display:flex;gap:8px;padding:0 20px 12px}
+.profile-rec-tabs button{
+  flex:1;padding:10px;border-radius:999px;font-size:12px;font-weight:600;
+  background:var(--bg-3);color:var(--ink-3);border:1px solid rgba(255,255,255,.06);
+}
+.profile-rec-tabs button.on{background:var(--ink);color:var(--accent-inv);border-color:var(--ink)}
+.capsule-days-lg{font-size:13px;font-weight:600;color:var(--sc-gold);letter-spacing:.04em}
 .daily-chip{
   flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;
   min-width:64px;padding:10px 8px;border-radius:14px;background:var(--bg-3);
@@ -3577,6 +3632,39 @@ button{cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:tr
 <input type="file" id="dailyPhotoInput" accept="image/*,.heic,.heif" capture="environment" class="hidden">
 <input type="file" id="dailySkyInput" accept="image/*,.heic,.heif" capture="environment" class="hidden">
 <input type="file" id="reflectPhotoInput" accept="image/*,.heic,.heif" class="hidden">
+<input type="file" id="nowPhotoFront" accept="image/*,.heic,.heif" capture="user" class="hidden">
+<input type="file" id="nowPhotoBack" accept="image/*,.heic,.heif" capture="environment" class="hidden">
+
+<div class="mood-pick-overlay" id="nowCaptureOverlay">
+  <div class="mood-pick-sheet now-capture-sheet">
+    <div class="now-capture-head">
+      <h3>今</h3>
+      <button type="button" class="now-flip-btn" id="nowFlipCam">カメラ切替</button>
+    </div>
+    <p class="now-capture-hint">この瞬間を残す。自撮りでも、風景でも、ごはんでも、何でも一枚。</p>
+    <div class="now-capture-preview" id="nowCapturePreview"></div>
+    <div id="nowCapturePick">
+      <button type="button" class="dq-cta" id="nowCaptureShoot" style="width:100%">撮る / 選ぶ</button>
+      <button type="button" class="create-pick" id="nowCaptureCancel" style="width:100%;margin-top:8px">やめる</button>
+    </div>
+    <div id="nowCaptureActions" class="now-capture-actions hidden">
+      <input type="text" class="mood-word-input" id="nowCaptionInput" placeholder="ひとこと（任意）" maxlength="80" style="width:100%">
+      <div id="nowSharePicker"></div>
+      <button type="button" class="dq-cta" id="nowCaptureSave" style="width:100%">残す</button>
+      <button type="button" class="create-pick" id="nowCaptureRetake" style="width:100%">撮り直す</button>
+    </div>
+  </div>
+</div>
+<div class="wrapped-overlay" id="nowBrandedOverlay">
+  <div>
+    <div class="now-branded-preview" id="nowBrandedPreview"></div>
+    <div class="wrapped-actions">
+      <button type="button" id="nowBrandedShare" class="primary-share">シェアする</button>
+      <button type="button" class="ghost" id="nowBrandedClose">閉じる</button>
+    </div>
+    <p class="now-share-caption-hint" id="nowShareCaptionHint"></p>
+  </div>
+</div>
 
 <div class="wrapped-overlay" id="wrappedOverlay">
   <div>
@@ -3832,12 +3920,17 @@ const SKY_MOODS=[
   {id:'snow',icon:'snow',label:'雪'},
 ];
 const DAILY_RECORD_TYPES={
-  mood:{iconKey:'cloud',label:'今日の空'},
-  photo:{iconKey:'camera',label:'今日の一枚'},
-  song:{iconKey:'music',label:'今日の一曲'},
-  food:{iconKey:'food',label:'今日のごはん'},
-  sky:{iconKey:'cloud',label:'空の写真'},
+  mood:{iconKey:'cloud',label:'気分',grid:'left',freq:'daily'},
+  song:{iconKey:'music',label:'音楽',grid:'left',freq:'daily'},
+  food:{iconKey:'food',label:'ご飯',grid:'left',freq:'daily'},
+  word:{iconKey:'edit',label:'一言',grid:'left',freq:'daily'},
+  hair:{iconKey:'user',label:'髪',grid:'right',freq:'occasional'},
+  clothes:{iconKey:'tag',label:'服',grid:'right',freq:'occasional'},
+  now:{iconKey:'camera',label:'今',grid:'hero',freq:'daily'},
+  photo:{iconKey:'camera',label:'一枚',grid:'legacy'},
+  sky:{iconKey:'cloud',label:'空',grid:'legacy'},
 };
+const DAILY_AXIS_ORDER=['mood','song','food','word','hair','clothes','now'];
 const DEFAULT_PROFILE_VISIBILITY={mood:'inner',recentPhoto:'inner',music:'inner',changes:'inner',pastPhotos:'self',textDiary:'self',streak:'self',totalPosts:'self',totalDays:'self'};
 const PRIVATE_PROFILE_STATS=['streak','totalPosts','totalDays'];
 const NIGHT_REFLECT_DEFAULT='今日は、どんな日だった？';
@@ -4010,6 +4103,7 @@ function closeTextCompose(){
   $('textComposeOverlay')?.classList.remove('open');
   if($('textComposeInput'))$('textComposeInput').value='';
   S._reflectTextMode=false;
+  S._wordAxisMode=false;
 }
 function renderTextDiaryList(){
   const posts=myTextDiaryPosts();
@@ -4617,6 +4711,7 @@ function dailyRecordPreview(rec){
     return tcIcon('cloud');
   }
   if(rec.type==='song')return rec.songTitle?tcIcon('music')+' '+esc(rec.songTitle.slice(0,8)):tcIcon('music');
+  if(rec.type==='word')return rec.caption||rec.text?tcIcon('edit'):tcIcon('edit');
   if(rec.mediaId)return tcIcon(rec.type==='sky'?'cloud':rec.type==='food'?'food':'camera');
   return tcIcon('check');
 }
@@ -4639,6 +4734,7 @@ async function createDailyRecord(type,data={}){
     songTitle:data.songTitle,songArtist:data.songArtist,songId:data.songId,
     songArtworkUrl:data.songArtworkUrl,songSource:data.songSource,songCapturedAt:data.songCapturedAt,
     caption:data.caption,
+    text:data.text||data.caption||'',
     visibility:data.visibility||'private',
     shareTo,
     createdAt:existing?.createdAt||Date.now(),updatedAt:Date.now(),resurfaceAt:addDays(365),
@@ -4648,7 +4744,7 @@ async function createDailyRecord(type,data={}){
   if(data.mediaDataUrl){
     rec.mediaId=id;
     await idbPut(id,data.mediaDataUrl);
-    if(['photo','food','sky'].includes(type))registerAppearanceShot(id,type);
+    if(['photo','food','sky'].includes(type))await registerAppearanceShotIfFace(id,type);
   }else if(existing?.mediaId){
     rec.mediaId=existing.mediaId;
   }
@@ -4717,9 +4813,305 @@ function openSongPickOverlay(){
     fetchSpotifyLiveTrack(true).then(()=>{renderPick();renderHome()});
   }
 }
+let nowCameraFacing='back';
+let pendingNowMedia=null;
+let pendingBrandedCardUrl=null;
+function ensureNowShots(){if(!S.nowShots)S.nowShots=[]}
+function skyMoodSymbol(id){
+  const map={sunny:'☀︎',cloudy:'☁',rain:'☂',storm:'⚡',snow:'❄'};
+  return map[id]||'☁';
+}
+function loadImageEl(src){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=reject;
+    img.src=src;
+  });
+}
+function buildBrandedCardMeta(caption=''){
+  const now=new Date();
+  const ctx=S.lastSealContext||{};
+  const moodRec=todayDailyRecords().find(r=>r.type==='mood');
+  const songRec=todayDailyRecords().find(r=>r.type==='song');
+  const sp=S.spotify?.nowPlaying;
+  const wordRec=todayDailyRecords().find(r=>r.type==='word');
+  const wordPost=(S.posts||[]).find(p=>isMyPost(p)&&p.type==='text'&&new Date(p.createdAt).toISOString().slice(0,10)===todayStr());
+  const place=(ctx.place||'').split('·')[0]?.trim()||'';
+  return{
+    date:`${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()}`,
+    time:now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false}),
+    tempC:ctx.temp!=null?Math.round(ctx.temp):null,
+    skyMood:moodRec?.skyMood||'cloudy',
+    songTitle:songRec?.songTitle||sp?.title||'',
+    songArtist:songRec?.songArtist||sp?.artist||'',
+    city:place,
+    dayNumber:totalRecordDays(),
+    caption:caption||wordRec?.caption||wordRec?.text||'',
+    wordText:wordRec?.text||wordRec?.caption||wordPost?.text||'',
+  };
+}
+async function generateBrandedCard(photoDataUrl,meta){
+  const w=1080,h=1920;
+  const canvas=document.createElement('canvas');
+  canvas.width=w;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const topBand=130,botBand=200;
+  ctx.fillStyle='#100D0A';
+  ctx.fillRect(0,0,w,h);
+  const img=await loadImageEl(photoDataUrl);
+  const photoY=topBand;
+  const photoH=h-topBand-botBand;
+  const scale=Math.max(w/img.width,photoH/img.height);
+  const sw=img.width*scale,sh=img.height*scale;
+  const sx=(w-sw)/2,sy=photoY+(photoH-sh)/2;
+  ctx.drawImage(img,sx,sy,sw,sh);
+  ctx.fillStyle='#100D0A';
+  ctx.fillRect(0,0,w,topBand);
+  ctx.fillRect(0,h-botBand,w,botBand);
+  const gold='#C9A84C';
+  ctx.fillStyle=gold;
+  ctx.font='500 40px Oswald, sans-serif';
+  ctx.fillText(meta.date,48,56);
+  ctx.textAlign='right';
+  ctx.fillText(meta.time,1032,56);
+  ctx.fillText(`Day ${meta.dayNumber}`,1032,100);
+  ctx.textAlign='left';
+  ctx.font='400 34px "Zen Kaku Gothic New", sans-serif';
+  const botY=h-botBand+52;
+  const line1=[skyMoodSymbol(meta.skyMood),meta.tempC!=null?`${meta.tempC}°`:'',meta.city].filter(Boolean).join('  ');
+  ctx.fillText(line1,48,botY);
+  if(meta.songTitle){
+    ctx.font='400 30px "Zen Kaku Gothic New", sans-serif';
+    ctx.fillText(`♪ ${meta.songTitle}${meta.songArtist?' · '+meta.songArtist:''}`.slice(0,36),48,botY+44);
+  }
+  const cap=meta.caption||meta.wordText;
+  if(cap){
+    ctx.font='400 28px "Zen Kaku Gothic New", sans-serif';
+    ctx.fillText(`「${cap.slice(0,28)}${cap.length>28?'…':''}」`,48,botY+88);
+  }
+  ctx.font='600 28px Oswald, sans-serif';
+  ctx.textAlign='right';
+  ctx.fillText('TIME CAP',1032,h-36);
+  return canvas.toDataURL('image/jpeg',0.92);
+}
+async function analyzeImageRegion(dataUrl,y0,y1){
+  const img=await loadImageEl(dataUrl);
+  const sy=Math.floor(img.height*Math.max(0,y0));
+  const eh=Math.floor(img.height*Math.min(1,y1));
+  const sh=Math.max(1,eh-sy);
+  const tw=48;
+  const th=Math.max(6,Math.round(tw*sh/img.width));
+  const c=document.createElement('canvas');
+  c.width=tw;c.height=th;
+  const ctx=c.getContext('2d');
+  ctx.drawImage(img,0,sy,img.width,sh,0,0,tw,th);
+  const {data,width:w,height:h}=ctx.getImageData(0,0,tw,th);
+  let sumL=0,sumL2=0,edges=0;
+  const n=w*h;
+  for(let y=0;y<h;y++){
+    for(let x=0;x<w;x++){
+      const i=(y*w+x)*4;
+      const L=0.299*data[i]+0.587*data[i+1]+0.114*data[i+2];
+      sumL+=L;sumL2+=L*L;
+      if(x>0){
+        const i2=(y*w+(x-1))*4;
+        const L2=0.299*data[i2]+0.587*data[i2+1]+0.114*data[i2+2];
+        if(Math.abs(L-L2)>26)edges++;
+      }
+      if(y>0){
+        const i2=((y-1)*w+x)*4;
+        const L2=0.299*data[i2]+0.587*data[i2+1]+0.114*data[i2+2];
+        if(Math.abs(L-L2)>26)edges++;
+      }
+    }
+  }
+  const mean=sumL/n;
+  const std=Math.sqrt(Math.max(0,(sumL2/n)-mean*mean));
+  const edgeDensity=edges/n;
+  const skyLike=mean>198&&std<20&&edgeDensity<0.055;
+  const emptyLike=std<9||edgeDensity<0.035;
+  const detailScore=Math.min(1,edgeDensity*9+std/38);
+  return{mean,std,edgeDensity,detailScore,skyLike,emptyLike};
+}
+async function detectHairInDataUrl(dataUrl){
+  const m=await analyzeImageRegion(dataUrl,0,0.5);
+  if(m.skyLike||m.emptyLike)return false;
+  return m.detailScore>=0.14;
+}
+async function detectClothesInDataUrl(dataUrl){
+  const m=await analyzeImageRegion(dataUrl,0.22,0.96);
+  if(m.skyLike||m.emptyLike)return false;
+  return m.detailScore>=0.13;
+}
+async function detectFaceInDataUrl(dataUrl){
+  try{
+    await ensureFaceModels();
+    const img=await loadImageEl(dataUrl);
+    const det=await faceapi.detectSingleFace(img,new faceapi.TinyFaceDetectorOptions({inputSize:224,scoreThreshold:.4}));
+    return !!det;
+  }catch(e){return false}
+}
+function todayNowShotMeta(){
+  const nowRec=todayDailyRecords().find(r=>r.type==='now'&&r.mediaId);
+  if(!nowRec)return null;
+  const shot=(S.nowShots||[]).find(s=>s.photoUrl===nowRec.mediaId);
+  return{rec:nowRec,shot,mediaId:nowRec.mediaId};
+}
+function hasTodayNowAxisSync(axis){
+  const meta=todayNowShotMeta();
+  if(!meta?.shot)return false;
+  return axis==='hair'?!!meta.shot.hairVisible:!!meta.shot.clothesVisible;
+}
+async function getTodayNowMediaForAxis(axis){
+  const meta=todayNowShotMeta();
+  if(!meta)return null;
+  const key=axis==='hair'?'hairVisible':'clothesVisible';
+  if(meta.shot&&meta.shot[key]===true)return{mediaId:meta.mediaId,rec:meta.rec};
+  if(meta.shot&&meta.shot[key]===false)return null;
+  const data=await idbGet(meta.mediaId);
+  if(!data)return null;
+  const ok=axis==='hair'?await detectHairInDataUrl(data):await detectClothesInDataUrl(data);
+  if(meta.shot){meta.shot[key]=ok;save()}
+  return ok?{mediaId:meta.mediaId,rec:meta.rec}:null;
+}
+async function registerAppearanceShotIfFace(mediaId,source='photo'){
+  const data=await idbGet(mediaId);
+  if(!data)return false;
+  if(!(await detectFaceInDataUrl(data)))return false;
+  await registerAppearanceShot(mediaId,source);
+  return true;
+}
+function openNowCapture(){
+  if(S.nowEnabled===false){toast('「今」はオフになっています');return}
+  if(!canAddDailyType('now')&&!todayDailyRecords().some(r=>r.type==='now')){
+    toast('今日はあと0枠です（3件まで）');return;
+  }
+  pendingNowMedia=null;
+  $('nowCapturePreview').innerHTML='';
+  $('nowCapturePick')?.classList.remove('hidden');
+  $('nowCaptureActions')?.classList.add('hidden');
+  $('nowCaptionInput').value='';
+  renderDailySharePicker('now',$('nowSharePicker'));
+  $('nowCaptureOverlay')?.classList.add('open');
+  haptic();
+}
+function triggerNowPhotoInput(){
+  const id=nowCameraFacing==='front'?'nowPhotoFront':'nowPhotoBack';
+  $(id)?.click();
+}
+async function previewNowPhoto(dataUrl){
+  pendingNowMedia={dataUrl,camera:nowCameraFacing};
+  $('nowCapturePreview').innerHTML=`<img src="${dataUrl}" alt="">`;
+  $('nowCapturePick')?.classList.add('hidden');
+  $('nowCaptureActions')?.classList.remove('hidden');
+}
+async function saveNowShot(){
+  if(!pendingNowMedia?.dataUrl)return;
+  const caption=$('nowCaptionInput')?.value?.trim()||'';
+  const payload=dailyRecordPayload('now',{caption,mediaDataUrl:pendingNowMedia.dataUrl});
+  const [hairVisible,clothesVisible,faceDetected]=await Promise.all([
+    detectHairInDataUrl(pendingNowMedia.dataUrl),
+    detectClothesInDataUrl(pendingNowMedia.dataUrl),
+    detectFaceInDataUrl(pendingNowMedia.dataUrl),
+  ]);
+  const rec=await createDailyRecord('now',payload);
+  if(!rec)return;
+  ensureNowShots();
+  const shotId='ns'+Date.now();
+  S.nowShots.unshift({
+    id:shotId,userId:meUserId()||meName(),
+    photoUrl:rec.mediaId,camera:pendingNowMedia.camera,
+    isManual:true,faceDetected,hairVisible,clothesVisible,capturedAt:Date.now(),
+    brandedCard:null,
+  });
+  if(faceDetected)registerAppearanceShot(rec.mediaId,'now');
+  const meta=buildBrandedCardMeta(caption);
+  const branded=await generateBrandedCard(pendingNowMedia.dataUrl,meta);
+  S.nowShots[0].brandedCard={...meta,nowShotId:shotId,imageDataUrl:branded};
+  save();
+  $('nowCaptureOverlay')?.classList.remove('open');
+  pendingNowMedia=null;
+  finishDailyRecordToast(rec._replaced);
+  openNowBrandedShare(branded,meta);
+}
+function openNowBrandedShare(dataUrl,meta){
+  pendingBrandedCardUrl=dataUrl;
+  $('nowBrandedPreview').innerHTML=`<img src="${dataUrl}" alt="Time Cap 今">`;
+  const link=inviteShareUrl();
+  $('nowShareCaptionHint').textContent=`${meta.date} · Time Cap — ${link}`;
+  $('nowBrandedOverlay')?.classList.add('open');
+  haptic();
+}
+async function shareNowBrandedCard(){
+  if(!pendingBrandedCardUrl)return;
+  const meta=buildBrandedCardMeta();
+  const link=inviteShareUrl();
+  const caption=`${meta.date} · Time Cap\n${link}`;
+  try{
+    const blob=await(await fetch(pendingBrandedCardUrl)).blob();
+    const file=new File([blob],'timecap-now.jpg',{type:'image/jpeg'});
+    if(navigator.share&&navigator.canShare?.({files:[file]})){
+      await navigator.share({files:[file],title:'Time Cap',text:caption});
+      toast('シェアしました');haptic();return;
+    }
+  }catch(e){}
+  try{
+    await navigator.clipboard.writeText(caption+'\n(画像は長押しで保存できます)');
+    toast('リンクをコピーしました');
+  }catch(e){toast('シェアの準備ができませんでした')}
+  haptic();
+}
+function renderDailyGrid(){
+  const mount=$('dailyStripMount');
+  if(!mount)return;
+  const hairReady=hasTodayNowAxisSync('hair');
+  const clothesReady=hasTodayNowAxisSync('clothes');
+  const slotsOf=t=>{
+    const left=dailySlotsRemaining(t);
+    if(!dailyTypeCount(t))return '';
+    return left>0?`あと${left}枠`:'';
+  };
+  const cell=(type,small)=>{
+    const meta=DAILY_RECORD_TYPES[type];
+    if(!meta||meta.grid==='legacy')return '';
+    const cnt=dailyTypeCount(type);
+    const full=!canAddDailyType(type)&&type!=='hair'&&type!=='clothes';
+    const hero=meta.grid==='hero';
+    const needsAxis=type==='hair'||type==='clothes';
+    const axisReady=type==='hair'?hairReady:clothesReady;
+    const needAxisHint=needsAxis&&!axisReady;
+    const hintText=type==='hair'?'髪の「今」が必要':type==='clothes'?'服の「今」が必要':'';
+    return`<button type="button" class="d7-cell${small?' small':''}${hero?' hero':''}${cnt?' done':''}${needAxisHint?' need-axis':''}" data-daily="${type}"${full?' disabled':''}>
+      <span class="d7-icon">${tcIcon(meta.iconKey,hero?'gold':'')}</span>
+      <span class="d7-label">${esc(meta.label)}</span>
+      ${needAxisHint?`<span class="d7-hint">${hintText}</span>`:''}
+      ${cnt?`<span class="d7-slots">${cnt}/3${slotsOf(type)?' · '+slotsOf(type):''}</span>`:''}
+    </button>`;
+  };
+  mount.innerHTML=`<div class="daily-7-grid">
+    <div class="daily-7-head">
+      <span class="daily-7-label">今日の記録</span>
+      <span class="daily-7-sub">やりたい軸だけでOK</span>
+    </div>
+    <div class="daily-7-layout">
+      <div class="d7-hero-col">${cell('now')}</div>
+      <div class="d7-rest">
+        <div class="d7-change-row">${cell('hair',true)}${cell('clothes',true)}</div>
+        <div class="d7-row">${cell('mood')}${cell('song')}</div>
+        <div class="d7-row">${cell('food')}${cell('word')}</div>
+      </div>
+    </div>
+  </div>`;
+  mount.querySelectorAll('[data-daily]').forEach(b=>b.addEventListener('click',()=>{
+    openDailyRecord(b.dataset.daily);
+    haptic();
+  }));
+}
+function renderDailyStrip(){renderDailyGrid()}
 function showDailyConfirm(dataUrl){
   const type=pendingDailyType||'photo';
-  const titles={photo:'今日の一枚',food:'今日のごはん',sky:'今日の空'};
+  const titles={photo:'今日の一枚',food:'今日のごはん',sky:'今日の空',now:'今'};
   $('dailyConfirmTitle').textContent=titles[type]||'残す';
   pendingDailyMedia={type,dataUrl};
   const prev=$('dailyConfirmPreview');
@@ -4730,8 +5122,32 @@ function showDailyConfirm(dataUrl){
   $('dailyConfirmOverlay')?.classList.add('open');
 }
 function openDailyRecord(type){
-  if(type!=='text'&&!canAddDailyType(type)){
+  if(type!=='hair'&&type!=='clothes'&&!canAddDailyType(type)){
     toast(`今日はあと0枠です（3件まで）`);
+    return;
+  }
+  if(type==='now'){openNowCapture();return}
+  if(type==='word'){S._wordAxisMode=true;openTextCompose({prefill:'',promptText:'いま、何を考えてる？'});return}
+  if(type==='hair'||type==='clothes'){
+    (async()=>{
+      const linked=await getTodayNowMediaForAxis(type);
+      if(!linked){
+        toast(type==='hair'
+          ?'髪の変化は、髪が写っている「今」から記録されます。風景やごはんでは残せません'
+          :'服の変化は、服が写っている「今」から記録されます。関係ない写真では残せません');
+        haptic();
+        return;
+      }
+      const note=prompt(type==='hair'?'髪の変化をひとこと（任意）':'服の変化をひとこと（任意）','');
+      if(note===null)return;
+      const payload=dailyRecordPayload(type,{caption:note||'',linkedMediaId:linked.mediaId});
+      const rec=await createDailyRecord(type,payload);
+      if(rec){
+        await registerAppearanceShot(linked.mediaId,type);
+        save();
+        finishDailyRecordToast(rec._replaced);
+      }
+    })();
     return;
   }
   if(type==='mood'){
@@ -4750,43 +5166,6 @@ function openDailyRecord(type){
   pendingDailyType=type;
   if(type==='sky')$('dailySkyInput')?.click();
   else $('dailyPhotoInput')?.click();
-}
-function renderDailyStrip(){
-  const mount=$('dailyStripMount');
-  if(!mount)return;
-  const today=todayDailyRecords();
-  const countOf=t=>dailyTypeCount(t);
-  const slotsOf=t=>{
-    const left=dailySlotsRemaining(t);
-    if(!countOf(t))return '';
-    return left>0?`あと${left}枠`:'';
-  };
-  mount.innerHTML=`<div class="daily-strip-card">
-    <div class="daily-strip-head">
-      <span class="daily-strip-label">今日の記録</span>
-      <span class="daily-strip-progress">${today.length}件</span>
-    </div>
-    <div class="daily-strip-scroll">
-      ${Object.entries(DAILY_RECORD_TYPES).map(([type,meta])=>{
-        const cnt=countOf(type);
-        const full=!canAddDailyType(type);
-        return`<button type="button" class="daily-chip${cnt?' done':''}${full?' disabled':''}" data-daily="${type}"${full?' disabled':''}>
-          <span class="dc-icon">${tcIcon(meta.iconKey)}</span>
-          <span class="dc-label">${esc(meta.label.replace('今日の',''))}</span>
-          ${cnt?`<span class="dc-check">${tcIcon('check','gold')}</span><span class="dc-slots">${cnt}/3${slotsOf(type)?' · '+slotsOf(type):''}</span>`:''}
-        </button>`;
-      }).join('')}
-      <button type="button" class="daily-chip text-entry" data-daily="text">
-        <span class="dc-icon">${tcIcon('edit')}</span>
-        <span class="dc-label">ひとこと</span>
-      </button>
-    </div>
-  </div>`;
-  mount.querySelectorAll('[data-daily]').forEach(b=>b.addEventListener('click',()=>{
-    if(b.dataset.daily==='text')openTextCompose();
-    else openDailyRecord(b.dataset.daily);
-    haptic();
-  }));
 }
 function renderMorningNudge(){
   const el=$('morningNudge');
@@ -5596,6 +5975,8 @@ function capsuleDaysShort(openAt){
   if(cd.ready)return '今日、開けられる';
   const ms=new Date(openAt)-Date.now();
   const d=Math.ceil(ms/864e5);
+  if(d===1)return 'あと1日';
+  if(d===3)return 'あと3日';
   if(d>0)return `あと${d}日`;
   return cd.text;
 }
@@ -5861,6 +6242,21 @@ async function ensureFaceModels(){
   })();
   return faceModelsLoading;
 }
+async function storeRegionCrop(dataUrl,y0,y1,baseId){
+  if(!dataUrl)return null;
+  const img=await loadImageEl(dataUrl);
+  const sy=Math.floor(img.height*Math.max(0,y0));
+  const eh=Math.floor(img.height*Math.min(1,y1));
+  const sh=Math.max(1,eh-sy);
+  const c=document.createElement('canvas');
+  c.width=256;c.height=256;
+  const ctx=c.getContext('2d');
+  ctx.drawImage(img,0,sy,img.width,sh,0,0,256,256);
+  const crop=c.toDataURL('image/jpeg',0.88);
+  const cropId=(baseId||'crop')+'_rg';
+  try{await idbPut(cropId,crop)}catch(e){return null}
+  return cropId;
+}
 async function storeFaceCrop(dataUrl,box,baseId){
   if(!box||!dataUrl)return null;
   const pad=Math.max(box.width,box.height)*0.18;
@@ -5934,6 +6330,12 @@ async function registerAppearanceShot(mediaId,source='photo'){
     const data=await idbGet(mediaId);
     if(!data)return;
     const sig=await extractFaceSignature(data,mediaId);
+    if(sig.method!=='faceapi'||!sig.vector?.length){
+      if(!['avatar','hair','clothes'].includes(source))return;
+    }
+    let faceRef=sig.faceRef||null;
+    if(!faceRef&&source==='hair')faceRef=await storeRegionCrop(data,0,0.52,mediaId+'_hair');
+    if(!faceRef&&source==='clothes')faceRef=await storeRegionCrop(data,0.22,0.96,mediaId+'_cloth');
     S.appearanceShots=S.appearanceShots||[];
     const prev=S.appearanceShots[0];
     const dist=prev?faceVectorDistance(sig.vector,prev.faceVector,prev.method,sig.method):1;
@@ -5941,7 +6343,7 @@ async function registerAppearanceShot(mediaId,source='photo'){
     const changed=!prev||dist>threshold;
     if(prev&&!changed)return;
     const shot={
-      id:'as'+Date.now(),userId:meName(),photoRef:mediaId,faceRef:sig.faceRef||null,
+      id:'as'+Date.now(),userId:meName(),photoRef:mediaId,faceRef,
       faceVector:sig.vector,faceMethod:sig.method,faceBox:sig.faceBox||null,
       changed:!!prev&&changed,capturedAt:Date.now(),source,
     };
@@ -10004,6 +10406,9 @@ if(S.apiSession===undefined)S.apiSession=null;
 if(S.mapTimePct===undefined)S.mapTimePct=100;
 if(!S.ctxDisplayPref)S.ctxDisplayPref='weather';
 if(!S.changeCardFrames)S.changeCardFrames=4;
+ensureNowShots();
+if(S.nowEnabled===undefined)S.nowEnabled=true;
+if(S.archiveVisScope===undefined)S.archiveVisScope='self';
 if(S.dismissedVoiceHint===undefined)S.dismissedVoiceHint=false;
 if(!S.sealLayer)S.sealLayer='now';
 if(!S.changeSummaries)S.changeSummaries=[];
@@ -10813,7 +11218,10 @@ function renderCapsuleChangeSection(){
       <div class="capsule-pillar">
         <div class="capsule-pillar-lbl">心</div>
         ${capsuleMoodPillarHtml()}
-        <div style="margin-top:8px">${capsuleWordsPillarHtml()}</div>
+        <div style="margin-top:8px">
+          <div style="font-size:11px;color:var(--ink-3);margin-bottom:4px">一言</div>
+          ${capsuleWordsPillarHtml()}
+        </div>
         <div class="capsule-pillar-actions">
           <button type="button" class="create-pick" id="capsuleMoodShareBtn">気分をシェア</button>
           <button type="button" class="create-pick" data-capsule-drill="words">言葉の推移</button>
@@ -10857,13 +11265,11 @@ function renderCapsuleUpcomingSection(){
       <p style="font-size:13px;color:var(--ink-3);line-height:1.5">未来に封じたものが、ここに並びます。</p></div>`;
   }
   return`<div class="capsule-section"><div class="capsule-section-label">もうすぐ開く</div>
-    <div class="capsule-upcoming">${list.map(c=>{
-      const cd=countdownText(unlockAtOf(c));
-      return`<button type="button" class="capsule-up-card" data-cap-open="${esc(c.id)}">
-        <div class="cu-when">${esc(cd.text)}</div>
+    <div class="capsule-upcoming">${list.map(c=>`
+      <button type="button" class="capsule-up-card" data-cap-open="${esc(c.id)}">
+        <div class="cu-when capsule-days-lg">${esc(capsuleDaysShort(unlockAtOf(c)))}</div>
         <div class="cu-sub">${esc(capDestLabel(c))} · ${esc((c.text||TYPE_JA[c.type]||'').slice(0,36))}</div>
-      </button>`;
-    }).join('')}</div></div>`;
+      </button>`).join('')}</div></div>`;
 }
 function renderCapsulePastSection(){
   const cards=[];
@@ -11295,9 +11701,12 @@ function reflectDayItem(rec,source){
   const sealed=!!(rec.sealed&&source!=='daily'&&isCapLocked(rec));
   return{
     id:rec.id,source,type:rec.type,
-    text:rec.text||rec.choice||rec.moodWord,
+    text:rec.text||rec.caption||rec.choice||rec.moodWord,
     mediaId:rec.mediaId,
     at:rec.createdAt||rec.openedAt||rec.at||rec.updatedAt,
+    visibility:rec.visibility,
+    shareTo:rec.shareTo,
+    to:rec.to,
     sealContext:rec.sealContext,
     linkedSong:rec.linkedSong,
     songTitle:rec.songTitle,
@@ -11311,6 +11720,13 @@ function reflectDayItem(rec,source){
     contextSong:rec.contextSong,
   };
 }
+function itemVisScope(item){
+  if(item.visibility==='inner')return 'inner';
+  if(item.visibility==='shared')return 'inner';
+  if(item.shareTo?.friends?.length||item.shareTo?.groups?.length)return 'inner';
+  if(item.to==='group')return 'inner';
+  return 'self';
+}
 function itemPassesMemFilter(item,filter){
   if(filter==='all')return true;
   if(filter==='opened')return !item.sealed;
@@ -11319,10 +11735,11 @@ function itemPassesMemFilter(item,filter){
   if(filter==='text')return item.type==='text'&&!item.mediaId;
   return true;
 }
-function collectReflectDays(filter='all'){
+function collectReflectDays(filter='all',visScope=null){
   const map=new Map();
   const add=(key,item)=>{
     if(!key||!itemPassesMemFilter(item,filter))return;
+    if(visScope&&itemVisScope(item)!==visScope)return;
     if(!map.has(key))map.set(key,{key,items:[],thumb:null,count:0,latestAt:0});
     const day=map.get(key);
     day.items.push(item);
@@ -11409,8 +11826,8 @@ function renderMemCalCell(dayKey,dayNum,dayData,isToday){
   const preview=allSealed?tcIcon('lock'):skyIcon||(dayData.items.find(i=>i.text)?.text||'').slice(0,12);
   return`<button type="button" class="mem-cal-cell has-data${isToday?' today':''}" data-day="${esc(dayKey)}">${streak}<div class="mem-cal-fallback" style="background:${esc(mood)};display:flex;align-items:center;justify-content:center">${typeof preview==='string'&&preview.startsWith('<')?preview:`<span style="font-size:8px;color:var(--ink-3);padding:6px;line-height:1.3">${esc(preview)}</span>`}</div>${badge}<span class="cal-day-num">${label}</span></button>`;
 }
-function renderMemCalendarView(filter='all'){
-  const days=collectReflectDays(filter);
+function renderMemCalendarView(filter='all',visScope=null){
+  const days=collectReflectDays(filter,visScope);
   const today=todayStr();
   const now=new Date();
   const weekdays=['日','月','火','水','木','金','土'];
@@ -11441,8 +11858,8 @@ function renderMemCalendarView(filter='all'){
   }
   return monthBlocks.join('');
 }
-function renderMemPhotoGrid(filter='all'){
-  const days=collectReflectDays(filter);
+function renderMemPhotoGrid(filter='all',visScope=null){
+  const days=collectReflectDays(filter,visScope);
   const today=todayStr();
   const sorted=[...days.values()].sort((a,b)=>b.key.localeCompare(a.key));
   if(!sorted.length){
@@ -11523,7 +11940,9 @@ function bindReflectViewEvents(root){
 
 function renderArchiveMemoryList(){
   const filter=S.archiveMemFilter||'all';
+  const visScope=S.archiveVisScope||'self';
   let items=allMemories(filter==='prompt'||filter==='text'||filter==='tag'?'all':filter);
+  items=items.filter(m=>itemVisScope(m)===visScope);
   if(filter==='opened')items=items.filter(m=>m.kind==='opened'||!isCapLocked(m));
   else if(filter==='sealed')items=items.filter(m=>m.kind==='sealed'||isCapLocked(m));
   else if(filter==='prompt')items=items.filter(m=>m.type==='prompt'||m.promptId);
@@ -11538,7 +11957,7 @@ function renderArchiveMemoryList(){
     const sizeCls=i%5===0?' wide':i%3===0?' tall':'';
     if(sealed&&!missed){
       const daysLbl=capsuleDaysShort(m.openAt||m.unlockAt||unlockAtOf(m));
-      return`<article class="arb-card${sizeCls}"><div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">${tcIcon('lock')} タイムカプセル</span></div><div class="arb-sealed capsule-days-badge">${esc(daysLbl)}</div></article>`;
+      return`<article class="arb-card${sizeCls}"><div class="arb-card-head"><span class="arb-date">${date}</span><span class="arb-type">${tcIcon('lock')} タイムカプセル</span></div><div class="arb-sealed capsule-days-lg">${esc(daysLbl)}</div></article>`;
     }
     const thumb=m.mediaId?`<img class="arb-thumb" data-lazy="${esc(m.mediaId)}" alt="">`:'';
     const text=m.text||m.choice||m.promptText||'';
@@ -11594,7 +12013,7 @@ function renderArchive(){
   }).join('');
 
   const sealedStrip=sealedVaultItems().slice(0,6).map(c=>`
-    <div class="vault-cell"><div class="vm-blur"></div><div class="vm-count">${tcIcon('lock')}</div><div class="capsule-days-badge" style="position:absolute;bottom:6px;left:0;right:0;text-align:center">${esc(capsuleDaysShort(unlockAtOf(c)))}</div></div>`).join('');
+    <div class="vault-cell"><div class="vm-blur"></div><div class="vm-count">${tcIcon('lock')}</div><div class="capsule-days-lg" style="position:absolute;bottom:6px;left:0;right:0;text-align:center">${esc(capsuleDaysShort(unlockAtOf(c)))}</div></div>`).join('');
 
   const seasonKey=getSeasonAlbumKey();
   const seasonAlbum=S.albums?.[seasonKey];
@@ -11622,6 +12041,11 @@ function renderArchive(){
 
   const memFilter=S.archiveMemFilter||'all';
   const memView=S.archiveMemView||'calendar';
+  const visScope=S.archiveVisScope||'self';
+  const visTabs=`<div class="profile-rec-tabs">
+    <button type="button" class="${visScope==='self'?'on':''}" data-vis-scope="self">自分だけの記録</button>
+    <button type="button" class="${visScope==='inner'?'on':''}" data-vis-scope="inner">みんなに見せた</button>
+  </div>`;
   const memFilters=`<div class="arb-filters">
     <button type="button" class="${memFilter==='all'?'on':''}" data-amf="all">すべて</button>
     <button type="button" class="${memFilter==='opened'?'on':''}" data-amf="opened">開封済み</button>
@@ -11636,8 +12060,8 @@ function renderArchive(){
     </div>
   </div>`;
   const memReflectBody=memView==='grid'
-    ?renderMemPhotoGrid(memFilter)
-    :renderMemCalendarView(memFilter);
+    ?renderMemPhotoGrid(memFilter,visScope)
+    :renderMemCalendarView(memFilter,visScope);
 
   const musicRank=(monthData?.ranking||[]).slice(0,5).map(t=>{
     const rkColor=t.rank===1?'var(--sc-gold,#C9A84C)':t.rank===2?'var(--silver)':'var(--ink-3)';
@@ -11650,7 +12074,7 @@ function renderArchive(){
 
   let panel='';
   if(tab==='all'){
-    panel=`${memFilters}${memViewBar}<div class="archive-panel" id="memReflectRoot">${memReflectBody}</div>`;
+    panel=`${visTabs}${memFilters}${memViewBar}<div class="archive-panel" id="memReflectRoot">${memReflectBody}</div>`;
   }else if(tab==='words'){
     panel=`<div class="archive-panel" style="padding-top:8px">
       <p style="padding:0 20px 12px;font-size:13px;color:var(--ink-2);line-height:1.5">${INNER_LABEL}に見せたことも、自分だけのことも、ここに時系列で積もっていきます。</p>
@@ -11722,6 +12146,9 @@ function renderArchive(){
   });
   if(tab==='all'){
     bindReflectViewEvents($('memReflectRoot'));
+    el.querySelectorAll('[data-vis-scope]').forEach(btn=>btn.addEventListener('click',()=>{
+      S.archiveVisScope=btn.dataset.visScope;save();renderArchive();haptic();
+    }));
     document.querySelectorAll('[data-memview]').forEach(btn=>btn.addEventListener('click',()=>{
       S.archiveMemView=btn.dataset.memview;save();renderArchive();haptic();
     }));
@@ -12404,6 +12831,32 @@ $('textComposeSubmit')?.addEventListener('click',()=>{
     renderAll();
     toast('答えました');
     haptic();
+    return;
+  }
+  if(S._wordAxisMode){
+    S._wordAxisMode=false;
+    const trimmed=String(text).trim();
+    if(!trimmed){toast('ひとこと書いてみよう');return}
+    const dest=textComposeDest;
+    const days=textComposeDays;
+    closeTextCompose();
+    (async()=>{
+      const payload=dailyRecordPayload('word',{caption:trimmed,text:trimmed});
+      const rec=await createDailyRecord('word',payload);
+      if(!rec)return;
+      if(dest==='capsule'){
+        createTextPost({text:trimmed,dest:'capsule',days});
+        toast('一言を未来に封じました');
+      }else if(dest==='inner'){
+        createTextPost({text:trimmed,dest:'inner'});
+        toast(rec._replaced?'更新しました':'残りました。タイムラインに流れていきます。');
+      }else{
+        finishDailyRecordToast(rec._replaced);
+        return;
+      }
+      renderAll();
+      haptic();
+    })();
     return;
   }
   const post=createTextPost({text,dest:textComposeDest,days:textComposeDays});
@@ -13256,6 +13709,42 @@ async function handleDailyPhotoInput(e){
 }
 $('dailyPhotoInput')?.addEventListener('change',handleDailyPhotoInput);
 $('dailySkyInput')?.addEventListener('change',handleDailyPhotoInput);
+async function handleNowPhotoInput(e){
+  const file=e.target.files?.[0];
+  e.target.value='';
+  if(!file)return;
+  try{
+    const dataUrl=await compressImage(file);
+    await previewNowPhoto(dataUrl);
+  }catch(err){toast('写真の読み込みに失敗しました')}
+}
+$('nowPhotoFront')?.addEventListener('change',handleNowPhotoInput);
+$('nowPhotoBack')?.addEventListener('change',handleNowPhotoInput);
+$('nowFlipCam')?.addEventListener('click',()=>{
+  nowCameraFacing=nowCameraFacing==='front'?'back':'front';
+  toast(nowCameraFacing==='front'?'内カメラ':'外カメラ');
+  haptic();
+});
+$('nowCaptureShoot')?.addEventListener('click',()=>triggerNowPhotoInput());
+$('nowCaptureCancel')?.addEventListener('click',()=>{
+  $('nowCaptureOverlay')?.classList.remove('open');
+  pendingNowMedia=null;
+  haptic();
+});
+$('nowCaptureSave')?.addEventListener('click',()=>saveNowShot());
+$('nowCaptureRetake')?.addEventListener('click',()=>{
+  pendingNowMedia=null;
+  $('nowCapturePreview').innerHTML='';
+  $('nowCapturePick')?.classList.remove('hidden');
+  $('nowCaptureActions')?.classList.add('hidden');
+  haptic();
+});
+$('nowBrandedShare')?.addEventListener('click',()=>shareNowBrandedCard());
+$('nowBrandedClose')?.addEventListener('click',()=>{
+  $('nowBrandedOverlay')?.classList.remove('open');
+  pendingBrandedCardUrl=null;
+  haptic();
+});
 $('onboardDemo')?.addEventListener('click',async()=>{
   const name=prompt('あなたの名前','ゆうま')||'ゆうま';
   const email=name+'@demo.local';
